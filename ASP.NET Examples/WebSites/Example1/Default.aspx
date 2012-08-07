@@ -52,8 +52,8 @@
             createTreeView(elemId, 'tv1', 10, 500, 200, 200, highestDepth, [[1, 0, 'One', 1], [2, 1, 'Two', 1], [3, 2, 'Three', 1], [4, 1, 'Four', 1], [5, 0, 'Five', 1]
                 , [6, 5, 'Six', 1], [7, 6, 'Seven', 1], [8, 6, 'Eight', 1], [9, 8, 'Nine', 1]], 0, 1, 3, 2, '#00FF00', '10pt Ariel', 10, 
                 function (canvasid, windowid, selectedNodeIndex) { alert(selectedNodeIndex); });
-            createTextBox(elemId, 'textbox1', 400, 10, 100, 20, highestDepth, 'Type your name here', '#F0F0F0', 12, '12pt Ariel', '#000000', 12, '12pt Ariel', 50, '[a-Z]+', 0, null, 1, '#C0C0C0',
-                1, 1, '#000000', 3, 3, 20, 1, 5, 1, '#FFFFFF', '#D0D0D0', 0, null, 0, null, 0, 0, 0, null, '', '#A0A0A0', '#0000F0', 1);
+            createTextBox(elemId, 'textbox1', 400, 10, 300, 60, highestDepth, 'Type your name here', '#F0F0F0', 18, '18pt Ariel', '#051329', 18, '18pt Ariel', 50, '[a-Z]+', 0, null, 1, '#2e3642',
+                1, 0, '#000000', 3, 3, 20, 1, 10, 1, '#9bacc6', '#d6e4f9', 0, null, 0, null, 0, 0, 0, null, '', '#0d2952', '#0000F0', 1);
             draw(elemId);
         </script>
     </div>

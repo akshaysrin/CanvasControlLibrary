@@ -5747,7 +5747,7 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
             ctx.shadowOffsetY = textBoxProps.ShadowOffsetY;
         }
         ctx.beginPath();
-        if (textBoxProps.HasRoundedEdges) {
+        if (textBoxProps.HasRoundedEdges == 1) {
             ctx.moveTo(textBoxProps.X, textBoxProps.Y + textBoxProps.EdgeRadius);
             ctx.arc(textBoxProps.X + textBoxProps.EdgeRadius, textBoxProps.Y + textBoxProps.EdgeRadius, textBoxProps.EdgeRadius, Math.PI, (Math.PI / 180) * 270, false);
             ctx.lineTo(textBoxProps.X + textBoxProps.Width - textBoxProps.EdgeRadius, textBoxProps.Y);
@@ -5762,10 +5762,11 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
         }
         ctx.fill();
         ctx.restore();
-        if (textBoxProps.HasBorder) {
+        if (textBoxProps.HasBorder == 1) {
             ctx.strokeStyle = textBoxProps.BorderColor;
             ctx.lineWidth = textBoxProps.BorderLineWidth;
-            if (textBoxProps.HasRoundedEdges) {
+            ctx.beginPath();
+            if (textBoxProps.HasRoundedEdges == 1) {
                 ctx.moveTo(textBoxProps.X, textBoxProps.Y + textBoxProps.EdgeRadius);
                 ctx.arc(textBoxProps.X + textBoxProps.EdgeRadius, textBoxProps.Y + textBoxProps.EdgeRadius, textBoxProps.EdgeRadius, Math.PI, (Math.PI / 180) * 270, false);
                 ctx.lineTo(textBoxProps.X + textBoxProps.Width - textBoxProps.EdgeRadius, textBoxProps.Y);

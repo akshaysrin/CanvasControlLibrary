@@ -894,12 +894,34 @@ public class CanvasControlLibrary
         }
     }
 
+    public class JavaScriptFunctionsToSendAndAttachOnClientSide
+    {
+        public string CanvasID;
+        public string WindowID;
+        public string JavaScriptCode;
+        public string ClientSideArrayVarName;
+        public string ClientSidePropertyName;
+        public string GetPropsFunctionName;
+
+        public JavaScriptFunctionsToSendAndAttachOnClientSide(string canvasid, string windowid, string javascriptcode, string clientsidearrayvarname, string clientsidepropertyname, string getpropsfunctionname)
+        {
+            CanvasID = canvasid;
+            WindowID = windowid;
+            JavaScriptCode = javascriptcode;
+            ClientSideArrayVarName = clientsidearrayvarname;
+            ClientSidePropertyName = clientsidepropertyname;
+            GetPropsFunctionName = getpropsfunctionname;
+        }
+    }
+
+    public List<JavaScriptFunctionsToSendAndAttachOnClientSide> JavaScriptCodeToSendInThisCall = new List<JavaScriptFunctionsToSendAndAttachOnClientSide>();
+
     public string FunctionName;
     public string CanvasID;
     public string WindowID;
 
-	public CanvasControlLibrary(Stream InputStream)
-	{
+    public CanvasControlLibrary(Stream InputStream)
+    {
         byte[] rdata = new byte[Convert.ToInt32(InputStream.Length)];
         InputStream.Read(rdata, 0, Convert.ToInt32(InputStream.Length));
         string strData = Encoding.ASCII.GetString(rdata);
@@ -911,6 +933,7 @@ public class CanvasControlLibrary
         CanvasID = vars.FirstChild.ChildNodes[1].InnerXml;
         WindowID = vars.FirstChild.ChildNodes[2].InnerXml;
         UnwrapVars(vars.FirstChild.ChildNodes[3]);
+        JavaScriptCodeToSendInThisCall = new List<JavaScriptFunctionsToSendAndAttachOnClientSide>();
     }
 
     public void InvokeServerSideFunction(Page Page)
@@ -1685,5 +1708,385 @@ public class CanvasControlLibrary
             }
         }
         return null;
+    }
+
+    public void DestroyControl(string canvasid, string windowid)
+    {
+        for (int i = 0; i < Windows.Count; i++)
+        {
+            if (Windows[i].CanvasID == canvasid && Windows[i].WindowCount == windowid)
+            {
+                DestroyControlByWindowObj(Windows[i]);
+            }
+        }
+    }
+
+    public void DestroyControlByNameID(string controlNameID)
+    {
+        for (int i = 0; i < Windows.Count; i++)
+        {
+            if (Windows[i].ControlNameID == controlNameID)
+            {
+                DestroyControlByWindowObj(Windows[i]);
+            }
+        }
+    }
+
+    public void DestroyWindow(string canvasid, string windowid)
+    {
+        for (int i = 0; i < Windows.Count; i++)
+        {
+            if (Windows[i].CanvasID == canvasid && windowid == Windows[i].WindowCount)
+            {
+                Windows.RemoveAt(i);
+                return;
+            }
+        }
+    }
+
+    public void DestroyAllCurrentControls(string canvasid)
+    {
+        for (int i = 0; i < Windows.Count; i++)
+        {
+            if (Windows[i].CanvasID == canvasid)
+            {
+                DestroyControlByWindowObj(Windows[i]);
+            }
+        }
+    }
+
+    public void DestroyControlByWindowObj(CCLWindow w)
+    {
+        for (int i = 0; i < w.ChildWindowIDs.Count; i++)
+        {
+            for (var x = 0; x < Windows.Count; x++)
+            {
+                if (Windows[x].CanvasID == w.CanvasID && Windows[x].WindowCount == w.ChildWindowIDs[i])
+                {
+                    DestroyControlByWindowObj(Windows[x]);
+                }
+            }
+        }
+        switch (w.ControlType)
+        {
+            case "Label":
+                for (int i = LabelPropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (LabelPropsArray[i].CanvasID == w.CanvasID && LabelPropsArray[i].WindowID == w.WindowCount)
+                    {
+                        LabelPropsArray.RemoveAt(i);
+                        break;
+                    }
+                }
+                break;
+            case "Button":
+                for (int i = ButtonPropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (ButtonPropsArray[i].CanvasID == w.CanvasID && ButtonPropsArray[i].WindowID == w.WindowCount)
+                    {
+                        ButtonPropsArray.RemoveAt(i);
+                        break;
+                    }
+                }
+                break;
+            case "ScrollBar":
+                for (int i = ScrollBarPropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (ScrollBarPropsArray[i].CanvasID == w.CanvasID && ScrollBarPropsArray[i].WindowID == w.WindowCount)
+                    {
+                        ScrollBarPropsArray.RemoveAt(i);
+                        break;
+                    }
+                }
+                break;
+            case "Grid":
+                for (int i = GridPropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (GridPropsArray[i].CanvasID == w.CanvasID && GridPropsArray[i].WindowID == w.WindowCount)
+                    {
+                        GridPropsArray.RemoveAt(i);
+                        break;
+                    }
+                }
+                break;
+            case "ComboBoxTextArea":
+                for (int i = ComboBoxPropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (ComboBoxPropsArray[i].CanvasID == w.CanvasID && ComboBoxPropsArray[i].WindowID == w.WindowCount)
+                    {
+                        DestroyWindow(w.CanvasID, ComboBoxPropsArray[i].ButtonWindowID);
+                        DestroyWindow(w.CanvasID, ComboBoxPropsArray[i].ListAreaWindowID);
+                        ComboBoxPropsArray.RemoveAt(i);
+                        break;
+                    }
+                }
+                break;
+            case "CheckBox":
+                for (int i = CheckBoxPropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (CheckBoxPropsArray[i].CanvasID == w.CanvasID && CheckBoxPropsArray[i].WindowID == w.WindowCount)
+                    {
+                        CheckBoxPropsArray.RemoveAt(i);
+                        break;
+                    }
+                }
+                break;
+            case "RadioButtonGroup":
+                for (int i = RadioButtonGroupPropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (RadioButtonGroupPropsArray[i].CanvasID == w.CanvasID && RadioButtonGroupPropsArray[i].WindowID == w.WindowCount)
+                    {
+                        RadioButtonGroupPropsArray.RemoveAt(i);
+                        break;
+                    }
+                }
+                break;
+            case "Image":
+                for (int i = ImagePropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (ImagePropsArray[i].CanvasID == w.CanvasID && ImagePropsArray[i].WindowID == w.WindowCount)
+                    {
+                        ImagePropsArray.RemoveAt(i);
+                        break;
+                    }
+                }
+                break;
+            case "TreeView":
+                for (int i = TreeViewPropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (TreeViewPropsArray[i].CanvasID == w.CanvasID && TreeViewPropsArray[i].WindowID == w.WindowCount)
+                    {
+                        TreeViewPropsArray.RemoveAt(i);
+                        break;
+                    }
+                }
+                break;
+            case "Calender":
+                for (int i = CalenderPropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (CalenderPropsArray[i].CanvasID == w.CanvasID && CalenderPropsArray[i].WindowID == w.WindowCount)
+                    {
+                        CalenderPropsArray.RemoveAt(i);
+                    }
+                }
+                break;
+            case "ProgressBar":
+                for (int i = ProgressBarPropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (ProgressBarPropsArray[i].CanvasID == w.CanvasID && ProgressBarPropsArray[i].WindowID == w.WindowCount)
+                    {
+                        ProgressBarPropsArray.RemoveAt(i);
+                        break;
+                    }
+                }
+                break;
+            case "Slider":
+                for (int i = SliderPropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (SliderPropsArray[i].CanvasID == w.CanvasID && SliderPropsArray[i].WindowID == w.WindowCount)
+                    {
+                        SliderPropsArray.RemoveAt(i);
+                        break;
+                    }
+                }
+                break;
+            case "DatePickerTextArea":
+                for (int i = DatePrickerPropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (DatePrickerPropsArray[i].CanvasID == w.CanvasID && DatePrickerPropsArray[i].WindowID == w.WindowCount)
+                    {
+                        DestroyWindow(w.CanvasID, DatePrickerPropsArray[i].ButtonWindowID);
+                        DestroyControl(w.CanvasID, DatePrickerPropsArray[i].CalenderWindowID);
+                        DatePrickerPropsArray.RemoveAt(i);
+                        break;
+                    }
+                }
+                break;
+            case "Panel":
+                for (int i = PanelPropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (PanelPropsArray[i].CanvasID == w.CanvasID && PanelPropsArray[i].WindowID == w.WindowCount)
+                    {
+                        PanelPropsArray.RemoveAt(i);
+                        break;
+                    }
+                }
+                break;
+            case "BarGraph":
+                for (int i = BarGraphPropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (BarGraphPropsArray[i].CanvasID == w.CanvasID && BarGraphPropsArray[i].WindowID == w.WindowCount)
+                    {
+                        BarGraphPropsArray.RemoveAt(i);
+                        break;
+                    }
+                }
+                break;
+            case "PieChart":
+                for (int i = PieChartPropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (PieChartPropsArray[i].CanvasID == w.CanvasID && PieChartPropsArray[i].WindowID == w.WindowCount)
+                    {
+                        PieChartPropsArray.RemoveAt(i);
+                        break;
+                    }
+                }
+                break;
+            case "LineGraph":
+                for (int i = LineGraphPropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (LineGraphPropsArray[i].CanvasID == w.CanvasID && LineGraphPropsArray[i].WindowID == w.WindowCount)
+                    {
+                        LineGraphPropsArray.RemoveAt(i);
+                        break;
+                    }
+                }
+                break;
+            case "Gauge":
+                for (int i = GaugeChartPropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (GaugeChartPropsArray[i].CanvasID == w.CanvasID && GaugeChartPropsArray[i].WindowID == w.WindowCount)
+                    {
+                        GaugeChartPropsArray.RemoveAt(i);
+                        break;
+                    }
+                }
+                break;
+            case "RadarGraph":
+                for (var i = RadarGraphPropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (RadarGraphPropsArray[i].CanvasID == w.CanvasID && RadarGraphPropsArray[i].WindowID == w.WindowCount)
+                    {
+                        RadarGraphPropsArray.RemoveAt(i);
+                        break;
+                    }
+                }
+                break;
+            case "LineAreaGraph":
+                for (var i = LineAreaGraphPropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (LineAreaGraphPropsArray[i].CanvasID == w.CanvasID && LineAreaGraphPropsArray[i].WindowID == w.WindowCount)
+                    {
+                        LineAreaGraphPropsArray.RemoveAt(i);
+                        break;
+                    }
+                }
+                break;
+            case "CandlesticksGraph":
+                for (var i = CandlesticksGraphPropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (CandlesticksGraphPropsArray[i].CanvasID == w.CanvasID && CandlesticksGraphPropsArray[i].WindowID == w.WindowCount)
+                    {
+                        CandlesticksGraphPropsArray.RemoveAt(i);
+                        break;
+                    }
+                }
+                break;
+            case "DoughnutChart":
+                for (var i = DoughnutChartPropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (DoughnutChartPropsArray[i].CanvasID == w.CanvasID && DoughnutChartPropsArray[i].WindowID == w.WindowCount)
+                    {
+                        DoughnutChartPropsArray.RemoveAt(i);
+                        break;
+                    }
+                }
+                break;
+            case "BarsMixedWithLabeledLineGraph":
+                for (var i = BarsMixedWithLabeledLineGraphPropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (BarsMixedWithLabeledLineGraphPropsArray[i].CanvasID == w.CanvasID && BarsMixedWithLabeledLineGraphPropsArray[i].WindowID == w.WindowCount)
+                    {
+                        BarsMixedWithLabeledLineGraphPropsArray.RemoveAt(i);
+                        break;
+                    }
+                }
+                break;
+            case "StackedBarGraph":
+                for (var i = StackedBarGraphPropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (StackedBarGraphPropsArray[i].CanvasID == w.CanvasID && StackedBarGraphPropsArray[i].WindowID == w.WindowCount)
+                    {
+                        StackedBarGraphPropsArray.RemoveAt(i);
+                        break;
+                    }
+                }
+                break;
+            case "Tab":
+                for (var i = TabPropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (TabPropsArray[i].CanvasID == w.CanvasID && TabPropsArray[i].WindowID == w.WindowCount)
+                    {
+                        TabPropsArray.RemoveAt(i);
+                        break;
+                    }
+                }
+                break;
+            case "ImageMap":
+                for (var i = ImageMapPropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (ImageMapPropsArray[i].CanvasID == w.CanvasID && ImageMapPropsArray[i].WindowID == w.WindowCount)
+                    {
+                        ImageMapPropsArray.RemoveAt(i);
+                        break;
+                    }
+                }
+                break;
+            case "SubMenu":
+                for (var i = SubMenuBarPropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (SubMenuBarPropsArray[i].CanvasID == w.CanvasID && SubMenuBarPropsArray[i].WindowID == w.WindowCount)
+                    {
+                        for (var y = 0; y < SubMenuBarPropsArray[i].ChildMenuWindowIDs.Count; y++)
+                        {
+                            DestroyControl(w.CanvasID, SubMenuBarPropsArray[i].ChildMenuWindowIDs[y].ToString());
+                        }
+                        SubMenuBarPropsArray.RemoveAt(i);
+                        break;
+                    }
+                }
+                break;
+            case "MenuBar":
+                for (var i = MenuBarPropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (MenuBarPropsArray[i].CanvasID == w.CanvasID && MenuBarPropsArray[i].WindowID == w.WindowCount)
+                    {
+                        for (var y = 0; y < MenuBarPropsArray[i].ChildMenuWindowIDs.Count; y++)
+                        {
+                            DestroyControl(w.CanvasID, MenuBarPropsArray[i].ChildMenuWindowIDs[y].ToString());
+                        }
+                        MenuBarPropsArray.RemoveAt(i);
+                        break;
+                    }
+                }
+                break;
+        }
+        DestroyWindow(w.CanvasID, w.WindowCount);
+    }
+
+    public int GetHighestDepth(string canvasid)
+    {
+        int highestDepth = 0;
+        for (int i = 0; i < Windows.Count; i++)
+        {
+            if (Windows[i].CanvasID == canvasid && Convert.ToInt32(Windows[i].Depth) > highestDepth)
+            {
+                highestDepth = Convert.ToInt32(Windows[i].Depth);
+            }
+        }
+        return highestDepth;
+    }
+
+    public int GetHighestAndCurrentWindowCount(string canvasid)
+    {
+        int highestCurrentWindowCount = 0;
+        for (int i = 0; i < Windows.Count; i++)
+        {
+            if (Windows[i].CanvasID == canvasid && highestCurrentWindowCount < Convert.ToInt32(Windows[i].WindowCount))
+            {
+                highestCurrentWindowCount = Convert.ToInt32(Windows[i].WindowCount);
+            }
+        }
+        return highestCurrentWindowCount;
     }
 }
