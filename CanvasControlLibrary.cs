@@ -894,6 +894,53 @@ public class CanvasControlLibrary
         }
     }
 
+    public List<CCLTextBox> TextBoxPropsArray = new List<CCLTextBox>();
+
+    public class CCLTextBox
+    {
+        public string CanvasID { get; set; }
+        public string WindowID { get; set; }
+        public string X { get; set; }
+        public string Y { get; set; }
+        public string Width { get; set; } 
+        public string Height { get; set; } 
+        public string WaterMarkText { get; set; }
+        public string WaterMarkTextColor { get; set; }
+        public string WaterMarkTextFontString { get; set; }
+        public string TextColor { get; set; }
+        public string TextHeight { get; set; }
+        public string TextFontString { get; set; }
+        public string MaxChars { get; set; }
+        public string AllowedCharsRegEx { get; set; }
+        public string IsPassword { get; set; }
+        public string PasswordChar { get; set; }
+        public string HasBorder { get; set; }
+        public string BorderColor { get; set; }
+        public string BorderLineWidth { get; set; }
+        public string HasShadow { get; set; }
+        public string ShadowOffsetX { get; set; }
+        public string ShadowOffsetY { get; set; }
+        public string ShadowBlurValue { get; set; }
+        public string HasRoundedEdges { get; set; }
+        public string EdgeRadius { get; set; }
+        public string HasBgGradient { get; set; }
+        public string BgGradientStartColor { get; set; }
+        public string BgGradientEndColor { get; set; }
+        public string HasBgImage { get; set; }
+        public string BgImageUrl { get; set; }
+        public string HasAutoComplete { get; set; }
+        public string ListPossibles { get; set; }
+        public string DropDownPossiblesListIfThereIsInputText { get; set; }
+        public string LimitToListPossibles { get; set; }
+        public string ListPossiblesTextHeight { get; set; }
+        public string ListPossiblesTextFontString { get; set; }
+        public string CaretPosIndex { get; set; }
+        public string UserInputText { get; set; }
+        public string ShadowColor { get; set; }
+        public string ShowCaret { get; set; }
+        public string CaretColor { get; set; }
+    }
+
     public class JavaScriptFunctionsToSendAndAttachOnClientSide
     {
         public string CanvasID;
@@ -1185,6 +1232,14 @@ public class CanvasControlLibrary
                         FillClassObject(child2, sm);
                     }
                     break;
+                case "textBoxPropsArray":
+                    foreach (XmlNode child2 in child1.ChildNodes)
+                    {
+                        CCLTextBox sm = new CCLTextBox();
+                        TextBoxPropsArray.Add(sm);
+                        FillClassObject(child2, sm);
+                    }
+                    break;
             }
         }
     }
@@ -1438,7 +1493,12 @@ public class CanvasControlLibrary
         {
             strVars += "[i]" + encodeObject(smb) + "[/i]";
         }
-        strVars += "[/subMenuBarPropsArray]";
+        strVars += "[/subMenuBarPropsArray][textBoxPropsArray]";
+        foreach (CCLTextBox smb in TextBoxPropsArray)
+        {
+            strVars += "[i]" + encodeObject(smb) + "[/i]";
+        }
+        strVars += "[/textBoxPropsArray]";
         strVars += "[/Vars][/root]";
         byte[] wdata = Encoding.ASCII.GetBytes(strVars);
         OutputStream.Write(wdata, 0, wdata.Length);
@@ -1704,6 +1764,15 @@ public class CanvasControlLibrary
                             }
                         }
                         break;
+                    case "TextBox":
+                        foreach (CCLTextBox o in TextBoxPropsArray)
+                        {
+                            if (o.CanvasID == w.CanvasID && o.WindowID == w.WindowCount)
+                            {
+                                return (object)o;
+                            }
+                        }
+                        break;
                 }
             }
         }
@@ -1761,7 +1830,7 @@ public class CanvasControlLibrary
         {
             for (var x = 0; x < Windows.Count; x++)
             {
-                if (Windows[x].CanvasID == w.CanvasID && Windows[x].WindowCount == w.ChildWindowIDs[i])
+                if (Windows[x].CanvasID == w.CanvasID && Windows[x].WindowCount == w.ChildWindowIDs[i].ToString())
                 {
                     DestroyControlByWindowObj(Windows[x]);
                 }
@@ -2055,6 +2124,17 @@ public class CanvasControlLibrary
                         {
                             DestroyControl(w.CanvasID, MenuBarPropsArray[i].ChildMenuWindowIDs[y].ToString());
                         }
+                        MenuBarPropsArray.RemoveAt(i);
+                        break;
+                    }
+                }
+                break;
+            case "TextBox":
+                for (var i = TextBoxPropsArray.Count - 1; i >= 0; i--)
+                {
+                    if (TextBoxPropsArray[i].CanvasID == w.CanvasID && TextBoxPropsArray[i].WindowID == w.WindowCount)
+                    {
+                        DestroyControl(w.CanvasID, TextBoxPropsArray[i].WindowID);
                         MenuBarPropsArray.RemoveAt(i);
                         break;
                     }

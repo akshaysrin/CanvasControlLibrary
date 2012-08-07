@@ -42,4 +42,44 @@ public partial class Default2 : System.Web.UI.Page
         CanvasControlLibrary.CCLLabelProps lp = ccl.getControlPropsByControlNameID("l1") as CanvasControlLibrary.CCLLabelProps;
         lp.Text = "Did Postback";
     }
+
+    public void InitializeForm1(string canvasid, int windowid)
+    {
+        CanvasControlLibrary.CCLComboBoxProps selectCityComboBox = ccl.getControlPropsByControlNameID("selectCityComboBoxComboBoxTextArea") as CanvasControlLibrary.CCLComboBoxProps;
+        selectCityComboBox.Data = new System.Collections.ArrayList();
+        selectCityComboBox.Data.Add("Mumbai");
+        selectCityComboBox.Data.Add("Delhi");
+        selectCityComboBox.Data.Add("Bangalore");
+        selectCityComboBox.Data.Add("Chennai");
+    }
+
+    public void onSelectCityChanged(string canvasid, int windowid)
+    {
+        CanvasControlLibrary.CCLComboBoxProps selectCityComboBox = ccl.getControlPropsByControlNameID("selectCityComboBoxComboBoxTextArea") as CanvasControlLibrary.CCLComboBoxProps;
+        CanvasControlLibrary.CCLComboBoxProps selectCinemaComboBox = ccl.getControlPropsByControlNameID("selectCinemaComboBoxComboBoxTextArea") as CanvasControlLibrary.CCLComboBoxProps;
+        selectCinemaComboBox.Data = new System.Collections.ArrayList();
+        switch (selectCityComboBox.Data[Convert.ToInt32(selectCityComboBox.SelectedID)].ToString())
+        {
+            case "Mumbai":
+                selectCinemaComboBox.Data.Add("Phoenix Mills");
+                selectCinemaComboBox.Data.Add("Juhu");
+                selectCinemaComboBox.Data.Add("Nariman Point");
+                break;
+            case "Delhi":
+                selectCinemaComboBox.Data.Add("Delhi Nagar 1");
+                selectCinemaComboBox.Data.Add("Delhi Nagar 2");
+                selectCinemaComboBox.Data.Add("Delhi Nagar 3");
+                break;
+            case "Bangalore":
+                selectCinemaComboBox.Data.Add("Bangalore Nagar 1");
+                selectCinemaComboBox.Data.Add("Bangalore Nagar 2");
+                selectCinemaComboBox.Data.Add("Bangalore Nagar 3");
+                break;
+            case "Chennai":
+                selectCinemaComboBox.Data.Add("Chennai Nagar 1");
+                selectCinemaComboBox.Data.Add("Chennai Nagar 2");
+                selectCinemaComboBox.Data.Add("Chennai Nagar 3");
+                break;
+        }
+    }
 }

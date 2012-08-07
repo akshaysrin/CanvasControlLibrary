@@ -1636,7 +1636,7 @@ function getComboboxPropsByScrollBarWindowId(canvasid, windowid) {
 }
 
 function createComboBox(canvasid, controlNameId, x, y, width, height, depth, data, drawTextAreaFunction, drawButtonFunction, drawListAreaFunction, buttonClickFunction,
-    listAreaClickFunction, textAreaTextColor, textAreaTextHeight, textAreaFontString, listAreaTextColor, listAreaTextHeight, listAreaFontString) {
+    listAreaClickFunction, textAreaTextColor, textAreaTextHeight, textAreaFontString, listAreaTextColor, listAreaTextHeight, listAreaFontString, onSelectionChanged) {
     var textareawindowid = createWindow(canvasid, x, y, width - 15, height, depth, null, 'ComboBoxTextArea', controlNameId + 'ComboBoxTextArea');
     var buttonwindowid = createWindow(canvasid, x + width - height, y, height, height, depth, null, 'ComboBoxButton', controlNameId + 'ComboBoxButton');
     var dropdownlistareawindowid = createWindow(canvasid, x, y + height, width - 15, 100, depth, null, 'ComboBoxListArea', controlNameId + 'ComboBoxListArea');
@@ -1649,7 +1649,7 @@ function createComboBox(canvasid, controlNameId, x, y, width, height, depth, dat
         X: x, Y: y, Width: width, Height: height, Data: data, SelectedID: 0,
         TextAreaTextColor: textAreaTextColor, TextAreaTextHeight: textAreaTextHeight,
         TextAreaFontString: textAreaFontString, ListAreaTextColor: listAreaTextColor,
-        ListAreaTextHeight: listAreaTextHeight, ListAreaFontString: listAreaFontString
+        ListAreaTextHeight: listAreaTextHeight, ListAreaFontString: listAreaFontString, OnSelectionChanged: onSelectionChanged
     });
     if (drawTextAreaFunction != null) {
         registerWindowDrawFunction(textareawindowid, function () { drawTextAreaFunction(canvasid, textareawindowid); }, canvasid);
@@ -1788,6 +1788,9 @@ function comboboxListAreaClick(canvasid, windowid) {
             comboboxProps.SelectedID = i;
             setHiddenWindowStatus(canvasid, comboboxProps.VScrollBarWindowID, 1);
             setHiddenWindowStatus(canvasid, comboboxProps.ListAreaWindowID, 1);
+            if (comboboxProps.OnSelectionChanged != null) {
+                comboboxProps.OnSelectionChanged(canvasid, comboboxProps.TextAreaWindowID, i);
+            }
             draw(canvasid);
             return;
         }
@@ -6063,14 +6066,18 @@ function getEncodedVariables() {
     for (var i = 0; i < subMenuBarPropsArray.length; i++) {
         strVars += '[i]' + stringEncodeObject(subMenuBarPropsArray[i]) + '[/i]';
     }
-    strVars += '[/subMenuBarPropsArray]';
+    strVars += '[/subMenuBarPropsArray][textBoxPropsArray]';
+    for (var i = 0; i < textBoxPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(textBoxPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/textBoxPropsArray]';
     return strVars;
 }
 
 var savedImagesOnPostback = new Array();
 var currentSavedImagesOnPostbackWindowID;
 var currentSavedImagesOnPostbackCanvasID;
-
+var savedFunctionsOnPostback = new Array();
 
 
 function stringEncodeObject(obj) {
@@ -6079,6 +6086,10 @@ function stringEncodeObject(obj) {
         if ((navigator.userAgent.toLowerCase().indexOf('opera') > -1 ? obj[name] instanceof Object && obj[name].hasOwnProperty && obj[name].src : obj[name] instanceof Image)) {
             savedImagesOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, Image: obj[name] });
             continue;
+        }
+        var getType = {};
+        if (obj[name] && getType.toString.call(obj[name]) == '[object Function]') {
+            savedFunctionsOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, FunctionValue: obj[name], PropertyName: name });
         }
         if (typeof obj[name] === 'string' || typeof obj[name] === 'number') {
             if (name == "WindowID") {
@@ -6159,10 +6170,76 @@ function UnWrapVars(data) {
             }
         }
     }
+    for (var i = 0; i < savedFunctionsOnPostback.length; i++) {
+        var o = getLabelProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getButtonProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getScrollBarProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getGridProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getComboboxPropsByTextAreaWindowId(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getcheckboxProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getRadioButtonProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getImageControlProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getTreeViewProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getCalenderProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getSliderProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getDatePickerPropsByTextBoxAreaWindowID(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getPanelProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getBarGraphProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getPieChartProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getLineGraphProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getGaugeChartProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getRadarGraphProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getLineAreaGraphProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getCandlesticksGraphProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getDoughnutChartProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getBarsMixedWithLabledLineGraphProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getstackedBarGraphProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getTabProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getImageMapProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getMenuBarProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getSubMenuBarProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getTextBoxProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+    }
     savedImagesOnPostback = new Array();
     for (var i = 0; i < canvases.length; i++) {
         draw(canvases[i][0]);
     }
+}
+
+function setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) {
+    if (o != null) {
+        o[savedFunctionsOnPostback[i].PropertyName] = savedFunctionsOnPostback[i].FunctionValue;
+        return 1;
+    }
+    return 0;
 }
 
 function recurseFillVars(varname, node, obj) {
