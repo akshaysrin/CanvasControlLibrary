@@ -372,6 +372,9 @@ function registerCanvasElementId(canvasId) {
             for (var j = 0; j < windowIdWithFocus.length; j++) {
                 if (windowIdWithFocus[j][0] == keyPressFunctions[i].CanvasID && windowIdWithFocus[j][1] == keyPressFunctions[i].WindowID) {
                     keyPressFunctions[i].KeyPressFunction(keyPressFunctions[i].CanvasID, keyPressFunctions[i].WindowID);
+                    if (window.event.preventDefault)
+                        window.event.preventDefault();
+                    window.event.returnValue = false;
                 }
             }
         }
