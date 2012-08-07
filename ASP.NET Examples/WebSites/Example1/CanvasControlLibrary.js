@@ -64,6 +64,7 @@ var modalWindows = new Array();
 var hiddenWindows = new Array();
 var gotFocusFunctions = new Array();
 var lostFocusFunctions = new Array();
+var keyPressFunctions = new Array();
 var doingClickEvent = 0;
 var doingMouseUp = 0;
 var doingMouseDown = 0;
@@ -366,6 +367,15 @@ function registerCanvasElementId(canvasId) {
     canvas.addEventListener('mouseup', function () { canvasOnMouseUp(canvasId); }, false);
     canvas.addEventListener('mousewheel', function () { canvasOnMouseWheel(canvasId); }, false);
     canvas.addEventListener('scroll', function () { canvasOnScroll(canvasId); }, false);
+    canvas.onkeypress = function (e) {
+        for (var i = 0; i < keyPressFunctions.length; i++) {
+            for (var j = 0; j < windowIdWithFocus.length; j++) {
+                if (windowIdWithFocus[j][0] == keyPressFunctions[i].CanvasID && windowIdWithFocus[j][1] == keyPressFunctions[i].WindowID) {
+                    keyPressFunctions[i].KeyPressFunction(keyPressFunctions[i].CanvasID, keyPressFunctions[i].WindowID);
+                }
+            }
+        }
+    };
 }
 
 function createWindow(canvasId, x, y, width, height, depth, parentwindowid, controlTypeNameString, controlNameId) {
@@ -384,6 +394,14 @@ function registerChildWindow(canvasid, windowid, parentwindowid) {
         if (windows[i].WindowCount == parentwindowid) {
             windows[i].ChildWindowIDs.push(windowid);
             getWindowProps(canvasid, windowid).ParentWindowID = parentwindowid;
+        }
+    }
+}
+
+function registerKeyPressFunction(canvasid, func, windowid) {
+    for (var i = 0; i < windows.length; i++) {
+        if (windows[i].CanvasID == canvasid && windows[i].WindowCount == windowid) {
+            keyPressFunctions.push({ CanvasID: canvasid, KeyPressFunction: func, WindowID: windowid });
         }
     }
 }
@@ -863,10 +881,10 @@ function createLabel(canvasid, controlNameId, x, y, width, height, text, textCol
         NewBrowserWindowHasLocationOrURLOrAddressBox: newbrowserwindowhaslocationorurloraddressbox,
         NewBrowserWindowHasDirectoriesOrExtraButtons: newbroserwindowhasdirectoriesorextrabuttons,
         NewBrowserWindowHasStatusBar: newbrowserwindowhasstatusbar, NewBrowserWindowHasMenuBar: newbrowserwindowhasmenubar,
-        NewBrowserWindowCopyHistory: newbrowserwindowcopyhistory
+        NewBrowserWindowCopyHistory: newbrowserwindowcopyhistory, DrawFunction: drawFunction
     });
     if (drawFunction != undefined && drawFunction != null)
-        registerWindowDrawFunction(windowid, function () { drawFunction(canvasid, windowid); }, canvasid);
+        registerWindowDrawFunction(windowid, function (canvasid1, windowid1) { var lp = getLabelProps(canvasid1, windowid1); lp.DrawFunction(canvasid1, windowid1); }, canvasid);
     else
         registerWindowDrawFunction(windowid, function () {
             var ctx = getCtx(canvasid);
@@ -2026,7 +2044,9 @@ function createImage(canvasid, controlNameId, x, y, width, height, depth, imgurl
     registerWindowDrawFunction(windowid, function (canvasid, windowid) {
         var ctx = getCtx(canvasid);
         var imageProps = getImageControlProps(canvasid, windowid);
-        ctx.drawImage(imageProps.Image, imageProps.X, imageProps.Y, imageProps.Width, imageProps.Height);
+        if (imageProps.Image) {
+            ctx.drawImage(imageProps.Image, 0, 0, imageProps.Width, imageProps.Height, imageProps.X, imageProps.Y, imageProps.Width, imageProps.Height);
+        }
     }, canvasid);
     if (clickFunction != null) {
         registerClickFunction(windowid, function () { clickFunction(canvasid, windowid); }, canvasid);
@@ -5680,70 +5700,6 @@ function setStatusForAllChildWindowsFromMenuBar(canvasid, childMenuWindowIDs, st
 
 //Textbox code starts here
 
-function textBoxKeyDown(e) {
-    var e = window.event || e;
-    switch (e.keyCode) {
-        case 37:
-            //left arrow	 37
-            break;
-        case 38:
-            //up arrow	 38
-            break;
-        case 39:
-            //right arrow	 39
-            break;
-        case 40:
-            //down arrow	 40
-            break;
-        case 33:
-            //page up	 33
-            break;
-        case 34:
-            //page down	 34
-            break;
-        case 99:
-            //ctrl-c
-            if (e.ctrlKey)
-                alert('ctrl-c');
-            break;
-    }
-}
-
-function textBoxKeyUp(e) {
-    var e = window.event || e;
-    switch (e.keyCode) {
-        case 8:
-            //backspace	 8
-            break;
-        case 9:
-            //'tab'	 9
-            break;
-        case 13:
-            //'enter'	 13
-            break;
-        case 35:
-            //end	 35
-            break;
-        case 36:
-            //home	 36
-            break;
-        case 45:
-            //insert	 45
-            break;
-        case 46:
-            //delete	 46
-            break;
-    }
-}
-
-function textBoxKeyPress(e) {
-    var e = window.event || e;
-    var c = String.fromCharCode(e.keyCode);
-    if (c.length == 1) {
-        alert(c + ' ' + e.ctrlKey);
-    }
-}
-
 var textBoxPropsArray = new Array();
 
 function getTextBoxProps(canvasid, windowid) {
@@ -5755,8 +5711,212 @@ function getTextBoxProps(canvasid, windowid) {
 }
 
 function createTextBox(canvasid, controlNameId, x, y, width, height, depth, waterMarkText, waterMarkTextColor, waterMarkTextHeight, waterMarkTextFontString,
-    textHeight, textFontString, maxChars, allowedCharsRegEx, isPassword, hasBorder, borderColor, borderLineWidth, hasShadow, shadowColor, shadowOffsetX, shadowOffsetY,
-    shadowBlurValue, hasRoundedEdges, edgeRadius, hasBgGradient, bgGradientStartColor, bgGradientEndColor, hasBgImage, bgImageUrl) {
+    textColor, textHeight, textFontString, maxChars, allowedCharsRegEx, isPassword, passwordChar, hasBorder, borderColor, borderLineWidth, hasShadow, shadowColor, shadowOffsetX, shadowOffsetY,
+    shadowBlurValue, hasRoundedEdges, edgeRadius, hasBgGradient, bgGradientStartColor, bgGradientEndColor, hasBgImage, bgImageUrl, hasAutoComplete, listPossibles, 
+    dropDownPossiblesListIfThereIsInputText, limitToListPossibles, listPossiblesTextHeight, listPossiblesTextFontString, initialText, caretColor, textSelectionBgColor, hasFocusInitially) {
+    var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'TextBox', controlNameId);
+    if (hasFocusInitially == 1) {
+        setFocusToWindowID(canvasid, windowid);
+    }
+    textBoxPropsArray.push({
+        CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, WaterMarkText: waterMarkText,
+        WaterMarkTextColor: waterMarkTextColor, WaterMarkTextFontString: waterMarkTextFontString, TextColor: textColor, TextHeight: textHeight,
+        TextFontString: textFontString, MaxChars: maxChars, AllowedCharsRegEx: allowedCharsRegEx, IsPassword: isPassword, PasswordChar: passwordChar,
+        HasBorder: hasBorder, BorderColor: borderColor, BorderLineWidth: borderLineWidth, HasShadow: hasShadow, ShadowOffsetX: shadowOffsetX, ShadowOffsetY: shadowOffsetY,
+        ShadowBlurValue: shadowBlurValue, HasRoundedEdges: hasRoundedEdges, EdgeRadius: edgeRadius, HasBgGradient: hasBgGradient, BgGradientStartColor: bgGradientStartColor,
+        BgGradientEndColor: bgGradientEndColor, HasBgImage: hasBgImage, BgImageUrl: bgImageUrl, HasAutoComplete: hasAutoComplete, ListPossibles: listPossibles,
+        DropDownPossiblesListIfThereIsInputText: dropDownPossiblesListIfThereIsInputText, LimitToListPossibles: limitToListPossibles, ListPossiblesTextHeight: listPossiblesTextHeight,
+        ListPossiblesTextFontString: listPossiblesTextFontString, CaretPosIndex: -1, UserInputText: initialText, ShadowColor: shadowColor, ShowCaret: 0, CaretColor: caretColor
+    });
+    registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
+        var textBoxProps = getTextBoxProps(canvasid1, windowid1);
+        var ctx = getCtx(canvasid1);
+        ctx.save();
+        if (textBoxProps.HasBgGradient) {
+            var g = ctx.createLinearGradient(textBoxProps.X, textBoxProps.Y, textBoxProps.X, textBoxProps.Y + textBoxProps.Height);
+            g.addColorStop(0.0, textBoxProps.BgGradientStartColor);
+            g.addColorStop(1.0, textBoxProps.BgGradientEndColor);
+            ctx.fillStyle = g;
+        } else {
+            ctx.fillStyle = '#FFFFFF';
+        }
+        if (textBoxProps.HasShadow) {
+            ctx.shadowBlur = textBoxProps.ShadowBlurValue;
+            ctx.shadowColor = textBoxProps.ShadowColor;
+            ctx.shadowOffsetX = textBoxProps.ShadowOffsetX;
+            ctx.shadowOffsetY = textBoxProps.ShadowOffsetY;
+        }
+        ctx.beginPath();
+        if (textBoxProps.HasRoundedEdges) {
+            ctx.moveTo(textBoxProps.X, textBoxProps.Y + textBoxProps.EdgeRadius);
+            ctx.arc(textBoxProps.X + textBoxProps.EdgeRadius, textBoxProps.Y + textBoxProps.EdgeRadius, textBoxProps.EdgeRadius, Math.PI, (Math.PI / 180) * 270, false);
+            ctx.lineTo(textBoxProps.X + textBoxProps.Width - textBoxProps.EdgeRadius, textBoxProps.Y);
+            ctx.arc(textBoxProps.X + textBoxProps.Width - textBoxProps.EdgeRadius, textBoxProps.Y + textBoxProps.EdgeRadius, textBoxProps.EdgeRadius, (Math.PI / 180) * 270, Math.PI * 2, false);
+            ctx.lineTo(textBoxProps.X + textBoxProps.Width, textBoxProps.Y + textBoxProps.Height - textBoxProps.EdgeRadius);
+            ctx.arc(textBoxProps.X + textBoxProps.Width - textBoxProps.EdgeRadius, textBoxProps.Y + textBoxProps.Height - textBoxProps.EdgeRadius, textBoxProps.EdgeRadius, 0, Math.PI / 2, false);
+            ctx.lineTo(textBoxProps.X + textBoxProps.EdgeRadius, textBoxProps.Y + textBoxProps.Height);
+            ctx.arc(textBoxProps.X + textBoxProps.EdgeRadius, textBoxProps.Y + textBoxProps.Height - textBoxProps.EdgeRadius, textBoxProps.EdgeRadius, Math.PI / 2, Math.PI, false);
+            ctx.closePath();
+        } else {
+            ctx.rect(textBoxProps.X, textBoxProps.Y, textBoxProps.Width, textBoxProps.Height);
+        }
+        ctx.fill();
+        ctx.restore();
+        if (textBoxProps.HasBorder) {
+            ctx.strokeStyle = textBoxProps.BorderColor;
+            ctx.lineWidth = textBoxProps.BorderLineWidth;
+            if (textBoxProps.HasRoundedEdges) {
+                ctx.moveTo(textBoxProps.X, textBoxProps.Y + textBoxProps.EdgeRadius);
+                ctx.arc(textBoxProps.X + textBoxProps.EdgeRadius, textBoxProps.Y + textBoxProps.EdgeRadius, textBoxProps.EdgeRadius, Math.PI, (Math.PI / 180) * 270, false);
+                ctx.lineTo(textBoxProps.X + textBoxProps.Width - textBoxProps.EdgeRadius, textBoxProps.Y);
+                ctx.arc(textBoxProps.X + textBoxProps.Width - textBoxProps.EdgeRadius, textBoxProps.Y + textBoxProps.EdgeRadius, textBoxProps.EdgeRadius, (Math.PI / 180) * 270, Math.PI * 2, false);
+                ctx.lineTo(textBoxProps.X + textBoxProps.Width, textBoxProps.Y + textBoxProps.Height - textBoxProps.EdgeRadius);
+                ctx.arc(textBoxProps.X + textBoxProps.Width - textBoxProps.EdgeRadius, textBoxProps.Y + textBoxProps.Height - textBoxProps.EdgeRadius, textBoxProps.EdgeRadius, 0, Math.PI / 2, false);
+                ctx.lineTo(textBoxProps.X + textBoxProps.EdgeRadius, textBoxProps.Y + textBoxProps.Height);
+                ctx.arc(textBoxProps.X + textBoxProps.EdgeRadius, textBoxProps.Y + textBoxProps.Height - textBoxProps.EdgeRadius, textBoxProps.EdgeRadius, Math.PI / 2, Math.PI, false);
+                ctx.closePath();
+            } else {
+                ctx.rect(textBoxProps.X, textBoxProps.Y, textBoxProps.Width, textBoxProps.Height);
+            }
+            ctx.stroke();
+        }
+        if (textBoxProps.UserInputText && textBoxProps.UserInputText.length > 0) {
+            ctx.fillStyle = textBoxProps.TextColor;
+            ctx.font = textBoxProps.TextFontString;
+            ctx.fillText(textBoxProps.UserInputText, textBoxProps.X + 4, textBoxProps.Y + textBoxProps.Height - ((textBoxProps.Height - textBoxProps.TextHeight) / 2));
+        } else if (textBoxProps.WaterMarkText && textBoxProps.WaterMarkText.length > 0) {
+            ctx.fillStyle = textBoxProps.WaterMarkTextColor;
+            ctx.font = textBoxProps.WaterMarkTextFontString;
+            ctx.fillText(textBoxProps.WaterMarkText, textBoxProps.X + 4, textBoxProps.Y + textBoxProps.Height - ((textBoxProps.Height - textBoxProps.TextHeight) / 2));
+        }
+        if (doesWindowHaveFocus(canvasid1, windowid1) == 1) {
+            if (textBoxProps.ShowCaret == 1) {
+                textBoxProps.ShowCaret = 0;
+                ctx.strokeStyle = textBoxProps.CaretColor;
+                ctx.beginPath();
+                if (textBoxProps.CaretPosIndex == -1) {
+                    ctx.moveTo(textBoxProps.X, textBoxProps.Y + 4);
+                    ctx.lineTo(textBoxProps.X + 3, textBoxProps.Y + 4);
+                    ctx.moveTo(textBoxProps.X, textBoxProps.Y + textBoxProps.Height - 4);
+                    ctx.moveTo(textBoxProps.X + 3, textBoxProps.Y + textBoxProps.Height - 4);
+                    ctx.moveTo(textBoxProps.X + 2, textBoxProps.Y + 4);
+                    ctx.lineTo(textBoxProps.X + 2, textBoxProps.Y + textBoxProps.Height - 4);
+                } else if (textBoxProps.CaretPosIndex > -1) {
+                    var tempstr = (textBoxProps.UserInputText && textBoxProps.UserInputText.length - 1 >= textBoxProps.CaretPosIndex ? textBoxProps.UserInputText.substring(0, textBoxProps.CaretPosIndex + 1) :
+                        '');
+                    ctx.font = textBoxProps.TextFontString;
+                    var w = ctx.measureText(tempstr).width;
+                    ctx.moveTo(textBoxProps.X + w, textBoxProps.Y + 4);
+                    ctx.lineTo(textBoxProps.X + 3 + w, textBoxProps.Y + 4);
+                    ctx.moveTo(textBoxProps.X + w, textBoxProps.Y + textBoxProps.Height - 4);
+                    ctx.moveTo(textBoxProps.X + 3 + w, textBoxProps.Y + textBoxProps.Height - 4);
+                    ctx.moveTo(textBoxProps.X + 2 + w, textBoxProps.Y + 4);
+                    ctx.lineTo(textBoxProps.X + 2 + w, textBoxProps.Y + textBoxProps.Height - 4);
+                }
+                ctx.stroke();
+            } else {
+                textBoxProps.ShowCaret = 1;
+            }
+        }
+    }, canvasid);
+    registerClickFunction(windowid, function (canvasid2, windowid2) {
+        var textBoxProps = getTextBoxProps(canvasid2, windowid2);
+        var canvas = getCanvas(canvasid2);
+        var x = event.pageX - canvas.offsetLeft;
+        var y = event.pageY - canvas.offsetTop;
+        var ctx = getCtx(canvasid2);
+        ctx.font = textBoxProps.TextFontString;
+        if(x > textBoxProps.X && x < textBoxProps.X + 4){
+            textBoxProps.CaretPosIndex = -1;
+        } else if (x > textBoxProps.X + ctx.measureText(textBoxProps.UserInputText).width + 4) {
+            textBoxProps.CaretPosIndex = textBoxProps.UserInputText.length - 1;
+        } else {
+            var letterExtents = new Array();
+            var lastWidth = 0;
+            for (var i = 0; i < textBoxProps.UserInputText.length; i++) {
+                var currWidth = ctx.measureText(textBoxProps.UserInputText.substring(0, i + 1)).width;
+                letterExtents.push({ Width: currWidth - lastWidth });
+                lastWidth = currWidth;
+            }
+            if (x > textBoxProps.X + 4 && x < textBoxProps.X + letterExtents[0].Width) {
+                textBoxProps.CaretPosIndex = 0;
+            } else {
+                var lastWidth = letterExtents[0].Width;
+                for (var i = 1; i < letterExtents.length; i++) {
+                    if (x > textBoxProps.X + lastWidth && x < textBoxProps.X + lastWidth + letterExtents[i].Width) {
+                        textBoxProps.CaretPosIndex = i;
+                        return;
+                    }
+                    lastWidth += letterExtents[i].Width;
+                }
+            }
+        }
+    }, canvasid);
+    registerKeyPressFunction(canvasid, function (canvasid3, windowid3) {
+        var textBoxProps = getTextBoxProps(canvasid3, windowid3);
+        var e = window.event;
+        switch (e.keyCode) {
+            case 37:
+                //left arrow	 37
+                if (textBoxProps.CaretPosIndex > -1) {
+                    textBoxProps.CaretPosIndex--;
+                }
+                return;
+            case 39:
+                //right arrow	 39
+                if (textBoxProps.CaretPosIndex > textBoxProps.UserInputText.length - 1) {
+                    textBoxProps.CaretPosIndex = textBoxProps.UserInputText.length - 1;
+                } else {
+                    textBoxProps.CaretPosIndex++;
+                }
+                return;
+            case 46:
+                //delete	 46
+                if (textBoxProps.CaretPosIndex < textBoxProps.UserInputText.length - 1) {
+                    if (textBoxProps.CaretPosIndex == -1) {
+                        textBoxProps.UserInputText = textBoxProps.UserInputText.substring(1);
+                    } else if (textBoxProps.CaretPosIndex == textBoxProps.UserInputText.length - 2) {
+                        textBoxProps.UserInputText = textBoxProps.UserInputText.substring(0, textBoxProps.UserInputText.length - 1);
+                    } else {
+                        textBoxProps.UserInputText = textBoxProps.UserInputText.substring(0, textBoxProps.CaretPosIndex + 1) +
+                            textBoxProps.UserInputText.substring(textBoxProps.CaretPosIndex + 2);
+                    }
+                }
+                return;
+            case 8:
+                //backspace	 8
+                if (textBoxProps.CaretPosIndex > -1) {
+                    if (textBoxProps.CaretPosIndex == 0) {
+                        if (textBoxProps.UserInputText.length > 1) {
+                            textBoxProps.UserInputText = textBoxProps.UserInputText.substring(1, textBoxProps.UserInputText.length - 1);
+                        } else {
+                            textBoxProps.UserInputText = '';
+                        }
+                        textBoxProps.CaretPosIndex = -1;
+                    } else if (textBoxProps.CaretPosIndex == textBoxProps.UserInputText.length - 1) {
+                        textBoxProps.UserInputText = textBoxProps.UserInputText.substring(0, textBoxProps.UserInputText.length - 1);
+                        textBoxProps.CaretPosIndex--;
+                    } else if (textBoxProps.CaretPosIndex > 0) {
+                        textBoxProps.UserInputText = textBoxProps.UserInputText.substring(0, textBoxProps.CaretPosIndex) +
+                            textBoxProps.UserInputText.substring(textBoxProps.CaretPosIndex + 1);
+                        textBoxProps.CaretPosIndex--;
+                    }
+                }
+                return;
+        }
+        var c = String.fromCharCode(e.keyCode);
+        if (textBoxProps.CaretPosIndex == -1) {
+            textBoxProps.UserInputText = c + (textBoxProps.UserInputText.length > 0 ? textBoxProps.UserInputText : '');
+            textBoxProps.CaretPosIndex++;
+        } else if (textBoxProps.CaretPosIndex == textBoxProps.UserInputText.length - 1) {
+            textBoxProps.UserInputText = textBoxProps.UserInputText + c;
+            textBoxProps.CaretPosIndex++;
+        } else {
+            textBoxProps.UserInputText = textBoxProps.UserInputText.substring(0, textBoxProps.CaretPosIndex + 1) + c + textBoxProps.UserInputText.substring(textBoxProps.CaretPosIndex + 1);
+            textBoxProps.CaretPosIndex++;
+        }
+    }, windowid);
+    registerAnimatedWindow(canvasid);
 }
 
 

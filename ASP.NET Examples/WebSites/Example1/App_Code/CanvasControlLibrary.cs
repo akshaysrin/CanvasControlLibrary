@@ -894,6 +894,28 @@ public class CanvasControlLibrary
         }
     }
 
+    public class JavaScriptFunctionsToSendAndAttachOnClientSide
+    {
+        public string CanvasID;
+        public string WindowID;
+        public string JavaScriptCode;
+        public string ClientSideArrayVarName;
+        public string ClientSidePropertyName;
+        public string GetPropsFunctionName;
+
+        public JavaScriptFunctionsToSendAndAttachOnClientSide(string canvasid, string windowid, string javascriptcode, string clientsidearrayvarname, string clientsidepropertyname, string getpropsfunctionname)
+        {
+            CanvasID = canvasid;
+            WindowID = windowid;
+            JavaScriptCode = javascriptcode;
+            ClientSideArrayVarName = clientsidearrayvarname;
+            ClientSidePropertyName = clientsidepropertyname;
+            GetPropsFunctionName = getpropsfunctionname;
+        }
+    }
+
+    public List<JavaScriptFunctionsToSendAndAttachOnClientSide> JavaScriptCodeToSendInThisCall = new List<JavaScriptFunctionsToSendAndAttachOnClientSide>();
+
     public string FunctionName;
     public string CanvasID;
     public string WindowID;
@@ -911,6 +933,7 @@ public class CanvasControlLibrary
         CanvasID = vars.FirstChild.ChildNodes[1].InnerXml;
         WindowID = vars.FirstChild.ChildNodes[2].InnerXml;
         UnwrapVars(vars.FirstChild.ChildNodes[3]);
+        JavaScriptCodeToSendInThisCall = new List<JavaScriptFunctionsToSendAndAttachOnClientSide>();
     }
 
     public void InvokeServerSideFunction(Page Page)
@@ -1721,6 +1744,17 @@ public class CanvasControlLibrary
         }
     }
 
+    public void DestroyAllCurrentControls(string canvasid)
+    {
+        for (int i = 0; i < Windows.Count; i++)
+        {
+            if (Windows[i].CanvasID == canvasid)
+            {
+                DestroyControlByWindowObj(Windows[i]);
+            }
+        }
+    }
+
     public void DestroyControlByWindowObj(CCLWindow w)
     {
         for (int i = 0; i < w.ChildWindowIDs.Count; i++)
@@ -2028,5 +2062,31 @@ public class CanvasControlLibrary
                 break;
         }
         DestroyWindow(w.CanvasID, w.WindowCount);
+    }
+
+    public int GetHighestDepth(string canvasid)
+    {
+        int highestDepth = 0;
+        for (int i = 0; i < Windows.Count; i++)
+        {
+            if (Windows[i].CanvasID == canvasid && Convert.ToInt32(Windows[i].Depth) > highestDepth)
+            {
+                highestDepth = Convert.ToInt32(Windows[i].Depth);
+            }
+        }
+        return highestDepth;
+    }
+
+    public int GetHighestAndCurrentWindowCount(string canvasid)
+    {
+        int highestCurrentWindowCount = 0;
+        for (int i = 0; i < Windows.Count; i++)
+        {
+            if (Windows[i].CanvasID == canvasid && highestCurrentWindowCount < Convert.ToInt32(Windows[i].WindowCount))
+            {
+                highestCurrentWindowCount = Convert.ToInt32(Windows[i].WindowCount);
+            }
+        }
+        return highestCurrentWindowCount;
     }
 }
