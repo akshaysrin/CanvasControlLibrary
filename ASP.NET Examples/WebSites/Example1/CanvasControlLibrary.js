@@ -655,8 +655,41 @@ function destroyWindow(canvasid, windowid){
     for (var i = 0; i < windows.length; i++) {
         if (windows[i].CanvasID == canvasid && windows[i].WindowID) {
             windows.splice(i, 1);
+            removeEventHooks(windows[i]);
         }
     }
+}
+
+function removeEventFunctions(eventarr, canvasid, windowid) {
+    for (var i = eventarr.length - 1; i >= 0; i--) {
+        if (eventarr.CanvasID == canvasid && eventarr.WindowID == windowid) {
+            eventarr.splice(i, 1);
+        }
+    }
+}
+
+function removeEventHooks(w) {
+    removeEventFunctions(clickFunctions, w.CanvasID, w.WindowCount);
+    removeEventFunctions(doubleClickFunctions, w.CanvasID, w.WindowCount);
+    removeEventFunctions(dragFunctions, w.CanvasID, w.WindowCount);
+    removeEventFunctions(dragEndFunctions, w.CanvasID, w.WindowCount);
+    removeEventFunctions(dragEnterFunctions, w.CanvasID, w.WindowCount);
+    removeEventFunctions(dragLeaveFunctions, w.CanvasID, w.WindowCount);
+    removeEventFunctions(dragOverFunctions, w.CanvasID, w.WindowCount);
+    removeEventFunctions(dragStartFunctions, w.CanvasID, w.WindowCount);
+    removeEventFunctions(dropFunctions, w.CanvasID, w.WindowCount);
+    removeEventFunctions(mouseDownFunctions, w.CanvasID, w.WindowCount);
+    removeEventFunctions(mouseMoveFunctions, w.CanvasID, w.WindowCount);
+    removeEventFunctions(mouseOutFunctions, w.CanvasID, w.WindowCount);
+    removeEventFunctions(mouseOverFunctions, w.CanvasID, w.WindowCount);
+    removeEventFunctions(mouseUpFunctions, w.CanvasID, w.WindowCount);
+    removeEventFunctions(mouseWheelFunctions, w.CanvasID, w.WindowCount);
+    removeEventFunctions(scrollFunctions, w.CanvasID, w.WindowCount);
+    removeEventFunctions(windowDrawFunctions, w.CanvasID, w.WindowCount);
+    removeEventFunctions(gotFocusFunctions, w.CanvasID, w.WindowCount);
+    removeEventFunctions(lostFocusFunctions, w.CanvasID, w.WindowCount);
+    removeEventFunctions(keyPressFunctions, w.CanvasID, w.WindowCount);
+    removeEventFunctions(keyDownFunctions, w.CanvasID, w.WindowCount);
 }
 
 function destroyControlByWindowObj(w, windowIndex) {
@@ -667,6 +700,7 @@ function destroyControlByWindowObj(w, windowIndex) {
             }
         }
     }
+    removeEventHooks(w);
     switch (w.ControlType) {
         case "Label":
             for (var i = labelPropsArray.length - 1; i >= 0 ; i--) {

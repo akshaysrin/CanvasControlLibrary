@@ -1778,7 +1778,7 @@ public class CanvasControlLibrary
         }
         return null;
     }
-
+    /*
     public void DestroyControl(string canvasid, string windowid)
     {
         for (int i = 0; i < Windows.Count; i++)
@@ -2143,6 +2143,7 @@ public class CanvasControlLibrary
         }
         DestroyWindow(w.CanvasID, w.WindowCount);
     }
+*/
 
     public int GetHighestDepth(string canvasid)
     {
