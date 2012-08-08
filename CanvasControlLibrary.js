@@ -65,6 +65,7 @@ var hiddenWindows = new Array();
 var gotFocusFunctions = new Array();
 var lostFocusFunctions = new Array();
 var keyPressFunctions = new Array();
+var keyDownFunctions = new Array();
 var doingClickEvent = 0;
 var doingMouseUp = 0;
 var doingMouseDown = 0;
@@ -379,6 +380,18 @@ function registerCanvasElementId(canvasId) {
             }
         }
     };
+    canvas.onkeydown = function (e) {
+        for (var i = 0; i < keyDownFunctions.length; i++) {
+            for (var j = 0; j < windowIdWithFocus.length; j++) {
+                if (windowIdWithFocus[j][0] == keyDownFunctions[i].CanvasID && windowIdWithFocus[j][1] == keyDownFunctions[i].WindowID) {
+                    keyDownFunctions[i].KeyDownFunction(keyDownFunctions[i].CanvasID, keyDownFunctions[i].WindowID);
+                    if (window.event.preventDefault)
+                        window.event.preventDefault();
+                    window.event.returnValue = false;
+                }
+            }
+        }
+    };
 }
 
 function createWindow(canvasId, x, y, width, height, depth, parentwindowid, controlTypeNameString, controlNameId) {
@@ -405,6 +418,14 @@ function registerKeyPressFunction(canvasid, func, windowid) {
     for (var i = 0; i < windows.length; i++) {
         if (windows[i].CanvasID == canvasid && windows[i].WindowCount == windowid) {
             keyPressFunctions.push({ CanvasID: canvasid, KeyPressFunction: func, WindowID: windowid });
+        }
+    }
+}
+
+function registerKeyDownFunction(canvasid, func, windowid) {
+    for (var i = 0; i < windows.length; i++) {
+        if (windows[i].CanvasID == canvasid && windows[i].WindowCount == windowid) {
+            keyDownFunctions.push({ CanvasID: canvasid, KeyDownFunction: func, WindowID: windowid });
         }
     }
 }
@@ -5859,7 +5880,7 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
             }
         }
     }, canvasid);
-    registerKeyPressFunction(canvasid, function (canvasid3, windowid3) {
+    registerKeyDownFunction(canvasid, function (canvasid3, windowid3) {
         var textBoxProps = getTextBoxProps(canvasid3, windowid3);
         var e = window.event;
         switch (e.keyCode) {
@@ -5911,7 +5932,7 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
                 }
                 return;
         }
-        var c = String.fromCharCode(e.keyCode);
+        var c = (e.shiftKey || e.shiftLeft ? String.fromCharCode(e.keyCode).toUpperCase() : String.fromCharCode(e.keyCode).toLowerCase());
         if (textBoxProps.CaretPosIndex == -1) {
             textBoxProps.UserInputText = c + (textBoxProps.UserInputText.length > 0 ? textBoxProps.UserInputText : '');
             textBoxProps.CaretPosIndex++;
@@ -5922,6 +5943,10 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
             textBoxProps.UserInputText = textBoxProps.UserInputText.substring(0, textBoxProps.CaretPosIndex + 1) + c + textBoxProps.UserInputText.substring(textBoxProps.CaretPosIndex + 1);
             textBoxProps.CaretPosIndex++;
         }
+    }, windowid);
+    registerKeyPressFunction(canvasid, function (canvasid4, windowid4) {
+        var textBoxProps = getTextBoxProps(canvasid4, windowid4);
+        var e = window.event;
     }, windowid);
     registerAnimatedWindow(canvasid);
 }
