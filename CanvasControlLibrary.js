@@ -5787,16 +5787,21 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
     if (hasFocusInitially == 1) {
         setFocusToWindowID(canvasid, windowid);
     }
+    var image = new Image(width, height);
+    image.src = bgImageUrl;
+    image.onload = function () {
+        draw(canvasid);
+    };
     textBoxPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, WaterMarkText: waterMarkText,
         WaterMarkTextColor: waterMarkTextColor, WaterMarkTextFontString: waterMarkTextFontString, TextColor: textColor, TextHeight: textHeight,
         TextFontString: textFontString, MaxChars: maxChars, AllowedCharsRegEx: allowedCharsRegEx, IsPassword: isPassword, PasswordChar: passwordChar,
         HasBorder: hasBorder, BorderColor: borderColor, BorderLineWidth: borderLineWidth, HasShadow: hasShadow, ShadowOffsetX: shadowOffsetX, ShadowOffsetY: shadowOffsetY,
         ShadowBlurValue: shadowBlurValue, HasRoundedEdges: hasRoundedEdges, EdgeRadius: edgeRadius, HasBgGradient: hasBgGradient, BgGradientStartColor: bgGradientStartColor,
-        BgGradientEndColor: bgGradientEndColor, HasBgImage: hasBgImage, BgImageUrl: bgImageUrl, HasAutoComplete: hasAutoComplete, ListPossibles: listPossibles,
+        BgGradientEndColor: bgGradientEndColor, HasBgImage: hasBgImage, BgImageUrl: bgImageUrl, Image: image, HasAutoComplete: hasAutoComplete, ListPossibles: listPossibles,
         DropDownPossiblesListIfThereIsInputText: dropDownPossiblesListIfThereIsInputText, LimitToListPossibles: limitToListPossibles, ListPossiblesTextHeight: listPossiblesTextHeight,
         ListPossiblesTextFontString: listPossiblesTextFontString, CaretPosIndex: -1, UserInputText: initialText, ShadowColor: shadowColor, ShowCaret: 0, CaretColor: caretColor,
-        SelectedTextStartIndex: -1, SelectedTextEndIndex: -1, TextSelectionBgColor: textSelectionBgColor, MouseDown: 0, WasSelecting: 0
+        SelectedTextStartIndex: -1, SelectedTextEndIndex: -1, TextSelectionBgColor: textSelectionBgColor, MouseDown: 0, WasSelecting: 0, MouseDownTime: 0
     });
     registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
         var textBoxProps = getTextBoxProps(canvasid1, windowid1);
@@ -5816,21 +5821,25 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
             ctx.shadowOffsetX = textBoxProps.ShadowOffsetX;
             ctx.shadowOffsetY = textBoxProps.ShadowOffsetY;
         }
-        ctx.beginPath();
-        if (textBoxProps.HasRoundedEdges == 1) {
-            ctx.moveTo(textBoxProps.X, textBoxProps.Y + textBoxProps.EdgeRadius);
-            ctx.arc(textBoxProps.X + textBoxProps.EdgeRadius, textBoxProps.Y + textBoxProps.EdgeRadius, textBoxProps.EdgeRadius, Math.PI, (Math.PI / 180) * 270, false);
-            ctx.lineTo(textBoxProps.X + textBoxProps.Width - textBoxProps.EdgeRadius, textBoxProps.Y);
-            ctx.arc(textBoxProps.X + textBoxProps.Width - textBoxProps.EdgeRadius, textBoxProps.Y + textBoxProps.EdgeRadius, textBoxProps.EdgeRadius, (Math.PI / 180) * 270, Math.PI * 2, false);
-            ctx.lineTo(textBoxProps.X + textBoxProps.Width, textBoxProps.Y + textBoxProps.Height - textBoxProps.EdgeRadius);
-            ctx.arc(textBoxProps.X + textBoxProps.Width - textBoxProps.EdgeRadius, textBoxProps.Y + textBoxProps.Height - textBoxProps.EdgeRadius, textBoxProps.EdgeRadius, 0, Math.PI / 2, false);
-            ctx.lineTo(textBoxProps.X + textBoxProps.EdgeRadius, textBoxProps.Y + textBoxProps.Height);
-            ctx.arc(textBoxProps.X + textBoxProps.EdgeRadius, textBoxProps.Y + textBoxProps.Height - textBoxProps.EdgeRadius, textBoxProps.EdgeRadius, Math.PI / 2, Math.PI, false);
-            ctx.closePath();
+        if (textBoxProps.HasBgImage == 1) {
+            ctx.drawImage(textBoxProps.Image, 0, 0, textBoxProps.Image.width, textBoxProps.Image.height, textBoxProps.X, textBoxProps.Y, textBoxProps.Width, textBoxProps.Height);
         } else {
-            ctx.rect(textBoxProps.X, textBoxProps.Y, textBoxProps.Width, textBoxProps.Height);
+            ctx.beginPath();
+            if (textBoxProps.HasRoundedEdges == 1) {
+                ctx.moveTo(textBoxProps.X, textBoxProps.Y + textBoxProps.EdgeRadius);
+                ctx.arc(textBoxProps.X + textBoxProps.EdgeRadius, textBoxProps.Y + textBoxProps.EdgeRadius, textBoxProps.EdgeRadius, Math.PI, (Math.PI / 180) * 270, false);
+                ctx.lineTo(textBoxProps.X + textBoxProps.Width - textBoxProps.EdgeRadius, textBoxProps.Y);
+                ctx.arc(textBoxProps.X + textBoxProps.Width - textBoxProps.EdgeRadius, textBoxProps.Y + textBoxProps.EdgeRadius, textBoxProps.EdgeRadius, (Math.PI / 180) * 270, Math.PI * 2, false);
+                ctx.lineTo(textBoxProps.X + textBoxProps.Width, textBoxProps.Y + textBoxProps.Height - textBoxProps.EdgeRadius);
+                ctx.arc(textBoxProps.X + textBoxProps.Width - textBoxProps.EdgeRadius, textBoxProps.Y + textBoxProps.Height - textBoxProps.EdgeRadius, textBoxProps.EdgeRadius, 0, Math.PI / 2, false);
+                ctx.lineTo(textBoxProps.X + textBoxProps.EdgeRadius, textBoxProps.Y + textBoxProps.Height);
+                ctx.arc(textBoxProps.X + textBoxProps.EdgeRadius, textBoxProps.Y + textBoxProps.Height - textBoxProps.EdgeRadius, textBoxProps.EdgeRadius, Math.PI / 2, Math.PI, false);
+                ctx.closePath();
+            } else {
+                ctx.rect(textBoxProps.X, textBoxProps.Y, textBoxProps.Width, textBoxProps.Height);
+            }
+            ctx.fill();
         }
-        ctx.fill();
         ctx.restore();
         if (textBoxProps.HasBorder == 1) {
             ctx.strokeStyle = textBoxProps.BorderColor;
@@ -5918,6 +5927,7 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
         var textBoxProps = getTextBoxProps(canvasid4, windowid4);
         if (textBoxProps.UserInputText && textBoxProps.UserInputText.length > 0) {
             textBoxProps.MouseDown = 1;
+            textBoxProps.MouseDownTime = (new Date()).getTime();
             var canvas = getCanvas(canvasid4);
             var x = event.pageX - canvas.offsetLeft;
             var y = event.pageY - canvas.offsetTop;
@@ -5948,11 +5958,16 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
                     }
                 }
             }
+            if (textBoxProps.SelectedTextStartIndex > textBoxProps.SelectedTextEndIndex) {
+                var tmp = textBoxProps.SelectedTextStartIndex;
+                textBoxProps.SelectedTextStartIndex = textBoxProps.SelectedTextEndIndex;
+                textBoxProps.SelectedTextEndIndex = tmp;
+            }
         }
     }, canvasid);
     registerMouseMoveFunction(windowid, function (canvasid5, windowid5) {
         var textBoxProps = getTextBoxProps(canvasid5, windowid5);
-        if (textBoxProps.MouseDown == 1 && textBoxProps.UserInputText && textBoxProps.UserInputText.length > 0) {
+        if (textBoxProps.MouseDown == 1 && (new Date()).getTime() - textBoxProps.MouseDownTime > 500 &&  textBoxProps.UserInputText && textBoxProps.UserInputText.length > 0) {
             var canvas = getCanvas(canvasid5);
             var x = event.pageX - canvas.offsetLeft;
             var y = event.pageY - canvas.offsetTop;
@@ -5994,42 +6009,44 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
         var textBoxProps = getTextBoxProps(canvasid6, windowid6);
         if (textBoxProps.MouseDown == 1) {
             textBoxProps.MouseDown = 0;
-            textBoxProps.WasSelecting = 1;
-            if (textBoxProps.UserInputText && textBoxProps.UserInputText.length > 0) {
-                var canvas = getCanvas(canvasid6);
-                var x = event.pageX - canvas.offsetLeft;
-                var y = event.pageY - canvas.offsetTop;
-                var ctx = getCtx(canvasid6);
-                ctx.font = textBoxProps.TextFontString;
-                if (x > textBoxProps.X && x < textBoxProps.X + 4) {
-                    textBoxProps.SelectedTextEndIndex = -1;
-                } else if (x > textBoxProps.X + ctx.measureText(textBoxProps.UserInputText).width + 4) {
-                    textBoxProps.SelectedTextEndIndex = textBoxProps.UserInputText.length - 1;
-                } else {
-                    var letterExtents = new Array();
-                    var lastWidth = 0;
-                    for (var i = 0; i < textBoxProps.UserInputText.length; i++) {
-                        var currWidth = ctx.measureText(textBoxProps.UserInputText.substring(0, i + 1)).width;
-                        letterExtents.push({ Width: currWidth - lastWidth });
-                        lastWidth = currWidth;
-                    }
-                    if (x > textBoxProps.X + 4 && x < textBoxProps.X + letterExtents[0].Width) {
-                        textBoxProps.SelectedTextEndIndex = 0;
+            if ((new Date()).getTime() - textBoxProps.MouseDownTime > 500) {
+                if (textBoxProps.UserInputText && textBoxProps.UserInputText.length > 0) {
+                    textBoxProps.WasSelecting = 1;
+                    var canvas = getCanvas(canvasid6);
+                    var x = event.pageX - canvas.offsetLeft;
+                    var y = event.pageY - canvas.offsetTop;
+                    var ctx = getCtx(canvasid6);
+                    ctx.font = textBoxProps.TextFontString;
+                    if (x > textBoxProps.X && x < textBoxProps.X + 4) {
+                        textBoxProps.SelectedTextEndIndex = -1;
+                    } else if (x > textBoxProps.X + ctx.measureText(textBoxProps.UserInputText).width + 4) {
+                        textBoxProps.SelectedTextEndIndex = textBoxProps.UserInputText.length - 1;
                     } else {
-                        var lastWidth = letterExtents[0].Width;
-                        for (var i = 1; i < letterExtents.length; i++) {
-                            if (x > textBoxProps.X + lastWidth && x < textBoxProps.X + lastWidth + letterExtents[i].Width) {
-                                textBoxProps.SelectedTextEndIndex = i;
-                                break;
+                        var letterExtents = new Array();
+                        var lastWidth = 0;
+                        for (var i = 0; i < textBoxProps.UserInputText.length; i++) {
+                            var currWidth = ctx.measureText(textBoxProps.UserInputText.substring(0, i + 1)).width;
+                            letterExtents.push({ Width: currWidth - lastWidth });
+                            lastWidth = currWidth;
+                        }
+                        if (x > textBoxProps.X + 4 && x < textBoxProps.X + letterExtents[0].Width) {
+                            textBoxProps.SelectedTextEndIndex = 0;
+                        } else {
+                            var lastWidth = letterExtents[0].Width;
+                            for (var i = 1; i < letterExtents.length; i++) {
+                                if (x > textBoxProps.X + lastWidth && x < textBoxProps.X + lastWidth + letterExtents[i].Width) {
+                                    textBoxProps.SelectedTextEndIndex = i;
+                                    break;
+                                }
+                                lastWidth += letterExtents[i].Width;
                             }
-                            lastWidth += letterExtents[i].Width;
                         }
                     }
-                }
-                if (textBoxProps.SelectedTextStartIndex > textBoxProps.SelectedTextEndIndex) {
-                    var tmp = textBoxProps.SelectedTextStartIndex;
-                    textBoxProps.SelectedTextStartIndex = textBoxProps.SelectedTextEndIndex;
-                    textBoxProps.SelectedTextEndIndex = tmp;
+                    if (textBoxProps.SelectedTextStartIndex > textBoxProps.SelectedTextEndIndex) {
+                        var tmp = textBoxProps.SelectedTextStartIndex;
+                        textBoxProps.SelectedTextStartIndex = textBoxProps.SelectedTextEndIndex;
+                        textBoxProps.SelectedTextEndIndex = tmp;
+                    }
                 }
             }
         }
