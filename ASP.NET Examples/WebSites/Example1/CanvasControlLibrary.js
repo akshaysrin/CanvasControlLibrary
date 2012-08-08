@@ -5811,7 +5811,15 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
         if (textBoxProps.UserInputText && textBoxProps.UserInputText.length > 0) {
             ctx.fillStyle = textBoxProps.TextColor;
             ctx.font = textBoxProps.TextFontString;
-            ctx.fillText(textBoxProps.UserInputText, textBoxProps.X + 4, textBoxProps.Y + textBoxProps.Height - ((textBoxProps.Height - textBoxProps.TextHeight) / 2));
+            if (textBoxProps.IsPassword == 1) {
+                var tmpstr = '';
+                for (var i = 0; i < textBoxProps.UserInputText.length; i++) {
+                    tmpstr += textBoxProps.PasswordChar;
+                }
+                ctx.fillText(tmpstr, textBoxProps.X + 4, textBoxProps.Y + textBoxProps.Height - ((textBoxProps.Height - textBoxProps.TextHeight) / 2));
+            } else {
+                ctx.fillText(textBoxProps.UserInputText, textBoxProps.X + 4, textBoxProps.Y + textBoxProps.Height - ((textBoxProps.Height - textBoxProps.TextHeight) / 2));
+            }
         } else if (textBoxProps.WaterMarkText && textBoxProps.WaterMarkText.length > 0) {
             ctx.fillStyle = textBoxProps.WaterMarkTextColor;
             ctx.font = textBoxProps.WaterMarkTextFontString;
@@ -5932,21 +5940,21 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
                 }
                 return;
         }
-        var c = (e.shiftKey || e.shiftLeft ? String.fromCharCode(e.keyCode).toUpperCase() : String.fromCharCode(e.keyCode).toLowerCase());
-        if (textBoxProps.CaretPosIndex == -1) {
-            textBoxProps.UserInputText = c + (textBoxProps.UserInputText.length > 0 ? textBoxProps.UserInputText : '');
-            textBoxProps.CaretPosIndex++;
-        } else if (textBoxProps.CaretPosIndex == textBoxProps.UserInputText.length - 1) {
-            textBoxProps.UserInputText = textBoxProps.UserInputText + c;
-            textBoxProps.CaretPosIndex++;
-        } else {
-            textBoxProps.UserInputText = textBoxProps.UserInputText.substring(0, textBoxProps.CaretPosIndex + 1) + c + textBoxProps.UserInputText.substring(textBoxProps.CaretPosIndex + 1);
-            textBoxProps.CaretPosIndex++;
+        if (textBoxProps.UserInputText.length < textBoxProps.MaxChars) {
+            var c = (e.shiftKey || e.shiftLeft ? String.fromCharCode(e.keyCode).toUpperCase() : String.fromCharCode(e.keyCode).toLowerCase());
+            if (!textBoxProps.AllowedCharsRegEx || textBoxProps.AllowedCharsRegEx == null || textBoxProps.AllowedCharsRegEx.length == 0 || c.match(textBoxProps.AllowedCharsRegEx) == c) {
+                if (textBoxProps.CaretPosIndex == -1) {
+                    textBoxProps.UserInputText = c + (textBoxProps.UserInputText.length > 0 ? textBoxProps.UserInputText : '');
+                    textBoxProps.CaretPosIndex++;
+                } else if (textBoxProps.CaretPosIndex == textBoxProps.UserInputText.length - 1) {
+                    textBoxProps.UserInputText = textBoxProps.UserInputText + c;
+                    textBoxProps.CaretPosIndex++;
+                } else {
+                    textBoxProps.UserInputText = textBoxProps.UserInputText.substring(0, textBoxProps.CaretPosIndex + 1) + c + textBoxProps.UserInputText.substring(textBoxProps.CaretPosIndex + 1);
+                    textBoxProps.CaretPosIndex++;
+                }
+            }
         }
-    }, windowid);
-    registerKeyPressFunction(canvasid, function (canvasid4, windowid4) {
-        var textBoxProps = getTextBoxProps(canvasid4, windowid4);
-        var e = window.event;
     }, windowid);
     registerAnimatedWindow(canvasid);
 }
