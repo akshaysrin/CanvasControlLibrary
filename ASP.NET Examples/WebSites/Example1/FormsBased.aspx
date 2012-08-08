@@ -21,8 +21,8 @@
         function form1() {
             createImage(elemId, 'imgTitle', 312, 10, 400, 100, highestDepth, 'Title.png', null);
             createMenuBarControl(elemId, 'menuBar1', 0, 120, 1024, 60, highestDepth, [['HOME', '#000000', 20, '20pt Ariel', 0, null, null], ['TICKETS', '#000000', 20, '20pt Ariel', 0, null, null],
-            ['MOVIES', '#000000', 20, '20pt Ariel', 0, null, null], ['CINEMAS', '#000000', 20, '20pt Ariel', 0, null, null], ['TRAILERS', '#000000', 20, '20pt Ariel', 0, null, null],
-            ['CONTACT US', '#000000', 20, '20pt Ariel', 0, null, null]], '#fdf2c0', '#f0cc75', '#d99839', '#e3e7ff', '#c5cdff', 0);
+                ['MOVIES', '#000000', 20, '20pt Ariel', 0, null, null], ['CINEMAS', '#000000', 20, '20pt Ariel', 0, null, null], ['TRAILERS', '#000000', 20, '20pt Ariel', 0, null, null],
+                ['CONTACT US', '#000000', 20, '20pt Ariel', 0, null, null]], '#fdf2c0', '#f0cc75', '#d99839', '#e3e7ff', '#c5cdff', 0);
             createLabel(elemId, 'label1', 10, 220, 100, 30, 'Select City', '#131aa3', 16, '16pt Ariel', null, highestDepth);
             createComboBox(elemId, 'selectCityComboBox', 150, 220, 200, 30, highestDepth, ['junk1'], null, null, null, null, null, '#131aa3', 16, '16pt Ariel', '#131aa3', 16, '16pt Ariel', cityChanged);
             createLabel(elemId, 'label2', 10, 300, 150, 30, 'Select Cinema', '#131aa3', 16, '16pt Ariel', null, highestDepth);

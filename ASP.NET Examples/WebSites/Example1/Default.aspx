@@ -53,7 +53,7 @@
                 , [6, 5, 'Six', 1], [7, 6, 'Seven', 1], [8, 6, 'Eight', 1], [9, 8, 'Nine', 1]], 0, 1, 3, 2, '#00FF00', '10pt Ariel', 10, 
                 function (canvasid, windowid, selectedNodeIndex) { alert(selectedNodeIndex); });
             createTextBox(elemId, 'textbox1', 400, 10, 300, 60, highestDepth, 'Type your name here', '#F0F0F0', 18, '18pt Ariel', '#051329', 18, '18pt Ariel', 50, '[a-zA-Z ]', 0, null, 1, '#2e3642',
-                1, 0, '#000000', 3, 3, 20, 1, 10, 1, '#9bacc6', '#d6e4f9', 0, null, 0, null, 0, 0, 0, null, '', '#0d2952', '#0000F0', 1);
+                1, 0, '#000000', 3, 3, 20, 1, 10, 1, '#9bacc6', '#d6e4f9', 0, null, 0, null, 0, 0, 0, null, '', '#0d2952', 'rgba(0, 0, 240, 0.2)', 1);
             draw(elemId);
         </script>
     </div>

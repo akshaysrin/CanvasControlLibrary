@@ -47,6 +47,7 @@ public partial class Default2 : System.Web.UI.Page
     {
         CanvasControlLibrary.CCLComboBoxProps selectCityComboBox = ccl.getControlPropsByControlNameID("selectCityComboBoxComboBoxTextArea") as CanvasControlLibrary.CCLComboBoxProps;
         selectCityComboBox.Data = new System.Collections.ArrayList();
+        selectCityComboBox.Data.Add("Select a city");
         selectCityComboBox.Data.Add("Mumbai");
         selectCityComboBox.Data.Add("Delhi");
         selectCityComboBox.Data.Add("Bangalore");
@@ -79,6 +80,9 @@ public partial class Default2 : System.Web.UI.Page
                 selectCinemaComboBox.Data.Add("Chennai Nagar 1");
                 selectCinemaComboBox.Data.Add("Chennai Nagar 2");
                 selectCinemaComboBox.Data.Add("Chennai Nagar 3");
+                break;
+            default:
+                selectCinemaComboBox.Data.Add("Select a city");
                 break;
         }
     }
