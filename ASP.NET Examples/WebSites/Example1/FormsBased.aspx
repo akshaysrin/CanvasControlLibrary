@@ -11,7 +11,9 @@
 <body style="background-color:#000000">
     <form id="form1" runat="server">
     <div>
-    <canvas id="canvas" width="1024" height="768" tabindex="0"></canvas>
+        <table style="width:100%;height:100%"><col width="50%" /><col width="1024px" /><col width="50%" /><tr><td>&nbsp;</td><td>
+                <canvas id="canvas" width="1024" height="768" tabindex="0"></canvas>
+        </td><td>&nbsp;</td></tr></table>
     <script type="text/javascript">
         var elemId = 'canvas';
         registerCanvasElementId(elemId);
