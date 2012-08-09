@@ -1346,7 +1346,7 @@ public class CanvasControlLibrary
         return str;
     }
 
-    public void SendVars(Stream OutputStream)
+    public void SendVars(Stream OutputStream, ArrayList parameters)
     {
         string strVars = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>[root][Vars][windows]";
         foreach (CCLWindow w in Windows)
@@ -1499,9 +1499,26 @@ public class CanvasControlLibrary
             strVars += "[i]" + encodeObject(smb) + "[/i]";
         }
         strVars += "[/textBoxPropsArray]";
-        strVars += "[/Vars][/root]";
+        strVars += "[/Vars][Params][Array]" + encodeParameters(parameters) + "[/Array][/Params][/root]";
         byte[] wdata = Encoding.ASCII.GetBytes(strVars);
         OutputStream.Write(wdata, 0, wdata.Length);
+    }
+
+    public string encodeParameters(ArrayList parameters)
+    {
+        string strParameters = "";
+        foreach (object obj in parameters)
+        {
+            if (obj is ArrayList)
+            {
+                strParameters += "[Array]" + encodeParameters(obj as ArrayList) + "[/Array]";
+            }
+            else
+            {
+                strParameters += "[i]" + obj.ToString() + "[/i]";
+            }
+        }
+        return strParameters;
     }
 
     public object getControlPropsByControlNameID(string controlNameID)

@@ -696,6 +696,11 @@ function removeEventHooks(w) {
     removeEventFunctions(lostFocusFunctions, w.CanvasID, w.WindowCount);
     removeEventFunctions(keyPressFunctions, w.CanvasID, w.WindowCount);
     removeEventFunctions(keyDownFunctions, w.CanvasID, w.WindowCount);
+    for (var i = windowDrawFunctions.length - 1; i >= 0; i--) {
+        if (w.WindowCount == windowDrawFunctions[i][0] && w.CanvasID == windowDrawFunctions[i][2]) {
+            windowDrawFunctions.splice(i, 1);
+        }
+    }
 }
 
 function destroyControlByWindowObj(w, windowIndex) {
@@ -933,7 +938,7 @@ function createLabel(canvasid, controlNameId, x, y, width, height, text, textCol
     isHyperlink, url, nobrowserhistory, isnewbrowserwindow,
     nameofnewbrowserwindow, widthofnewbrowserwindow, heightofnewbrowserwindow, newbrowserwindowisresizable, newbrowserwindowhasscrollbars,
     newbrowserwindowhastoolbar, newbrowserwindowhaslocationorurloraddressbox, newbroserwindowhasdirectoriesorextrabuttons,
-    newbrowserwindowhasstatusbar, newbrowserwindowhasmenubar, newbrowserwindowcopyhistory) {
+    newbrowserwindowhasstatusbar, newbrowserwindowhasmenubar, newbrowserwindowcopyhistory, alignment, clickFunction) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Label', controlNameId);
     labelPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Text: text,
@@ -945,7 +950,7 @@ function createLabel(canvasid, controlNameId, x, y, width, height, text, textCol
         NewBrowserWindowHasLocationOrURLOrAddressBox: newbrowserwindowhaslocationorurloraddressbox,
         NewBrowserWindowHasDirectoriesOrExtraButtons: newbroserwindowhasdirectoriesorextrabuttons,
         NewBrowserWindowHasStatusBar: newbrowserwindowhasstatusbar, NewBrowserWindowHasMenuBar: newbrowserwindowhasmenubar,
-        NewBrowserWindowCopyHistory: newbrowserwindowcopyhistory, DrawFunction: drawFunction
+        NewBrowserWindowCopyHistory: newbrowserwindowcopyhistory, DrawFunction: drawFunction, Alignment: alignment, ClickFunction: clickFunction
     });
     if (drawFunction != undefined && drawFunction != null)
         registerWindowDrawFunction(windowid, function (canvasid1, windowid1) { var lp = getLabelProps(canvasid1, windowid1); lp.DrawFunction(canvasid1, windowid1); }, canvasid);
@@ -955,9 +960,11 @@ function createLabel(canvasid, controlNameId, x, y, width, height, text, textCol
             var labelProps = getLabelProps(canvasid, windowid);
             ctx.font = labelProps.TextFontString;
             ctx.fillStyle = labelProps.TextColor;
-            ctx.fillText(labelProps.Text, labelProps.X + ((labelProps.Width - ctx.measureText(labelProps.Text).width) / 2), labelProps.Y + labelProps.Height - ((labelProps.Height - labelProps.TextHeight) / 2));
+            ctx.fillText(labelProps.Text, labelProps.X + (labelProps.Alignment == 'center' ? ((labelProps.Width - ctx.measureText(labelProps.Text).width) / 2) : 0), labelProps.Y + labelProps.Height - ((labelProps.Height - labelProps.TextHeight) / 2));
         }, canvasid);
-    if (isHyperlink == 1) {
+    if (clickFunction != null) {
+        registerClickFunction(windowid, clickFunction, canvasid);
+    } else if (isHyperlink == 1) {
         registerClickFunction(windowid, function () {
             if (isnewbrowserwindow == 1) {
                 var str = '';
@@ -2091,13 +2098,7 @@ function createImage(canvasid, controlNameId, x, y, width, height, depth, imgurl
     newbrowserwindowhastoolbar, newbrowserwindowhaslocationorurloraddressbox, newbroserwindowhasdirectoriesorextrabuttons,
     newbrowserwindowhasstatusbar, newbrowserwindowhasmenubar, newbrowserwindowcopyhistory) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Image', controlNameId);
-    var image = new Image(width, height);
-    image.src = imgurl;
-    image.onload = function () {
-        //var ctx = getCtx(canvasid);
-        //ctx.drawImage(image, x, y, width, height);
-        draw(canvasid);
-    };
+    var image = new Image();
     imageControlPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width,
         Height: height, ImageURL: imgurl, ClickFunction: clickFunction, Image: image, AlreadyDrawnImage: 0, IsHyperlink: isHyperlink, URL: url,
@@ -2110,6 +2111,13 @@ function createImage(canvasid, controlNameId, x, y, width, height, depth, imgurl
         NewBrowserWindowHasStatusBar: newbrowserwindowhasstatusbar, NewBrowserWindowHasMenuBar: newbrowserwindowhasmenubar,
         NewBrowserWindowCopyHistory: newbrowserwindowcopyhistory
     });
+    image.onload = function () {
+        var imageProps = getImageControlProps(canvasid, windowid);
+        imageProps.Width = image.width;
+        imageProps.Height = image.height;
+        draw(canvasid);
+    };
+    image.src = imgurl;
     registerWindowDrawFunction(windowid, function (canvasid, windowid) {
         var ctx = getCtx(canvasid);
         var imageProps = getImageControlProps(canvasid, windowid);
@@ -6210,8 +6218,10 @@ function invokeServerSideFunction(ajaxURL, functionName, canvasid, windowid, cal
     xmlhttp.onreadystatechange = function () {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             //Here is where you unwrap the data
-            UnWrapVars(xmlhttp.responseText);
-            callBackFunc();
+            var arr = UnWrapVars(xmlhttp.responseText);
+            if (callBackFunc) {
+                callBackFunc(arr);
+            }
         }
     }
     xmlhttp.open("POST", ajaxURL, true);
@@ -6502,6 +6512,19 @@ function UnWrapVars(data) {
     for (var i = 0; i < canvases.length; i++) {
         draw(canvases[i][0]);
     }
+    return getParameters(xmlDoc.firstChild.childNodes[1].childNodes[0].childNodes);
+}
+
+function getParameters(nodes) {
+    var arr = new Array();
+    for (var i = 0; i < nodes.length; i++) {
+        if (nodes[i].nodeName == 'Array') {
+            arr.push(getParameters(nodes[i].childNodes));
+        } else {
+            arr.push(correctValueTypes(nodes[i].childNodes.length > 0 ? nodes[i].childNodes[0].nodeValue : nodes[i].nodeValue));
+        }
+    }
+    return arr;
 }
 
 function setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) {
