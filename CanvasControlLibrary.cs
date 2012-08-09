@@ -974,6 +974,9 @@ public class CanvasControlLibrary
         string strData = Encoding.ASCII.GetString(rdata);
         strData = strData.Replace("[", "<");
         strData = strData.Replace("]", ">");
+        strData = strData.Replace("&lb;", "[");
+        strData = strData.Replace("&rb;", "]");
+        strData = strData.Replace("&amp;", "&");
         XmlDocument vars = new XmlDocument();
         vars.LoadXml("<root>" + strData + "</root>");
         FunctionName = vars.FirstChild.ChildNodes[0].InnerXml;

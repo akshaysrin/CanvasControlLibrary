@@ -22,24 +22,51 @@
             invokeServerSideFunction('AjaxEx1.aspx', 'onSelectCinemaChanged', canvasid, windowid, showMoviesForCinema);
         }
         function selectMovieTime(canvasid, windowid) {
+            var labelProps = getLabelProps(canvasid, windowid);
+            labelProps.BackGroundColor = '#899b0d';
+            createLabel(elemId, 'numTicketsLabel', 630, 220, 100, 30, 'Number of Tickets:', '#131aa3', 16, '16pt Ariel', null, highestDepth);
+            createTextBox(elemId, 'numTicketsTextBox', 740, 220, 50, 30, highestDepth, 'Type number of seats here.', '#F0F0F0', 12, '12pt Ariel', '#051329', 12, '12pt Ariel', 2, '[0-9]', 0, null, 1, '#2e3642',
+                1, 0, '#000000', 3, 3, 20, 1, 10, 1, '#9bacc6', '#d6e4f9', 0, null, 0, null, 0, 0, 0, null, '', '#0d2952', 'rgba(0, 0, 240, 0.2)', 1);
+            createButton(elemId, 'PaymentButton', 810, 220, 100, 30, 'Book Tickets', '#0000FF', 12, '12pt Ariel', 2, highestDepth + 1,
+                function (canvasid, windowid) {
+                    invokeServerSideFunction('AjaxEx1.aspx', 'DoPaymentForTickets', elemId, windowid, afterPayment);
+                }, null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1');
         }
-        var controlNameIDs = new Array();
-        function showMoviesForCinema(params) {
+        function afterPayment(params) {
+            suspendDraw = 1;
             for (var i = 0; i < controlNameIDs.length; i++) {
                 destroyControlByNameID(controlNameIDs[i]);
             }
+            controlNameIDs = new Array();
+            destroyControlByNameID('numTicketsLabel');
+            destroyControlByNameID('numTicketsTextBox');
+            destroyControlByNameID('PaymentButton');
+            destroyControlByNameID('label1');
+            destroyControlByNameID('label2');
+            destroyControlByNameID('selectCityComboBoxComboBoxTextArea');
+            destroyControlByNameID('selectCinemaComboBoxComboBoxTextArea');
+            suspendDraw = 0;
+            createLabel(elemId, 'PaymentMessageLabel', 10, 220, 500, 30, params[0], '#131aa3', 20, '20pt Ariel', null, highestDepth);
+        }
+        var controlNameIDs = new Array();
+        function showMoviesForCinema(params) {
+            suspendDraw = 1;
+            for (var i = 0; i < controlNameIDs.length; i++) {
+                destroyControlByNameID(controlNameIDs[i]);
+            }
+            controlNameIDs = new Array();
+            suspendDraw = 0;
             var xoffset = 0;
             for (var i = 0; i < params.length; i++) {
                 var windowid = createImage(elemId, 'Poster' + i.toString(), 10 + xoffset, 300, 266, 200, highestDepth, params[i][0]);
                 controlNameIDs.push('Poster' + i.toString());
                 var timesoffset = 0;
                 for (var j = 1; j < params[i].length; j++) {
-                    createLabel(elemId, 'MoveTimeLabel' + j.toString(), 10 + xoffset + timesoffset, 510, 75, 20, params[i][j], '#cdc833', 12, '12pt Ariel', null, highestDepth, null, null, null,
+                    createLabel(elemId, 'MovieTimeLabel' + j.toString(), 10 + xoffset + timesoffset, 510, 75, 20, params[i][j], '#cdc833', 12, '12pt Ariel', null, highestDepth, null, null, null,
                          null, null, null, null, null, null, null, null, null, null, null, null, null, selectMovieTime);
-                    controlNameIDs.push('MoveTimeLabel' + j.toString());
+                    controlNameIDs.push('MovieTimeLabel' + j.toString());
                     timesoffset += 70;
                 }
-                var imageProps = getImageControlProps(elemId, windowid);
                 xoffset += 296;
             }
             draw(elemId);

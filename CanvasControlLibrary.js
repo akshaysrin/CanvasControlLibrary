@@ -72,6 +72,7 @@ var doingMouseDown = 0;
 var doingEventForWindowID = -1;
 var intervalID = -1;
 var windowWithAnimationCount = new Array();
+var suspendDraw = 0;
 
 function animatedDraw() {
     for (var i = 0; i < windowWithAnimationCount.length; i++) {
@@ -583,16 +584,35 @@ function getWindowProps(canvasid, windowid) {
 }
 
 function draw(canvasId, parentwindowid) {
-    var canvas = getCanvas(canvasId);
-    if (parentwindowid == null) {
-        getCtx(canvasId).clearRect(0, 0, canvas.width, canvas.height);
-    }
-    for (var d = 0; d <= highestDepth; d++) {
+    if (suspendDraw == 0) {
+        var canvas = getCanvas(canvasId);
+        if (parentwindowid == null) {
+            getCtx(canvasId).clearRect(0, 0, canvas.width, canvas.height);
+        }
+        for (var d = 0; d <= highestDepth; d++) {
+            for (var i = 0; i < windowDrawFunctions.length; i++) {
+                var windowProps = getWindowProps(canvasId, windowDrawFunctions[i][0]);
+                if (windowProps.ParentWindowID == parentwindowid && checkIfHiddenWindow(canvasId, windowDrawFunctions[i][0]) == 0 &&
+                    checkIfModalWindow(canvasId, windowDrawFunctions[i][0]) == 0 &&
+                    getWindowDepth(windowDrawFunctions[i][0], windowDrawFunctions[i][2]) == d && windowDrawFunctions[i][2] == canvasId) {
+                    var ctx = getCtx(canvasId);
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.rect(windowProps.X, windowProps.Y, windowProps.Width, windowProps.Height);
+                    ctx.clip();
+                    windowDrawFunctions[i][1](canvasId, windowDrawFunctions[i][0]);
+                    if (windowProps.ChildWindowIDs.length > 0) {
+                        draw(canvasId, windowDrawFunctions[i][0]);
+                    }
+                    ctx.restore();
+                }
+            }
+        }
         for (var i = 0; i < windowDrawFunctions.length; i++) {
             var windowProps = getWindowProps(canvasId, windowDrawFunctions[i][0]);
             if (windowProps.ParentWindowID == parentwindowid && checkIfHiddenWindow(canvasId, windowDrawFunctions[i][0]) == 0 &&
-                checkIfModalWindow(canvasId, windowDrawFunctions[i][0]) == 0 &&
-                getWindowDepth(windowDrawFunctions[i][0], windowDrawFunctions[i][2]) == d && windowDrawFunctions[i][2] == canvasId) {
+                checkIfModalWindow(canvasId, windowDrawFunctions[i][0]) == 1 &&
+                windowDrawFunctions[i][2] == canvasId) {
                 var ctx = getCtx(canvasId);
                 ctx.save();
                 ctx.beginPath();
@@ -604,23 +624,6 @@ function draw(canvasId, parentwindowid) {
                 }
                 ctx.restore();
             }
-        }
-    }
-    for (var i = 0; i < windowDrawFunctions.length; i++) {
-        var windowProps = getWindowProps(canvasId, windowDrawFunctions[i][0]);
-        if (windowProps.ParentWindowID == parentwindowid && checkIfHiddenWindow(canvasId, windowDrawFunctions[i][0]) == 0 &&
-            checkIfModalWindow(canvasId, windowDrawFunctions[i][0]) == 1 &&
-            windowDrawFunctions[i][2] == canvasId) {
-            var ctx = getCtx(canvasId);
-            ctx.save();
-            ctx.beginPath();
-            ctx.rect(windowProps.X, windowProps.Y, windowProps.Width, windowProps.Height);
-            ctx.clip();
-            windowDrawFunctions[i][1](canvasId, windowDrawFunctions[i][0]);
-            if (windowProps.ChildWindowIDs.length > 0) {
-                draw(canvasId, windowDrawFunctions[i][0]);
-            }
-            ctx.restore();
         }
     }
 }
@@ -643,8 +646,8 @@ function getCanvas(canvasId) {
 
 function destroyControl(canvasid, windowid) {
     for (var i = 0; i < windows.length; i++) {
-        if (windows[i].CanvasID == canvasid && windows[i].WindowID) {
-            destroyControlByWindowObj(windows[i], i);
+        if (windows[i].CanvasID == canvasid && windows[i].WindowCount == windowid) {
+            destroyControlByWindowObj(windows[i]);
         }
     }
 }
@@ -652,23 +655,23 @@ function destroyControl(canvasid, windowid) {
 function destroyControlByNameID(controlNameID) {
     for (var i = 0; i < windows.length; i++) {
         if (windows[i].ControlNameID == controlNameID) {
-            destroyControlByWindowObj(windows[i], i);
+            destroyControlByWindowObj(windows[i]);
         }
     }
 }
 
 function destroyWindow(canvasid, windowid){
     for (var i = 0; i < windows.length; i++) {
-        if (windows[i].CanvasID == canvasid && windows[i].WindowID) {
-            windows.splice(i, 1);
+        if (windows[i].CanvasID == canvasid && windows[i].WindowCount == windowid) {
             removeEventHooks(windows[i]);
+            windows.splice(i, 1);
         }
     }
 }
 
 function removeEventFunctions(eventarr, canvasid, windowid) {
     for (var i = eventarr.length - 1; i >= 0; i--) {
-        if (eventarr.CanvasID == canvasid && eventarr.WindowID == windowid) {
+        if (eventarr[i][2] == canvasid && eventarr[i][0] == windowid) {
             eventarr.splice(i, 1);
         }
     }
@@ -696,14 +699,10 @@ function removeEventHooks(w) {
     removeEventFunctions(lostFocusFunctions, w.CanvasID, w.WindowCount);
     removeEventFunctions(keyPressFunctions, w.CanvasID, w.WindowCount);
     removeEventFunctions(keyDownFunctions, w.CanvasID, w.WindowCount);
-    for (var i = windowDrawFunctions.length - 1; i >= 0; i--) {
-        if (w.WindowCount == windowDrawFunctions[i][0] && w.CanvasID == windowDrawFunctions[i][2]) {
-            windowDrawFunctions.splice(i, 1);
-        }
-    }
+    removeEventFunctions(windowDrawFunctions, w.CanvasID, w.WindowCount);
 }
 
-function destroyControlByWindowObj(w, windowIndex) {
+function destroyControlByWindowObj(w) {
     for (var i = 0; i < w.ChildWindowIDs.length; i++) {
         for (var x = 0; x < windows.length; x++) {
             if (windows[x].CanvasID == w.CanvasID && windows[x].WindowID == w.ChildWindowIDs[i]) {
@@ -711,7 +710,6 @@ function destroyControlByWindowObj(w, windowIndex) {
             }
         }
     }
-    removeEventHooks(w);
     switch (w.ControlType) {
         case "Label":
             for (var i = labelPropsArray.length - 1; i >= 0 ; i--) {
@@ -920,7 +918,7 @@ function destroyControlByWindowObj(w, windowIndex) {
             }
             break;
     }
-    destroyWindow(w.CanvasID, w.WindowID);
+    destroyWindow(w.CanvasID, w.WindowCount);
 }
 
 //Code for labels starts here
@@ -938,7 +936,7 @@ function createLabel(canvasid, controlNameId, x, y, width, height, text, textCol
     isHyperlink, url, nobrowserhistory, isnewbrowserwindow,
     nameofnewbrowserwindow, widthofnewbrowserwindow, heightofnewbrowserwindow, newbrowserwindowisresizable, newbrowserwindowhasscrollbars,
     newbrowserwindowhastoolbar, newbrowserwindowhaslocationorurloraddressbox, newbroserwindowhasdirectoriesorextrabuttons,
-    newbrowserwindowhasstatusbar, newbrowserwindowhasmenubar, newbrowserwindowcopyhistory, alignment, clickFunction) {
+    newbrowserwindowhasstatusbar, newbrowserwindowhasmenubar, newbrowserwindowcopyhistory, alignment, clickFunction, backgroundColor) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Label', controlNameId);
     labelPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Text: text,
@@ -950,7 +948,7 @@ function createLabel(canvasid, controlNameId, x, y, width, height, text, textCol
         NewBrowserWindowHasLocationOrURLOrAddressBox: newbrowserwindowhaslocationorurloraddressbox,
         NewBrowserWindowHasDirectoriesOrExtraButtons: newbroserwindowhasdirectoriesorextrabuttons,
         NewBrowserWindowHasStatusBar: newbrowserwindowhasstatusbar, NewBrowserWindowHasMenuBar: newbrowserwindowhasmenubar,
-        NewBrowserWindowCopyHistory: newbrowserwindowcopyhistory, DrawFunction: drawFunction, Alignment: alignment, ClickFunction: clickFunction
+        NewBrowserWindowCopyHistory: newbrowserwindowcopyhistory, DrawFunction: drawFunction, Alignment: alignment, ClickFunction: clickFunction, BackGroundColor: backgroundColor
     });
     if (drawFunction != undefined && drawFunction != null)
         registerWindowDrawFunction(windowid, function (canvasid1, windowid1) { var lp = getLabelProps(canvasid1, windowid1); lp.DrawFunction(canvasid1, windowid1); }, canvasid);
@@ -959,6 +957,12 @@ function createLabel(canvasid, controlNameId, x, y, width, height, text, textCol
             var ctx = getCtx(canvasid);
             var labelProps = getLabelProps(canvasid, windowid);
             ctx.font = labelProps.TextFontString;
+            if (labelProps.BackGroundColor) {
+                ctx.fillStyle = labelProps.BackGroundColor;
+                ctx.beginPath();
+                ctx.rect(labelProps.X, labelProps.Y, labelProps.Width, labelProps.Height);
+                ctx.fill();
+            }
             ctx.fillStyle = labelProps.TextColor;
             ctx.fillText(labelProps.Text, labelProps.X + (labelProps.Alignment == 'center' ? ((labelProps.Width - ctx.measureText(labelProps.Text).width) / 2) : 0), labelProps.Y + labelProps.Height - ((labelProps.Height - labelProps.TextHeight) / 2));
         }, canvasid);
@@ -6363,12 +6367,12 @@ var savedFunctionsOnPostback = new Array();
 function stringEncodeObject(obj) {
     var str = '';
     for (var name in obj) {
-        if ((navigator.userAgent.toLowerCase().indexOf('opera') > -1 ? obj[name] instanceof Object && obj[name].hasOwnProperty && obj[name].src : obj[name] instanceof Image)) {
+        if ((navigator.userAgent.toLowerCase().indexOf('opera') > -1 ? obj[name] instanceof Object && obj[name].hasOwnProperty && obj[name].src : obj[name] instanceof Image) || name == 'Image') {
             savedImagesOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, Image: obj[name] });
             continue;
         }
         var getType = {};
-        if (obj[name] && getType.toString.call(obj[name]) == '[object Function]') {
+        if (obj[name] && typeof obj[name] == 'function') {
             savedFunctionsOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, FunctionValue: obj[name], PropertyName: name });
         }
         if (typeof obj[name] === 'string' || typeof obj[name] === 'number') {
