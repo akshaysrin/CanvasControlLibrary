@@ -193,24 +193,12 @@ public partial class Default2 : System.Web.UI.Page
 
     public void DoPaymentForTickets(string canvasid, int windowid)
     {
+        CanvasControlLibrary.CCLButtonProps buttonProps = ccl.getControlPropsByWindowID(canvasid, windowid.ToString()) as CanvasControlLibrary.CCLButtonProps;
+        CanvasControlLibrary.CCLLabelProps lp = ccl.getControlPropsByControlNameID((string)buttonProps.Tag) as CanvasControlLibrary.CCLLabelProps;
         CanvasControlLibrary.CCLTextBox textbox = ccl.getControlPropsByControlNameID("numTicketsTextBox") as CanvasControlLibrary.CCLTextBox;
         CanvasControlLibrary.CCLComboBoxProps selectCinemaComboBox = ccl.getControlPropsByControlNameID("selectCinemaComboBoxComboBoxTextArea") as CanvasControlLibrary.CCLComboBoxProps;
-        string labelname = "";
-        CanvasControlLibrary.CCLLabelProps lp = null;
-        for (int i = 0; i < ccl.Windows.Count; i++)
-        {
-            if (ccl.Windows[i].ControlType == "Label")
-            {
-                lp = ccl.getControlPropsByWindowID(canvasid, ccl.Windows[i].WindowCount) as CanvasControlLibrary.CCLLabelProps;
-                if (lp.BackGroundColor != null && lp.BackGroundColor.Length > 0)
-                {
-                    labelname = ccl.Windows[i].ControlNameID;
-                    break;
-                }
-            }
-        }
         Regex regex = new System.Text.RegularExpressions.Regex("MovieTimeLabel[0-9]+Poster(?<PosterIndex>[0-9]+)");
-        Match m = regex.Match(labelname);
+        Match m = regex.Match((string)buttonProps.Tag);
         int movieIndex = Convert.ToInt32(m.Groups["PosterIndex"].Value);
         string movieName = "";
         for (int i = 0; i < movieIndexes.Count; i++)

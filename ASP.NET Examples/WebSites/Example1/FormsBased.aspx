@@ -25,14 +25,15 @@
         }
         function selectMovieTime(canvasid, windowid) {
             var labelProps = getLabelProps(canvasid, windowid);
+            var labelWindowProps = getWindowProps(canvasid, windowid);
             labelProps.BackGroundColor = '#899b0d';
             createLabel(elemId, 'numTicketsLabel', 630, 220, 160, 30, 'Number of Tickets:', '#131aa3', 16, '16pt Ariel', null, highestDepth);
             createTextBox(elemId, 'numTicketsTextBox', 800, 220, 50, 30, highestDepth, 'No.', '#F0F0F0', 12, '12pt Ariel', '#051329', 12, '12pt Ariel', 2, '[0-9]', 0, null, 1, '#2e3642',
-                1, 0, '#000000', 3, 3, 20, 1, 10, 1, '#9bacc6', '#d6e4f9', 0, null, 0, null, 0, 0, 0, null, '', '#0d2952', 'rgba(0, 0, 240, 0.2)', 1);
+                1, 0, '#000000', 3, 3, 20, 1, 10, 1, '#9bacc6', '#d6e4f9', 0, null, 0, null, 0, 0, 0, null, '', '#0d2952', 'rgba(0, 0, 240, 0.2)', 1, ['test', 'this', 'out']);
             createButton(elemId, 'PaymentButton', 875, 220, 100, 30, 'Book Tickets', '#0000FF', 12, '12pt Ariel', 2, highestDepth + 1,
                 function (canvasid, windowid) {
                     invokeServerSideFunction('AjaxEx1.aspx', 'DoPaymentForTickets', elemId, windowid, afterPayment);
-                }, null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1');
+                }, null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1', labelWindowProps.ControlNameID);
             for (var i = 0; i < controlNameIDs.length; i++) {
                 var window = getWindowByControlNameID(controlNameIDs[i]);
                 if (window.ControlType == 'Label' && window.WindowCount != windowid) {

@@ -961,7 +961,7 @@ function getLabelProps(canvasid, windowid) {
 }
 
 function createLabel(canvasid, controlNameId, x, y, width, height, text, textColor, textHeight, textFontString, drawFunction, depth,
-    alignment, clickFunction, backgroundColor, autoAdjustWidth, isHyperlink, url, nobrowserhistory, isnewbrowserwindow,
+    alignment, clickFunction, backgroundColor, autoAdjustWidth, tag, isHyperlink, url, nobrowserhistory, isnewbrowserwindow,
     nameofnewbrowserwindow, widthofnewbrowserwindow, heightofnewbrowserwindow, newbrowserwindowisresizable, newbrowserwindowhasscrollbars,
     newbrowserwindowhastoolbar, newbrowserwindowhaslocationorurloraddressbox, newbroserwindowhasdirectoriesorextrabuttons,
     newbrowserwindowhasstatusbar, newbrowserwindowhasmenubar, newbrowserwindowcopyhistory) {
@@ -981,7 +981,8 @@ function createLabel(canvasid, controlNameId, x, y, width, height, text, textCol
         NewBrowserWindowHasLocationOrURLOrAddressBox: newbrowserwindowhaslocationorurloraddressbox,
         NewBrowserWindowHasDirectoriesOrExtraButtons: newbroserwindowhasdirectoriesorextrabuttons,
         NewBrowserWindowHasStatusBar: newbrowserwindowhasstatusbar, NewBrowserWindowHasMenuBar: newbrowserwindowhasmenubar,
-        NewBrowserWindowCopyHistory: newbrowserwindowcopyhistory, DrawFunction: drawFunction, Alignment: alignment, ClickFunction: clickFunction, BackGroundColor: backgroundColor
+        NewBrowserWindowCopyHistory: newbrowserwindowcopyhistory, DrawFunction: drawFunction, Alignment: alignment,
+        ClickFunction: clickFunction, BackGroundColor: backgroundColor, Tag: tag
     });
     if (drawFunction != undefined && drawFunction != null)
         registerWindowDrawFunction(windowid, function (canvasid1, windowid1) { var lp = getLabelProps(canvasid1, windowid1); lp.DrawFunction(canvasid1, windowid1); }, canvasid);
@@ -1127,7 +1128,7 @@ function defaultButtonDrawFunction(canvasid, windowid) {
 }
 
 function createButton(canvasid, controlNameId, x, y, width, height, text, textColor, textHeight, textFontString, edgeRadius, depth, clickFunction,
-    drawFunction, bottomColorStart, bottomColorEnd, topColorStart, topColorEnd, borderColor, isHyperlink, url, nobrowserhistory, isnewbrowserwindow,
+    drawFunction, bottomColorStart, bottomColorEnd, topColorStart, topColorEnd, borderColor, tag, isHyperlink, url, nobrowserhistory, isnewbrowserwindow,
     nameofnewbrowserwindow, widthofnewbrowserwindow, heightofnewbrowserwindow, newbrowserwindowisresizable, newbrowserwindowhasscrollbars,
     newbrowserwindowhastoolbar, newbrowserwindowhaslocationorurloraddressbox, newbroserwindowhasdirectoriesorextrabuttons,
     newbrowserwindowhasstatusbar, newbrowserwindowhasmenubar, newbrowserwindowcopyhistory) {
@@ -1144,7 +1145,7 @@ function createButton(canvasid, controlNameId, x, y, width, height, text, textCo
         NewBrowserWindowHasLocationOrURLOrAddressBox: newbrowserwindowhaslocationorurloraddressbox, 
         NewBrowserWindowHasDirectoriesOrExtraButtons: newbroserwindowhasdirectoriesorextrabuttons,
         NewBrowserWindowHasStatusBar: newbrowserwindowhasstatusbar, NewBrowserWindowHasMenuBar: newbrowserwindowhasmenubar, 
-        NewBrowserWindowCopyHistory: newbrowserwindowcopyhistory
+        NewBrowserWindowCopyHistory: newbrowserwindowcopyhistory, Tag: tag
     });
     registerClickFunction(windowid, function () {
         if (isHyperlink == 1) {
@@ -1486,7 +1487,7 @@ function scrollBarLostFocus(canvasid, windowid) {
     scrollBarProps.MouseDownState = 0;
 }
 
-function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, alignment, drawFunction, clickFunction) {
+function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, alignment, drawFunction, clickFunction, tag) {
     var windowid;
     if (alignment == 1) {
         windowid = createWindow(canvasid, x, y, 15, len, depth, null, 'ScrollBar', controlNameId);
@@ -1495,7 +1496,7 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
     }
     scrollBarPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Len: len, SelectedID: 0,
-        MaxItems: maxitems, Alignment: alignment, MouseDownState: 0
+        MaxItems: maxitems, Alignment: alignment, MouseDownState: 0, Tag: tag
     });
     if (clickFunction == null) {
         registerClickFunction(windowid, scrollBarClick, canvasid);
@@ -1529,7 +1530,7 @@ function getGridProps(canvasid, windowid) {
 function createGrid(canvasid, controlNameId, x, y, width, height, depth, rowData, headerData, rowDataTextColor, rowDataTextHeight, rowDataTextFontString,
     headerDataTextColor, headerDataTextHeight, headerDataTextFontString, drawRowDataCellFunction, drawHeaderCellFunction,
     cellClickFunction, dataRowHeight, headerRowHeight, columnWidthArray, hasBorder, borderColor, borderLineWidth,
-    headerbackgroundstartcolor, headerbackgroundendcolor, altrowbgcolorstart1, altrowbgcolorend1, altrowbgcolorstart2, altrowbgcolorend2, controlNameId) {
+    headerbackgroundstartcolor, headerbackgroundendcolor, altrowbgcolorstart1, altrowbgcolorend1, altrowbgcolorstart2, altrowbgcolorend2, tag) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Grid');
     var effectiveWidth = 0;
     for (var i = 0; i < columnWidthArray.length; i++) {
@@ -1557,7 +1558,8 @@ function createGrid(canvasid, controlNameId, x, y, width, height, depth, rowData
         BorderLineWidth: borderLineWidth, VScrollBarWindowId: vscrollBarWindowId,
         HScrollBarWindowId: hscrollBarWindowId, HeaderBackgroundStartColor: headerbackgroundstartcolor, 
         HeaderBackgroundEndColor: headerbackgroundendcolor, AltRowBgColorStart1: altrowbgcolorstart1, 
-        AltRowBgColorEnd1: altrowbgcolorend1, AltRowBgColorStart2: altrowbgcolorstart2, AltRowBgColorEnd2: altrowbgcolorend2
+        AltRowBgColorEnd1: altrowbgcolorend1, AltRowBgColorStart2: altrowbgcolorstart2,
+        AltRowBgColorEnd2: altrowbgcolorend2, Tag: tag
     });
     registerWindowDrawFunction(windowid, function () { drawGrid(canvasid, windowid); }, canvasid);
     registerClickFunction(windowid, function () { clickGrid(canvasid, windowid); }, canvasid);
@@ -1741,7 +1743,7 @@ function getComboboxPropsByScrollBarWindowId(canvasid, windowid) {
 }
 
 function createComboBox(canvasid, controlNameId, x, y, width, height, depth, data, drawTextAreaFunction, drawButtonFunction, drawListAreaFunction, buttonClickFunction,
-    listAreaClickFunction, textAreaTextColor, textAreaTextHeight, textAreaFontString, listAreaTextColor, listAreaTextHeight, listAreaFontString, onSelectionChanged) {
+    listAreaClickFunction, textAreaTextColor, textAreaTextHeight, textAreaFontString, listAreaTextColor, listAreaTextHeight, listAreaFontString, onSelectionChanged, tag) {
     var textareawindowid = createWindow(canvasid, x, y, width - 15, height, depth, null, 'ComboBoxTextArea', controlNameId + 'ComboBoxTextArea');
     var buttonwindowid = createWindow(canvasid, x + width - height, y, height, height, depth, null, 'ComboBoxButton', controlNameId + 'ComboBoxButton');
     var dropdownlistareawindowid = createWindow(canvasid, x, y + height, width - 15, 100, depth, null, 'ComboBoxListArea', controlNameId + 'ComboBoxListArea');
@@ -1754,7 +1756,7 @@ function createComboBox(canvasid, controlNameId, x, y, width, height, depth, dat
         X: x, Y: y, Width: width, Height: height, Data: data, SelectedID: 0,
         TextAreaTextColor: textAreaTextColor, TextAreaTextHeight: textAreaTextHeight,
         TextAreaFontString: textAreaFontString, ListAreaTextColor: listAreaTextColor,
-        ListAreaTextHeight: listAreaTextHeight, ListAreaFontString: listAreaFontString, OnSelectionChanged: onSelectionChanged
+        ListAreaTextHeight: listAreaTextHeight, ListAreaFontString: listAreaFontString, OnSelectionChanged: onSelectionChanged, Tag: tag
     });
     if (drawTextAreaFunction != null) {
         registerWindowDrawFunction(textareawindowid, function () { drawTextAreaFunction(canvasid, textareawindowid); }, canvasid);
@@ -2008,9 +2010,9 @@ function drawCheckbox(canvasid, windowid) {
     ctx.restore();
 }
 
-function createCheckbox(canvasid, controlNameId, x, y, depth, status) {
+function createCheckbox(canvasid, controlNameId, x, y, depth, status, tag) {
     var windowid = createWindow(canvasid, x, y, 15, 15, depth, null, 'CheckBox', controlNameId);
-    checkboxPropsArray.push({ CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Status: status });
+    checkboxPropsArray.push({ CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Status: status, Tag: tag });
     registerClickFunction(windowid, function () {
         var checkboxProps = getcheckboxProps(canvasid, windowid);
         if (checkboxProps.Status == 1) {
@@ -2036,7 +2038,7 @@ function getRadioButtonProps(canvasid, windowid) {
     }
 }
 
-function createRadioButtonGroup(canvasid, controlNameId, x, y, alignment, depth, groupname, labels, selectedid, labelTextColor, labelFontString, labelTextHeight, radius) {
+function createRadioButtonGroup(canvasid, controlNameId, x, y, alignment, depth, groupname, labels, selectedid, labelTextColor, labelFontString, labelTextHeight, radius, tag) {
     var canvas = document.getElementById(canvasid);
     var ctx = canvas.getContext('2d');
     ctx.font = labelFontString;
@@ -2055,7 +2057,7 @@ function createRadioButtonGroup(canvasid, controlNameId, x, y, alignment, depth,
     radiobuttonPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Alignment: alignment, GroupName: groupname,
         Labels: labels, SelectedID: selectedid, LabelTextColor: labelTextColor, LabelFontString: labelFontString, Radius: radius,
-        ButtonExtents: new Array(), LabelTextHeight: labelTextHeight
+        ButtonExtents: new Array(), LabelTextHeight: labelTextHeight, Tag: tag
     });
     registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
         var radioButtonProps = getRadioButtonProps(canvasid1, windowid1);
@@ -2129,7 +2131,7 @@ function getImageControlProps(canvasid, windowid) {
     }
 }
 
-function createImage(canvasid, controlNameId, x, y, width, height, depth, imgurl, clickFunction,
+function createImage(canvasid, controlNameId, x, y, width, height, depth, imgurl, clickFunction, tag,
     isHyperlink, url, nobrowserhistory, isnewbrowserwindow,
     nameofnewbrowserwindow, widthofnewbrowserwindow, heightofnewbrowserwindow, newbrowserwindowisresizable, newbrowserwindowhasscrollbars,
     newbrowserwindowhastoolbar, newbrowserwindowhaslocationorurloraddressbox, newbroserwindowhasdirectoriesorextrabuttons,
@@ -2146,7 +2148,7 @@ function createImage(canvasid, controlNameId, x, y, width, height, depth, imgurl
         NewBrowserWindowHasLocationOrURLOrAddressBox: newbrowserwindowhaslocationorurloraddressbox,
         NewBrowserWindowHasDirectoriesOrExtraButtons: newbroserwindowhasdirectoriesorextrabuttons,
         NewBrowserWindowHasStatusBar: newbrowserwindowhasstatusbar, NewBrowserWindowHasMenuBar: newbrowserwindowhasmenubar,
-        NewBrowserWindowCopyHistory: newbrowserwindowcopyhistory
+        NewBrowserWindowCopyHistory: newbrowserwindowcopyhistory, Tag: tag
     });
     image.onload = function () {
         var imageProps = getImageControlProps(canvasid, windowid);
@@ -2226,7 +2228,7 @@ function getTreeViewProps(canvasid, windowid) {
 }
 
 function createTreeView(canvasid, controlNameId, x, y, width, height, depth, data, idcolindex, parentidcolindex, expandedcolindex,
-    labelcolindex, textcolor, textfontstring, textheight, clickNodeFunction) {
+    labelcolindex, textcolor, textfontstring, textheight, clickNodeFunction, tag) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'TreeView', controlNameId);
     var shownitemscount = 0;
     for (var i = 0; i < data.length; i++) {
@@ -2243,7 +2245,7 @@ function createTreeView(canvasid, controlNameId, x, y, width, height, depth, dat
         Data: data, IDColumnIndex: idcolindex, ParentIDColIndex: parentidcolindex, ExpandedColIndex: expandedcolindex,
         LabelColIndex: labelcolindex, VScrollBarWindowID: vscrollbarwindowid, HScrollBarWindowID: hscrollbarwindowid, 
         TextColor: textcolor, TextFontString: textfontstring, TextHeight: textheight, ClickButtonExtents: clickButtonExtents,
-        ClickLabelExtents: clickLabelExtents, ClickNodeFunction: clickNodeFunction, SelectedNodeIndex: 0
+        ClickLabelExtents: clickLabelExtents, ClickNodeFunction: clickNodeFunction, SelectedNodeIndex: 0, Tag: tag
     });
     registerWindowDrawFunction(windowid, drawTreeView, canvasid);
     registerClickFunction(windowid, clickTreeView, canvasid);
@@ -2622,7 +2624,7 @@ function createCalendar(canvasid, controlNameId, x, y, width, height, depth, vis
     dayDateActiveColor, dayDateActiveTextHeight, dayDateActiveTextFontString,
     dayDateInactiveTextColor, dayDateInactiveTextHeight, dayDateInactiveTextFontString, selectedDayTextColor, selectedDayTextHeight,
     selectedDayTextFontString, selectedDayHighLightColor, todayTextColor, todayTextHeight, todayTextFontString, todayHighLightColor,
-    mouseoverHightlightColor, ondayClickFunction, dayLabelTextColor, dayLabelTextHeight, dayLabelTextFontString) {
+    mouseoverHightlightColor, ondayClickFunction, dayLabelTextColor, dayLabelTextHeight, dayLabelTextFontString, tag) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Calender', controlNameId);
     calenderPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, VisibleMonth: visibleMonth, VisibleYear: visibileYear,
@@ -2637,8 +2639,7 @@ function createCalendar(canvasid, controlNameId, x, y, width, height, depth, vis
         TodayHighLightColor: todayHighLightColor, OnDayClickFunction: ondayClickFunction,
         HeaderBackgroundColor: headerBackgroundColor, BodyBackgroundColor: bodyBackgroundColor,
         MouseOverHightLightColor: mouseoverHightlightColor, MouseHoverDate: null, ButtonClickExtents: null, DateClickExtents: null,
-        DayLabelTextColor: dayLabelTextColor, DayLabelTextHeight: dayLabelTextHeight,
-        DayLabelTextFontString: dayLabelTextFontString
+        DayLabelTextColor: dayLabelTextColor, DayLabelTextHeight: dayLabelTextHeight, Tag: tag, DayLabelTextFontString: dayLabelTextFontString
     });
     registerWindowDrawFunction(windowid, drawCalender, canvasid);
     registerClickFunction(windowid, calenderClick, canvasid);
@@ -2754,11 +2755,11 @@ function getProgressBarProps(canvasid, windowid) {
     }
 }
 
-function createProgressBar(canvasid, controlNameId, x, y, width, height, depth, color, maxvalue, minvalue, currentvalue) {
+function createProgressBar(canvasid, controlNameId, x, y, width, height, depth, color, maxvalue, minvalue, currentvalue, tag) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'ProgressBar', controlNameId);
     progressBarPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Color: color, MaxValue: maxvalue,
-        MinValue: minvalue, CurrentValue: currentvalue
+        MinValue: minvalue, CurrentValue: currentvalue, Tag: tag
     });
     registerWindowDrawFunction(windowid, drawProgressBar, canvasid);
     return windowid;
@@ -2909,11 +2910,11 @@ function sliderMouseUp(canvasid, windowid) {
     sliderProps.MouseDownState = 0;
 }
 
-function createSlider(canvasid, controlNameId, x, y, width, height, depth, handlewidth, maxvalue, minvalue, value) {
+function createSlider(canvasid, controlNameId, x, y, width, height, depth, handlewidth, maxvalue, minvalue, value, tag) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Slider', controlNameId);
     sliderPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, HandleWidth: handlewidth,
-        HandleHeight: height, MaxValue: maxvalue, MinValue: minvalue, CurrentValue: value, MouseDownState: 0
+        HandleHeight: height, MaxValue: maxvalue, MinValue: minvalue, CurrentValue: value, MouseDownState: 0, Tag: tag
     });
     registerWindowDrawFunction(windowid, drawSlider, canvasid);
     registerMouseDownFunction(windowid, sliderMouseDown, canvasid);
@@ -2956,7 +2957,7 @@ function createDatePicker(canvasid, controlNameId, x, y, width, height, depth, v
     dayDateInactiveTextColor, dayDateInactiveTextHeight, dayDateInactiveTextFontString, selectedDayTextColor, selectedDayTextHeight,
     selectedDayTextFontString, selectedDayHighLightColor, todayTextColor, todayTextHeight, todayTextFontString, todayHighLightColor,
     mouseoverHightlightColor, ondayClickFunction, dayLabelTextColor, dayLabelTextHeight, dayLabelTextFontString, textboxAreaTextColor,
-    textboxAreaTextHeight, textboxAreaTextFontString, calenderHeight) {
+    textboxAreaTextHeight, textboxAreaTextFontString, calenderHeight, tag) {
     var textboxAreaWindowID = createWindow(canvasid, x, y, width - height, height, depth, null, 'DatePickerTextArea', controlNameId + 'DatePickerTextArea');
     var buttonWindowID = createWindow(canvasid, x + width - height, y, height, height, depth, null, 'DatePickerButton', controlNameId + 'DatePickerButton');
     var calenderWindowID = createCalendar(canvasid, controlNameId + 'DatePickerCalender', x, y + height, width, calenderHeight, depth, visibleMonth, visibileYear, selectedDay,
@@ -2977,7 +2978,7 @@ function createDatePicker(canvasid, controlNameId, x, y, width, height, depth, v
     datePickerPropsArray.push({
         CanvasID: canvasid, WindowID: textboxAreaWindowID, TextBoxAreaWindowID: textboxAreaWindowID, ButtonWindowID: buttonWindowID,
         CalenderWindowID: calenderWindowID, X: x, Y: y, Width: width, Height: height, TextBoxAreaTextColor: textboxAreaTextColor,
-        TextBoxAreaTextHeight: textboxAreaTextHeight, TextBoxAreaTextFontString: textboxAreaTextFontString
+        TextBoxAreaTextHeight: textboxAreaTextHeight, TextBoxAreaTextFontString: textboxAreaTextFontString, Tag: tag
     });
     registerModalWindow(canvasid, calenderWindowID);
     registerHiddenWindow(canvasid, calenderWindowID, 1);
@@ -3091,7 +3092,7 @@ function getPanelProps(canvasid, windowid) {
 
 function createPanel(canvasid, controlNameId, x, y, width, height, depth, hasBorder, borderColor, hasBackgroundGradient, backgroundStartColor, backgroundEndColor,
     iscollapsable, collapsedWidth, collapsedHeight, panellabel, panelLabelTextColor, panelLabelTextHeight, panelLabelTextFontString,
-    headerBackgroundStartColor, headerBackgroundEndColor, headerheight, expandCollapseButtonColor, isexpanded, expandCollapseButtonRadius) {
+    headerBackgroundStartColor, headerBackgroundEndColor, headerheight, expandCollapseButtonColor, isexpanded, expandCollapseButtonRadius, tag) {
     var windowid = createWindow(canvasid, x, y, (iscollapsable == 1 ? (isexpanded == 1 ? width : collapsedWidth) : width),
         (iscollapsable == 1 ? (isexpanded == 1 ? height : headerheight) : height), depth, null, 'Panel', controlNameId);
     panelPropsArray.push({
@@ -3101,7 +3102,7 @@ function createPanel(canvasid, controlNameId, x, y, width, height, depth, hasBor
         HeaderHeight: headerheight, HeaderBackgroundStartColor: headerBackgroundStartColor, HeaderBackgroundEndColor: headerBackgroundEndColor,
         ExpandCollapseButtonColor: expandCollapseButtonColor, IsExpanded: isexpanded, ExpandCollapseButtonRadius: expandCollapseButtonRadius,
         PanelLabel: panellabel, PanelLabelTextColor: panelLabelTextColor, PanelLabelTextHeight: panelLabelTextHeight, 
-        PanelLabelTextFontString: panelLabelTextFontString, OriginalWidth: width, OriginalHeight: height
+        PanelLabelTextFontString: panelLabelTextFontString, OriginalWidth: width, OriginalHeight: height, Tag: tag
     });
     registerWindowDrawFunction(windowid, function (canvasid2, windowid2) {
         var panelProps = getPanelProps(canvasid2, windowid2);
@@ -3274,7 +3275,7 @@ function getBarGraphProps(canvasid, windowid) {
 
 function createBarGraph(canvasid, controlNameId, x, y, width, height, depth, data, maxvalue, nummarksy, title, titletextcolor, 
     titletextheigth, titletextfontstring, barwidth, axisLabelsTextColor, axisLabelsTextHeight, axisLabelsTextFontString,
-    marginleft, gapbetweenbars, barClickFunction, haslegend, marginright) {
+    marginleft, gapbetweenbars, barClickFunction, haslegend, marginright, tag) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'BarGraph', controlNameId);
     barGraphsPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Data: data,
@@ -3283,7 +3284,7 @@ function createBarGraph(canvasid, controlNameId, x, y, width, height, depth, dat
         H: height - axisLabelsTextHeight - 8 - 20, AxisLabelsTextHeight: axisLabelsTextHeight,
         AxisLabelsTextFontString: axisLabelsTextFontString, AxisLabelsTextColor: axisLabelsTextColor, MarginLeft: marginleft,
         GapBetweenBars: gapbetweenbars, BarClickFunction: barClickFunction, AlreadyUnregisteredAnimation: 0,
-        HasLegend: haslegend, MarginRight: marginright
+        HasLegend: haslegend, MarginRight: marginright, Tag: tag
     });
     registerClickFunction(windowid, function (canvasid1, windowid1) {
         var barGraphProps = getBarGraphProps(canvasid1, windowid1);
@@ -3461,7 +3462,7 @@ function getPieChartProps(canvasid, windowid) {
 }
 
 function createPieChart(canvasid, controlNameId, x, y, width, height, depth, data, title, titletextcolor, titletextheight, titletextfontstring,
-    labeltextcolor, labeltextheight, labeltextfontstring, sliceClickFunction) {
+    labeltextcolor, labeltextheight, labeltextfontstring, sliceClickFunction, tag) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'PieChart', controlNameId);
     var totalvalue = 0;
     for (i = 0; i < data.length; i++) {
@@ -3472,7 +3473,7 @@ function createPieChart(canvasid, controlNameId, x, y, width, height, depth, dat
         Title: title, TitleTextColor: titletextcolor, TitleTextHeight: titletextheight, TitleTextFontString: titletextfontstring,
         CurrentRadius: 20, TotalValue: totalvalue, LabelTextColor: labeltextcolor, LabelTextHeight: labeltextheight, 
         LabelTextFontString: labeltextfontstring, AlreadyUnregisteredAnimation: 0, DeltaI: -1,
-        DeltaX: 0, DeltaY: 0, SliceClickFunction: sliceClickFunction
+        DeltaX: 0, DeltaY: 0, SliceClickFunction: sliceClickFunction, Tag: tag
     });
     registerClickFunction(windowid, function (canvasid1, windowid1) {
         var pieChartProps = getPieChartProps(canvasid1, windowid1);
@@ -3717,7 +3718,7 @@ function getLineGraphProps(canvasid, windowid) {
 
 function createLineGraph(canvasid, controlNameId, x, y, width, height, depth, data, xmaxvalue, nummarksx, ymaxvalue, nummarksy, title,
     titletextcolor, titletextheight, titletextfontstring, axislabelstextcolor, axislabelstextheight, axislabelstextfontstring,
-    clickFunction, marginleft, islabeledxvalues) {
+    clickFunction, marginleft, islabeledxvalues, tag) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'LineGraph', controlNameId);
     var hmax = 0;
     for (j = 0; j < data.length; j++) {
@@ -3730,7 +3731,7 @@ function createLineGraph(canvasid, controlNameId, x, y, width, height, depth, da
         TitleTextColor: titletextcolor, TitleTextHeight: titletextheight, TitleTextFontString: titletextfontstring,
         AxisLabelsTextColor: axislabelstextcolor, AxisLabelsTextHeight: axislabelstextheight, AxisLabelsTextFontString: axislabelstextfontstring,
         H: 2, HMax: hmax, LineXYs: new Array(), ClickFunction: clickFunction, AlreadyUnregisteredAnimation: 0, MarginLeft: marginleft,
-        IsLabeledXValues: islabeledxvalues
+        IsLabeledXValues: islabeledxvalues, Tag: tag
     });
     registerClickFunction(windowid, function (canvasid1, windowid1) {
         var lineGraphProps = getLineGraphProps(canvasid1, windowid1);
@@ -3936,14 +3937,14 @@ function getGaugeChartProps(canvasid, windowid) {
 }
 
 function createGauge(canvasid, controlNameId, x, y, width, height, depth, data, title, titletextcolor, titletextheight, titletextfontstring, gaugeradius,
-    gaugelabeltextcolor, gaugelabeltextheight, gaugelabeltextfontstring) {
+    gaugelabeltextcolor, gaugelabeltextheight, gaugelabeltextfontstring, tag) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Gauge', controlNameId);
     gaugeChartPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Data: data,
         Title: title, TitleTextColor: titletextcolor, TitleTextHeight: titletextheight, TitleTextFontString: titletextfontstring,
         H: 1, CenterX: x + width / 2, CenterY: y + (height - 8 - titletextheight) / 2 + (height - 8 - titletextheight - (gaugeradius * 2)) / 2,
         GaugeRadius: gaugeradius, GaugeLabelTextColor: gaugelabeltextcolor, GaugeLabelTextHeight: gaugelabeltextheight,
-        GaugeLabelTextFontString: gaugelabeltextfontstring, AlreadyUnregisteredAnimation: 0
+        GaugeLabelTextFontString: gaugelabeltextfontstring, AlreadyUnregisteredAnimation: 0, Tag: tag
     });
     registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
         var gaugeChartProps = getGaugeChartProps(canvasid1, windowid1);
@@ -4220,14 +4221,14 @@ function getRadarGraphProps(canvasid, windowid) {
 }
 
 function createRadarGraph(canvasid, controlNameId, x, y, width, height, depth, data, maxvalue, colorstr, nummarks, title, titletextcolor, titletextheight,
-    titletextfontstring, marklabeltextcolor, marklabeltextheight, marklabeltextfontstring) {
+    titletextfontstring, marklabeltextcolor, marklabeltextheight, marklabeltextfontstring, tag) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'RadarGraph', controlNameId);
     radarGraphPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Data: data,
         MaxValue: maxvalue, ColorStr: colorstr, NumMarks: nummarks, Title: title, TitleTextColor: titletextcolor,
         TitleTextHeight: titletextheight, TitleTextFontString: titletextfontstring, H: 20,
         MarkLabelTextColor: marklabeltextcolor, MarkLabelTextHeight: marklabeltextheight, MarkLabelTextFontString: marklabeltextfontstring,
-        AlreadyUnregisteredAnimation: 0
+        AlreadyUnregisteredAnimation: 0, Tag: tag
     });
     registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
         var radarGraphProps = getRadarGraphProps(canvasid1, windowid1);
@@ -4322,14 +4323,14 @@ function getLineAreaGraphProps(canvasid, windowid) {
 
 function createLineAreaGraph(canvasid, controlNameId, x, y, width, height, depth, data, xmaxvalue, ymaxvalue, nummarksx, nummarksy, title,
     titletextcolor, titletextheight, titletextfontstring, axislabelscolor, axislabelsheight, axislabelsfontstring, marginleft,
-    islabeledonxaxis) {
+    islabeledonxaxis, tag) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'LineAreaGraph', controlNameId);
     lineAreaGraphPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Data: data,
         XMaxValue: xmaxvalue, YMaxValue: ymaxvalue, NumMarksX: nummarksx, NumMarksY: nummarksy, Title: title,
         TitleTextColor: titletextcolor, TitleTextHeight: titletextheight, TitleTextFontString: titletextfontstring,
         AxisLabelsColor: axislabelscolor, AxisLabelsHeight: axislabelsheight, AxisLabelsFontString: axislabelsfontstring,
-        H: 0, MarginLeft: marginleft, AlreadyUnregisteredAnimation: 0, IsLabledOnXAxis: islabeledonxaxis
+        H: 0, MarginLeft: marginleft, AlreadyUnregisteredAnimation: 0, IsLabledOnXAxis: islabeledonxaxis, Tag: tag
     });
     registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
         var lineAreaGraphProps = getLineAreaGraphProps(canvasid1, windowid1);
@@ -4485,14 +4486,14 @@ function getCandlesticksGraphProps(canvasid, windowid) {
 
 function createCandlesticksGraph(canvasid, controlNameId, x, y, width, height, depth, data, xmarkslabeldata, xmarkswidth, ymaxvalue, nummarksy, title,
     titlecolor, titleheight, titlefontstring, candlebodywidth, candelbodycolorstr, candellinecolorstr, marginleft,
-    axislabelscolor, axislabelsheight, axislabelsfontstring) {
+    axislabelscolor, axislabelsheight, axislabelsfontstring, tag) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'CandlesticksGraph', controlNameId);
     candlesticksGraphPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Data: data,
         XMarksLabelData: xmarkslabeldata, XMarksWidth: xmarkswidth, YMaxValue: ymaxvalue, NumMarksY: nummarksy, Title: title,
         TitleColor: titlecolor, TitleHeight: titleheight, TitleFontString: titlefontstring, CandleBodyWidth: candlebodywidth,
         CandleBodyColor: candelbodycolorstr, CandleLineColor: candellinecolorstr, MarginLeft: marginleft,
-        AxisLabelsColor: axislabelscolor, AxisLabelsHeight: axislabelsheight, AxisLabelsFontString: axislabelsfontstring
+        AxisLabelsColor: axislabelscolor, AxisLabelsHeight: axislabelsheight, AxisLabelsFontString: axislabelsfontstring, Tag: tag
     });
     registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
         var candlesticksGraphProps = getCandlesticksGraphProps(canvasid1, windowid1);
@@ -4676,7 +4677,7 @@ function getDoughnutChartProps(canvasid, windowid) {
 }
 
 function createDoughnutChart(canvasid, controlNameId, x, y, width, height, depth, data, title, titlecolor, titletextheight, titlefontstring, innerradius, marginsides,
-    labelcolor, labelheight, labelfontstring, legendwidth, legendheight, legendfontstring, sliceClickFunction) {
+    labelcolor, labelheight, labelfontstring, legendwidth, legendheight, legendfontstring, sliceClickFunction, tag) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'DoughnutChart', controlNameId);
     var totalvalue = 0;
     for (i = 0; i < data.length; i++) {
@@ -4687,7 +4688,7 @@ function createDoughnutChart(canvasid, controlNameId, x, y, width, height, depth
         Title: title, TitleColor: titlecolor, TitleTextHeight: titletextheight, TitleFontString: titlefontstring, InnerRadius: innerradius,
         CurrentRadius: innerradius + 20, TotalValue: totalvalue, MarginSides: marginsides, LabelColor: labelcolor, LabelHeight: labelheight,
         LabelFontString: labelfontstring, LegendWidth: legendwidth, LegendHeight: legendheight, LegendFontString: legendfontstring,
-        AnimationCompleted: 0, DeltaI: -1, DeltaX: 0, DeltaY: 0, SliceClickFunction: sliceClickFunction
+        AnimationCompleted: 0, DeltaI: -1, DeltaX: 0, DeltaY: 0, SliceClickFunction: sliceClickFunction, Tag: tag
     });
     registerClickFunction(windowid, function (canvasid1, windowid1) {
         var doughnutChartProps = getDoughnutChartProps(canvasid1, windowid1);
@@ -4862,7 +4863,7 @@ function getBarsMixedWithLabledLineGraphProps(canvasid, windowid) {
 
 function createBarsMixedWithLabledLineGraph(canvasid, controlNameId, x, y, width, height, depth, data, maxvalue, nummarksy, title, titletextcolor,
     titletextheigth, titletextfontstring, barwidth, axisLabelsTextColor, axisLabelsTextHeight, axisLabelsTextFontString,
-    marginleft, gapbetweenbars, barClickFunction, haslegend, marginright, linesData, lineClickFunction) {
+    marginleft, gapbetweenbars, barClickFunction, haslegend, marginright, linesData, lineClickFunction, tag) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'BarsMixedWithLabeledLineGraph', controlNameId);
     barsMixedWithLabledLineGraphsPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Data: data,
@@ -4872,7 +4873,7 @@ function createBarsMixedWithLabledLineGraph(canvasid, controlNameId, x, y, width
         AxisLabelsTextFontString: axisLabelsTextFontString, AxisLabelsTextColor: axisLabelsTextColor, MarginLeft: marginleft,
         GapBetweenBars: gapbetweenbars, BarClickFunction: barClickFunction, AlreadyUnregisteredAnimation: 0,
         HasLegend: haslegend, MarginRight: marginright, LinesData: linesData, LineXYs: new Array(), LineClickFunction: lineClickFunction,
-        YMaxValue: maxvalue
+        YMaxValue: maxvalue, Tag: tag
     });
     registerClickFunction(windowid, function (canvasid1, windowid1) {
         var barsMixedWithLabledLineGraphProps = getBarsMixedWithLabledLineGraphProps(canvasid1, windowid1);
@@ -5084,7 +5085,7 @@ function getstackedBarGraphProps(canvasid, windowid) {
 }
 
 function createStackedBarGraph(canvasid, controlNameId, x, y, width, height, depth, data, maxvalue, nummarksy, title, titlecolor, titleheight,
-    titlefontstring, barwidth, gapbetweenbarssets, axislabelscolor, axislabelsheight, axislabelsfontstring, barClickFunction, marginleft) {
+    titlefontstring, barwidth, gapbetweenbarssets, axislabelscolor, axislabelsheight, axislabelsfontstring, barClickFunction, marginleft, tag) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'StackedBarGraph', controlNameId);
     stackedBarGraphPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height,
@@ -5092,7 +5093,7 @@ function createStackedBarGraph(canvasid, controlNameId, x, y, width, height, dep
         TitleFontString: titlefontstring, BarWidth: barwidth, GapBetweenBarSets: gapbetweenbarssets, H: height - titleheight - 16 -
         axislabelsheight, AxisLabelsColor: axislabelscolor, AxisLabelsHeight: axislabelsheight, AxisLabelsFontString: axislabelsfontstring,
         BarLabelsWithBoundingBoxes: new Array(), BarClickFunction: barClickFunction, AlreadyUnregisteredAnimation: 0,
-        MarginLeft: marginleft
+        MarginLeft: marginleft, Tag: tag
     });
     registerClickFunction(windowid, function (canvasid1, windowid1) {
         var stackedBarGraphProps = getstackedBarGraphProps(canvasid1, windowid1);
@@ -5310,7 +5311,7 @@ function getTabProps(canvasid, windowid) {
 function createTabControl(canvasid, controlNameId, x, y, width, height, depth, tablabels, tablabelcolor, tablabelheight, tablabelfontstring,
     tablabelgradientstartcolor, tablabelgradientendcolor, panelHasBorder, panelBorderColor, panelHasBackgroundGradient,
     panelBackgroundStartColor, panelBackgroundEndColor, selectedTabID, gapbetweentabs, selectedtabbordercolor,
-    selectedtabborderlinewidth) {
+    selectedtabborderlinewidth, tag) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Tab', controlNameId);
     var panels = new Array();
     for (var i = 0; i < tablabels.length; i++) {
@@ -5325,7 +5326,7 @@ function createTabControl(canvasid, controlNameId, x, y, width, height, depth, t
         TabLabels: tablabels, TabLabelColor: tablabelcolor, TabLabelHeight: tablabelheight, TabLabelFontString: tablabelfontstring,
         PanelWindowIDs: panels, SelectedTabID: selectedTabID, TabLabelGradientStartColor: tablabelgradientstartcolor, 
         TabLabelGradientEndColor: tablabelgradientendcolor, TabLabelHitAreas: new Array(),
-        GapBetweenTabs: gapbetweentabs, SelectedTabBorderColor: selectedtabbordercolor, SelectedTabBorderLineWidth: selectedtabborderlinewidth
+        GapBetweenTabs: gapbetweentabs, SelectedTabBorderColor: selectedtabbordercolor, SelectedTabBorderLineWidth: selectedtabborderlinewidth, Tag: tag
     });
     registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
         var tabProps = getTabProps(canvasid1, windowid1);
@@ -5441,7 +5442,7 @@ function getImageMapProps(canvasid, windowid) {
 }
 
 function createImageMapControl(canvasid, controlNameId, x, y, width, height, depth, imgurl, pinxys, pinClickFunction, hasZoom,
-    imagetopleftxoffset, imagetopleftyoffset, scale, scaleincrementfactor) {
+    imagetopleftxoffset, imagetopleftyoffset, scale, scaleincrementfactor, tag) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'ImageMap', controlNameId);
     var image = new Image();
     image.src = imgurl;
@@ -5452,7 +5453,7 @@ function createImageMapControl(canvasid, controlNameId, x, y, width, height, dep
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height,
         ImgUrl: imgurl, Image: image, PinXYs: pinxys, PinClickFunction: pinClickFunction, HasZoom: hasZoom,
         ImageTopLeftXOffset: imagetopleftxoffset, ImageTopLeftYOffset: imagetopleftyoffset, MovingMap: 0,
-        LastMovingX: 0, LastMovingY: 0, Scale: scale, ScaleIncrementFactor: scaleincrementfactor
+        LastMovingX: 0, LastMovingY: 0, Scale: scale, ScaleIncrementFactor: scaleincrementfactor, Tag: tag
     });
     registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
         var imageMapProps = getImageMapProps(canvasid1, windowid1);
@@ -5570,7 +5571,7 @@ function getSubMenuBarProps(canvasid, windowid) {
     }
 }
 
-function createSubMenu(canvasid, controlNameId, parentWindowId, depth, data, xoffset, yoffset, parentIndexInParentMenu, dropdowncolorstart, dropdowncolorend) {
+function createSubMenu(canvasid, controlNameId, parentWindowId, depth, data, xoffset, yoffset, parentIndexInParentMenu, dropdowncolorstart, dropdowncolorend, tag) {
     var ctx = getCtx(canvasid);
     var greatestLength = 0;
     var greatestHeight = 5;
@@ -5598,7 +5599,7 @@ function createSubMenu(canvasid, controlNameId, parentWindowId, depth, data, xof
     subMenuBarPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: xoffset, Y: yoffset, Width: greatestLength, Height: greatestHeight,
         Data: newdata, ParentMenuWindowID: parentWindowId, ParentIndexInParentMenu: parentIndexInParentMenu, ChildMenuWindowIDs: childMenuWindowIDs,
-        DropDownColorStart: dropdowncolorstart, DropDownColorEnd: dropdowncolorend
+        DropDownColorStart: dropdowncolorstart, DropDownColorEnd: dropdowncolorend, Tag: tag
     });
     registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
         var subMenuBarProps = getSubMenuBarProps(canvasid1, windowid1);
@@ -5717,7 +5718,7 @@ function checkIfAnyMenuHasFocusFromParentMenu(canvasid, windowid) {
 }
 
 function createMenuBarControl(canvasid, controlNameId, x, y, width, height, depth, data, barcolorstart, barcolormiddle, barcolorend,
-    dropdowncolorstart, dropdowncolorend, orientation) {
+    dropdowncolorstart, dropdowncolorend, orientation, tag) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'MenuBar', controlNameId);
     var ctx = getCtx(canvasid);
     var widthOffset = 0;
@@ -5732,7 +5733,7 @@ function createMenuBarControl(canvasid, controlNameId, x, y, width, height, dept
     menuBarPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height,
         Data: data, BarColorStart: barcolorstart, BarColorMiddle: barcolormiddle, BarColorEnd: barcolorend,
-        DropDownColorStart: dropdowncolorstart, DropDownColorEnd: dropdowncolorend, ChildMenuWindowIDs: childMenuWindowIds
+        DropDownColorStart: dropdowncolorstart, DropDownColorEnd: dropdowncolorend, ChildMenuWindowIDs: childMenuWindowIds, Tag: tag
     });
     registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
         var menuBarProps = getMenuBarProps(canvasid1, windowid1);
@@ -5827,7 +5828,7 @@ function getTextBoxProps(canvasid, windowid) {
 function createTextBox(canvasid, controlNameId, x, y, width, height, depth, waterMarkText, waterMarkTextColor, waterMarkTextHeight, waterMarkTextFontString,
     textColor, textHeight, textFontString, maxChars, allowedCharsRegEx, isPassword, passwordChar, hasBorder, borderColor, borderLineWidth, hasShadow, shadowColor, shadowOffsetX, shadowOffsetY,
     shadowBlurValue, hasRoundedEdges, edgeRadius, hasBgGradient, bgGradientStartColor, bgGradientEndColor, hasBgImage, bgImageUrl, hasAutoComplete, listPossibles, 
-    dropDownPossiblesListIfThereIsInputText, limitToListPossibles, listPossiblesTextHeight, listPossiblesTextFontString, initialText, caretColor, textSelectionBgColor, hasFocusInitially) {
+    dropDownPossiblesListIfThereIsInputText, limitToListPossibles, listPossiblesTextHeight, listPossiblesTextFontString, initialText, caretColor, textSelectionBgColor, hasFocusInitially, tag) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'TextBox', controlNameId);
     if (hasFocusInitially == 1) {
         setFocusToWindowID(canvasid, windowid);
@@ -5846,7 +5847,7 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
         BgGradientEndColor: bgGradientEndColor, HasBgImage: hasBgImage, BgImageUrl: bgImageUrl, Image: image, HasAutoComplete: hasAutoComplete, ListPossibles: listPossibles,
         DropDownPossiblesListIfThereIsInputText: dropDownPossiblesListIfThereIsInputText, LimitToListPossibles: limitToListPossibles, ListPossiblesTextHeight: listPossiblesTextHeight,
         ListPossiblesTextFontString: listPossiblesTextFontString, CaretPosIndex: -1, UserInputText: initialText, ShadowColor: shadowColor, ShowCaret: 0, CaretColor: caretColor,
-        SelectedTextStartIndex: -1, SelectedTextEndIndex: -1, TextSelectionBgColor: textSelectionBgColor, MouseDown: 0, WasSelecting: 0, MouseDownTime: 0
+        SelectedTextStartIndex: -1, SelectedTextEndIndex: -1, TextSelectionBgColor: textSelectionBgColor, MouseDown: 0, WasSelecting: 0, MouseDownTime: 0, Tag: tag
     });
     registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
         var textBoxProps = getTextBoxProps(canvasid1, windowid1);
