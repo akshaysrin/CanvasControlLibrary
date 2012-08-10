@@ -55,7 +55,7 @@
             destroyControlByNameID('selectCityComboBoxComboBoxTextArea');
             destroyControlByNameID('selectCinemaComboBoxComboBoxTextArea');
             suspendDraw = 0;
-            createLabel(elemId, 'PaymentMessageLabel', 10, 220, 1024, 30, params[0], '#131aa3', 10, '10pt Ariel', null, highestDepth);
+            createLabel(elemId, 'PaymentMessageLabel', 10, 220, 1024, 30, params[0], '#131aa3', 16, '16pt Ariel', null, highestDepth);
         }
         var controlNameIDs = new Array();
         function showMoviesForCinema(params) {
@@ -71,8 +71,8 @@
                 controlNameIDs.push('Poster' + i.toString());
                 var timesoffset = 0;
                 for (var j = 1; j < params[i].length; j++) {
-                    createLabel(elemId, 'MovieTimeLabel' + j.toString() + 'Poster' + i.toString(), 10 + xoffset + timesoffset, 510, 50, 20, params[i][j], '#cdc833', 12, '12pt Ariel', null, highestDepth, null, null, null,
-                         null, null, null, null, null, null, null, null, null, null, null, null, null, selectMovieTime);
+                    createLabel(elemId, 'MovieTimeLabel' + j.toString() + 'Poster' + i.toString(), 10 + xoffset + timesoffset, 510, 50, 20, params[i][j], '#cdc833', 
+                        12, '12pt Ariel', null, highestDepth, null, selectMovieTime, null, 1);
                     controlNameIDs.push('MovieTimeLabel' + j.toString() + 'Poster' + i.toString());
                     timesoffset += 70;
                 }

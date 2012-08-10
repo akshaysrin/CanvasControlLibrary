@@ -961,10 +961,15 @@ function getLabelProps(canvasid, windowid) {
 }
 
 function createLabel(canvasid, controlNameId, x, y, width, height, text, textColor, textHeight, textFontString, drawFunction, depth,
-    isHyperlink, url, nobrowserhistory, isnewbrowserwindow,
+    alignment, clickFunction, backgroundColor, autoAdjustWidth, isHyperlink, url, nobrowserhistory, isnewbrowserwindow,
     nameofnewbrowserwindow, widthofnewbrowserwindow, heightofnewbrowserwindow, newbrowserwindowisresizable, newbrowserwindowhasscrollbars,
     newbrowserwindowhastoolbar, newbrowserwindowhaslocationorurloraddressbox, newbroserwindowhasdirectoriesorextrabuttons,
-    newbrowserwindowhasstatusbar, newbrowserwindowhasmenubar, newbrowserwindowcopyhistory, alignment, clickFunction, backgroundColor) {
+    newbrowserwindowhasstatusbar, newbrowserwindowhasmenubar, newbrowserwindowcopyhistory) {
+    if (autoAdjustWidth == 1) {
+        var ctx = getCtx(canvasid);
+        ctx.font = textFontString;
+        width = ctx.measureText(text).width;
+    }
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Label', controlNameId);
     labelPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Text: text,
@@ -1408,7 +1413,7 @@ function scrollBarClick(canvasid, windowid) {
             --scrollBarProps.SelectedID;
             draw(canvasid);
         } else if (xm > scrollBarProps.X && xm < scrollBarProps.X + 15 && ym > scrollBarProps.Y + scrollBarProps.Len - 15 &&
-            ym < scrollBarProps.Y + scrollBarProps.Len && scrollBarProps.SelectedID + 1 < scrollBarProps.MaxItems) {
+            ym < scrollBarProps.Y + scrollBarProps.Len && scrollBarProps.SelectedID + 1 <= scrollBarProps.MaxItems) {
             ++scrollBarProps.SelectedID;
             draw(canvasid);
         }
@@ -1417,7 +1422,7 @@ function scrollBarClick(canvasid, windowid) {
             --scrollBarProps.SelectedID;
             draw(canvasid);
         } else if (xm > scrollBarProps.X + scrollBarProps.Len - 15 && xm < scrollBarProps.X + scrollBarProps.Len &&
-            ym > scrollBarProps.Y && ym < scrollBarProps.Y + 15 && scrollBarProps.SelectedID + 1 < scrollBarProps.MaxItems) {
+            ym > scrollBarProps.Y && ym < scrollBarProps.Y + 15 && scrollBarProps.SelectedID + 1 <= scrollBarProps.MaxItems) {
             ++scrollBarProps.SelectedID;
             draw(canvasid);
         }
