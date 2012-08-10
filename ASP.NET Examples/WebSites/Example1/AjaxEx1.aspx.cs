@@ -22,14 +22,24 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Reflection;
 using System.Collections;
+using System.Text.RegularExpressions;
 
 public partial class Default2 : System.Web.UI.Page
 {
     CanvasControlLibrary ccl;
     ArrayList parameters = new ArrayList();
+    ArrayList movieIndexes = new ArrayList();
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        ArrayList al = new ArrayList();
+        al.Add("Phoenix Mills");
+        ArrayList indexs = new ArrayList();
+        indexs.Add("Fantastic Four");
+        indexs.Add("Ferris Bueller's Day Off");
+        indexs.Add("Incredible Hulk");
+        al.Add(indexs);
+        movieIndexes.Add(al);
         ccl = new CanvasControlLibrary(Request.InputStream);
         ccl.InvokeServerSideFunction(this.Page);
         ccl.SendVars(Response.OutputStream, parameters);
@@ -95,7 +105,35 @@ public partial class Default2 : System.Web.UI.Page
 
     public void DoPaymentForTickets(string canvasid, int windowid)
     {
-        parameters.Add("The payment was successful.");
+        CanvasControlLibrary.CCLTextBox textbox = ccl.getControlPropsByControlNameID("numTicketsTextBox") as CanvasControlLibrary.CCLTextBox;
+        CanvasControlLibrary.CCLComboBoxProps selectCinemaComboBox = ccl.getControlPropsByControlNameID("selectCinemaComboBoxComboBoxTextArea") as CanvasControlLibrary.CCLComboBoxProps;
+        string labelname = "";
+        CanvasControlLibrary.CCLLabelProps lp = null;
+        for (int i = 0; i < ccl.Windows.Count; i++)
+        {
+            if (ccl.Windows[i].ControlType == "Label")
+            {
+                lp = ccl.getControlPropsByWindowID(canvasid, ccl.Windows[i].WindowCount) as CanvasControlLibrary.CCLLabelProps;
+                if (lp.BackGroundColor != null && lp.BackGroundColor.Length > 0)
+                {
+                    labelname = ccl.Windows[i].ControlNameID;
+                    break;
+                }
+            }
+        }
+        Regex regex = new System.Text.RegularExpressions.Regex("MovieTimeLabel[0-9]+Poster(?<PosterIndex>[0-9]+)");
+        Match m = regex.Match(labelname);
+        int movieIndex = Convert.ToInt32(m.Groups["PosterIndex"].Value);
+        string movieName = "";
+        for (int i = 0; i < movieIndexes.Count; i++)
+        {
+            if (((ArrayList)movieIndexes[i])[0].ToString() == selectCinemaComboBox.Data[Convert.ToInt32(selectCinemaComboBox.SelectedID)].ToString())
+            {
+                movieName = ((ArrayList)((ArrayList)movieIndexes[i])[1])[movieIndex].ToString();
+            }
+        }
+        parameters.Add("The payment was successful.  You have " + textbox.UserInputText + " tickets to see " + movieName + " at " + selectCinemaComboBox.Data[Convert.ToInt32(selectCinemaComboBox.SelectedID)].ToString() +
+            " showing at time " + lp.Text);
     }
 
     public void onSelectCinemaChanged(string canvasid, int windowid)

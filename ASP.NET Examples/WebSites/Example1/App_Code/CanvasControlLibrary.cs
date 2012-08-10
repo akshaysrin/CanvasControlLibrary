@@ -76,6 +76,7 @@ public class CanvasControlLibrary
         public string NewBrowserWindowHasStatusBar { get; set; }
         public string NewBrowserWindowHasMenuBar { get; set; }
         public string NewBrowserWindowCopyHistory { get; set; }
+        public string BackGroundColor { get; set; }
     }
 
     public List<CCLButtonProps> ButtonPropsArray = new List<CCLButtonProps>();
@@ -1522,6 +1523,30 @@ public class CanvasControlLibrary
             }
         }
         return strParameters;
+    }
+
+    public CCLWindow getWindowProps(string canvasid, string windowid)
+    {
+        for (int i = 0; i < Windows.Count; i++)
+        {
+            if (Windows[i].WindowCount == windowid && Windows[i].CanvasID == canvasid)
+            {
+                return Windows[i];
+            }
+        }
+        return null;
+    }
+
+    public object getControlPropsByWindowID(string canvasid, string windowid)
+    {
+        for (int i = 0; i < Windows.Count; i++)
+        {
+            if (Windows[i].WindowCount == windowid && Windows[i].CanvasID == canvasid)
+            {
+                return getControlPropsByControlNameID(Windows[i].ControlNameID);
+            }
+        }
+        return null;
     }
 
     public object getControlPropsByControlNameID(string controlNameID)
