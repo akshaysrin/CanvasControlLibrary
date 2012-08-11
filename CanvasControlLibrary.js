@@ -1401,6 +1401,56 @@ function drawScrollBar(canvasid, windowid) {
         ctx.lineTo(x + len - 15 + 6, y + 11);
         ctx.closePath();
         ctx.fill();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = '#15598a';
+        ctx.beginPath();
+        ctx.rect(x + ((selindex * (len - 55)) / maxitems) + 16, y, 25, 15);
+        ctx.stroke();
+        ctx.fillStyle = '#6ac1e5';
+        ctx.beginPath();
+        ctx.rect(x + ((selindex * (len - 55)) / maxitems) + 16 + 1, y + 8, 23, 6);
+        ctx.fill();
+        ctx.fillStyle = '#b7e4f7';
+        ctx.beginPath();
+        ctx.rect(x + ((selindex * (len - 55)) / maxitems) + 16 + 1, y + 1, 23, 6);
+        ctx.fill();
+        ctx.strokeStyle = '#8fd5f3';
+        ctx.beginPath();
+        ctx.moveTo(x + ((selindex * (len - 55)) / maxitems) + 16 + 1, y + 8);
+        ctx.lineTo(x + ((selindex * (len - 55)) / maxitems) + 16 + 22, y + 8);
+        ctx.stroke();
+        var g = ctx.createLinearGradient(x + ((selindex * (len - 55)) / maxitems) + 16 + 8, y + 4, x + ((selindex * (len - 55)) / maxitems) + 16 + 8, y + 10);
+        g.addColorStop(0, '#2b404b');
+        g.addColorStop(1, '#5888a1');
+        ctx.strokeStyle = g;
+        ctx.beginPath();
+        ctx.moveTo(x + ((selindex * (len - 55)) / maxitems) + 16 + 8, y + 4);
+        ctx.lineTo(x + ((selindex * (len - 55)) / maxitems) + 16 + 8, y + 10);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x + ((selindex * (len - 55)) / maxitems) + 16 + 11, y + 4);
+        ctx.lineTo(x + ((selindex * (len - 55)) / maxitems) + 16 + 11, y + 10);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x + ((selindex * (len - 55)) / maxitems) + 16 + 14, y + 4);
+        ctx.lineTo(x + ((selindex * (len - 55)) / maxitems) + 16 + 14, y + 10);
+        ctx.stroke();
+        var g = ctx.createLinearGradient(x + ((selindex * (len - 55)) / maxitems) + 16 + 8, y + 4, x + ((selindex * (len - 55)) / maxitems) + 16 + 8, y + 10);
+        g.addColorStop(0, '#447791');
+        g.addColorStop(1, '#96bed3');
+        ctx.strokeStyle = g;
+        ctx.beginPath();
+        ctx.moveTo(x + ((selindex * (len - 55)) / maxitems) + 16 + 9, y + 4);
+        ctx.lineTo(x + ((selindex * (len - 55)) / maxitems) + 16 + 9, y + 10);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x + ((selindex * (len - 55)) / maxitems) + 16 + 12, y + 4);
+        ctx.lineTo(x + ((selindex * (len - 55)) / maxitems) + 16 + 12, y + 10);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x + ((selindex * (len - 55)) / maxitems) + 16 + 15, y + 4);
+        ctx.lineTo(x + ((selindex * (len - 55)) / maxitems) + 16 + 15, y + 10);
+        ctx.stroke();
     }
 }
 
@@ -1414,7 +1464,7 @@ function scrollBarClick(canvasid, windowid) {
             --scrollBarProps.SelectedID;
             draw(canvasid);
         } else if (xm > scrollBarProps.X && xm < scrollBarProps.X + 15 && ym > scrollBarProps.Y + scrollBarProps.Len - 15 &&
-            ym < scrollBarProps.Y + scrollBarProps.Len && scrollBarProps.SelectedID + 1 <= scrollBarProps.MaxItems) {
+            ym < scrollBarProps.Y + scrollBarProps.Len && scrollBarProps.SelectedID + 1 < scrollBarProps.MaxItems) {
             ++scrollBarProps.SelectedID;
             draw(canvasid);
         }
@@ -1423,7 +1473,7 @@ function scrollBarClick(canvasid, windowid) {
             --scrollBarProps.SelectedID;
             draw(canvasid);
         } else if (xm > scrollBarProps.X + scrollBarProps.Len - 15 && xm < scrollBarProps.X + scrollBarProps.Len &&
-            ym > scrollBarProps.Y && ym < scrollBarProps.Y + 15 && scrollBarProps.SelectedID + 1 <= scrollBarProps.MaxItems) {
+            ym > scrollBarProps.Y && ym < scrollBarProps.Y + 15 && scrollBarProps.SelectedID + 1 < scrollBarProps.MaxItems) {
             ++scrollBarProps.SelectedID;
             draw(canvasid);
         }

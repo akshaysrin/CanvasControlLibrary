@@ -152,6 +152,7 @@ public partial class Default2 : System.Web.UI.Page
         selectCityComboBox.Data.Add("Delhi");
         selectCityComboBox.Data.Add("Bangalore");
         selectCityComboBox.Data.Add("Chennai");
+        ((CanvasControlLibrary.CCLScrollBarProps)ccl.getControlPropsByWindowID(canvasid, selectCityComboBox.VScrollBarWindowID)).MaxItems = selectCityComboBox.Data.Count.ToString();
     }
 
     public void onSelectCityChanged(string canvasid, int windowid)
@@ -189,6 +190,7 @@ public partial class Default2 : System.Web.UI.Page
                 selectCinemaComboBox.Data.Add("Select a city");
                 break;
         }
+        ((CanvasControlLibrary.CCLScrollBarProps)ccl.getControlPropsByWindowID(canvasid, selectCinemaComboBox.VScrollBarWindowID)).MaxItems = selectCinemaComboBox.Data.Count.ToString();
     }
 
     public void DoPaymentForTickets(string canvasid, int windowid)
@@ -413,5 +415,6 @@ public partial class Default2 : System.Web.UI.Page
                 parameters.Add(pictures);
                 break;
         }
+        ((CanvasControlLibrary.CCLScrollBarProps)ccl.getControlPropsByWindowID(canvasid, selectCinemaComboBox.VScrollBarWindowID)).MaxItems = selectCinemaComboBox.Data.Count.ToString();
     }
 }
