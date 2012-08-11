@@ -140,10 +140,11 @@ function doesWindowHaveFocus(canvasid, windowid) {
     return 0;
 }
 
-function pointEvent(eventArray, canvasId, parentwindowid) {
+function pointEvent(eventArray, canvasId, e, parentwindowid) {
     var canvas = getCanvas(canvasId);
-    var x = event.pageX - canvasGetOffsetLeft(canvas);
-    var y = event.pageY - canvasGetOffsetTop(canvas);
+    var e = e || window.event;
+    var x = e.pageX - canvasGetOffsetLeft(canvas);
+    var y = e.pageY - canvasGetOffsetTop(canvas);
     var consumeevent = 0;
     var dodraw = 0;
     for (var d = highestDepth; d >= 0; d--) {
@@ -188,17 +189,17 @@ function pointEvent(eventArray, canvasId, parentwindowid) {
                 for (var u = 0; u < eventArray.length; u++) {
                     if (eventArray[u][0] == windows[i].WindowCount) {
                         if (windows[i].ChildWindowIDs.length > 0) {
-                            if (pointEvent(eventArray, canvasId, windows[i].WindowCount) != 1) {
+                            if (pointEvent(eventArray, canvasId, e, windows[i].WindowCount) != 1) {
                                 eventArray[u][1](canvasId, windows[i].WindowCount);
                             }
                         } else {
-                            eventArray[u][1](canvasId, windows[i].WindowCount);
+                            eventArray[u][1](canvasId, windows[i].WindowCount, e);
                         }
                         draw(canvasId);
                         if (windows[i].ControlType != 'TextBox') {
-                            if (window.event.preventDefault)
-                                window.event.preventDefault();
-                            window.event.returnValue = false;
+                            if (e.preventDefault)
+                                e.preventDefault();
+                            e.returnValue = false;
                         }
                         return 1;
                     }
@@ -250,17 +251,17 @@ function pointEvent(eventArray, canvasId, parentwindowid) {
                     if (eventArray[u][0] == windows[i].WindowCount) {
                         if (windows[i].ChildWindowIDs.length > 0) {
                             doingEvent = 0;
-                            if (pointEvent(eventArray, canvasId, windows[i].WindowCount) != 1) {
+                            if (pointEvent(eventArray, canvasId, e, windows[i].WindowCount) != 1) {
                                 eventArray[u][1](canvasId, windows[i].WindowCount);
                             }
                         } else {
-                            eventArray[u][1](canvasId, windows[i].WindowCount);
+                            eventArray[u][1](canvasId, windows[i].WindowCount, e);
                         }
                         draw(canvasId);
                         if (windows[i].ControlType != 'TextBox') {
-                            if (window.event.preventDefault)
-                                window.event.preventDefault();
-                            window.event.returnValue = false;
+                            if (e.preventDefault)
+                                e.preventDefault();
+                            e.returnValue = false;
                         }
                         return 1;
                     }
@@ -302,119 +303,120 @@ function setFocusToWindowID(canvasId, windowid) {
     windowIdWithFocus.push([canvasId, windowid]);
 }
 
-function canvasOnClick(canvasId) {
+function canvasOnClick(canvasId, e) {
     doingClickEvent = 1;
-    pointEvent(clickFunctions, canvasId);
+    pointEvent(clickFunctions, canvasId, e);
     doingClickEvent = 0;
 }
 
-function canvasOnDblClick(canvasId) {
-    pointEvent(doubleClickFunctions, canvasId);
+function canvasOnDblClick(canvasId, e) {
+    pointEvent(doubleClickFunctions, canvasId, e);
 }
 
-function canvasOnDrag(canvasId) {
-    pointEvents(dragFunctions, canvasId);
+function canvasOnDrag(canvasId, e) {
+    pointEvents(dragFunctions, canvasId, e);
 }
 
-function canvasOnDragEnd(canvasId) {
-    pointEvent(dragEndFunctions, canvasId);
+function canvasOnDragEnd(canvasId, e) {
+    pointEvent(dragEndFunctions, canvasId, e);
 }
 
-function canvasOnDragEnter(canvasId) {
-    pointEvent(dragEnterFunctions, canvasId);
+function canvasOnDragEnter(canvasId, e) {
+    pointEvent(dragEnterFunctions, canvasId, e);
 }
 
-function canvasOnDragLeave(canvasId) {
-    pointEvent(dragLeaveFunctions, canvasId);
+function canvasOnDragLeave(canvasId, e) {
+    pointEvent(dragLeaveFunctions, canvasId, e);
 }
 
-function canvasOnDragOver(canvasId) {
-    pointEvent(dragOverFunctions, canvasId);
+function canvasOnDragOver(canvasId, e) {
+    pointEvent(dragOverFunctions, canvasId, e);
 }
 
-function canvasOnDragStart(canvasId) {
-    pointEvent(dragStartFunctions, canvasId);
+function canvasOnDragStart(canvasId, e) {
+    pointEvent(dragStartFunctions, canvasId, e);
 }
 
-function canvasOnDrop(canvasId) {
-    pointEvent(dropFunctions, canvasId);
+function canvasOnDrop(canvasId, e) {
+    pointEvent(dropFunctions, canvasId, e);
 }
 
-function canvasOnMouseDown(canvasId) {
+function canvasOnMouseDown(canvasId, e) {
     doingMouseDown = 1;
-    pointEvent(mouseDownFunctions, canvasId);
+    pointEvent(mouseDownFunctions, canvasId, e);
     doingMouseDown = 0;
 }
 
-function canvasOnMouseMove(canvasId) {
-    pointEvent(mouseMoveFunctions, canvasId);
+function canvasOnMouseMove(canvasId, e) {
+    pointEvent(mouseMoveFunctions, canvasId, e);
 }
 
-function canvasOnMouseOut(canvasId) {
-    pointEvent(mouseOutFunctions, canvasId);
+function canvasOnMouseOut(canvasId, e) {
+    pointEvent(mouseOutFunctions, canvasId, e);
 }
 
-function canvasOnMouseOver(canvasId) {
-    pointEvent(mouseOverFunctions, canvasId);
+function canvasOnMouseOver(canvasId, e) {
+    pointEvent(mouseOverFunctions, canvasId, e);
 }
 
-function canvasOnMouseUp(canvasId) {
+function canvasOnMouseUp(canvasId, e) {
     doingMouseUp = 1;
-    pointEvent(mouseUpFunctions, canvasId);
+    pointEvent(mouseUpFunctions, canvasId, e);
     doingMouseUp = 0;
 }
 
-function canvasOnMouseWheel(canvasId) {
-    pointEvent(mouseWheelFunctions, canvasId);
+function canvasOnMouseWheel(canvasId, e) {
+    pointEvent(mouseWheelFunctions, canvasId, e);
 }
 
-function canvasOnScroll(canvasId) {
-    pointEvent(scrollFunctions, canvasId);
+function canvasOnScroll(canvasId, e) {
+    pointEvent(scrollFunctions, canvasId, e);
 }
 
 function registerCanvasElementId(canvasId) {
     var canvas = document.getElementById(canvasId);
     canvases.push([canvasId, canvas]);
     ctxs.push([canvasId, canvas.getContext('2d')]);
-    canvas.addEventListener('click', function () { }, false);
-    canvas.addEventListener('click', function () { canvasOnClick(canvasId); }, false);
-    canvas.addEventListener('dblclick', function () { canvasOnDblClick(canvasId); }, false);
-    canvas.addEventListener('drag', function () { canvasOnDrag(canvasId); }, false);
-    canvas.addEventListener('dragend', function () { canvasOnDragEnd(canvasId); }, false);
-    canvas.addEventListener('dragenter', function () { canvasOnDragEnter(canvasId); }, false);
-    canvas.addEventListener('dragleave', function () { canvasOnDragLeave(canvasId); }, false);
-    canvas.addEventListener('dragover', function () { canvasOnDragOver(canvasId); }, false);
-    canvas.addEventListener('dragstart', function () { canvasOnDragStart(canvasId); }, false);
-    canvas.addEventListener('drop', function () { canvasOnDrop(canvasId); }, false);
-    canvas.addEventListener('mousedown', function () { canvasOnMouseDown(canvasId); }, false);
-    canvas.addEventListener('mousemove', function () { canvasOnMouseMove(canvasId); }, false);
-    canvas.addEventListener('mouseout', function () { canvasOnMouseOut(canvasId); }, false);
-    canvas.addEventListener('mouseover', function () { canvasOnMouseOver(canvasId); }, false);
-    canvas.addEventListener('mouseup', function () { canvasOnMouseUp(canvasId); }, false);
-    canvas.addEventListener('mousewheel', function () { canvasOnMouseWheel(canvasId); }, false);
-    canvas.addEventListener('scroll', function () { canvasOnScroll(canvasId); }, false);
+    canvas.onclick = function (e) { canvasOnClick(canvasId, e); };
+    canvas.ondblclick = function (e) { canvasOnDblClick(canvasId, e); };
+    canvas.ondrag = function (e) { canvasOnDrag(canvasId, e); };
+    canvas.ondragend = function (e) { canvasOnDragEnd(canvasId, e); };
+    canvas.ondragenter = function (e) { canvasOnDragEnter(canvasId, e); };
+    canvas.ondragleave = function (e) { canvasOnDragLeave(canvasId, e); };
+    canvas.ondragover = function (e) { canvasOnDragOver(canvasId, e); };
+    canvas.ondragstart = function (e) { canvasOnDragStart(canvasId, e); };
+    canvas.ondrop = function (e) { canvasOnDrop(canvasId, e); };
+    canvas.onmousedown = function (e) { canvasOnMouseDown(canvasId, e); };
+    canvas.onmousemove = function (e) { canvasOnMouseMove(canvasId, e); };
+    canvas.onmouseout = function (e) { canvasOnMouseOut(canvasId, e); };
+    canvas.onmouseover = function (e) { canvasOnMouseOver(canvasId, e); };
+    canvas.onmouseup = function (e) { canvasOnMouseUp(canvasId, e); };
+    canvas.onmousewheel = function (e) { canvasOnMouseWheel(canvasId, e); };
+    canvas.onscroll = function (e) { canvasOnScroll(canvasId, e); };
     canvas.onkeypress = function (e) {
+        var e = e || window.event;
         for (var i = 0; i < keyPressFunctions.length; i++) {
             for (var j = 0; j < windowIdWithFocus.length; j++) {
                 if (windowIdWithFocus[j][0] == keyPressFunctions[i].CanvasID && windowIdWithFocus[j][1] == keyPressFunctions[i].WindowID) {
-                    keyPressFunctions[i].KeyPressFunction(keyPressFunctions[i].CanvasID, keyPressFunctions[i].WindowID);
+                    keyPressFunctions[i].KeyPressFunction(keyPressFunctions[i].CanvasID, keyPressFunctions[i].WindowID, e);
                     draw(keyPressFunctions[i].CanvasID);
-                    if (window.event.preventDefault)
-                        window.event.preventDefault();
-                    window.event.returnValue = false;
+                    if (e.preventDefault)
+                        e.preventDefault();
+                    e.returnValue = false;
                 }
             }
         }
     };
     canvas.onkeydown = function (e) {
+        var e = e || window.event;
         for (var i = 0; i < keyDownFunctions.length; i++) {
             for (var j = 0; j < windowIdWithFocus.length; j++) {
                 if (windowIdWithFocus[j][0] == keyDownFunctions[i].CanvasID && windowIdWithFocus[j][1] == keyDownFunctions[i].WindowID) {
-                    keyDownFunctions[i].KeyDownFunction(keyDownFunctions[i].CanvasID, keyDownFunctions[i].WindowID);
+                    keyDownFunctions[i].KeyDownFunction(keyDownFunctions[i].CanvasID, keyDownFunctions[i].WindowID, e);
                     draw(keyDownFunctions[i].CanvasID);
-                    if (window.event.preventDefault)
-                        window.event.preventDefault();
-                    window.event.returnValue = false;
+                    if (e.preventDefault)
+                        e.preventDefault();
+                    e.returnValue = false;
                 }
             }
         }
@@ -1454,11 +1456,12 @@ function drawScrollBar(canvasid, windowid) {
     }
 }
 
-function scrollBarClick(canvasid, windowid) {
+function scrollBarClick(canvasid, windowid, e) {
+    var e = e || window.event;
     var scrollBarProps = getScrollBarProps(canvasid, windowid);
     var canvas = getCanvas(canvasid);
-    var xm = event.pageX - canvasGetOffsetLeft(canvas);
-    var ym = event.pageY - canvasGetOffsetTop(canvas);
+    var xm = e.pageX - canvasGetOffsetLeft(canvas);
+    var ym = e.pageY - canvasGetOffsetTop(canvas);
     if (scrollBarProps.Alignment == 1) {
         if (xm > scrollBarProps.X && xm < scrollBarProps.X + 15 && ym > scrollBarProps.Y && ym < scrollBarProps.Y + 15 && scrollBarProps.SelectedID - 1 >= 0) {
             --scrollBarProps.SelectedID;
@@ -1480,11 +1483,12 @@ function scrollBarClick(canvasid, windowid) {
     }
 }
 
-function scrollBarMouseDown(canvasid, windowid) {
+function scrollBarMouseDown(canvasid, windowid, e) {
+    var e = e || window.event;
     var scrollBarProps = getScrollBarProps(canvasid, windowid);
     var canvas = getCanvas(canvasid);
-    var x = event.pageX - canvasGetOffsetLeft(canvas);
-    var y = event.pageY - canvasGetOffsetTop(canvas);
+    var x = e.pageX - canvasGetOffsetLeft(canvas);
+    var y = e.pageY - canvasGetOffsetTop(canvas);
     if (scrollBarProps.Alignment == 1) {
         if (x > scrollBarProps.X && x < scrollBarProps.X + 15 && y > scrollBarProps.Y +
             ((scrollBarProps.SelectedID * (scrollBarProps.Len - 55)) / scrollBarProps.MaxItems) + 16 &&
@@ -1500,12 +1504,13 @@ function scrollBarMouseDown(canvasid, windowid) {
     }
 }
 
-function scrollBarMouseMove(canvasid, windowid) {
+function scrollBarMouseMove(canvasid, windowid, e) {
+    var e = e || window.event;
     var scrollBarProps = getScrollBarProps(canvasid, windowid);
     if (scrollBarProps.MouseDownState == 1) {
         var canvas = getCanvas(canvasid);
         if (scrollBarProps.Alignment == 1) {
-            var y = event.pageY - canvasGetOffsetTop(canvas);
+            var y = e.pageY - canvasGetOffsetTop(canvas);
             if (y < scrollBarProps.Y) {
                 scrollBarProps.SelectedID = 1;
             } else if (y > scrollBarProps.Y + scrollBarProps.Len) {
@@ -1514,7 +1519,7 @@ function scrollBarMouseMove(canvasid, windowid) {
                 scrollBarProps.SelectedID = Math.floor(((y - scrollBarProps.Y) * scrollBarProps.MaxItems) / scrollBarProps.Len);
             }
         } else {
-            var x = event.pageX - canvasGetOffsetLeft(canvas);
+            var x = e.pageX - canvasGetOffsetLeft(canvas);
             if (x < scrollBarProps.X) {
                 scrollBarProps.SelectedID = 1;
             } else if (x > scrollBarProps.X + scrollBarProps.Len) {
@@ -1718,13 +1723,14 @@ function drawGrid(canvasid, windowid) {
     }
 }
 
-function clickGrid(canvasid, windowid) {
+function clickGrid(canvasid, windowid, e) {
+    var e = e || window.event;
     var gridProps = getGridProps(canvasid, windowid);
     var vscrollBarProps = getScrollBarProps(canvasid, gridProps.VScrollBarWindowId);
     var hscrollBarProps = getScrollBarProps(canvasid, gridProps.HScrollBarWindowId);
     var canvas = getCanvas(canvasid);
-    var x = event.pageX - canvasGetOffsetLeft(canvas);
-    var y = event.pageY - canvasGetOffsetTop(canvas);
+    var x = e.pageX - canvasGetOffsetLeft(canvas);
+    var y = e.pageY - canvasGetOffsetTop(canvas);
     var startRow = 0;
     if (vscrollBarProps != null) {
         startRow = vscrollBarProps.SelectedID;
@@ -1932,12 +1938,13 @@ function drawComboboxListArea(canvasid, windowid) {
     ctx.stroke();
 }
 
-function comboboxListAreaClick(canvasid, windowid) {
+function comboboxListAreaClick(canvasid, windowid, e) {
+    var e = e || window.event;
     var comboboxProps = getComboboxPropsByListAreaWindowId(canvasid, windowid);
     var vscrollBarProps = getScrollBarProps(canvasid, comboboxProps.VScrollBarWindowID);
     var canvas = getCanvas(canvasid);
-    var x = event.pageX - canvasGetOffsetLeft(canvas);
-    var y = event.pageY - canvasGetOffsetTop(canvas);
+    var x = e.pageX - canvasGetOffsetLeft(canvas);
+    var y = e.pageY - canvasGetOffsetTop(canvas);
     for (var i = vscrollBarProps.SelectedID; i < comboboxProps.Data.length && ((comboboxProps.ListAreaTextHeight + 6) * (i - vscrollBarProps.SelectedID + 1)) < 100; i++) {
         if (x > comboboxProps.X && y > comboboxProps.Y + comboboxProps.Height + ((comboboxProps.ListAreaTextHeight + 6) * (i - vscrollBarProps.SelectedID)) &&
             x < comboboxProps.X + comboboxProps.Width - 15 && y < comboboxProps.Y + comboboxProps.Height + ((comboboxProps.ListAreaTextHeight + 6) *
@@ -2153,11 +2160,12 @@ function createRadioButtonGroup(canvasid, controlNameId, x, y, alignment, depth,
         }
         radioButtonProps.ButtonExtents = buttonExtents;
     }, canvasid);
-    registerClickFunction(windowid, function (canvasid2, windowid2) {
+    registerClickFunction(windowid, function (canvasid2, windowid2, e) {
+        var e = e || window.event;
         var radioButtonProps = getRadioButtonProps(canvasid2, windowid2);
         var canvas = getCanvas(canvasid2);
-        var clickx = event.pageX - canvasGetOffsetLeft(canvas);
-        var clicky = event.pageY - canvasGetOffsetTop(canvas);
+        var clickx = e.pageX - canvasGetOffsetLeft(canvas);
+        var clicky = e.pageY - canvasGetOffsetTop(canvas);
         for (var i = 0; i < radioButtonProps.ButtonExtents.length; i++) {
             if (clickx > radioButtonProps.ButtonExtents[i].X && clickx < radioButtonProps.ButtonExtents[i].X + radioButtonProps.ButtonExtents[i].Width &&
                 clicky > radioButtonProps.ButtonExtents[i].Y && clicky < radioButtonProps.ButtonExtents[i].Y + radioButtonProps.ButtonExtents[i].Height) {
@@ -2314,11 +2322,12 @@ function toggleAllChildNodesExpandedState(treeViewProps, p) {
     }
 }
 
-function clickTreeView(canvasid, windowid) {
+function clickTreeView(canvasid, windowid, e) {
+    var e = e || window.event;
     var treeViewProps = getTreeViewProps(canvasid, windowid);
     var canvas = getCanvas(canvasid);
-    var x = event.pageX - canvasGetOffsetLeft(canvas);
-    var y = event.pageY - canvasGetOffsetTop(canvas);
+    var x = e.pageX - canvasGetOffsetLeft(canvas);
+    var y = e.pageY - canvasGetOffsetTop(canvas);
     for (var i = 0; i < treeViewProps.ClickButtonExtents.length; i++) {
         if (x > treeViewProps.ClickButtonExtents[i].X && x < treeViewProps.ClickButtonExtents[i].X + 9 &&
             y > treeViewProps.ClickButtonExtents[i].Y && y < treeViewProps.ClickButtonExtents[i].Y + 9) {
@@ -2726,11 +2735,12 @@ function getMonthName(x) {
     }
 }
 
-function calenderClick(canvasid, windowid) {
+function calenderClick(canvasid, windowid, e) {
+    var e = e || window.event;
     var calenderProps = getCalenderProps(canvasid, windowid);
     var canvas = getCanvas(canvasid);
-    var x = event.pageX - canvasGetOffsetLeft(canvas);
-    var y = event.pageY - canvasGetOffsetTop(canvas);
+    var x = e.pageX - canvasGetOffsetLeft(canvas);
+    var y = e.pageY - canvasGetOffsetTop(canvas);
     var visibleMonth = new Date('1 ' + calenderProps.VisibleMonth + ' ' + calenderProps.VisibleYear);
     for (var i = 0; i < calenderProps.ButtonClickExtents.length; i++) {
         if (x > calenderProps.ButtonClickExtents[i].X && x < calenderProps.ButtonClickExtents[i].X + calenderProps.ButtonClickExtents[i].Width &&
@@ -2778,11 +2788,12 @@ function calenderClick(canvasid, windowid) {
     }
 }
 
-function calenderMouseOver(canvasid, windowid) {
+function calenderMouseOver(canvasid, windowid, e) {
+    var e = e || window.event;
     var calenderProps = getCalenderProps(canvasid, windowid);
     var canvas = getCanvas(canvasid);
-    var x = event.pageX - canvasGetOffsetLeft(canvas);
-    var y = event.pageY - canvasGetOffsetTop(canvas);
+    var x = e.pageX - canvasGetOffsetLeft(canvas);
+    var y = e.pageY - canvasGetOffsetTop(canvas);
     for (var i = 0; i < calenderProps.DateClickExtents.length; i++) {
         if (x > calenderProps.DateClickExtents[i].X && x < calenderProps.DateClickExtents[i].X + calenderProps.DayCellWidth &&
             y > calenderProps.DateClickExtents[i].Y && y < calenderProps.DateClickExtents[i].Y + calenderProps.DayCellHeight) {
@@ -2938,12 +2949,13 @@ function sliderMouseDown(canvasid, windowid) {
     sliderProps.MouseDownState = 1;
 }
 
-function sliderMouseMove(canvasid, windowid) {
+function sliderMouseMove(canvasid, windowid, e) {
+    var e = e || window.event;
     var sliderProps = getSliderProps(canvasid, windowid);
     if (sliderProps.MouseDownState == 1) {
         var canvas = getCanvas(canvasid);
-        var x = event.pageX - canvasGetOffsetLeft(canvas);
-        var y = event.pageY - canvasGetOffsetTop(canvas);
+        var x = e.pageX - canvasGetOffsetLeft(canvas);
+        var y = e.pageY - canvasGetOffsetTop(canvas);
         if (x < sliderProps.X) {
             sliderProps.CurrentValue = sliderProps.MinValue;
         } else if (x > sliderProps.X + sliderProps.Width) {
@@ -3275,12 +3287,13 @@ function createPanel(canvasid, controlNameId, x, y, width, height, depth, hasBor
         }
     }, canvasid);
     if (iscollapsable == 1) {
-        registerClickFunction(windowid, function (canvasid3, windowid3) {
+        registerClickFunction(windowid, function (canvasid3, windowid3, e) {
+            var e = e || window.event;
             var panelProps = getPanelProps(canvasid3, windowid3);
             var windowProps = getWindowProps(canvasid3, windowid3);
             var canvas = getCanvas(canvasid3);
-            var x = event.pageX - canvasGetOffsetLeft(canvas);
-            var y = event.pageY - canvasGetOffsetTop(canvas);
+            var x = e.pageX - canvasGetOffsetLeft(canvas);
+            var y = e.pageY - canvasGetOffsetTop(canvas);
             if (x > panelProps.X + panelProps.Width - 4 - (panelProps.ExpandCollapseButtonRadius * 2) &&
                 x < panelProps.X + panelProps.Width - 4 && y > panelProps.Y + +
                 ((panelProps.HeaderHeight - (panelProps.ExpandCollapseButtonRadius * 2)) / 2) &&
@@ -3336,11 +3349,12 @@ function createBarGraph(canvasid, controlNameId, x, y, width, height, depth, dat
         GapBetweenBars: gapbetweenbars, BarClickFunction: barClickFunction, AlreadyUnregisteredAnimation: 0,
         HasLegend: haslegend, MarginRight: marginright, Tag: tag
     });
-    registerClickFunction(windowid, function (canvasid1, windowid1) {
+    registerClickFunction(windowid, function (canvasid1, windowid1, e) {
+        var e = e || window.event;
         var barGraphProps = getBarGraphProps(canvasid1, windowid1);
         var canvas = getCanvas(canvasid);
-        var clickx = event.pageX - canvasGetOffsetLeft(canvas);
-        var clicky = event.pageY - canvasGetOffsetTop(canvas);
+        var clickx = e.pageX - canvasGetOffsetLeft(canvas);
+        var clicky = e.pageY - canvasGetOffsetTop(canvas);
         for (i = 0; i < barGraphProps.BarLabelsWithBoundingBoxes.length; i++) {
             if (clickx >= barGraphProps.BarLabelsWithBoundingBoxes[i].X && clickx <= barGraphProps.BarLabelsWithBoundingBoxes[i].X +
                 barGraphProps.BarLabelsWithBoundingBoxes[i].Width && clicky >= barGraphProps.BarLabelsWithBoundingBoxes[i].Y &&
@@ -3525,7 +3539,8 @@ function createPieChart(canvasid, controlNameId, x, y, width, height, depth, dat
         LabelTextFontString: labeltextfontstring, AlreadyUnregisteredAnimation: 0, DeltaI: -1,
         DeltaX: 0, DeltaY: 0, SliceClickFunction: sliceClickFunction, Tag: tag
     });
-    registerClickFunction(windowid, function (canvasid1, windowid1) {
+    registerClickFunction(windowid, function (canvasid1, windowid1, e) {
+        var e = e || window.event;
         var pieChartProps = getPieChartProps(canvasid1, windowid1);
         var data = pieChartProps.Data;
         var currRadius = (pieChartProps.Height - pieChartProps.TitleTextHeight - 24 - (pieChartProps.LabelTextHeight * 2)) / 2;
@@ -3534,8 +3549,8 @@ function createPieChart(canvasid, controlNameId, x, y, width, height, depth, dat
             totalvalue += data[i][1];
         }
         var canvas = getCanvas(canvasid);
-        var clickx = event.pageX - canvasGetOffsetLeft(canvas);
-        var clicky = event.pageY - canvasGetOffsetTop(canvas);
+        var clickx = e.pageX - canvasGetOffsetLeft(canvas);
+        var clicky = e.pageY - canvasGetOffsetTop(canvas);
         var pieoutangle = -1;
         var centerx = pieChartProps.X + (pieChartProps.Width - (currRadius * 2)) / 2 + currRadius;
         var centery = pieChartProps.Y + 16 + pieChartProps.TitleTextHeight + pieChartProps.LabelTextHeight + currRadius;
@@ -3783,14 +3798,15 @@ function createLineGraph(canvasid, controlNameId, x, y, width, height, depth, da
         H: 2, HMax: hmax, LineXYs: new Array(), ClickFunction: clickFunction, AlreadyUnregisteredAnimation: 0, MarginLeft: marginleft,
         IsLabeledXValues: islabeledxvalues, Tag: tag
     });
-    registerClickFunction(windowid, function (canvasid1, windowid1) {
+    registerClickFunction(windowid, function (canvasid1, windowid1, e) {
+        var e = e || window.event;
         var lineGraphProps = getLineGraphProps(canvasid1, windowid1);
         if (lineGraphProps.ClickFunction != null) {
             var data = lineGraphProps.Data;
             var linexys = lineGraphProps.LineXYs;
             var ctx = getCtx(canvasid1);
-            var clickx = event.pageX - canvasGetOffsetLeft(canvas);
-            var clicky = event.pageY - canvasGetOffsetTop(canvas);
+            var clickx = e.pageX - canvasGetOffsetLeft(canvas);
+            var clicky = e.pageY - canvasGetOffsetTop(canvas);
             for (i = 0; i < linexys.length; i++) {
                 for (j = 0; j < linexys[i].length - 1; j++) {
                     if (clickx >= linexys[i][j][0] && clickx <= linexys[i][j + 1][0]) {
@@ -4740,15 +4756,16 @@ function createDoughnutChart(canvasid, controlNameId, x, y, width, height, depth
         LabelFontString: labelfontstring, LegendWidth: legendwidth, LegendHeight: legendheight, LegendFontString: legendfontstring,
         AnimationCompleted: 0, DeltaI: -1, DeltaX: 0, DeltaY: 0, SliceClickFunction: sliceClickFunction, Tag: tag
     });
-    registerClickFunction(windowid, function (canvasid1, windowid1) {
+    registerClickFunction(windowid, function (canvasid1, windowid1, e) {
+        var e = e || window.event;
         var doughnutChartProps = getDoughnutChartProps(canvasid1, windowid1);
         var data = doughnutChartProps.Data;
         var currRadius = doughnutChartProps.CurrentRadius;
         var innerradius = doughnutChartProps.InnerRadius;
         var totalvalue = doughnutChartProps.TotalValue;
         var canvas = getCanvas(canvasid1);
-        var clickx = event.pageX - canvasGetOffsetLeft(canvas);
-        var clicky = event.pageY - canvasGetOffsetTop(canvas);
+        var clickx = e.pageX - canvasGetOffsetLeft(canvas);
+        var clicky = e.pageY - canvasGetOffsetTop(canvas);
         var pieoutangle = -1;
         var centerx = doughnutChartProps.X + (doughnutChartProps.Width / 2) + doughnutChartProps.MarginSides;
         var centery = doughnutChartProps.Y + ((doughnutChartProps.Height - doughnutChartProps.TitleTextHeight - 8 - (doughnutChartProps.LabelHeight * 2))/2);
@@ -4925,11 +4942,12 @@ function createBarsMixedWithLabledLineGraph(canvasid, controlNameId, x, y, width
         HasLegend: haslegend, MarginRight: marginright, LinesData: linesData, LineXYs: new Array(), LineClickFunction: lineClickFunction,
         YMaxValue: maxvalue, Tag: tag
     });
-    registerClickFunction(windowid, function (canvasid1, windowid1) {
+    registerClickFunction(windowid, function (canvasid1, windowid1, e) {
+        var e = e || window.event;
         var barsMixedWithLabledLineGraphProps = getBarsMixedWithLabledLineGraphProps(canvasid1, windowid1);
         var canvas = getCanvas(canvasid);
-        var clickx = event.pageX - canvasGetOffsetLeft(canvas);
-        var clicky = event.pageY - canvasGetOffsetTop(canvas);
+        var clickx = e.pageX - canvasGetOffsetLeft(canvas);
+        var clicky = e.pageY - canvasGetOffsetTop(canvas);
         for (i = 0; i < barsMixedWithLabledLineGraphProps.BarLabelsWithBoundingBoxes.length; i++) {
             if (clickx >= barsMixedWithLabledLineGraphProps.BarLabelsWithBoundingBoxes[i].X && clickx <= barsMixedWithLabledLineGraphProps.BarLabelsWithBoundingBoxes[i].X +
                 barsMixedWithLabledLineGraphProps.BarLabelsWithBoundingBoxes[i].Width && clicky >= barsMixedWithLabledLineGraphProps.BarLabelsWithBoundingBoxes[i].Y &&
@@ -5145,7 +5163,8 @@ function createStackedBarGraph(canvasid, controlNameId, x, y, width, height, dep
         BarLabelsWithBoundingBoxes: new Array(), BarClickFunction: barClickFunction, AlreadyUnregisteredAnimation: 0,
         MarginLeft: marginleft, Tag: tag
     });
-    registerClickFunction(windowid, function (canvasid1, windowid1) {
+    registerClickFunction(windowid, function (canvasid1, windowid1, e) {
+        var e = e || window.event;
         var stackedBarGraphProps = getstackedBarGraphProps(canvasid1, windowid1);
         var data = stackedBarGraphProps.Data;
         var canvas = getCanvas(canvasid1);
@@ -5153,8 +5172,8 @@ function createStackedBarGraph(canvasid, controlNameId, x, y, width, height, dep
         for (i = 0; i < data.length; i++) {
             totalvalue += data[i][1];
         }
-        var clickx = event.pageX - canvasGetOffsetLeft(canvas);
-        var clicky = event.pageY - canvasGetOffsetTop(canvas);
+        var clickx = e.pageX - canvasGetOffsetLeft(canvas);
+        var clicky = e.pageY - canvasGetOffsetTop(canvas);
         for (i = 0; i < stackedBarGraphProps.BarLabelsWithBoundingBoxes.length; i++) {
             if (clickx >= stackedBarGraphProps.BarLabelsWithBoundingBoxes[i][1] && clickx <= stackedBarGraphProps.BarLabelsWithBoundingBoxes[i][3] &&
                 clicky >= stackedBarGraphProps.BarLabelsWithBoundingBoxes[i][2] && clicky <= stackedBarGraphProps.BarLabelsWithBoundingBoxes[i][4]) {
@@ -5458,11 +5477,12 @@ function createTabControl(canvasid, controlNameId, x, y, width, height, depth, t
                 TabID: tabProps.SelectedTabID
         });
     }, canvasid);
-    registerClickFunction(windowid, function (canvasid2, windowid2) {
+    registerClickFunction(windowid, function (canvasid2, windowid2, e) {
+        var e = e || window.event;
         var tabProps = getTabProps(canvasid2, windowid2);
         var canvas = getCanvas(canvasid2);
-        var clickx = event.pageX - canvasGetOffsetLeft(canvas);
-        var clicky = event.pageY - canvasGetOffsetTop(canvas);
+        var clickx = e.pageX - canvasGetOffsetLeft(canvas);
+        var clicky = e.pageY - canvasGetOffsetTop(canvas);
         for (var i = 0; i < tabProps.TabLabelHitAreas.length; i++) {
             if (clickx > tabProps.TabLabelHitAreas[i].XStart && clickx < tabProps.TabLabelHitAreas[i].XEnd &&
                 clicky > tabProps.TabLabelHitAreas[i].YStart && clicky < tabProps.TabLabelHitAreas[i].YEnd) {
@@ -5552,11 +5572,12 @@ function createImageMapControl(canvasid, controlNameId, x, y, width, height, dep
         var imageMapProps = getImageMapProps(canvasid4, windowid4);
         imageMapProps.MovingMap = 0;
     }, canvasid);
-    registerClickFunction(windowid, function (canvasid5, windowid5) {
+    registerClickFunction(windowid, function (canvasid5, windowid5, e) {
+        var e = e || window.event;
         var imageMapProps = getImageMapProps(canvasid5, windowid5);
         var canvas = getCanvas(canvasid5);
-        var clickx = event.pageX - canvasGetOffsetLeft(canvas);
-        var clicky = event.pageY - canvasGetOffsetTop(canvas);
+        var clickx = e.pageX - canvasGetOffsetLeft(canvas);
+        var clicky = e.pageY - canvasGetOffsetTop(canvas);
         for (var i = 0; i < imageMapProps.PinXYs.length; i++) {
             if (clickx > imageMapProps.X + (imageMapProps.PinXYs[i][0] * imageMapProps.Scale) - (imageMapProps.ImageTopLeftXOffset * imageMapProps.Scale) - imageMapProps.PinXYs[i][2] &&
                 clickx < imageMapProps.X + (imageMapProps.PinXYs[i][0] * imageMapProps.Scale) - (imageMapProps.ImageTopLeftXOffset * imageMapProps.Scale) + imageMapProps.PinXYs[i][2] &&
@@ -5568,11 +5589,12 @@ function createImageMapControl(canvasid, controlNameId, x, y, width, height, dep
             }
         }
     }, canvasid);
-    registerMouseMoveFunction(windowid, function (canvasid6, windowid6) {
+    registerMouseMoveFunction(windowid, function (canvasid6, windowid6, e) {
+        var e = e || window.event;
         var imageMapProps = getImageMapProps(canvasid6, windowid6);
         var canvas = getCanvas(canvasid6);
-        var x = event.pageX - canvasGetOffsetLeft(canvas);
-        var y = event.pageY - canvasGetOffsetTop(canvas);
+        var x = e.pageX - canvasGetOffsetLeft(canvas);
+        var y = e.pageY - canvasGetOffsetTop(canvas);
         if (imageMapProps.MovingMap == 0) {
             imageMapProps.LastMovingX = x;
             imageMapProps.LastMovingY = y;
@@ -5588,10 +5610,11 @@ function createImageMapControl(canvasid, controlNameId, x, y, width, height, dep
         }
     }, canvasid);
     if (hasZoom == 1) {
-        registerMouseWheelFunction(windowid, function (canvasid7, windowid7) {
+        registerMouseWheelFunction(windowid, function (canvasid7, windowid7, e) {
+            var e = e || window.event;
             var imageMapProps = getImageMapProps(canvasid7, windowid7);
             var lastscale = imageMapProps.Scale;
-            imageMapProps.Scale += (event.wheelDelta / 120) * imageMapProps.ScaleIncrementFactor;
+            imageMapProps.Scale += (e.wheelDelta / 120) * imageMapProps.ScaleIncrementFactor;
             if (imageMapProps.ImageTopLeftXOffset + (imageMapProps.Width / imageMapProps.Scale) >= imageMapProps.Image.width ||
                 imageMapProps.ImageTopLeftYOffset + (imageMapProps.Height / imageMapProps.Scale) >= imageMapProps.Image.height) {
                 imageMapProps.Scale = lastscale;
@@ -5675,11 +5698,12 @@ function createSubMenu(canvasid, controlNameId, parentWindowId, depth, data, xof
             }
         }
     }, canvasid);
-    registerClickFunction(windowid, function (canvasid2, windowid2) {
+    registerClickFunction(windowid, function (canvasid2, windowid2, e) {
+        var e = e || window.event;
         var subMenuBarProps = getSubMenuBarProps(canvasid2, windowid2);
         var canvas = getCanvas(canvasid2);
-        var x = event.pageX - canvasGetOffsetLeft(canvas);
-        var y = event.pageY - canvasGetOffsetTop(canvas);
+        var x = e.pageX - canvasGetOffsetLeft(canvas);
+        var y = e.pageY - canvasGetOffsetTop(canvas);
         var heightOffset = 0;
         for (var i = 0; i < subMenuBarProps.Data.length; i++) {
             if (x > subMenuBarProps.X && x < subMenuBarProps.X + subMenuBarProps.Width && y > subMenuBarProps.Y + heightOffset + 5 &&
@@ -5804,12 +5828,13 @@ function createMenuBarControl(canvasid, controlNameId, x, y, width, height, dept
             widthOffset += ctx.measureText(menuBarProps.Data[i][0]).width + 5;
         }
     }, canvasid);
-    registerClickFunction(windowid, function (canvasid2, windowid2) {
+    registerClickFunction(windowid, function (canvasid2, windowid2, e) {
+        var e = e || window.event;
         var menuBarProps = getMenuBarProps(canvasid2, windowid2);
         var ctx = getCtx(canvasid2);
         var canvas = getCanvas(canvasid2);
-        var x = event.pageX - canvasGetOffsetLeft(canvas);
-        var y = event.pageY - canvasGetOffsetTop(canvas);
+        var x = e.pageX - canvasGetOffsetLeft(canvas);
+        var y = e.pageY - canvasGetOffsetTop(canvas);
         var widthOffset = 0;
         for (var i = 0; i < menuBarProps.Data.length; i++) {
             ctx.font = menuBarProps.Data[i][3];
@@ -6019,14 +6044,15 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
         }
     }, canvasid);
     //This screws up initially as the canvas wont receive keystrokes
-    registerMouseDownFunction(windowid, function (canvasid4, windowid4) {
+    registerMouseDownFunction(windowid, function (canvasid4, windowid4, e) {
+        var e = e || window.event;
         var textBoxProps = getTextBoxProps(canvasid4, windowid4);
         if (textBoxProps.UserInputText && textBoxProps.UserInputText.length > 0) {
             textBoxProps.MouseDown = 1;
             textBoxProps.MouseDownTime = (new Date()).getTime();
             var canvas = getCanvas(canvasid4);
-            var x = event.pageX - canvasGetOffsetLeft(canvas);
-            var y = event.pageY - canvasGetOffsetTop(canvas);
+            var x = e.pageX - canvasGetOffsetLeft(canvas);
+            var y = e.pageY - canvasGetOffsetTop(canvas);
             var ctx = getCtx(canvasid4);
             ctx.font = textBoxProps.TextFontString;
             if (x > textBoxProps.X && x < textBoxProps.X + 4) {
@@ -6061,12 +6087,13 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
             }
         }
     }, canvasid);
-    registerMouseMoveFunction(windowid, function (canvasid5, windowid5) {
+    registerMouseMoveFunction(windowid, function (canvasid5, windowid5, e) {
+        var e = e || window.event;
         var textBoxProps = getTextBoxProps(canvasid5, windowid5);
         if (textBoxProps.MouseDown == 1 && (new Date()).getTime() - textBoxProps.MouseDownTime > 500 &&  textBoxProps.UserInputText && textBoxProps.UserInputText.length > 0) {
             var canvas = getCanvas(canvasid5);
-            var x = event.pageX - canvasGetOffsetLeft(canvas);
-            var y = event.pageY - canvasGetOffsetTop(canvas);
+            var x = e.pageX - canvasGetOffsetLeft(canvas);
+            var y = e.pageY - canvasGetOffsetTop(canvas);
             var ctx = getCtx(canvasid5);
             ctx.font = textBoxProps.TextFontString;
             if (x > textBoxProps.X && x < textBoxProps.X + 4) {
@@ -6101,7 +6128,8 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
             }
         }
     }, canvasid);
-    registerMouseUpFunction(windowid, function (canvasid6, windowid6) {
+    registerMouseUpFunction(windowid, function (canvasid6, windowid6, e) {
+        var e = e || window.event;
         var textBoxProps = getTextBoxProps(canvasid6, windowid6);
         if (textBoxProps.MouseDown == 1) {
             textBoxProps.MouseDown = 0;
@@ -6109,8 +6137,8 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
                 if (textBoxProps.UserInputText && textBoxProps.UserInputText.length > 0) {
                     textBoxProps.WasSelecting = 1;
                     var canvas = getCanvas(canvasid6);
-                    var x = event.pageX - canvasGetOffsetLeft(canvas);
-                    var y = event.pageY - canvasGetOffsetTop(canvas);
+                    var x = e.pageX - canvasGetOffsetLeft(canvas);
+                    var y = e.pageY - canvasGetOffsetTop(canvas);
                     var ctx = getCtx(canvasid6);
                     ctx.font = textBoxProps.TextFontString;
                     if (x > textBoxProps.X && x < textBoxProps.X + 4) {
@@ -6147,11 +6175,12 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
             }
         }
     }, canvasid);
-    registerClickFunction(windowid, function (canvasid2, windowid2) {
+    registerClickFunction(windowid, function (canvasid2, windowid2, e) {
+        var e = e || window.event;
         var textBoxProps = getTextBoxProps(canvasid2, windowid2);
         var canvas = getCanvas(canvasid2);
-        var x = event.pageX - canvasGetOffsetLeft(canvas);
-        var y = event.pageY - canvasGetOffsetTop(canvas);
+        var x = e.pageX - canvasGetOffsetLeft(canvas);
+        var y = e.pageY - canvasGetOffsetTop(canvas);
         var ctx = getCtx(canvasid2);
         ctx.font = textBoxProps.TextFontString;
         if(x > textBoxProps.X && x < textBoxProps.X + 4){
@@ -6186,9 +6215,9 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
             textBoxProps.SelectedTextEndIndex = -1;
         }
     }, canvasid);
-    registerKeyDownFunction(canvasid, function (canvasid3, windowid3) {
+    registerKeyDownFunction(canvasid, function (canvasid3, windowid3, e) {
+        var e = e || window.event;
         var textBoxProps = getTextBoxProps(canvasid3, windowid3);
-        var e = window.event;
         switch (e.keyCode) {
             case 37:
                 //left arrow	 37
