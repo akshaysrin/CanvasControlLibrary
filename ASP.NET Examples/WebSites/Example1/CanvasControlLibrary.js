@@ -6342,7 +6342,9 @@ function invokeServerSideFunction(ajaxURL, functionName, canvasid, windowid, cal
         }
     }
     xmlhttp.open("POST", ajaxURL, true);
-    xmlhttp.overrideMimeType("application/octet-stream");
+    if (navigator.userAgent.toLowerCase().indexOf('msie') == -1) {
+        xmlhttp.overrideMimeType("application/octet-stream");
+    }
     xmlhttp.send("[FunctionName]" + functionName + "[/FunctionName][CanvasID]" + canvasid + "[/CanvasID][WindowID]" + windowid.toString() + "[/WindowID][Vars]" + getEncodedVariables() + "[/Vars]");
 }
 

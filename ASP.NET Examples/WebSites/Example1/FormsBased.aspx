@@ -6,6 +6,7 @@
 <head runat="server">
     <title>Book a ticket at Fake Cinemas</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1, IE=edge" />
     <script src="CanvasControlLibrary.js" type="text/javascript"></script>
 </head>
 <body style="background-color:#000000">
