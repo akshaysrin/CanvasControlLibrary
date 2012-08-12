@@ -84,12 +84,12 @@
                     ctx.drawImage(image, x, y);
                 };
             }
-            function listAreaCustomClickFunction(canvasid, windowid) {
+            function listAreaCustomClickFunction(canvasid, windowid, e) {
                 var comboboxProps = getComboboxPropsByListAreaWindowId(canvasid, windowid);
                 var vscrollBarProps = getScrollBarProps(canvasid, comboboxProps.VScrollBarWindowID);
                 var canvas = getCanvas(canvasid);
-                var x = event.pageX - canvas.offsetLeft;
-                var y = event.pageY - canvas.offsetTop;
+                var x = e.calcX;
+                var y = e.calcY;
                 for (var i = vscrollBarProps.SelectedID; i < comboboxProps.Data.length && ((comboboxProps.ListAreaTextHeight + 10) * (i - vscrollBarProps.SelectedID + 1)) < 100; i++) {
                     if (x > comboboxProps.X && y > comboboxProps.Y + 4 + comboboxProps.Height + ((comboboxProps.ListAreaTextHeight + 10) * (i - vscrollBarProps.SelectedID)) &&
                         x < comboboxProps.X + comboboxProps.Width - 15 && y < comboboxProps.Y + comboboxProps.Height + 4 + ((comboboxProps.ListAreaTextHeight + 10) *

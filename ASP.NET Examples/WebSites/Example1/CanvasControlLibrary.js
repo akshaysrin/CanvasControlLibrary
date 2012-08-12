@@ -140,11 +140,24 @@ function doesWindowHaveFocus(canvasid, windowid) {
     return 0;
 }
 
+function correctEvent(canvasid, e) {
+    e = e || window.event;
+    var canvas = document.getElementById(canvasid);
+    if (e.pageX || e.pageY) {
+        e.calcX = e.pageX - canvasGetOffsetLeft(canvas);
+        e.calcY = e.pageY - canvasGetOffsetTop(canvas);
+        return e;
+    } else if (e.clientX || e.clientY) {
+        e.calcX = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft - canvasGetOffsetLeft(canvas);
+        e.calcY = e.clientY + document.body.scrollTop + document.documentElement.scrollTop - canvasGetOffsetTop(canvas);
+    }
+}
+
 function pointEvent(eventArray, canvasId, e, parentwindowid) {
     var canvas = getCanvas(canvasId);
-    var e = e || window.event;
-    var x = e.pageX - canvasGetOffsetLeft(canvas);
-    var y = e.pageY - canvasGetOffsetTop(canvas);
+    e = correctEvent(canvasId, e);
+    var x = e.calcX;
+    var y = e.calcY;
     var consumeevent = 0;
     var dodraw = 0;
     for (var d = highestDepth; d >= 0; d--) {
@@ -190,7 +203,7 @@ function pointEvent(eventArray, canvasId, e, parentwindowid) {
                     if (eventArray[u][0] == windows[i].WindowCount) {
                         if (windows[i].ChildWindowIDs.length > 0) {
                             if (pointEvent(eventArray, canvasId, e, windows[i].WindowCount) != 1) {
-                                eventArray[u][1](canvasId, windows[i].WindowCount);
+                                eventArray[u][1](canvasId, windows[i].WindowCount, e);
                             }
                         } else {
                             eventArray[u][1](canvasId, windows[i].WindowCount, e);
@@ -252,7 +265,7 @@ function pointEvent(eventArray, canvasId, e, parentwindowid) {
                         if (windows[i].ChildWindowIDs.length > 0) {
                             doingEvent = 0;
                             if (pointEvent(eventArray, canvasId, e, windows[i].WindowCount) != 1) {
-                                eventArray[u][1](canvasId, windows[i].WindowCount);
+                                eventArray[u][1](canvasId, windows[i].WindowCount, e);
                             }
                         } else {
                             eventArray[u][1](canvasId, windows[i].WindowCount, e);
@@ -394,7 +407,6 @@ function registerCanvasElementId(canvasId) {
     canvas.onmousewheel = function (e) { canvasOnMouseWheel(canvasId, e); };
     canvas.onscroll = function (e) { canvasOnScroll(canvasId, e); };
     canvas.onkeypress = function (e) {
-        var e = e || window.event;
         for (var i = 0; i < keyPressFunctions.length; i++) {
             for (var j = 0; j < windowIdWithFocus.length; j++) {
                 if (windowIdWithFocus[j][0] == keyPressFunctions[i].CanvasID && windowIdWithFocus[j][1] == keyPressFunctions[i].WindowID) {
@@ -408,7 +420,6 @@ function registerCanvasElementId(canvasId) {
         }
     };
     canvas.onkeydown = function (e) {
-        var e = e || window.event;
         for (var i = 0; i < keyDownFunctions.length; i++) {
             for (var j = 0; j < windowIdWithFocus.length; j++) {
                 if (windowIdWithFocus[j][0] == keyDownFunctions[i].CanvasID && windowIdWithFocus[j][1] == keyDownFunctions[i].WindowID) {
@@ -1457,11 +1468,10 @@ function drawScrollBar(canvasid, windowid) {
 }
 
 function scrollBarClick(canvasid, windowid, e) {
-    var e = e || window.event;
     var scrollBarProps = getScrollBarProps(canvasid, windowid);
     var canvas = getCanvas(canvasid);
-    var xm = e.pageX - canvasGetOffsetLeft(canvas);
-    var ym = e.pageY - canvasGetOffsetTop(canvas);
+    var xm = e.calcX;
+    var ym = e.calcY;
     if (scrollBarProps.Alignment == 1) {
         if (xm > scrollBarProps.X && xm < scrollBarProps.X + 15 && ym > scrollBarProps.Y && ym < scrollBarProps.Y + 15 && scrollBarProps.SelectedID - 1 >= 0) {
             --scrollBarProps.SelectedID;
@@ -1484,11 +1494,11 @@ function scrollBarClick(canvasid, windowid, e) {
 }
 
 function scrollBarMouseDown(canvasid, windowid, e) {
-    var e = e || window.event;
+    
     var scrollBarProps = getScrollBarProps(canvasid, windowid);
     var canvas = getCanvas(canvasid);
-    var x = e.pageX - canvasGetOffsetLeft(canvas);
-    var y = e.pageY - canvasGetOffsetTop(canvas);
+    var x = e.calcX;
+    var y = e.calcY;
     if (scrollBarProps.Alignment == 1) {
         if (x > scrollBarProps.X && x < scrollBarProps.X + 15 && y > scrollBarProps.Y +
             ((scrollBarProps.SelectedID * (scrollBarProps.Len - 55)) / scrollBarProps.MaxItems) + 16 &&
@@ -1505,12 +1515,12 @@ function scrollBarMouseDown(canvasid, windowid, e) {
 }
 
 function scrollBarMouseMove(canvasid, windowid, e) {
-    var e = e || window.event;
+    
     var scrollBarProps = getScrollBarProps(canvasid, windowid);
     if (scrollBarProps.MouseDownState == 1) {
         var canvas = getCanvas(canvasid);
         if (scrollBarProps.Alignment == 1) {
-            var y = e.pageY - canvasGetOffsetTop(canvas);
+            var y = e.calcY;
             if (y < scrollBarProps.Y) {
                 scrollBarProps.SelectedID = 1;
             } else if (y > scrollBarProps.Y + scrollBarProps.Len) {
@@ -1519,7 +1529,7 @@ function scrollBarMouseMove(canvasid, windowid, e) {
                 scrollBarProps.SelectedID = Math.floor(((y - scrollBarProps.Y) * scrollBarProps.MaxItems) / scrollBarProps.Len);
             }
         } else {
-            var x = e.pageX - canvasGetOffsetLeft(canvas);
+            var x = e.calcX;
             if (x < scrollBarProps.X) {
                 scrollBarProps.SelectedID = 1;
             } else if (x > scrollBarProps.X + scrollBarProps.Len) {
@@ -1724,13 +1734,13 @@ function drawGrid(canvasid, windowid) {
 }
 
 function clickGrid(canvasid, windowid, e) {
-    var e = e || window.event;
+    
     var gridProps = getGridProps(canvasid, windowid);
     var vscrollBarProps = getScrollBarProps(canvasid, gridProps.VScrollBarWindowId);
     var hscrollBarProps = getScrollBarProps(canvasid, gridProps.HScrollBarWindowId);
     var canvas = getCanvas(canvasid);
-    var x = e.pageX - canvasGetOffsetLeft(canvas);
-    var y = e.pageY - canvasGetOffsetTop(canvas);
+    var x = e.calcX;
+    var y = e.calcY;
     var startRow = 0;
     if (vscrollBarProps != null) {
         startRow = vscrollBarProps.SelectedID;
@@ -1939,12 +1949,12 @@ function drawComboboxListArea(canvasid, windowid) {
 }
 
 function comboboxListAreaClick(canvasid, windowid, e) {
-    var e = e || window.event;
+    
     var comboboxProps = getComboboxPropsByListAreaWindowId(canvasid, windowid);
     var vscrollBarProps = getScrollBarProps(canvasid, comboboxProps.VScrollBarWindowID);
     var canvas = getCanvas(canvasid);
-    var x = e.pageX - canvasGetOffsetLeft(canvas);
-    var y = e.pageY - canvasGetOffsetTop(canvas);
+    var x = e.calcX;
+    var y = e.calcY;
     for (var i = vscrollBarProps.SelectedID; i < comboboxProps.Data.length && ((comboboxProps.ListAreaTextHeight + 6) * (i - vscrollBarProps.SelectedID + 1)) < 100; i++) {
         if (x > comboboxProps.X && y > comboboxProps.Y + comboboxProps.Height + ((comboboxProps.ListAreaTextHeight + 6) * (i - vscrollBarProps.SelectedID)) &&
             x < comboboxProps.X + comboboxProps.Width - 15 && y < comboboxProps.Y + comboboxProps.Height + ((comboboxProps.ListAreaTextHeight + 6) *
@@ -2161,11 +2171,11 @@ function createRadioButtonGroup(canvasid, controlNameId, x, y, alignment, depth,
         radioButtonProps.ButtonExtents = buttonExtents;
     }, canvasid);
     registerClickFunction(windowid, function (canvasid2, windowid2, e) {
-        var e = e || window.event;
+        
         var radioButtonProps = getRadioButtonProps(canvasid2, windowid2);
         var canvas = getCanvas(canvasid2);
-        var clickx = e.pageX - canvasGetOffsetLeft(canvas);
-        var clicky = e.pageY - canvasGetOffsetTop(canvas);
+        var clickx = e.calcX;
+        var clicky = e.calcY;
         for (var i = 0; i < radioButtonProps.ButtonExtents.length; i++) {
             if (clickx > radioButtonProps.ButtonExtents[i].X && clickx < radioButtonProps.ButtonExtents[i].X + radioButtonProps.ButtonExtents[i].Width &&
                 clicky > radioButtonProps.ButtonExtents[i].Y && clicky < radioButtonProps.ButtonExtents[i].Y + radioButtonProps.ButtonExtents[i].Height) {
@@ -2218,8 +2228,13 @@ function createImage(canvasid, controlNameId, x, y, width, height, depth, imgurl
     registerWindowDrawFunction(windowid, function (canvasid, windowid) {
         var ctx = getCtx(canvasid);
         var imageProps = getImageControlProps(canvasid, windowid);
-        if (imageProps.Image) {
-            ctx.drawImage(imageProps.Image, 0, 0, imageProps.Width, imageProps.Height, imageProps.X, imageProps.Y, imageProps.Width, imageProps.Height);
+        var i = new Image();
+        if (imageProps.Image.complete == true) {
+            if (navigator.userAgent.toLowerCase().indexOf('msie') == -1) {
+                ctx.drawImage(imageProps.Image, 0, 0, imageProps.Width, imageProps.Height, imageProps.X, imageProps.Y, imageProps.Width, imageProps.Height);
+            } else {
+                ctx.drawImage(imageProps.Image, imageProps.X, imageProps.Y, imageProps.Width, imageProps.Height);
+            }
         }
     }, canvasid);
     if (clickFunction != null) {
@@ -2323,11 +2338,11 @@ function toggleAllChildNodesExpandedState(treeViewProps, p) {
 }
 
 function clickTreeView(canvasid, windowid, e) {
-    var e = e || window.event;
+    
     var treeViewProps = getTreeViewProps(canvasid, windowid);
     var canvas = getCanvas(canvasid);
-    var x = e.pageX - canvasGetOffsetLeft(canvas);
-    var y = e.pageY - canvasGetOffsetTop(canvas);
+    var x = e.calcX;
+    var y = e.calcY;
     for (var i = 0; i < treeViewProps.ClickButtonExtents.length; i++) {
         if (x > treeViewProps.ClickButtonExtents[i].X && x < treeViewProps.ClickButtonExtents[i].X + 9 &&
             y > treeViewProps.ClickButtonExtents[i].Y && y < treeViewProps.ClickButtonExtents[i].Y + 9) {
@@ -2736,11 +2751,11 @@ function getMonthName(x) {
 }
 
 function calenderClick(canvasid, windowid, e) {
-    var e = e || window.event;
+    
     var calenderProps = getCalenderProps(canvasid, windowid);
     var canvas = getCanvas(canvasid);
-    var x = e.pageX - canvasGetOffsetLeft(canvas);
-    var y = e.pageY - canvasGetOffsetTop(canvas);
+    var x = e.calcX;
+    var y = e.calcY;
     var visibleMonth = new Date('1 ' + calenderProps.VisibleMonth + ' ' + calenderProps.VisibleYear);
     for (var i = 0; i < calenderProps.ButtonClickExtents.length; i++) {
         if (x > calenderProps.ButtonClickExtents[i].X && x < calenderProps.ButtonClickExtents[i].X + calenderProps.ButtonClickExtents[i].Width &&
@@ -2789,11 +2804,11 @@ function calenderClick(canvasid, windowid, e) {
 }
 
 function calenderMouseOver(canvasid, windowid, e) {
-    var e = e || window.event;
+    
     var calenderProps = getCalenderProps(canvasid, windowid);
     var canvas = getCanvas(canvasid);
-    var x = e.pageX - canvasGetOffsetLeft(canvas);
-    var y = e.pageY - canvasGetOffsetTop(canvas);
+    var x = e.calcX;
+    var y = e.calcY;
     for (var i = 0; i < calenderProps.DateClickExtents.length; i++) {
         if (x > calenderProps.DateClickExtents[i].X && x < calenderProps.DateClickExtents[i].X + calenderProps.DayCellWidth &&
             y > calenderProps.DateClickExtents[i].Y && y < calenderProps.DateClickExtents[i].Y + calenderProps.DayCellHeight) {
@@ -2950,12 +2965,12 @@ function sliderMouseDown(canvasid, windowid) {
 }
 
 function sliderMouseMove(canvasid, windowid, e) {
-    var e = e || window.event;
+    
     var sliderProps = getSliderProps(canvasid, windowid);
     if (sliderProps.MouseDownState == 1) {
         var canvas = getCanvas(canvasid);
-        var x = e.pageX - canvasGetOffsetLeft(canvas);
-        var y = e.pageY - canvasGetOffsetTop(canvas);
+        var x = e.calcX;
+        var y = e.calcY;
         if (x < sliderProps.X) {
             sliderProps.CurrentValue = sliderProps.MinValue;
         } else if (x > sliderProps.X + sliderProps.Width) {
@@ -3288,12 +3303,12 @@ function createPanel(canvasid, controlNameId, x, y, width, height, depth, hasBor
     }, canvasid);
     if (iscollapsable == 1) {
         registerClickFunction(windowid, function (canvasid3, windowid3, e) {
-            var e = e || window.event;
+            
             var panelProps = getPanelProps(canvasid3, windowid3);
             var windowProps = getWindowProps(canvasid3, windowid3);
             var canvas = getCanvas(canvasid3);
-            var x = e.pageX - canvasGetOffsetLeft(canvas);
-            var y = e.pageY - canvasGetOffsetTop(canvas);
+            var x = e.calcX;
+            var y = e.calcY;
             if (x > panelProps.X + panelProps.Width - 4 - (panelProps.ExpandCollapseButtonRadius * 2) &&
                 x < panelProps.X + panelProps.Width - 4 && y > panelProps.Y + +
                 ((panelProps.HeaderHeight - (panelProps.ExpandCollapseButtonRadius * 2)) / 2) &&
@@ -3350,11 +3365,11 @@ function createBarGraph(canvasid, controlNameId, x, y, width, height, depth, dat
         HasLegend: haslegend, MarginRight: marginright, Tag: tag
     });
     registerClickFunction(windowid, function (canvasid1, windowid1, e) {
-        var e = e || window.event;
+        
         var barGraphProps = getBarGraphProps(canvasid1, windowid1);
         var canvas = getCanvas(canvasid);
-        var clickx = e.pageX - canvasGetOffsetLeft(canvas);
-        var clicky = e.pageY - canvasGetOffsetTop(canvas);
+        var clickx = e.calcX;
+        var clicky = e.calcY;
         for (i = 0; i < barGraphProps.BarLabelsWithBoundingBoxes.length; i++) {
             if (clickx >= barGraphProps.BarLabelsWithBoundingBoxes[i].X && clickx <= barGraphProps.BarLabelsWithBoundingBoxes[i].X +
                 barGraphProps.BarLabelsWithBoundingBoxes[i].Width && clicky >= barGraphProps.BarLabelsWithBoundingBoxes[i].Y &&
@@ -3540,7 +3555,7 @@ function createPieChart(canvasid, controlNameId, x, y, width, height, depth, dat
         DeltaX: 0, DeltaY: 0, SliceClickFunction: sliceClickFunction, Tag: tag
     });
     registerClickFunction(windowid, function (canvasid1, windowid1, e) {
-        var e = e || window.event;
+        
         var pieChartProps = getPieChartProps(canvasid1, windowid1);
         var data = pieChartProps.Data;
         var currRadius = (pieChartProps.Height - pieChartProps.TitleTextHeight - 24 - (pieChartProps.LabelTextHeight * 2)) / 2;
@@ -3549,8 +3564,8 @@ function createPieChart(canvasid, controlNameId, x, y, width, height, depth, dat
             totalvalue += data[i][1];
         }
         var canvas = getCanvas(canvasid);
-        var clickx = e.pageX - canvasGetOffsetLeft(canvas);
-        var clicky = e.pageY - canvasGetOffsetTop(canvas);
+        var clickx = e.calcX;
+        var clicky = e.calcY;
         var pieoutangle = -1;
         var centerx = pieChartProps.X + (pieChartProps.Width - (currRadius * 2)) / 2 + currRadius;
         var centery = pieChartProps.Y + 16 + pieChartProps.TitleTextHeight + pieChartProps.LabelTextHeight + currRadius;
@@ -3799,14 +3814,14 @@ function createLineGraph(canvasid, controlNameId, x, y, width, height, depth, da
         IsLabeledXValues: islabeledxvalues, Tag: tag
     });
     registerClickFunction(windowid, function (canvasid1, windowid1, e) {
-        var e = e || window.event;
+        
         var lineGraphProps = getLineGraphProps(canvasid1, windowid1);
         if (lineGraphProps.ClickFunction != null) {
             var data = lineGraphProps.Data;
             var linexys = lineGraphProps.LineXYs;
             var ctx = getCtx(canvasid1);
-            var clickx = e.pageX - canvasGetOffsetLeft(canvas);
-            var clicky = e.pageY - canvasGetOffsetTop(canvas);
+            var clickx = e.calcX;
+            var clicky = e.calcY;
             for (i = 0; i < linexys.length; i++) {
                 for (j = 0; j < linexys[i].length - 1; j++) {
                     if (clickx >= linexys[i][j][0] && clickx <= linexys[i][j + 1][0]) {
@@ -4757,15 +4772,15 @@ function createDoughnutChart(canvasid, controlNameId, x, y, width, height, depth
         AnimationCompleted: 0, DeltaI: -1, DeltaX: 0, DeltaY: 0, SliceClickFunction: sliceClickFunction, Tag: tag
     });
     registerClickFunction(windowid, function (canvasid1, windowid1, e) {
-        var e = e || window.event;
+        
         var doughnutChartProps = getDoughnutChartProps(canvasid1, windowid1);
         var data = doughnutChartProps.Data;
         var currRadius = doughnutChartProps.CurrentRadius;
         var innerradius = doughnutChartProps.InnerRadius;
         var totalvalue = doughnutChartProps.TotalValue;
         var canvas = getCanvas(canvasid1);
-        var clickx = e.pageX - canvasGetOffsetLeft(canvas);
-        var clicky = e.pageY - canvasGetOffsetTop(canvas);
+        var clickx = e.calcX;
+        var clicky = e.calcY;
         var pieoutangle = -1;
         var centerx = doughnutChartProps.X + (doughnutChartProps.Width / 2) + doughnutChartProps.MarginSides;
         var centery = doughnutChartProps.Y + ((doughnutChartProps.Height - doughnutChartProps.TitleTextHeight - 8 - (doughnutChartProps.LabelHeight * 2))/2);
@@ -4943,11 +4958,11 @@ function createBarsMixedWithLabledLineGraph(canvasid, controlNameId, x, y, width
         YMaxValue: maxvalue, Tag: tag
     });
     registerClickFunction(windowid, function (canvasid1, windowid1, e) {
-        var e = e || window.event;
+        
         var barsMixedWithLabledLineGraphProps = getBarsMixedWithLabledLineGraphProps(canvasid1, windowid1);
         var canvas = getCanvas(canvasid);
-        var clickx = e.pageX - canvasGetOffsetLeft(canvas);
-        var clicky = e.pageY - canvasGetOffsetTop(canvas);
+        var clickx = e.calcX;
+        var clicky = e.calcY;
         for (i = 0; i < barsMixedWithLabledLineGraphProps.BarLabelsWithBoundingBoxes.length; i++) {
             if (clickx >= barsMixedWithLabledLineGraphProps.BarLabelsWithBoundingBoxes[i].X && clickx <= barsMixedWithLabledLineGraphProps.BarLabelsWithBoundingBoxes[i].X +
                 barsMixedWithLabledLineGraphProps.BarLabelsWithBoundingBoxes[i].Width && clicky >= barsMixedWithLabledLineGraphProps.BarLabelsWithBoundingBoxes[i].Y &&
@@ -5164,7 +5179,7 @@ function createStackedBarGraph(canvasid, controlNameId, x, y, width, height, dep
         MarginLeft: marginleft, Tag: tag
     });
     registerClickFunction(windowid, function (canvasid1, windowid1, e) {
-        var e = e || window.event;
+        
         var stackedBarGraphProps = getstackedBarGraphProps(canvasid1, windowid1);
         var data = stackedBarGraphProps.Data;
         var canvas = getCanvas(canvasid1);
@@ -5172,8 +5187,8 @@ function createStackedBarGraph(canvasid, controlNameId, x, y, width, height, dep
         for (i = 0; i < data.length; i++) {
             totalvalue += data[i][1];
         }
-        var clickx = e.pageX - canvasGetOffsetLeft(canvas);
-        var clicky = e.pageY - canvasGetOffsetTop(canvas);
+        var clickx = e.calcX;
+        var clicky = e.calcY;
         for (i = 0; i < stackedBarGraphProps.BarLabelsWithBoundingBoxes.length; i++) {
             if (clickx >= stackedBarGraphProps.BarLabelsWithBoundingBoxes[i][1] && clickx <= stackedBarGraphProps.BarLabelsWithBoundingBoxes[i][3] &&
                 clicky >= stackedBarGraphProps.BarLabelsWithBoundingBoxes[i][2] && clicky <= stackedBarGraphProps.BarLabelsWithBoundingBoxes[i][4]) {
@@ -5478,11 +5493,11 @@ function createTabControl(canvasid, controlNameId, x, y, width, height, depth, t
         });
     }, canvasid);
     registerClickFunction(windowid, function (canvasid2, windowid2, e) {
-        var e = e || window.event;
+        
         var tabProps = getTabProps(canvasid2, windowid2);
         var canvas = getCanvas(canvasid2);
-        var clickx = e.pageX - canvasGetOffsetLeft(canvas);
-        var clicky = e.pageY - canvasGetOffsetTop(canvas);
+        var clickx = e.calcX;
+        var clicky = e.calcY;
         for (var i = 0; i < tabProps.TabLabelHitAreas.length; i++) {
             if (clickx > tabProps.TabLabelHitAreas[i].XStart && clickx < tabProps.TabLabelHitAreas[i].XEnd &&
                 clicky > tabProps.TabLabelHitAreas[i].YStart && clicky < tabProps.TabLabelHitAreas[i].YEnd) {
@@ -5573,11 +5588,11 @@ function createImageMapControl(canvasid, controlNameId, x, y, width, height, dep
         imageMapProps.MovingMap = 0;
     }, canvasid);
     registerClickFunction(windowid, function (canvasid5, windowid5, e) {
-        var e = e || window.event;
+        
         var imageMapProps = getImageMapProps(canvasid5, windowid5);
         var canvas = getCanvas(canvasid5);
-        var clickx = e.pageX - canvasGetOffsetLeft(canvas);
-        var clicky = e.pageY - canvasGetOffsetTop(canvas);
+        var clickx = e.calcX;
+        var clicky = e.calcY;
         for (var i = 0; i < imageMapProps.PinXYs.length; i++) {
             if (clickx > imageMapProps.X + (imageMapProps.PinXYs[i][0] * imageMapProps.Scale) - (imageMapProps.ImageTopLeftXOffset * imageMapProps.Scale) - imageMapProps.PinXYs[i][2] &&
                 clickx < imageMapProps.X + (imageMapProps.PinXYs[i][0] * imageMapProps.Scale) - (imageMapProps.ImageTopLeftXOffset * imageMapProps.Scale) + imageMapProps.PinXYs[i][2] &&
@@ -5590,11 +5605,11 @@ function createImageMapControl(canvasid, controlNameId, x, y, width, height, dep
         }
     }, canvasid);
     registerMouseMoveFunction(windowid, function (canvasid6, windowid6, e) {
-        var e = e || window.event;
+        
         var imageMapProps = getImageMapProps(canvasid6, windowid6);
         var canvas = getCanvas(canvasid6);
-        var x = e.pageX - canvasGetOffsetLeft(canvas);
-        var y = e.pageY - canvasGetOffsetTop(canvas);
+        var x = e.calcX;
+        var y = e.calcY;
         if (imageMapProps.MovingMap == 0) {
             imageMapProps.LastMovingX = x;
             imageMapProps.LastMovingY = y;
@@ -5611,7 +5626,7 @@ function createImageMapControl(canvasid, controlNameId, x, y, width, height, dep
     }, canvasid);
     if (hasZoom == 1) {
         registerMouseWheelFunction(windowid, function (canvasid7, windowid7, e) {
-            var e = e || window.event;
+            
             var imageMapProps = getImageMapProps(canvasid7, windowid7);
             var lastscale = imageMapProps.Scale;
             imageMapProps.Scale += (e.wheelDelta / 120) * imageMapProps.ScaleIncrementFactor;
@@ -5699,11 +5714,11 @@ function createSubMenu(canvasid, controlNameId, parentWindowId, depth, data, xof
         }
     }, canvasid);
     registerClickFunction(windowid, function (canvasid2, windowid2, e) {
-        var e = e || window.event;
+        
         var subMenuBarProps = getSubMenuBarProps(canvasid2, windowid2);
         var canvas = getCanvas(canvasid2);
-        var x = e.pageX - canvasGetOffsetLeft(canvas);
-        var y = e.pageY - canvasGetOffsetTop(canvas);
+        var x = e.calcX;
+        var y = e.calcY;
         var heightOffset = 0;
         for (var i = 0; i < subMenuBarProps.Data.length; i++) {
             if (x > subMenuBarProps.X && x < subMenuBarProps.X + subMenuBarProps.Width && y > subMenuBarProps.Y + heightOffset + 5 &&
@@ -5829,12 +5844,12 @@ function createMenuBarControl(canvasid, controlNameId, x, y, width, height, dept
         }
     }, canvasid);
     registerClickFunction(windowid, function (canvasid2, windowid2, e) {
-        var e = e || window.event;
+        
         var menuBarProps = getMenuBarProps(canvasid2, windowid2);
         var ctx = getCtx(canvasid2);
         var canvas = getCanvas(canvasid2);
-        var x = e.pageX - canvasGetOffsetLeft(canvas);
-        var y = e.pageY - canvasGetOffsetTop(canvas);
+        var x = e.calcX;
+        var y = e.calcY;
         var widthOffset = 0;
         for (var i = 0; i < menuBarProps.Data.length; i++) {
             ctx.font = menuBarProps.Data[i][3];
@@ -6045,14 +6060,14 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
     }, canvasid);
     //This screws up initially as the canvas wont receive keystrokes
     registerMouseDownFunction(windowid, function (canvasid4, windowid4, e) {
-        var e = e || window.event;
+        
         var textBoxProps = getTextBoxProps(canvasid4, windowid4);
         if (textBoxProps.UserInputText && textBoxProps.UserInputText.length > 0) {
             textBoxProps.MouseDown = 1;
             textBoxProps.MouseDownTime = (new Date()).getTime();
             var canvas = getCanvas(canvasid4);
-            var x = e.pageX - canvasGetOffsetLeft(canvas);
-            var y = e.pageY - canvasGetOffsetTop(canvas);
+            var x = e.calcX;
+            var y = e.calcY;
             var ctx = getCtx(canvasid4);
             ctx.font = textBoxProps.TextFontString;
             if (x > textBoxProps.X && x < textBoxProps.X + 4) {
@@ -6088,12 +6103,12 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
         }
     }, canvasid);
     registerMouseMoveFunction(windowid, function (canvasid5, windowid5, e) {
-        var e = e || window.event;
+        
         var textBoxProps = getTextBoxProps(canvasid5, windowid5);
         if (textBoxProps.MouseDown == 1 && (new Date()).getTime() - textBoxProps.MouseDownTime > 500 &&  textBoxProps.UserInputText && textBoxProps.UserInputText.length > 0) {
             var canvas = getCanvas(canvasid5);
-            var x = e.pageX - canvasGetOffsetLeft(canvas);
-            var y = e.pageY - canvasGetOffsetTop(canvas);
+            var x = e.calcX;
+            var y = e.calcY;
             var ctx = getCtx(canvasid5);
             ctx.font = textBoxProps.TextFontString;
             if (x > textBoxProps.X && x < textBoxProps.X + 4) {
@@ -6129,7 +6144,7 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
         }
     }, canvasid);
     registerMouseUpFunction(windowid, function (canvasid6, windowid6, e) {
-        var e = e || window.event;
+        
         var textBoxProps = getTextBoxProps(canvasid6, windowid6);
         if (textBoxProps.MouseDown == 1) {
             textBoxProps.MouseDown = 0;
@@ -6137,8 +6152,8 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
                 if (textBoxProps.UserInputText && textBoxProps.UserInputText.length > 0) {
                     textBoxProps.WasSelecting = 1;
                     var canvas = getCanvas(canvasid6);
-                    var x = e.pageX - canvasGetOffsetLeft(canvas);
-                    var y = e.pageY - canvasGetOffsetTop(canvas);
+                    var x = e.calcX;
+                    var y = e.calcY;
                     var ctx = getCtx(canvasid6);
                     ctx.font = textBoxProps.TextFontString;
                     if (x > textBoxProps.X && x < textBoxProps.X + 4) {
@@ -6176,11 +6191,11 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
         }
     }, canvasid);
     registerClickFunction(windowid, function (canvasid2, windowid2, e) {
-        var e = e || window.event;
+        
         var textBoxProps = getTextBoxProps(canvasid2, windowid2);
         var canvas = getCanvas(canvasid2);
-        var x = e.pageX - canvasGetOffsetLeft(canvas);
-        var y = e.pageY - canvasGetOffsetTop(canvas);
+        var x = e.calcX;
+        var y = e.calcY;
         var ctx = getCtx(canvasid2);
         ctx.font = textBoxProps.TextFontString;
         if(x > textBoxProps.X && x < textBoxProps.X + 4){
@@ -6216,7 +6231,7 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
         }
     }, canvasid);
     registerKeyDownFunction(canvasid, function (canvasid3, windowid3, e) {
-        var e = e || window.event;
+        
         var textBoxProps = getTextBoxProps(canvasid3, windowid3);
         switch (e.keyCode) {
             case 37:
