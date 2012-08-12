@@ -1185,7 +1185,7 @@ function createButton(canvasid, controlNameId, x, y, width, height, text, textCo
                 if (newbrowserwindowcopyhistory != null) {
                     str += (wroteone == 1 ? ',' : '') + 'copyhistory=' + newbrowserwindowcopyhistory;
                 }
-                window.open(url, nameofnewbrowserwindow, str);
+                window.open(url, (navigator.userAgent.toLowerCase().indexOf('msie') == -1 ? nameofnewbrowserwindow : nameofnewbrowserwindow.replace(' ','')), str);
             } else{
                 if (nobrowserhistory == 1) {
                     window.location.replace(url);
@@ -6320,6 +6320,8 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
         textBoxProps.WasSelecting = 0;
     });
 }
+
+//Word processor code starts here
 
 
 //AJAX Postback code Starts here
