@@ -1081,6 +1081,7 @@ function defaultButtonDrawFunction(canvasid, windowid) {
     var ctx = getCtx(canvasid);
     var buttonProps = getButtonProps(canvasid, windowid);
     if (buttonProps.IsPressed == 1) {
+        buttonProps.IsPressed = 0;
         buttonOffsetX = 5;
         buttonOffsetY = 5;
     }
@@ -1210,8 +1211,8 @@ function createButton(canvasid, controlNameId, x, y, width, height, text, textCo
             clickFunction(canvasid, windowid);
         }
     }, canvasid);
-    registerMouseDownFunction(windowid, function () { getButtonProps(canvasid, windowid).IsPressed = 1; draw(canvasid); }, canvasid);
-    registerMouseUpFunction(canvasid, function () { getButtonProps(canvasid, windowid).IsPressed = 0; draw(canvasid); }, canvasid);
+    registerMouseDownFunction(windowid, function (canvasid, windowid) { getButtonProps(canvasid, windowid).IsPressed = 1; draw(canvasid); }, canvasid);
+    registerMouseUpFunction(canvasid, function (canvasid, windowid) { getButtonProps(canvasid, windowid).IsPressed = 0; draw(canvasid); }, canvasid);
     if (drawFunction != undefined && drawFunction != null)
         registerWindowDrawFunction(windowid, function () { drawFunction(canvasid, windowid); }, canvasid);
     else
@@ -1810,19 +1811,21 @@ function getComboboxPropsByScrollBarWindowId(canvasid, windowid) {
 
 function createComboBox(canvasid, controlNameId, x, y, width, height, depth, data, drawTextAreaFunction, drawButtonFunction, drawListAreaFunction, buttonClickFunction,
     listAreaClickFunction, textAreaTextColor, textAreaTextHeight, textAreaFontString, listAreaTextColor, listAreaTextHeight, listAreaFontString, onSelectionChanged, tag) {
-    var textareawindowid = createWindow(canvasid, x, y, width - 15, height, depth, null, 'ComboBoxTextArea', controlNameId + 'ComboBoxTextArea');
+    var textareawindowid = createWindow(canvasid, x, y, width - height, height, depth, null, 'ComboBoxTextArea', controlNameId + 'ComboBoxTextArea');
     var buttonwindowid = createWindow(canvasid, x + width - height, y, height, height, depth, null, 'ComboBoxButton', controlNameId + 'ComboBoxButton');
     var dropdownlistareawindowid = createWindow(canvasid, x, y + height, width - 15, 100, depth, null, 'ComboBoxListArea', controlNameId + 'ComboBoxListArea');
     registerModalWindow(canvasid, dropdownlistareawindowid);
     var vscrollBarComboboxWindowId = createScrollBar(canvasid, controlNameId + 'VS', x + width - 15, y + height, 100, depth, data.length, 1,
         function () { drawComboboxScrollBar(canvasid, vscrollBarComboboxWindowId); }, null);
     comboboxPropsArray.push({
-        CanvasID: canvasid, WindowID: textareawindowid, TextAreaWindowID: textareawindowid, ButtonWindowID: buttonwindowid,
-        ListAreaWindowID: dropdownlistareawindowid, VScrollBarWindowID: vscrollBarComboboxWindowId,
-        X: x, Y: y, Width: width, Height: height, Data: data, SelectedID: 0,
+        CanvasID: canvasid, WindowID: textareawindowid, TextAreaWindowID: textareawindowid,
+        ButtonWindowID: buttonwindowid, ListAreaWindowID: dropdownlistareawindowid,
+        VScrollBarWindowID: vscrollBarComboboxWindowId, X: x, Y: y, Width: width,
+        Height: height, Data: data, SelectedID: 0,
         TextAreaTextColor: textAreaTextColor, TextAreaTextHeight: textAreaTextHeight,
         TextAreaFontString: textAreaFontString, ListAreaTextColor: listAreaTextColor,
-        ListAreaTextHeight: listAreaTextHeight, ListAreaFontString: listAreaFontString, OnSelectionChanged: onSelectionChanged, Tag: tag
+        ListAreaTextHeight: listAreaTextHeight, ListAreaFontString: listAreaFontString,
+        OnSelectionChanged: onSelectionChanged, Tag: tag
     });
     if (drawTextAreaFunction != null) {
         registerWindowDrawFunction(textareawindowid, function () { drawTextAreaFunction(canvasid, textareawindowid); }, canvasid);
