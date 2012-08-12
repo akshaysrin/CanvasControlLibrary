@@ -1196,7 +1196,7 @@ function createButton(canvasid, controlNameId, x, y, width, height, text, textCo
                 if (newbrowserwindowcopyhistory != null) {
                     str += (wroteone == 1 ? ',' : '') + 'copyhistory=' + newbrowserwindowcopyhistory;
                 }
-                window.open(url, (navigator.userAgent.toLowerCase().indexOf('msie') == -1 ? nameofnewbrowserwindow : nameofnewbrowserwindow.replace(' ','')), str);
+                window.open(url, (navigator.userAgent.toLowerCase().indexOf('msie') == -1 ? nameofnewbrowserwindow : nameofnewbrowserwindow.replace(/ /g,'')), str);
             } else{
                 if (nobrowserhistory == 1) {
                     window.location.replace(url);
