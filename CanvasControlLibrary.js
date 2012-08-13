@@ -209,7 +209,7 @@ function pointEvent(eventArray, canvasId, e, parentwindowid) {
                             eventArray[u][1](canvasId, windows[i].WindowCount, e);
                         }
                         draw(canvasId);
-                        if (windows[i].ControlType != 'TextBox') {
+                        if (windows[i].ControlType != 'TextBox' && navigator.userAgent.toLowerCase().indexOf('ipad') == -1 && navigator.userAgent.toLowerCase().indexOf('ipad') == -1 && navigator.userAgent.toLowerCase().indexOf('ipad') == -1) {
                             if (e.preventDefault)
                                 e.preventDefault();
                             e.returnValue = false;
@@ -271,7 +271,7 @@ function pointEvent(eventArray, canvasId, e, parentwindowid) {
                             eventArray[u][1](canvasId, windows[i].WindowCount, e);
                         }
                         draw(canvasId);
-                        if (windows[i].ControlType != 'TextBox') {
+                        if (windows[i].ControlType != 'TextBox' && navigator.userAgent.toLowerCase().indexOf('ipad') == -1 && navigator.userAgent.toLowerCase().indexOf('ipad') == -1 && navigator.userAgent.toLowerCase().indexOf('ipad') == -1) {
                             if (e.preventDefault)
                                 e.preventDefault();
                             e.returnValue = false;
@@ -399,13 +399,6 @@ function registerCanvasElementId(canvasId) {
     canvas.ondragover = function (e) { canvasOnDragOver(canvasId, e); };
     canvas.ondragstart = function (e) { canvasOnDragStart(canvasId, e); };
     canvas.ondrop = function (e) { canvasOnDrop(canvasId, e); };
-    canvas.onmousedown = function (e) { canvasOnMouseDown(canvasId, e); };
-    canvas.onmousemove = function (e) { canvasOnMouseMove(canvasId, e); };
-    canvas.onmouseout = function (e) { canvasOnMouseOut(canvasId, e); };
-    canvas.onmouseover = function (e) { canvasOnMouseOver(canvasId, e); };
-    canvas.onmouseup = function (e) { canvasOnMouseUp(canvasId, e); };
-    canvas.onmousewheel = function (e) { canvasOnMouseWheel(canvasId, e); };
-    canvas.onscroll = function (e) { canvasOnScroll(canvasId, e); };
     canvas.onkeypress = function (e) {
         for (var i = 0; i < keyPressFunctions.length; i++) {
             for (var j = 0; j < windowIdWithFocus.length; j++) {
@@ -432,6 +425,31 @@ function registerCanvasElementId(canvasId) {
             }
         }
     };
+    if (navigator.userAgent.toLowerCase().indexOf('ipad') > -1 || navigator.userAgent.toLowerCase().indexOf('iphone') > -1 || navigator.userAgent.toLowerCase().indexOf('ipod') > -1) {
+        canvas.addEventListener("touchstart", function (e) {
+            e.pageX = e.touches[0].pageX;
+            e.pageY = e.touches[0].pageY;
+            pointEvent(mouseDownFunctions, canvasId, e, null);
+        }, false);
+        canvas.addEventListener("touchmove", function (e) {
+            e.pageX = e.touches[0].pageX;
+            e.pageY = e.touches[0].pageY;
+            pointEvent(mouseMoveFunctions, canvasId, e, null);
+        }, false);
+        canvas.addEventListener("touchend", function (e) {
+            e.pageX = e.touches[0].pageX;
+            e.pageY = e.touches[0].pageY;
+            pointEvent(mouseUpFunctions, canvasId, e, null);
+        }, false);
+    } else {
+        canvas.onmousedown = function (e) { canvasOnMouseDown(canvasId, e); };
+        canvas.onmousemove = function (e) { canvasOnMouseMove(canvasId, e); };
+        canvas.onmouseup = function (e) { canvasOnMouseUp(canvasId, e); };
+        canvas.onmouseout = function (e) { canvasOnMouseOut(canvasId, e); };
+        canvas.onmouseover = function (e) { canvasOnMouseOver(canvasId, e); };
+        canvas.onmousewheel = function (e) { canvasOnMouseWheel(canvasId, e); };
+        canvas.onscroll = function (e) { canvasOnScroll(canvasId, e); };
+    }
 }
 
 function createWindow(canvasId, x, y, width, height, depth, parentwindowid, controlTypeNameString, controlNameId) {

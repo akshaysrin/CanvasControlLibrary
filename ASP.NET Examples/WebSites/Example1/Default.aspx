@@ -70,6 +70,7 @@
                 function (canvasid, windowid, selectedNodeIndex) { alert(selectedNodeIndex); });
             createTextBox(elemId, 'textbox1', 400, 10, 300, 60, highestDepth, 'Type your name here', '#F0F0F0', 18, '18pt Ariel', '#051329', 18, '18pt Ariel', 50, '[a-zA-Z ]', 0, null, 1, '#2e3642',
                 1, 0, '#000000', 3, 3, 20, 1, 10, 1, '#9bacc6', '#d6e4f9', 0, 'Title.png', 0, null, 0, 0, 0, null, '', '#0d2952', 'rgba(0, 0, 240, 0.2)', 1);
+            alert(navigator.userAgent);
             draw(elemId);
         </script>
     </div>
