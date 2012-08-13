@@ -6403,6 +6403,12 @@ function createImageFader(canvasid, controlNameId, x, y, width, height, depth, i
         }
         ctx.restore();
     }, canvasid);
+    if (clickFunction) {
+        registerClickFunction(windowid, function (canvasid2, windowid2, e) {
+            var imageFaderProps = getImageFaderProps(canvasid2, windowid2);
+            imageFaderProps.ClickFunction(canvasid2, windowid2, e, imageFaderProps.CurrentImageIndex);
+        }, canvasid);
+    }
     registerAnimatedWindow(canvasid);
 }
 

@@ -57,7 +57,7 @@
                 ['Configuration', '#000000', 10, '10pt Ariel', 0, function () { alert('You choose Configuration from the menu'); }, null]]]]], ['Help', '#000000', 10, '10pt Ariel', 0,
                 function () { alert('You choose Help from the menu'); }, null]], '#bec7ff', '#848ec9', '#515eac', '#e3e7ff', '#c5cdff', 0);
             createImageFader(elemId, 'MoviePosters', 500, 200, 135, 200, highestDepth, ['fantastic_four.jpg', 'IncredibleHulk.jpg', 'Thor.jpg', 'xmen_first_class.jpg'],
-                0, 1, 0.01, 100, null, 1);
+                0, 1, 0.01, 100, function (canvasid, windowid, e, i) { var imageFaderProps = getImageFaderProps(canvasid, windowid); alert(imageFaderProps.ImageURLs[i]); }, 1);
             draw(elemId);
         </script>
     </div>
