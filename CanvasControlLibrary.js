@@ -1098,22 +1098,6 @@ function defaultButtonDrawFunction(canvasid, windowid) {
     ctx.lineTo(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius, buttonOffsetY + buttonProps.Y + buttonProps.Height);
     ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius, buttonOffsetY + buttonProps.Y + buttonProps.Height -
         buttonProps.EdgeRadius, buttonProps.EdgeRadius, Math.PI / 2, Math.PI, false);
-    /*
-    ctx.lineTo(buttonOffsetX + buttonProps.X, buttonOffsetY + buttonProps.Y + buttonProps.EdgeRadius);
-    ctx.moveTo(buttonOffsetX + buttonProps.X + 3, buttonOffsetY + buttonProps.Y + 3 + buttonProps.EdgeRadius);
-    ctx.lineTo(buttonOffsetX + buttonProps.X + 3, buttonOffsetY + buttonProps.Y + buttonProps.Height - buttonProps.EdgeRadius - 3);
-    ctx.arc(buttonOffsetX + buttonProps.X + 3 + buttonProps.EdgeRadius, buttonOffsetY + buttonProps.Y + buttonProps.Height -
-        buttonProps.EdgeRadius - 3, buttonProps.EdgeRadius, Math.PI, Math.PI / 2, true);
-    ctx.lineTo(buttonOffsetX + buttonProps.X + buttonProps.Width - buttonProps.EdgeRadius - 3, buttonOffsetY + buttonProps.Y + buttonProps.Height - 3);
-    ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.Width - buttonProps.EdgeRadius - 3, buttonOffsetY + buttonProps.Y +
-        buttonProps.Height - buttonProps.EdgeRadius - 3, buttonProps.EdgeRadius, Math.PI / 2, 0, true);
-    ctx.lineTo(buttonOffsetX + buttonProps.X + buttonProps.Width - 3, buttonOffsetY + buttonProps.Y + buttonProps.EdgeRadius + 3);
-    ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.Width - buttonProps.EdgeRadius - 3, buttonOffsetY + buttonProps.Y +
-        buttonProps.EdgeRadius + 3, buttonProps.EdgeRadius, 0, (Math.PI / 180) * 270, true);
-    ctx.lineTo(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius + 3, buttonOffsetY + buttonProps.Y + 3);
-    ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius + 3, buttonOffsetY + buttonProps.Y + buttonProps.EdgeRadius + 3,
-        buttonProps.EdgeRadius, (Math.PI / 180) * 270, Math.PI, true);
-        */
     ctx.closePath();
     ctx.fillStyle = buttonProps.BorderColor;
     ctx.fill();
@@ -6337,6 +6321,89 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
         textBoxProps.MouseDown = 0;
         textBoxProps.WasSelecting = 0;
     });
+}
+
+//Image fader code starts here
+
+var imageFaderPropsArray = new Array();
+
+function getImageFaderProps(canvasid, windowid) {
+    for (var i = 0; i < imageFaderPropsArray.length; i++) {
+        if (imageFaderPropsArray[i].CanvasID == canvasid && imageFaderPropsArray[i].WindowID == windowid) {
+            return imageFaderPropsArray[i];
+        }
+    }
+}
+
+function createImageFader(canvasid, controlNameId, x, y, width, height, depth, imageURLs, fadeStartValue, fadeEndValue, fadeStepValue, holdForTicks, clickFunction, overlayimages) {
+    var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'ImageFader', controlNameId);
+    var images = new Array();
+    for (var i = 0; i < imageURLs.length; i++) {
+        var image = new Image();
+        images.push(image);
+        image.onload = function () {
+            draw(canvasid);
+        };
+        image.src = imageURLs[i];
+    }
+    var drawingCanvas = document.createElement('canvas');
+    drawingCanvas.width = width;
+    drawingCanvas.height = height;
+    var drawingCanvasCtx = drawingCanvas.getContext('2d');
+    imageFaderPropsArray.push({
+        CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, ImageURLs: imageURLs, Images: images,
+        FadeStartValue: fadeStartValue, FadeEndValue: fadeEndValue, FadeStepValue: fadeStepValue, HoldForTicks: holdForTicks, ClickFunction: clickFunction,
+        HoldCountDown: holdForTicks, CurrentImageIndex: 0, CurrentGlobalAlphaValue: fadeStartValue, OverlayImages: overlayimages, DrawingCanvas: drawingCanvas,
+        DrawingCanvasCtx: drawingCanvasCtx
+    });
+    registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
+        var imageFaderProps = getImageFaderProps(canvasid1, windowid1);
+        var ctx = imageFaderProps.DrawingCanvasCtx;
+        var realCtx = getCtx(canvasid1);
+        ctx.save();
+        if (imageFaderProps.HoldCountDown == 0) {
+            if (imageFaderProps.CurrentGlobalAlphaValue == imageFaderProps.FadeStartValue) {
+                if (imageFaderProps.CurrentImageIndex + 1 >= imageFaderProps.Images.length) {
+                    imageFaderProps.CurrentImageIndex = 0;
+                } else {
+                    imageFaderProps.CurrentImageIndex++;
+                }
+            }
+            if (imageFaderProps.CurrentGlobalAlphaValue < imageFaderProps.FadeEndValue) {
+                imageFaderProps.CurrentGlobalAlphaValue += imageFaderProps.FadeStepValue;
+                if (imageFaderProps.CurrentGlobalAlphaValue > 1) {
+                    imageFaderProps.CurrentGlobalAlphaValue = 1;
+                }
+                ctx.globalAlpha = imageFaderProps.CurrentGlobalAlphaValue;
+            } else {
+                imageFaderProps.CurrentGlobalAlphaValue = imageFaderProps.FadeStartValue;
+                ctx.globalAlpha = imageFaderProps.CurrentGlobalAlphaValue;
+                imageFaderProps.HoldCountDown = imageFaderProps.HoldForTicks;
+            }
+            if (imageFaderProps.OverlayImages == 1 && imageFaderProps.CurrentGlobalAlphaValue != imageFaderProps.FadeEndValue) {
+                var prevImageIndex = 0;
+                if (imageFaderProps.CurrentImageIndex - 1 < 0) {
+                    prevImageIndex = imageFaderProps.Images.length - 1;
+                } else {
+                    prevImageIndex = imageFaderProps.CurrentImageIndex - 1;
+                }
+                if (imageFaderProps.FadeEndValue - ctx.globalAlpha > 0 && imageFaderProps.FadeEndValue - ctx.globalAlpha < 1) {
+                    var saveAlpha = ctx.globalAlpha;
+                    ctx.globalAlpha = imageFaderProps.FadeEndValue - saveAlpha;
+                    ctx.drawImage(imageFaderProps.Images[prevImageIndex], 0, 0);
+                    ctx.globalAlpha = saveAlpha;
+                }
+            }
+            ctx.drawImage(imageFaderProps.Images[imageFaderProps.CurrentImageIndex], 0, 0);
+            realCtx.drawImage(imageFaderProps.DrawingCanvas, imageFaderProps.X, imageFaderProps.Y);
+        } else {
+            imageFaderProps.HoldCountDown--;
+            ctx.globalAlpha = imageFaderProps.FadeEndValue;
+            realCtx.drawImage(imageFaderProps.Images[imageFaderProps.CurrentImageIndex], imageFaderProps.X, imageFaderProps.Y);
+        }
+        ctx.restore();
+    }, canvasid);
+    registerAnimatedWindow(canvasid);
 }
 
 //Word processor code starts here
