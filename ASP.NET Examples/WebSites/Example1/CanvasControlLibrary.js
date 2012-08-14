@@ -153,7 +153,7 @@ function correctEvent(canvasid, e) {
     }
 }
 
-function pointEvent(eventArray, canvasId, e, parentwindowid) {
+function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefault) {
     var canvas = getCanvas(canvasId);
     e = correctEvent(canvasId, e);
     var x = e.calcX;
@@ -202,14 +202,14 @@ function pointEvent(eventArray, canvasId, e, parentwindowid) {
                 for (var u = 0; u < eventArray.length; u++) {
                     if (eventArray[u][0] == windows[i].WindowCount) {
                         if (windows[i].ChildWindowIDs.length > 0) {
-                            if (pointEvent(eventArray, canvasId, e, windows[i].WindowCount) != 1) {
+                            if (pointEvent(eventArray, canvasId, e, windows[i].WindowCount, suppressPreventDefault) != 1) {
                                 eventArray[u][1](canvasId, windows[i].WindowCount, e);
                             }
                         } else {
                             eventArray[u][1](canvasId, windows[i].WindowCount, e);
                         }
                         draw(canvasId);
-                        if (windows[i].ControlType != 'TextBox' && navigator.userAgent.toLowerCase().indexOf('ipad') == -1 && navigator.userAgent.toLowerCase().indexOf('ipad') == -1 && navigator.userAgent.toLowerCase().indexOf('ipad') == -1) {
+                        if (windows[i].ControlType != 'TextBox' && suppressPreventDefault != 1) {
                             if (e.preventDefault)
                                 e.preventDefault();
                             e.returnValue = false;
@@ -264,14 +264,14 @@ function pointEvent(eventArray, canvasId, e, parentwindowid) {
                     if (eventArray[u][0] == windows[i].WindowCount) {
                         if (windows[i].ChildWindowIDs.length > 0) {
                             doingEvent = 0;
-                            if (pointEvent(eventArray, canvasId, e, windows[i].WindowCount) != 1) {
+                            if (pointEvent(eventArray, canvasId, e, windows[i].WindowCount, suppressPreventDefault) != 1) {
                                 eventArray[u][1](canvasId, windows[i].WindowCount, e);
                             }
                         } else {
                             eventArray[u][1](canvasId, windows[i].WindowCount, e);
                         }
                         draw(canvasId);
-                        if (windows[i].ControlType != 'TextBox' && navigator.userAgent.toLowerCase().indexOf('ipad') == -1 && navigator.userAgent.toLowerCase().indexOf('ipad') == -1 && navigator.userAgent.toLowerCase().indexOf('ipad') == -1) {
+                        if (windows[i].ControlType != 'TextBox' && suppressPreventDefault != 1) {
                             if (e.preventDefault)
                                 e.preventDefault();
                             e.returnValue = false;
@@ -439,7 +439,7 @@ function registerCanvasElementId(canvasId) {
         canvas.addEventListener("touchend", function (e) {
             e.pageX = e.touches[0].pageX;
             e.pageY = e.touches[0].pageY;
-            pointEvent(mouseUpFunctions, canvasId, e, null);
+            pointEvent(mouseUpFunctions, canvasId, e, null, 1);
         }, false);
     } else {
         canvas.onmousedown = function (e) { canvasOnMouseDown(canvasId, e); };
@@ -965,6 +965,20 @@ function destroyControlByWindowObj(w) {
                         destroyControl(w.CanvasID, menuBarPropsArray[i].ChildMenuWindowIDs[y]);
                     }
                     menuBarPropsArray.splice(i, 1);
+                }
+            }
+            break;
+        case "TextBox":
+            for (var i = textBoxPropsArray.length - 1; i >= 0 ; i--) {
+                if (textBoxPropsArray[i].CanvasID == w.CanvasID && textBoxPropsArray[i].WindowID == w.WindowCount) {
+                    textBoxPropsArray.splice(i, 1);
+                }
+            }
+            break;
+        case "ImageFader":
+            for (var i = imageFaderPropsArray.length - 1; i >= 0 ; i--) {
+                if (imageFaderPropsArray[i].CanvasID == w.CanvasID && imageFaderPropsArray[i].WindowID == w.WindowCount) {
+                    imageFaderPropsArray.splice(i, 1);
                 }
             }
             break;
@@ -2234,7 +2248,7 @@ function createImage(canvasid, controlNameId, x, y, width, height, depth, imgurl
         var ctx = getCtx(canvasid);
         var imageProps = getImageControlProps(canvasid, windowid);
         var i = new Image();
-        if (imageProps.Image.complete == true) {
+        if (imageProps.Image && imageProps.Image.complete == true) {
             if (navigator.userAgent.toLowerCase().indexOf('msie') == -1) {
                 ctx.drawImage(imageProps.Image, 0, 0, imageProps.Width, imageProps.Height, imageProps.X, imageProps.Y, imageProps.Width, imageProps.Height);
             } else {
@@ -6580,7 +6594,11 @@ function getEncodedVariables() {
     for (var i = 0; i < textBoxPropsArray.length; i++) {
         strVars += '[i]' + stringEncodeObject(textBoxPropsArray[i]) + '[/i]';
     }
-    strVars += '[/textBoxPropsArray]';
+    strVars += '[/textBoxPropsArray][imageFaderPropsArray]';
+    for (var i = 0; i < imageFaderPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(imageFaderPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/imageFaderPropsArray]';
     return strVars;
 }
 
@@ -6588,7 +6606,9 @@ var savedImagesOnPostback = new Array();
 var currentSavedImagesOnPostbackWindowID;
 var currentSavedImagesOnPostbackCanvasID;
 var savedFunctionsOnPostback = new Array();
-
+var savedDrawingCanvas = new Array();
+var savedDrawingCanvasCtx = new Array();
+var savedImageArrayOnPostback = new Array();
 
 function stringEncodeObject(obj) {
     var str = '';
@@ -6597,9 +6617,17 @@ function stringEncodeObject(obj) {
             savedImagesOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, Image: obj[name] });
             continue;
         }
-        var getType = {};
+        if (name == 'DrawingCanvas') {
+            savedDrawingCanvas.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, DrawingCanvas: obj[name] });
+            continue;
+        }
+        if (name == 'DrawingCanvasCtx') {
+            savedDrawingCanvasCtx.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, DrawingCanvasCtx: obj[name] });
+            continue;
+        }
         if (obj[name] && typeof obj[name] == 'function') {
             savedFunctionsOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, FunctionValue: obj[name], PropertyName: name });
+            continue;
         }
         if (typeof obj[name] === 'string' || typeof obj[name] === 'number') {
             if (name == "WindowID") {
@@ -6612,6 +6640,10 @@ function stringEncodeObject(obj) {
         } else if (obj[name] instanceof Array) {
             str += '[' + name + ']';
             for (var i = 0; i < obj[name].length; i++) {
+                if ((navigator.userAgent.toLowerCase().indexOf('opera') > -1 ? obj[name][i] instanceof Object && obj[name][i].hasOwnProperty && obj[name][i].src : obj[name][i] instanceof Image)) {
+                    savedImageArrayOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, Image: obj[name][i] });
+                    continue;
+                }
                 if (typeof obj[name][i] === 'string' || typeof obj[name][i] === 'number') {
                     str += '[i]' + encodeAllBrackets(obj[name][i].toString()) + '[/i]';
                 } else if (obj[name][i] instanceof Array) {
@@ -6637,6 +6669,10 @@ function encodeAllBrackets(str) {
 function encodeArray(arr) {
     var str = '[Array]';
     for (var i = 0; i < arr.length; i++) {
+        if ((navigator.userAgent.toLowerCase().indexOf('opera') > -1 ? arr[i] instanceof Object && arr[i].hasOwnProperty && arr[i].src : arr[i] instanceof Image)) {
+            savedImageArrayOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, Image: arr[i] });
+            continue;
+        }
         if (typeof arr[i] === 'string' || typeof arr[i] === 'number') {
             str += '[i]' + encodeAllBrackets(arr[i].toString()) + '[/i]';
         } else if (arr[i] instanceof Array) {
@@ -6677,6 +6713,27 @@ function UnWrapVars(data) {
         for (var x = 0; x < imageControlPropsArray.length; x++) {
             if (imageControlPropsArray[x].CanvasID == savedImagesOnPostback[i].CanvasID && imageControlPropsArray[x].WindowID == savedImagesOnPostback[i].WindowID) {
                 imageControlPropsArray[x].Image = savedImagesOnPostback[i].Image;
+            }
+        }
+    }
+    for (var i = 0; i < savedImageArrayOnPostback.length; i++) {
+        for (var x = 0; x < imageFaderPropsArray.length; x++) {
+            if (imageFaderPropsArray[x].CanvasID == savedImageArrayOnPostback[i].CanvasID && imageFaderPropsArray[x].WindowID == savedImageArrayOnPostback[i].WindowID) {
+                imageFaderPropsArray[x].Images.push(savedImageArrayOnPostback[i].Image);
+            }
+        }
+    }
+    for (var i = 0; i < savedDrawingCanvas.length; i++) {
+        for (var x = 0; x < imageFaderPropsArray.length; x++) {
+            if (imageFaderPropsArray[x].CanvasID == savedDrawingCanvas[i].CanvasID && imageFaderPropsArray[x].WindowID == savedDrawingCanvas[i].WindowID) {
+                imageFaderPropsArray[x].DrawingCanvas = savedDrawingCanvas[i].DrawingCanvas;
+            }
+        }
+    }
+    for (var i = 0; i < savedDrawingCanvasCtx.length; i++) {
+        for (var x = 0; x < imageFaderPropsArray.length; x++) {
+            if (imageFaderPropsArray[x].CanvasID == savedDrawingCanvasCtx[i].CanvasID && imageFaderPropsArray[x].WindowID == savedDrawingCanvasCtx[i].WindowID) {
+                imageFaderPropsArray[x].DrawingCanvasCtx = savedDrawingCanvasCtx[i].DrawingCanvasCtx;
             }
         }
     }

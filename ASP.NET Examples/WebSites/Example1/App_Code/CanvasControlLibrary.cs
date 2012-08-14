@@ -923,9 +923,9 @@ public class CanvasControlLibrary
         }
     }
 
-    public List<CCLTextBox> TextBoxPropsArray = new List<CCLTextBox>();
+    public List<CCLTextBoxProps> TextBoxPropsArray = new List<CCLTextBoxProps>();
 
-    public class CCLTextBox
+    public class CCLTextBoxProps
     {
         public string CanvasID { get; set; }
         public string WindowID { get; set; }
@@ -969,6 +969,31 @@ public class CanvasControlLibrary
         public string ShowCaret { get; set; }
         public string CaretColor { get; set; }
         public object Tag { get; set; }
+    }
+
+    public class CCLImageFaderProps
+    {
+        public string CanvasID { get; set; }
+        public string WindowID { get; set; }
+        public string X { get; set; }
+        public string Y { get; set; }
+        public string Width { get; set; }
+        public string Height { get; set; }
+        public ArrayList ImageURLs { get; set; }
+        public string FadeStartValue { get; set; }
+        public string FadeEndValue { get; set; }
+        public string FadeStepValue { get; set; }
+        public string HoldForTicks { get; set; }
+        public string ClickFunction { get; set; }
+        public string HoldCountDown { get; set; }
+        public string CurrentImageIndex { get; set; }
+        public string CurrentGlobalAlphaValue { get; set; }
+        public string OverlayImages { get; set; }
+
+        public CCLImageFaderProps()
+        {
+            ImageURLs = new ArrayList();
+        }
     }
 
     public class JavaScriptFunctionsToSendAndAttachOnClientSide
@@ -1268,7 +1293,7 @@ public class CanvasControlLibrary
                 case "textBoxPropsArray":
                     foreach (XmlNode child2 in child1.ChildNodes)
                     {
-                        CCLTextBox sm = new CCLTextBox();
+                        CCLTextBoxProps sm = new CCLTextBoxProps();
                         TextBoxPropsArray.Add(sm);
                         FillClassObject(child2, sm);
                     }
@@ -1527,7 +1552,7 @@ public class CanvasControlLibrary
             strVars += "[i]" + encodeObject(smb) + "[/i]";
         }
         strVars += "[/subMenuBarPropsArray][textBoxPropsArray]";
-        foreach (CCLTextBox smb in TextBoxPropsArray)
+        foreach (CCLTextBoxProps smb in TextBoxPropsArray)
         {
             strVars += "[i]" + encodeObject(smb) + "[/i]";
         }
@@ -1839,7 +1864,7 @@ public class CanvasControlLibrary
                         }
                         break;
                     case "TextBox":
-                        foreach (CCLTextBox o in TextBoxPropsArray)
+                        foreach (CCLTextBoxProps o in TextBoxPropsArray)
                         {
                             if (o.CanvasID == w.CanvasID && o.WindowID == w.WindowCount)
                             {

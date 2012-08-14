@@ -58,6 +58,11 @@
                 function () { alert('You choose Help from the menu'); }, null]], '#bec7ff', '#848ec9', '#515eac', '#e3e7ff', '#c5cdff', 0);
             createImageFader(elemId, 'MoviePosters', 500, 200, 135, 200, highestDepth, ['fantastic_four.jpg', 'IncredibleHulk.jpg', 'Thor.jpg', 'xmen_first_class.jpg'],
                 0, 1, 0.01, 100, function (canvasid, windowid, e, i) { var imageFaderProps = getImageFaderProps(canvasid, windowid); alert(imageFaderProps.ImageURLs[i]); }, 1);
+            createButton(elemId, 'b8', 500, 74, 250, 40, 'Custom Click Function', '#0000FF', 12, '12pt Ariel', 2, highestDepth,
+                function (canvasid, windowid) {
+                    invokeServerSideFunction('AjaxEx1.aspx', 'ClickMe', elemId, windowid, function () { alert('Did Postback'); });
+                }, null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1');
+            createLabel(elemId, 'l1', 500, 40, 100, 20, 'Label 1', '#000000', 12, '12pt Ariel', null, highestDepth);
             draw(elemId);
         </script>
     </div>

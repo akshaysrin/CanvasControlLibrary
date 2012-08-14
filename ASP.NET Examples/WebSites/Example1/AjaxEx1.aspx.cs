@@ -197,7 +197,7 @@ public partial class Default2 : System.Web.UI.Page
     {
         CanvasControlLibrary.CCLButtonProps buttonProps = ccl.getControlPropsByWindowID(canvasid, windowid.ToString()) as CanvasControlLibrary.CCLButtonProps;
         CanvasControlLibrary.CCLLabelProps lp = ccl.getControlPropsByControlNameID((string)buttonProps.Tag) as CanvasControlLibrary.CCLLabelProps;
-        CanvasControlLibrary.CCLTextBox textbox = ccl.getControlPropsByControlNameID("numTicketsTextBox") as CanvasControlLibrary.CCLTextBox;
+        CanvasControlLibrary.CCLTextBoxProps textbox = ccl.getControlPropsByControlNameID("numTicketsTextBox") as CanvasControlLibrary.CCLTextBoxProps;
         CanvasControlLibrary.CCLComboBoxProps selectCinemaComboBox = ccl.getControlPropsByControlNameID("selectCinemaComboBoxComboBoxTextArea") as CanvasControlLibrary.CCLComboBoxProps;
         Regex regex = new System.Text.RegularExpressions.Regex("MovieTimeLabel[0-9]+Poster(?<PosterIndex>[0-9]+)");
         Match m = regex.Match((string)buttonProps.Tag);
