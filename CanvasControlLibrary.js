@@ -5733,7 +5733,6 @@ function createSubMenu(canvasid, controlNameId, parentWindowId, depth, data, xof
         }
     }, canvasid);
     registerClickFunction(windowid, function (canvasid2, windowid2, e) {
-        
         var subMenuBarProps = getSubMenuBarProps(canvasid2, windowid2);
         var canvas = getCanvas(canvasid2);
         var x = e.calcX;
@@ -5742,7 +5741,7 @@ function createSubMenu(canvasid, controlNameId, parentWindowId, depth, data, xof
         for (var i = 0; i < subMenuBarProps.Data.length; i++) {
             if (x > subMenuBarProps.X && x < subMenuBarProps.X + subMenuBarProps.Width && y > subMenuBarProps.Y + heightOffset + 5 &&
                 y < subMenuBarProps.Y + heightOffset + 5 + subMenuBarProps.Data[i][2]) {
-                if (subMenuBarProps.Data[i][5] != null) {
+                if (typeof subMenuBarProps.Data[i][5] == 'function') {
                     subMenuBarProps.Data[i][5](canvasid2, windowid2, 1, i);
                 } else {
                     var idx = 0;
@@ -5750,10 +5749,10 @@ function createSubMenu(canvasid, controlNameId, parentWindowId, depth, data, xof
                         if (j == i) {
                             if (subMenuBarProps.Data[i][4] == 0) {
                                 subMenuBarProps.Data[i][4] = 1;
-                                setStatusForAllChildWindowsFromMenuBar(canvasid2, subMenuBarProps.ChildMenuWindowIDs, 0, idx);
+                                setStatusForAllChildWindowsFromMenuBar(canvasid2, subMenuBarProps.ChildMenuWindowIDs, 0, idx, subMenuBarProps.ParentMenuWindowID);
                             } else {
                                 subMenuBarProps.Data[i][4] = 0;
-                                setStatusForAllChildWindowsFromMenuBar(canvasid2, subMenuBarProps.ChildMenuWindowIDs, 1, idx);
+                                setStatusForAllChildWindowsFromMenuBar(canvasid2, subMenuBarProps.ChildMenuWindowIDs, 1, idx, subMenuBarProps.ParentMenuWindowID);
                             }
                         }
                         if (subMenuBarProps.Data[j][5] == null) {
@@ -5773,7 +5772,7 @@ function createSubMenu(canvasid, controlNameId, parentWindowId, depth, data, xof
                 parentMenuBarProps = getSubMenuBarProps(canvasid3, subMenuBarProps.ParentMenuWindowID);
             }
             parentMenuBarProps.Data[subMenuBarProps.ParentIndexInParentMenu][4] = 0;
-            setStatusForAllChildWindowsFromMenuBar(canvasid3, subMenuBarProps.ChildMenuWindowIDs, 1, -1);
+            setStatusForAllChildWindowsFromMenuBar(canvasid3, subMenuBarProps.ChildMenuWindowIDs, 1, -1, subMenuBarProps.ParentMenuWindowID);
         }
     });
     return windowid;
@@ -5881,10 +5880,10 @@ function createMenuBarControl(canvasid, controlNameId, x, y, width, height, dept
                         if (j == i) {
                             if (menuBarProps.Data[i][4] == 0) {
                                 menuBarProps.Data[i][4] = 1;
-                                setStatusForAllChildWindowsFromMenuBar(canvasid2, menuBarProps.ChildMenuWindowIDs, 0, idx);
+                                setStatusForAllChildWindowsFromMenuBar(canvasid2, menuBarProps.ChildMenuWindowIDs, 0, idx, null);
                             } else {
                                 menuBarProps.Data[i][4] = 0;
-                                setStatusForAllChildWindowsFromMenuBar(canvasid2, menuBarProps.ChildMenuWindowIDs, 1, idx);
+                                setStatusForAllChildWindowsFromMenuBar(canvasid2, menuBarProps.ChildMenuWindowIDs, 1, idx, null);
                             }
                         }
                         if (menuBarProps.Data[j][6] != null) {
@@ -5903,7 +5902,7 @@ function createMenuBarControl(canvasid, controlNameId, x, y, width, height, dept
             var menuBarProps = getMenuBarProps(canvasid3, windowid3);
             for (var i = 0; i < menuBarProps.Data.length; i++) {
                 if (menuBarProps.Data[i][4] == 1) {
-                    setStatusForAllChildWindowsFromMenuBar(canvasid3, menuBarProps.ChildMenuWindowIDs, 1, -1);
+                    setStatusForAllChildWindowsFromMenuBar(canvasid3, menuBarProps.ChildMenuWindowIDs, 1, -1, null);
                 }
                 menuBarProps.Data[i][4] = 0;
             }
@@ -5911,14 +5910,64 @@ function createMenuBarControl(canvasid, controlNameId, x, y, width, height, dept
     });
 }
 
-function setStatusForAllChildWindowsFromMenuBar(canvasid, childMenuWindowIDs, status, idx) {
-    for (var i = 0; i < childMenuWindowIDs.length; i++) {
-        setHiddenWindowStatus(canvasid, childMenuWindowIDs[i], (i == idx ? status : 1));
-        var subMenuBarProps = getSubMenuBarProps(canvasid, childMenuWindowIDs[i]);
-        for (var j = 0; j < subMenuBarProps.Data.length; j++) {
-            subMenuBarProps.Data[j][4] = status;
+function setStatusForAllChildWindowsFromMenuBar(canvasid, childMenuWindowIDs, status, idx, parentMenuWindowID) {
+    if (status == 0) {
+        for (var i = 0; i < childMenuWindowIDs.length; i++) {
+            setHiddenWindowStatus(canvasid, childMenuWindowIDs[i], (i == idx ? status : 1));
+            var subMenuBarProps = getSubMenuBarProps(canvasid, childMenuWindowIDs[i]);
+            for (var j = 0; j < subMenuBarProps.Data.length; j++) {
+                subMenuBarProps.Data[j][4] = status;
+            }
+            setStatusForAllChildWindowsFromMenuBar(canvasid, subMenuBarProps.ChildMenuWindowIDs, status, -1);
         }
-        setStatusForAllChildWindowsFromMenuBar(canvasid, subMenuBarProps.ChildMenuWindowIDs, status, -1);
+    } else {
+        var subMenuBarProps;
+        while (parentMenuWindowID) {
+            subMenuBarProps = getSubMenuBarProps(canvasid, parentMenuWindowID);
+            if (!subMenuBarProps) {
+                subMenuBarProps = getMenuBarProps(canvasid, parentMenuWindowID);
+            }
+            parentMenuWindowID = subMenuBarProps.ParentMenuWindowID;
+        }
+        if (!subMenuBarProps) {
+            for (var i = 0; i < menuBarPropsArray.length; i++) {
+                var notFound = 0;
+                for (var j = 0; j < childMenuWindowIDs.length; j++) {
+                    var found = 0;
+                    for (x = 0; x < menuBarPropsArray[i].ChildMenuWindowIDs.length; x++) {
+                        if (childMenuWindowIDs[j] == menuBarPropsArray[i].ChildMenuWindowIDs[x]) {
+                            found = 1;
+                            break;
+                        }
+                    }
+                    if (found == 0) {
+                        notFound = 1;
+                        break;
+                    }
+                }
+                if (notFound == 0) {
+                    subMenuBarProps = menuBarPropsArray[i];
+                    break;
+                }
+            }
+        }
+        for (var i = 0; i < subMenuBarProps.ChildMenuWindowIDs.length; i++) {
+            setHiddenWindowStatus(canvasid, subMenuBarProps.ChildMenuWindowIDs[i], 1);
+            var subMenuBarPropsChild = getSubMenuBarProps(canvasid, subMenuBarProps.ChildMenuWindowIDs[i]);
+            if (subMenuBarPropsChild.ChildMenuWindowIDs.length > 0) {
+                recurseHideSubMenuBarWindows(canvasid, subMenuBarPropsChild);
+            }
+        }
+    }
+}
+
+function recurseHideSubMenuBarWindows(canvasid, subMenuBarProps) {
+    for (var i = 0; i < subMenuBarProps.ChildMenuWindowIDs.length; i++) {
+        setHiddenWindowStatus(canvasid, subMenuBarProps.ChildMenuWindowIDs[i], 1);
+        var subMenuBarPropsChild = getSubMenuBarProps(canvasid, subMenuBarProps.ChildMenuWindowIDs[i]);
+        if (subMenuBarPropsChild.ChildMenuWindowIDs.length > 0) {
+            recurseHideSubMenuBarWindows(subMenuBarPropsChild);
+        }
     }
 }
 
@@ -6368,7 +6417,7 @@ function getImageFaderProps(canvasid, windowid) {
 }
 
 function createImageFader(canvasid, controlNameId, x, y, width, height, depth, imageURLs, fadeStartValue, fadeEndValue, fadeStepValue, holdForTicks, clickFunction, overlayimages) {
-    var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'ImageFader', controlNameId);
+    var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'ImageFader');
     var images = new Array();
     for (var i = 0; i < imageURLs.length; i++) {
         var image = new Image();
@@ -6443,6 +6492,90 @@ function createImageFader(canvasid, controlNameId, x, y, width, height, depth, i
     }
     registerAnimatedWindow(canvasid);
 }
+
+//Image slider code starts here
+
+var imageSliderPropsArray = new Array();
+
+function getImageSliderProps(canvasid, windowid) {
+    for (var i = 0; i < imageSliderPropsArray.length; i++) {
+        if (imageSliderPropsArray[i].CanvasID == canvasid && imageSliderPropsArray[i].WindowID == windowid) {
+            return imageSliderPropsArray[i];
+        }
+    }
+}
+
+function createImageSlider(canvasid, controlNameId, x, y, width, height, depth, imageURLs, direction, stepIncrement, clickFunction) {
+    var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'ImageSlider');
+    var images = new Array();
+    for (var i = 0; i < imageURLs.length; i++) {
+        var image = new Image();
+        images.push(image);
+        image.onload = function () {
+            draw(canvasid);
+        };
+        image.src = imageURLs[i];
+    }
+    imageFaderPropsArray.push({
+        CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, ImageURLs: imageURLs, Images: images,
+        Direction: direction, StepIncrement: stepIncrement, 
+    });
+    registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
+        var imageFaderProps = getImageFaderProps(canvasid1, windowid1);
+        var ctx = imageFaderProps.DrawingCanvasCtx;
+        var realCtx = getCtx(canvasid1);
+        ctx.save();
+        if (imageFaderProps.HoldCountDown == 0) {
+            if (imageFaderProps.CurrentGlobalAlphaValue == imageFaderProps.FadeStartValue) {
+                if (imageFaderProps.CurrentImageIndex + 1 >= imageFaderProps.Images.length) {
+                    imageFaderProps.CurrentImageIndex = 0;
+                } else {
+                    imageFaderProps.CurrentImageIndex++;
+                }
+            }
+            if (imageFaderProps.CurrentGlobalAlphaValue < imageFaderProps.FadeEndValue) {
+                imageFaderProps.CurrentGlobalAlphaValue += imageFaderProps.FadeStepValue;
+                if (imageFaderProps.CurrentGlobalAlphaValue > 1) {
+                    imageFaderProps.CurrentGlobalAlphaValue = 1;
+                }
+                ctx.globalAlpha = imageFaderProps.CurrentGlobalAlphaValue;
+            } else {
+                imageFaderProps.CurrentGlobalAlphaValue = imageFaderProps.FadeStartValue;
+                ctx.globalAlpha = imageFaderProps.CurrentGlobalAlphaValue;
+                imageFaderProps.HoldCountDown = imageFaderProps.HoldForTicks;
+            }
+            if (imageFaderProps.OverlayImages == 1 && imageFaderProps.CurrentGlobalAlphaValue != imageFaderProps.FadeEndValue) {
+                var prevImageIndex = 0;
+                if (imageFaderProps.CurrentImageIndex - 1 < 0) {
+                    prevImageIndex = imageFaderProps.Images.length - 1;
+                } else {
+                    prevImageIndex = imageFaderProps.CurrentImageIndex - 1;
+                }
+                if (imageFaderProps.FadeEndValue - ctx.globalAlpha > 0 && imageFaderProps.FadeEndValue - ctx.globalAlpha < 1) {
+                    var saveAlpha = ctx.globalAlpha;
+                    ctx.globalAlpha = imageFaderProps.FadeEndValue - saveAlpha;
+                    ctx.drawImage(imageFaderProps.Images[prevImageIndex], 0, 0);
+                    ctx.globalAlpha = saveAlpha;
+                }
+            }
+            ctx.drawImage(imageFaderProps.Images[imageFaderProps.CurrentImageIndex], 0, 0);
+            realCtx.drawImage(imageFaderProps.DrawingCanvas, imageFaderProps.X, imageFaderProps.Y);
+        } else {
+            imageFaderProps.HoldCountDown--;
+            ctx.globalAlpha = imageFaderProps.FadeEndValue;
+            realCtx.drawImage(imageFaderProps.Images[imageFaderProps.CurrentImageIndex], imageFaderProps.X, imageFaderProps.Y);
+        }
+        ctx.restore();
+    }, canvasid);
+    if (clickFunction) {
+        registerClickFunction(windowid, function (canvasid2, windowid2, e) {
+            var imageFaderProps = getImageFaderProps(canvasid2, windowid2);
+            imageFaderProps.ClickFunction(canvasid2, windowid2, e, imageFaderProps.CurrentImageIndex);
+        }, canvasid);
+    }
+    registerAnimatedWindow(canvasid);
+}
+
 
 //Word processor code starts here
 
@@ -6609,8 +6742,10 @@ var savedFunctionsOnPostback = new Array();
 var savedDrawingCanvas = new Array();
 var savedDrawingCanvasCtx = new Array();
 var savedImageArrayOnPostback = new Array();
+var savedArrayFunctionsOnPostback = new Array();
 
 function stringEncodeObject(obj) {
+    var strIndexes = '';
     var str = '';
     for (var name in obj) {
         if ((navigator.userAgent.toLowerCase().indexOf('opera') > -1 ? obj[name] instanceof Object && obj[name].hasOwnProperty && obj[name].src : obj[name] instanceof Image) || name == 'Image') {
@@ -6644,12 +6779,18 @@ function stringEncodeObject(obj) {
                     savedImageArrayOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, Image: obj[name][i] });
                     continue;
                 }
+                if (obj[name][i] && typeof obj[name][i] == 'function') {
+                    savedArrayFunctionsOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID,
+                        Index: i.toString(), Function: obj[name][i]
+                    });
+                    continue;
+                }
                 if (typeof obj[name][i] === 'string' || typeof obj[name][i] === 'number') {
                     str += '[i]' + encodeAllBrackets(obj[name][i].toString()) + '[/i]';
                 } else if (obj[name][i] instanceof Array) {
-                    str += encodeArray(obj[name][i]);
+                    str += encodeArray(obj[name][i], (strIndexes && strIndexes.length > 0 ? strIndexes + ',' + i.toString() : i.toString()));
                 } else {
-                    str += '[Array]' + stringEncodeObject(obj[name][i]) + '[/Array]';
+                    str += '[Array]' + stringEncodeObject(obj[name][i], strIndexes ) + '[/Array]';
                 }
             }
             str += '[/' + name + ']'
@@ -6666,17 +6807,24 @@ function encodeAllBrackets(str) {
     return str.replace(']', '&rb;');
 }
 
-function encodeArray(arr) {
+function encodeArray(arr, strIndexes) {
     var str = '[Array]';
     for (var i = 0; i < arr.length; i++) {
         if ((navigator.userAgent.toLowerCase().indexOf('opera') > -1 ? arr[i] instanceof Object && arr[i].hasOwnProperty && arr[i].src : arr[i] instanceof Image)) {
             savedImageArrayOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, Image: arr[i] });
             continue;
         }
+        if (arr[i] && typeof arr[i] == 'function') {
+            savedArrayFunctionsOnPostback.push({
+                CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, 
+                Index: (strIndexes && strIndexes.length > 0 ? strIndexes + ',' + i.toString() : i.toString()), Function: arr[i]
+            });
+            continue;
+        }
         if (typeof arr[i] === 'string' || typeof arr[i] === 'number') {
             str += '[i]' + encodeAllBrackets(arr[i].toString()) + '[/i]';
         } else if (arr[i] instanceof Array) {
-            str += encodeArray(arr[i]);
+            str += encodeArray(arr[i], (strIndexes && strIndexes.length > 0 ? strIndexes + ',' + i.toString() : i.toString()));
         } else {
             str += '[Array]' + stringEncodeObject(arr[i]) + '[/Array]';
         }
@@ -6684,6 +6832,21 @@ function encodeArray(arr) {
     return str + '[/Array]'
 }
 
+function rectifyNullFunctions(arr) {
+    if (arr.length == 6) {
+        arr.splice(5, 0, null);
+    }
+    if (arr.length >= 7 && arr[6] != null) {
+        for (var i = 0; i < arr[6].length; i++) {
+            if (typeof arr[6][i][5] != 'function' && typeof arr[6][i][5] == 'object') {
+                arr[6][i].splice(5, 0, null);
+                rectifyNullFunctions(arr[6][i][6]);
+            }
+        }
+    } else if (arr.length == 6) {
+        arr.push(null);
+    }
+}
 
 function UnWrapVars(data) {
     var xmlDoc;
@@ -6734,6 +6897,67 @@ function UnWrapVars(data) {
         for (var x = 0; x < imageFaderPropsArray.length; x++) {
             if (imageFaderPropsArray[x].CanvasID == savedDrawingCanvasCtx[i].CanvasID && imageFaderPropsArray[x].WindowID == savedDrawingCanvasCtx[i].WindowID) {
                 imageFaderPropsArray[x].DrawingCanvasCtx = savedDrawingCanvasCtx[i].DrawingCanvasCtx;
+            }
+        }
+    }
+    for (var i = 0; i < savedArrayFunctionsOnPostback.length; i++) {
+        for (var j = 0; j < menuBarPropsArray.length; j++) {
+            if (savedArrayFunctionsOnPostback[i].CanvasID == menuBarPropsArray[j].CanvasID &&
+                savedArrayFunctionsOnPostback[i].WindowID == menuBarPropsArray[j].WindowID) {
+                var arrayIndexes = savedArrayFunctionsOnPostback[i].Index.split(',');
+                var dataptr = menuBarPropsArray[j].Data;
+                for (var x = 0; x < arrayIndexes.length - 1; x++) {
+                    dataptr = dataptr[dataptr.length - 1 > arrayIndexes[x] ? arrayIndexes[x] : dataptr.length - 1];
+                }
+                dataptr.splice(arrayIndexes[arrayIndexes.length - 1], 0, savedArrayFunctionsOnPostback[i].Function);
+            }
+        }
+    }
+    for (var j = 0; j < menuBarPropsArray.length; j++) {
+        for (var k = 0; k < menuBarPropsArray[j].Data.length; k++) {
+            rectifyNullFunctions(menuBarPropsArray[j].Data[k]);
+        }
+    }
+    for (var i = 0; i < subMenuBarPropsArray.length; i++) {
+        for (var j = 0; j < menuBarPropsArray.length; j++) {
+            for (var c = 0; c < menuBarPropsArray[j].ChildMenuWindowIDs.length; c++) {
+                if (subMenuBarPropsArray[i].WindowID == menuBarPropsArray[j].ChildMenuWindowIDs[c] &&
+                    subMenuBarPropsArray[i].CanvasID == menuBarPropsArray[j].CanvasID) {
+                    var x = 0;
+                    for (var k = 0; k < menuBarPropsArray[j].Data.length; k++) {
+                        if (menuBarPropsArray[j].Data[k][6] != null) {
+                            if (x == c) {
+                                subMenuBarPropsArray[i].Data = menuBarPropsArray[j].Data[k][6];
+                            }
+                            x++;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    for (var i = 0; i < menuBarPropsArray.length; i++) {
+        for (var c = 0; c < menuBarPropsArray[i].ChildMenuWindowIDs.length; c++) {
+            for (var k = 0; k < subMenuBarPropsArray.length; k++) {
+                if (subMenuBarPropsArray[k].CanvasID == menuBarPropsArray[i].CanvasID &&
+                    subMenuBarPropsArray[k].WindowID == menuBarPropsArray[i].ChildMenuWindowIDs[c]) {
+                    for (var m = 0; m < subMenuBarPropsArray[k].ChildMenuWindowIDs.length; m++) {
+                        for (var j = 0; j < subMenuBarPropsArray.length; j++) {
+                            if (subMenuBarPropsArray[j].CanvasID == subMenuBarPropsArray[k].CanvasID &&
+                                subMenuBarPropsArray[j].WindowID == subMenuBarPropsArray[k].ChildMenuWindowIDs[m]) {
+                                var x = 0;
+                                for (var u = 0; u < subMenuBarPropsArray[k].Data.length; u++) {
+                                    if (subMenuBarPropsArray[k].Data[u][6] != null) {
+                                        if (x == m) {
+                                            subMenuBarPropsArray[j].Data = subMenuBarPropsArray[k].Data[u][6];
+                                        }
+                                        x++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
