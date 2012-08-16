@@ -6505,7 +6505,7 @@ function getImageSliderProps(canvasid, windowid) {
     }
 }
 
-function createImageSlider(canvasid, controlNameId, x, y, width, height, depth, imageURLs, direction, stepIncrement, clickFunction) {
+function createImageSlider(canvasid, controlNameId, x, y, width, height, depth, imageURLs, direction, stepIncrement, holdForTicks, clickFunction) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'ImageSlider');
     var images = new Array();
     for (var i = 0; i < imageURLs.length; i++) {
@@ -6516,61 +6516,106 @@ function createImageSlider(canvasid, controlNameId, x, y, width, height, depth, 
         };
         image.src = imageURLs[i];
     }
-    imageFaderPropsArray.push({
+    imageSliderPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, ImageURLs: imageURLs, Images: images,
-        Direction: direction, StepIncrement: stepIncrement, 
+        Direction: direction, StepIncrement: stepIncrement, ClickFunction: clickFunction, HoldForTicks: holdForTicks, CurrentImageIndex: 0,
+        Slide: 0, HoldCountDown: holdForTicks
     });
     registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
-        var imageFaderProps = getImageFaderProps(canvasid1, windowid1);
-        var ctx = imageFaderProps.DrawingCanvasCtx;
-        var realCtx = getCtx(canvasid1);
-        ctx.save();
-        if (imageFaderProps.HoldCountDown == 0) {
-            if (imageFaderProps.CurrentGlobalAlphaValue == imageFaderProps.FadeStartValue) {
-                if (imageFaderProps.CurrentImageIndex + 1 >= imageFaderProps.Images.length) {
-                    imageFaderProps.CurrentImageIndex = 0;
+        var imageSliderProps = getImageSliderProps(canvasid1, windowid1);
+        var ctx = getCtx(canvasid1);
+        if (imageSliderProps.HoldCountDown == 0) {
+            imageSliderProps.Slide += imageSliderProps.StepIncrement;
+            if (imageSliderProps.Direction == 1) {
+                if (Math.abs(imageSliderProps.Slide) >= imageSliderProps.Width) {
+                    imageSliderProps.HoldCountDown = imageSliderProps.HoldForTicks;
+                    if (imageSliderProps.Slide > 0) {
+                        if (imageSliderProps.CurrentImageIndex == 0) {
+                            imageSliderProps.CurrentImageIndex = imageSliderProps.ImageURLs.length - 1;
+                        } else {
+                            imageSliderProps.CurrentImageIndex--;
+                        }
+                    } else if (imageSliderProps.Slide < 0) {
+                        if (imageSliderProps.CurrentImageIndex + 1 < imageSliderProps.ImageURLs.length) {
+                            imageSliderProps.CurrentImageIndex++;
+                        } else {
+                            imageSliderProps.CurrentImageIndex = 0;
+                        }
+                    }
+                    imageSliderProps.Slide = 0;
+                    imageSliderProps.HoldCountDown = imageSliderProps.HoldForTicks;
+                    ctx.drawImage(imageSliderProps.Images[imageSliderProps.CurrentImageIndex], imageSliderProps.X, imageSliderProps.Y);
                 } else {
-                    imageFaderProps.CurrentImageIndex++;
+                    if (imageSliderProps.Slide > 0) {
+                        var prevImageIndex;
+                        if (imageSliderProps.CurrentImageIndex == 0) {
+                            prevImageIndex = imageSliderProps.ImageURLs.length - 1;
+                        } else {
+                            prevImageIndex = imageSliderProps.CurrentImageIndex - 1;
+                        }
+                        ctx.drawImage(imageSliderProps.Images[prevImageIndex], imageSliderProps.X - imageSliderProps.Width + imageSliderProps.Slide, imageSliderProps.Y);
+                        ctx.drawImage(imageSliderProps.Images[imageSliderProps.CurrentImageIndex], imageSliderProps.X + imageSliderProps.Slide, imageSliderProps.Y);
+                    } else {
+                        var nextImageIndex;
+                        if (imageSliderProps.CurrentImageIndex + 1 < imageSliderProps.ImageURLs.length) {
+                            nextImageIndex = imageSliderProps.CurrentImageIndex + 1;
+                        } else {
+                            nextImageIndex = 0;
+                        }
+                        ctx.drawImage(imageSliderProps.Images[imageSliderProps.CurrentImageIndex], imageSliderProps.X + imageSliderProps.Slide, imageSliderProps.Y);
+                        ctx.drawImage(imageSliderProps.Images[nextImageIndex], imageSliderProps.X + imageSliderProps.Width + imageSliderProps.Slide, imageSliderProps.Y);
+                    }
                 }
-            }
-            if (imageFaderProps.CurrentGlobalAlphaValue < imageFaderProps.FadeEndValue) {
-                imageFaderProps.CurrentGlobalAlphaValue += imageFaderProps.FadeStepValue;
-                if (imageFaderProps.CurrentGlobalAlphaValue > 1) {
-                    imageFaderProps.CurrentGlobalAlphaValue = 1;
-                }
-                ctx.globalAlpha = imageFaderProps.CurrentGlobalAlphaValue;
             } else {
-                imageFaderProps.CurrentGlobalAlphaValue = imageFaderProps.FadeStartValue;
-                ctx.globalAlpha = imageFaderProps.CurrentGlobalAlphaValue;
-                imageFaderProps.HoldCountDown = imageFaderProps.HoldForTicks;
-            }
-            if (imageFaderProps.OverlayImages == 1 && imageFaderProps.CurrentGlobalAlphaValue != imageFaderProps.FadeEndValue) {
-                var prevImageIndex = 0;
-                if (imageFaderProps.CurrentImageIndex - 1 < 0) {
-                    prevImageIndex = imageFaderProps.Images.length - 1;
+                if (Math.abs(imageSliderProps.Slide) >= imageSliderProps.Height) {
+                    imageSliderProps.HoldCountDown = imageSliderProps.HoldForTicks;
+                    if (imageSliderProps.Slide > 0) {
+                        if (imageSliderProps.CurrentImageIndex == 0) {
+                            imageSliderProps.CurrentImageIndex = imageSliderProps.ImageURLs.length - 1;
+                        } else {
+                            imageSliderProps.CurrentImageIndex--;
+                        }
+                    } else if (imageSliderProps.Slide < 0) {
+                        if (imageSliderProps.CurrentImageIndex + 1 < imageSliderProps.ImageURLs.length) {
+                            imageSliderProps.CurrentImageIndex++;
+                        } else {
+                            imageSliderProps.CurrentImageIndex = 0;
+                        }
+                    }
+                    imageSliderProps.Slide = 0;
+                    imageSliderProps.HoldCountDown = imageSliderProps.HoldForTicks;
+                    ctx.drawImage(imageSliderProps.Images[imageSliderProps.CurrentImageIndex], imageSliderProps.X, imageSliderProps.Y);
                 } else {
-                    prevImageIndex = imageFaderProps.CurrentImageIndex - 1;
-                }
-                if (imageFaderProps.FadeEndValue - ctx.globalAlpha > 0 && imageFaderProps.FadeEndValue - ctx.globalAlpha < 1) {
-                    var saveAlpha = ctx.globalAlpha;
-                    ctx.globalAlpha = imageFaderProps.FadeEndValue - saveAlpha;
-                    ctx.drawImage(imageFaderProps.Images[prevImageIndex], 0, 0);
-                    ctx.globalAlpha = saveAlpha;
+                    if (imageSliderProps.Slide > 0) {
+                        var prevImageIndex;
+                        if (imageSliderProps.CurrentImageIndex == 0) {
+                            prevImageIndex = imageSliderProps.ImageURLs.length - 1;
+                        } else {
+                            prevImageIndex = imageSliderProps.CurrentImageIndex - 1;
+                        }
+                        ctx.drawImage(imageSliderProps.Images[prevImageIndex], imageSliderProps.X, imageSliderProps.Y - imageSliderProps.Height + imageSliderProps.Slide);
+                        ctx.drawImage(imageSliderProps.Images[imageSliderProps.CurrentImageIndex], imageSliderProps.X, imageSliderProps.Y + imageSliderProps.Slide);
+                    } else {
+                        var nextImageIndex;
+                        if (imageSliderProps.CurrentImageIndex + 1 < imageSliderProps.ImageURLs.length) {
+                            nextImageIndex = imageSliderProps.CurrentImageIndex + 1;
+                        } else {
+                            nextImageIndex = 0;
+                        }
+                        ctx.drawImage(imageSliderProps.Images[imageSliderProps.CurrentImageIndex], imageSliderProps.X, imageSliderProps.Y + imageSliderProps.Slide);
+                        ctx.drawImage(imageSliderProps.Images[nextImageIndex], imageSliderProps.X, imageSliderProps.Y + imageSliderProps.Height + imageSliderProps.Slide);
+                    }
                 }
             }
-            ctx.drawImage(imageFaderProps.Images[imageFaderProps.CurrentImageIndex], 0, 0);
-            realCtx.drawImage(imageFaderProps.DrawingCanvas, imageFaderProps.X, imageFaderProps.Y);
         } else {
-            imageFaderProps.HoldCountDown--;
-            ctx.globalAlpha = imageFaderProps.FadeEndValue;
-            realCtx.drawImage(imageFaderProps.Images[imageFaderProps.CurrentImageIndex], imageFaderProps.X, imageFaderProps.Y);
+            imageSliderProps.HoldCountDown--;
+            ctx.drawImage(imageSliderProps.Images[imageSliderProps.CurrentImageIndex], imageSliderProps.X, imageSliderProps.Y);
         }
-        ctx.restore();
     }, canvasid);
     if (clickFunction) {
         registerClickFunction(windowid, function (canvasid2, windowid2, e) {
-            var imageFaderProps = getImageFaderProps(canvasid2, windowid2);
-            imageFaderProps.ClickFunction(canvasid2, windowid2, e, imageFaderProps.CurrentImageIndex);
+            var imageSliderProps = getImageFaderProps(canvasid2, windowid2);
+            imageFaderProps.ClickFunction(canvasid2, windowid2, e, imageSliderProps.CurrentImageIndex);
         }, canvasid);
     }
     registerAnimatedWindow(canvasid);
