@@ -5862,7 +5862,6 @@ function createMenuBarControl(canvasid, controlNameId, x, y, width, height, dept
         }
     }, canvasid);
     registerClickFunction(windowid, function (canvasid2, windowid2, e) {
-        
         var menuBarProps = getMenuBarProps(canvasid2, windowid2);
         var ctx = getCtx(canvasid2);
         var canvas = getCanvas(canvasid2);
@@ -5874,7 +5873,9 @@ function createMenuBarControl(canvasid, controlNameId, x, y, width, height, dept
             currWidth = ctx.measureText(menuBarProps.Data[i][0]).width;
             if (x > menuBarProps.X + widthOffset + 5 && x < menuBarProps.X + widthOffset + currWidth + 5 &&
                 y > menuBarProps.Y && y < menuBarProps.Y + menuBarProps.Height) {
-                if (menuBarProps.Data[i][6] != null) {
+                if (typeof menuBarProps.Data[i][6] == 'function') {
+                    menuBarProps.Data[i][6](canvasid2, windowid2, 0, i);
+                } else if (menuBarProps.Data[i][6] != null) {
                     var idx = 0;
                     for (var j = 0; j < menuBarProps.Data.length; j++) {
                         if (j == i) {
@@ -6614,8 +6615,8 @@ function createImageSlider(canvasid, controlNameId, x, y, width, height, depth, 
     }, canvasid);
     if (clickFunction) {
         registerClickFunction(windowid, function (canvasid2, windowid2, e) {
-            var imageSliderProps = getImageFaderProps(canvasid2, windowid2);
-            imageFaderProps.ClickFunction(canvasid2, windowid2, e, imageSliderProps.CurrentImageIndex);
+            var imageSliderProps = getImageSliderProps(canvasid2, windowid2);
+            imageSliderProps.ClickFunction(canvasid2, windowid2, e, imageSliderProps.CurrentImageIndex);
         }, canvasid);
     }
     registerAnimatedWindow(canvasid);
