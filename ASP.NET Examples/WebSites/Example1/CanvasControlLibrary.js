@@ -6310,20 +6310,20 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
             textBoxProps.SelectedTextStartIndex = 0;
             textBoxProps.SelectedTextEndIndex = textBoxProps.UserInputText.length - 1;
         } else if (e.ctrlKey && String.fromCharCode(e.keyCode).toLowerCase() == 'c' && window.clipboardData) {
-            if (textBoxProps.SelectedTextStartIndex > -1 && textBoxProps.SelectedTextEndIndex > -1 && textBoxProps.SelectedTextEndIndex < textBoxProps.UserInputText.length) {
-                window.clipboardData.setData('Text', (textBoxProps.SelectedTextEndIndex == textBoxProps.UserInputText.length - 1 ? textBoxProps.UserInputText.substring(textBoxProps.SelectedTextStartIndex) :
+            if (textBoxProps.SelectedTextStartIndex > -1 && textBoxProps.SelectedTextEndIndex > -1 && textBoxProps.UserInputText && textBoxProps.SelectedTextEndIndex < textBoxProps.UserInputText.length) {
+                window.clipboardData.setData('Text', (textBoxProps.UserInputText && textBoxProps.SelectedTextEndIndex == textBoxProps.UserInputText.length - 1 ? textBoxProps.UserInputText.substring(textBoxProps.SelectedTextStartIndex) :
                     textBoxProps.UserInputText.substring(textBoxProps.SelectedTextStartIndex, textBoxProps.SelectedTextEndIndex - textBoxProps.SelectedTextStartIndex + 1)));
             }
-        } else if (textBoxProps.UserInputText && textBoxProps.UserInputText.length < textBoxProps.MaxChars) {
+        } else if (!textBoxProps.UserInputText || (textBoxProps.UserInputText && textBoxProps.UserInputText.length < textBoxProps.MaxChars)) {
             var c = (e.shiftKey || e.shiftLeft ? String.fromCharCode(e.keyCode).toUpperCase() : String.fromCharCode(e.keyCode).toLowerCase());
             if (!textBoxProps.AllowedCharsRegEx || textBoxProps.AllowedCharsRegEx == null || textBoxProps.AllowedCharsRegEx.length == 0 || c.match(textBoxProps.AllowedCharsRegEx) == c) {
                 if (textBoxProps.CaretPosIndex == -1) {
-                    textBoxProps.UserInputText = c + (textBoxProps.UserInputText.length > 0 ? textBoxProps.UserInputText : '');
+                    textBoxProps.UserInputText = c + (textBoxProps.UserInputText ? textBoxProps.UserInputText : '');
                     textBoxProps.CaretPosIndex++;
-                } else if (textBoxProps.CaretPosIndex == textBoxProps.UserInputText.length - 1) {
+                } else if (textBoxProps.UserInputText && textBoxProps.CaretPosIndex == textBoxProps.UserInputText.length - 1) {
                     textBoxProps.UserInputText = textBoxProps.UserInputText + c;
                     textBoxProps.CaretPosIndex++;
-                } else {
+                } else if (textBoxProps.UserInputText) {
                     textBoxProps.UserInputText = textBoxProps.UserInputText.substring(0, textBoxProps.CaretPosIndex + 1) + c + textBoxProps.UserInputText.substring(textBoxProps.CaretPosIndex + 1);
                     textBoxProps.CaretPosIndex++;
                 }
