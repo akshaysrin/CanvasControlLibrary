@@ -1406,7 +1406,7 @@ public class CanvasControlLibrary
 
     public void SendVars(Stream OutputStream, ArrayList parameters)
     {
-        string strVars = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>[root][Vars][windows]";
+        string strVars = "[root][Vars][windows]";
         foreach (CCLWindow w in Windows)
         {
             strVars += "[i]" + encodeObject(w) + "[/i]";

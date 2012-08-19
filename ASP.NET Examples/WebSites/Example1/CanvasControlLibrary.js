@@ -154,7 +154,6 @@ function correctEvent(canvasid, e) {
 }
 
 function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefault) {
-    var canvas = getCanvas(canvasId);
     e = correctEvent(canvasId, e);
     var x = e.calcX;
     var y = e.calcY;
@@ -201,7 +200,7 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
                 }
                 for (var u = 0; u < eventArray.length; u++) {
                     if (eventArray[u][0] == windows[i].WindowCount) {
-                        if (windows[i].ChildWindowIDs.length > 0) {
+                        if (windows[i].ChildWindowIDs && windows[i].ChildWindowIDs.length > 0) {
                             if (pointEvent(eventArray, canvasId, e, windows[i].WindowCount, suppressPreventDefault) != 1) {
                                 eventArray[u][1](canvasId, windows[i].WindowCount, e);
                             }
@@ -262,7 +261,7 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
                 }
                 for (var u = 0; u < eventArray.length; u++) {
                     if (eventArray[u][0] == windows[i].WindowCount) {
-                        if (windows[i].ChildWindowIDs.length > 0) {
+                        if (windows[i].ChildWindowIDs && windows[i].ChildWindowIDs.length > 0) {
                             doingEvent = 0;
                             if (pointEvent(eventArray, canvasId, e, windows[i].WindowCount, suppressPreventDefault) != 1) {
                                 eventArray[u][1](canvasId, windows[i].WindowCount, e);
@@ -652,7 +651,7 @@ function draw(canvasId, parentwindowid) {
                     ctx.rect(windowProps.X, windowProps.Y, windowProps.Width, windowProps.Height);
                     ctx.clip();
                     windowDrawFunctions[i][1](canvasId, windowDrawFunctions[i][0]);
-                    if (windowProps.ChildWindowIDs.length > 0) {
+                    if (windowProps.ChildWindowIDs && windowProps.ChildWindowIDs.length > 0) {
                         draw(canvasId, windowDrawFunctions[i][0]);
                     }
                     ctx.restore();
@@ -670,7 +669,7 @@ function draw(canvasId, parentwindowid) {
                 ctx.rect(windowProps.X, windowProps.Y, windowProps.Width, windowProps.Height);
                 ctx.clip();
                 windowDrawFunctions[i][1](canvasId, windowDrawFunctions[i][0]);
-                if (windowProps.ChildWindowIDs.length > 0) {
+                if (windowProps.ChildWindowIDs && windowProps.ChildWindowIDs.length > 0) {
                     draw(canvasId, windowDrawFunctions[i][0]);
                 }
                 ctx.restore();
@@ -754,7 +753,7 @@ function removeEventHooks(w) {
 }
 
 function destroyControlByWindowObj(w) {
-    for (var i = 0; i < w.ChildWindowIDs.length; i++) {
+    for (var i = 0; w.ChildWindowIDs && i < w.ChildWindowIDs.length; i++) {
         for (var x = 0; x < windows.length; x++) {
             if (windows[x].CanvasID == w.CanvasID && windows[x].WindowID == w.ChildWindowIDs[i]) {
                 destroyControlByWindowObj(windows[x]);
@@ -1486,7 +1485,6 @@ function drawScrollBar(canvasid, windowid) {
 
 function scrollBarClick(canvasid, windowid, e) {
     var scrollBarProps = getScrollBarProps(canvasid, windowid);
-    var canvas = getCanvas(canvasid);
     var xm = e.calcX;
     var ym = e.calcY;
     if (scrollBarProps.Alignment == 1) {
@@ -1511,9 +1509,7 @@ function scrollBarClick(canvasid, windowid, e) {
 }
 
 function scrollBarMouseDown(canvasid, windowid, e) {
-    
     var scrollBarProps = getScrollBarProps(canvasid, windowid);
-    var canvas = getCanvas(canvasid);
     var x = e.calcX;
     var y = e.calcY;
     if (scrollBarProps.Alignment == 1) {
@@ -1532,10 +1528,8 @@ function scrollBarMouseDown(canvasid, windowid, e) {
 }
 
 function scrollBarMouseMove(canvasid, windowid, e) {
-    
     var scrollBarProps = getScrollBarProps(canvasid, windowid);
     if (scrollBarProps.MouseDownState == 1) {
-        var canvas = getCanvas(canvasid);
         if (scrollBarProps.Alignment == 1) {
             var y = e.calcY;
             if (y < scrollBarProps.Y) {
@@ -1755,7 +1749,6 @@ function clickGrid(canvasid, windowid, e) {
     var gridProps = getGridProps(canvasid, windowid);
     var vscrollBarProps = getScrollBarProps(canvasid, gridProps.VScrollBarWindowId);
     var hscrollBarProps = getScrollBarProps(canvasid, gridProps.HScrollBarWindowId);
-    var canvas = getCanvas(canvasid);
     var x = e.calcX;
     var y = e.calcY;
     var startRow = 0;
@@ -1766,7 +1759,6 @@ function clickGrid(canvasid, windowid, e) {
     if (hscrollBarProps != null) {
         startCol = hscrollBarProps.SelectedID;
     }
-    var totalWidth = 0;
     for (var r = startRow; r < gridProps.RowData.length; r++) {
         if (((r - startRow) * gridProps.DataRowHeight) + gridProps.HeaderRowHeight >= gridProps.Height) {
             break;
@@ -1880,7 +1872,6 @@ function createComboBox(canvasid, controlNameId, x, y, width, height, depth, dat
 }
 
 function drawComboboxScrollBar(canvasid, windowid) {
-    var comboboxProps = getComboboxPropsByScrollBarWindowId(canvasid, windowid);
     drawScrollBar(canvasid, windowid);
 }
 
@@ -1971,7 +1962,6 @@ function comboboxListAreaClick(canvasid, windowid, e) {
     
     var comboboxProps = getComboboxPropsByListAreaWindowId(canvasid, windowid);
     var vscrollBarProps = getScrollBarProps(canvasid, comboboxProps.VScrollBarWindowID);
-    var canvas = getCanvas(canvasid);
     var x = e.calcX;
     var y = e.calcY;
     for (var i = vscrollBarProps.SelectedID; i < comboboxProps.Data.length && ((comboboxProps.ListAreaTextHeight + 6) * (i - vscrollBarProps.SelectedID + 1)) < 100; i++) {
@@ -2192,7 +2182,6 @@ function createRadioButtonGroup(canvasid, controlNameId, x, y, alignment, depth,
     registerClickFunction(windowid, function (canvasid2, windowid2, e) {
         
         var radioButtonProps = getRadioButtonProps(canvasid2, windowid2);
-        var canvas = getCanvas(canvasid2);
         var clickx = e.calcX;
         var clicky = e.calcY;
         for (var i = 0; i < radioButtonProps.ButtonExtents.length; i++) {
@@ -2247,7 +2236,6 @@ function createImage(canvasid, controlNameId, x, y, width, height, depth, imgurl
     registerWindowDrawFunction(windowid, function (canvasid, windowid) {
         var ctx = getCtx(canvasid);
         var imageProps = getImageControlProps(canvasid, windowid);
-        var i = new Image();
         if (imageProps.Image && imageProps.Image.complete == true) {
             if (navigator.userAgent.toLowerCase().indexOf('msie') == -1) {
                 ctx.drawImage(imageProps.Image, 0, 0, imageProps.Width, imageProps.Height, imageProps.X, imageProps.Y, imageProps.Width, imageProps.Height);
@@ -2359,7 +2347,6 @@ function toggleAllChildNodesExpandedState(treeViewProps, p) {
 function clickTreeView(canvasid, windowid, e) {
     
     var treeViewProps = getTreeViewProps(canvasid, windowid);
-    var canvas = getCanvas(canvasid);
     var x = e.calcX;
     var y = e.calcY;
     for (var i = 0; i < treeViewProps.ClickButtonExtents.length; i++) {
@@ -2563,7 +2550,6 @@ function drawCalender(canvasid, windowid) {
     var calenderProps = getCalenderProps(canvasid, windowid);
     var ctx = getCtx(canvasid);
     var visibleMonth = new Date('1 ' + calenderProps.VisibleMonth + ' ' + calenderProps.VisibleYear);
-    var selectedDay = (calenderProps.SelectedDay != null ? new Date(calenderProps.SelectedDay) : null);
     var todaysDate = new Date();
     ctx.fillStyle = calenderProps.HeaderBackgroundColor;
     ctx.beginPath();
@@ -2613,11 +2599,10 @@ function drawCalender(canvasid, windowid) {
         calenderProps.Y + ((calenderProps.HeaderHeight - calenderProps.TextHeaderHeight) / 2) + calenderProps.TextHeaderHeight);
     ctx.fillText(calenderProps.VisibleYear, headeroffsetx + 53 + maxmonthwidth, calenderProps.Y + ((calenderProps.HeaderHeight -
         calenderProps.TextHeaderHeight) / 2) + calenderProps.TextHeaderHeight);
-    var daynum = visibleMonth.getDay();
     var currday = (visibleMonth.getDay() > 0 ? new Date(visibleMonth.getTime() - (visibleMonth.getDay() * 24 * 60 * 60 * 1000)) : visibleMonth);
     var dateClickExtents = new Array();
+    var daylabel = null;
     for (var i = 0; i < 7; i++) {
-        var daylabel;
         switch (i) {
             case 0:
                 daylabel = 'Sun';
@@ -2772,7 +2757,6 @@ function getMonthName(x) {
 function calenderClick(canvasid, windowid, e) {
     
     var calenderProps = getCalenderProps(canvasid, windowid);
-    var canvas = getCanvas(canvasid);
     var x = e.calcX;
     var y = e.calcY;
     var visibleMonth = new Date('1 ' + calenderProps.VisibleMonth + ' ' + calenderProps.VisibleYear);
@@ -2825,7 +2809,6 @@ function calenderClick(canvasid, windowid, e) {
 function calenderMouseOver(canvasid, windowid, e) {
     
     var calenderProps = getCalenderProps(canvasid, windowid);
-    var canvas = getCanvas(canvasid);
     var x = e.calcX;
     var y = e.calcY;
     for (var i = 0; i < calenderProps.DateClickExtents.length; i++) {
@@ -2987,9 +2970,7 @@ function sliderMouseMove(canvasid, windowid, e) {
     
     var sliderProps = getSliderProps(canvasid, windowid);
     if (sliderProps.MouseDownState == 1) {
-        var canvas = getCanvas(canvasid);
         var x = e.calcX;
-        var y = e.calcY;
         if (x < sliderProps.X) {
             sliderProps.CurrentValue = sliderProps.MinValue;
         } else if (x > sliderProps.X + sliderProps.Width) {
@@ -3064,9 +3045,9 @@ function createDatePicker(canvasid, controlNameId, x, y, width, height, depth, v
         selectedDayTextFontString, selectedDayHighLightColor, todayTextColor, todayTextHeight, todayTextFontString, todayHighLightColor,
         mouseoverHightlightColor, function () {
             var datePickerProps = getDatePickerPropsByTextBoxAreaWindowID(canvasid, textboxAreaWindowID);
-            var calenderProps = getCalenderProps(canvasid, calenderWindowID);
+            var calenderProps = getCalenderProps(canvasid, datePickerProps.CalenderWindowID);
             if (ondayClickFunction != null) {
-                ondayClickFunction(canvasid, calenderWindowID, calenderProps.SelectedDay);
+                ondayClickFunction(canvasid, datePickerProps.CalenderWindowID, calenderProps.SelectedDay);
             }
             setHiddenWindowStatus(canvasid, datePickerProps.CalenderWindowID, 1);
             draw(canvasid);
@@ -3325,7 +3306,6 @@ function createPanel(canvasid, controlNameId, x, y, width, height, depth, hasBor
             
             var panelProps = getPanelProps(canvasid3, windowid3);
             var windowProps = getWindowProps(canvasid3, windowid3);
-            var canvas = getCanvas(canvasid3);
             var x = e.calcX;
             var y = e.calcY;
             if (x > panelProps.X + panelProps.Width - 4 - (panelProps.ExpandCollapseButtonRadius * 2) &&
@@ -3386,10 +3366,9 @@ function createBarGraph(canvasid, controlNameId, x, y, width, height, depth, dat
     registerClickFunction(windowid, function (canvasid1, windowid1, e) {
         
         var barGraphProps = getBarGraphProps(canvasid1, windowid1);
-        var canvas = getCanvas(canvasid);
         var clickx = e.calcX;
         var clicky = e.calcY;
-        for (i = 0; i < barGraphProps.BarLabelsWithBoundingBoxes.length; i++) {
+        for (var i = 0; i < barGraphProps.BarLabelsWithBoundingBoxes.length; i++) {
             if (clickx >= barGraphProps.BarLabelsWithBoundingBoxes[i].X && clickx <= barGraphProps.BarLabelsWithBoundingBoxes[i].X +
                 barGraphProps.BarLabelsWithBoundingBoxes[i].Width && clicky >= barGraphProps.BarLabelsWithBoundingBoxes[i].Y &&
                 clicky <= barGraphProps.BarLabelsWithBoundingBoxes[i].Y + barGraphProps.BarLabelsWithBoundingBoxes[i].Height) {
@@ -3423,7 +3402,7 @@ function createBarGraph(canvasid, controlNameId, x, y, width, height, depth, dat
         ctx.moveTo(barGraphProps.X + barGraphProps.MarginLeft, barGraphProps.Y + barGraphProps.TitleTextHeight + 8 + yaxisheight);
         ctx.lineTo(barGraphProps.X + barGraphProps.MarginLeft, barGraphProps.Y + barGraphProps.TitleTextHeight + 8);
         ctx.stroke();
-        for (c = 0; c < barGraphProps.NumMarksY; c++) {
+        for (var c = 0; c < barGraphProps.NumMarksY; c++) {
             var val = (barGraphProps.MaxValue / barGraphProps.NumMarksY) * c;
             val = Math.round(val * 100) / 100;
             var tw = ctx.measureText(val.toString()).width;
@@ -3437,7 +3416,7 @@ function createBarGraph(canvasid, controlNameId, x, y, width, height, depth, dat
             ctx.stroke();
         }
         barGraphProps.BarLabelsWithBoundingBoxes = new Array();
-        for (i = 0; i < barGraphProps.Data.length; i++) {
+        for (var i = 0; i < barGraphProps.Data.length; i++) {
             if (barGraphProps.HasLegend != 1) {
                 var w = ctx.measureText(barGraphProps.Data[i][0]).width;
                 ctx.fillStyle = barGraphProps.AxisLabelsTextColor;
@@ -3453,7 +3432,7 @@ function createBarGraph(canvasid, controlNameId, x, y, width, height, depth, dat
             drawrect(canvasid2, windowid2, ctx, barGraphProps, i, yaxisheight);
         }
         if (barGraphProps.HasLegend == 1) {
-            for (o = 0; o < barGraphProps.Data.length; o++) {
+            for (var o = 0; o < barGraphProps.Data.length; o++) {
                 ctx.fillStyle = data[o][2];
                 ctx.fillRect(barGraphProps.X + barGraphProps.Width - barGraphProps.MarginRight, barGraphProps.Y + barGraphProps.Height
                     - 8 - barGraphProps.AxisLabelsTextHeight - (o * (8 + barGraphProps.AxisLabelsTextHeight)), 30, barGraphProps.AxisLabelsTextHeight);
@@ -3563,7 +3542,7 @@ function createPieChart(canvasid, controlNameId, x, y, width, height, depth, dat
     labeltextcolor, labeltextheight, labeltextfontstring, sliceClickFunction, tag) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'PieChart', controlNameId);
     var totalvalue = 0;
-    for (i = 0; i < data.length; i++) {
+    for (var i = 0; i < data.length; i++) {
         totalvalue += data[i][1];
     }
     pieChartsPropsArray.push({
@@ -3579,10 +3558,9 @@ function createPieChart(canvasid, controlNameId, x, y, width, height, depth, dat
         var data = pieChartProps.Data;
         var currRadius = (pieChartProps.Height - pieChartProps.TitleTextHeight - 24 - (pieChartProps.LabelTextHeight * 2)) / 2;
         var totalvalue = 0;
-        for (i = 0; i < data.length; i++) {
+        for (var i = 0; i < data.length; i++) {
             totalvalue += data[i][1];
         }
-        var canvas = getCanvas(canvasid);
         var clickx = e.calcX;
         var clicky = e.calcY;
         var pieoutangle = -1;
@@ -3607,8 +3585,6 @@ function createPieChart(canvasid, controlNameId, x, y, width, height, depth, dat
         }
         var currangle = 0;
         var lastangle = 0;
-        var lastx = centerx + currRadius;
-        var lasty = centery;
         var founddelta = 0;
         for (i = 0; i < data.length; i++) {
             currangle += (data[i][1] * 360) / totalvalue;
@@ -3700,9 +3676,7 @@ function createPieChart(canvasid, controlNameId, x, y, width, height, depth, dat
         ctx.font = pieChartProps.LabelTextFontString;
         var currangle = 0; //in degrees
         var lastangle = 0;
-        var lastx = centerx + currRadius;
-        var lasty = centery;
-        for (i = 0; i < data.length; i++) {
+        for (var i = 0; i < data.length; i++) {
             currangle += (data[i][1] * 100 * 360) / (totalvalue * 100);
             var redcomp = parseInt(data[i][2].substr(1, 2), 16);
             var greencomp = parseInt(data[i][2].substr(3, 2), 16);
@@ -3749,10 +3723,8 @@ function createPieChart(canvasid, controlNameId, x, y, width, height, depth, dat
         }
         var currangle = 0;
         var lastangle = 0;
-        var lastx = centerx + currRadius;
-        var lasty = 250;
         ctx.font = pieChartProps.LabelTextFontString;
-        for (i = 0; i < data.length; i++) {
+        for (var i = 0; i < data.length; i++) {
             currangle += (data[i][1] * 100 * 360) / (totalvalue * 100);
             ctx.fillStyle = data[i][2];
             drawPieChartLabels(ctx, data[i][0], currangle, lastangle, currRadius, totalvalue, data[i][1], data[i][2], 0, 0, centerx +
@@ -3760,7 +3732,7 @@ function createPieChart(canvasid, controlNameId, x, y, width, height, depth, dat
                 pieChartProps.DeltaY : 0), pieChartProps.LabelTextHeight);
             lastangle = currangle;
         }
-        for (o = 0; o < data.length; o++) {
+        for (var o = 0; o < data.length; o++) {
             ctx.fillStyle = data[o][2];
             ctx.fillRect(pieChartProps.X + pieChartProps.Width - 100, pieChartProps.Y + pieChartProps.Height
                 - 8 - pieChartProps.LabelTextHeight - (o * (8 + pieChartProps.LabelTextHeight)), 30, pieChartProps.LabelTextHeight);
@@ -3820,7 +3792,7 @@ function createLineGraph(canvasid, controlNameId, x, y, width, height, depth, da
     clickFunction, marginleft, islabeledxvalues, tag) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'LineGraph', controlNameId);
     var hmax = 0;
-    for (j = 0; j < data.length; j++) {
+    for (var j = 0; j < data.length; j++) {
         if (data[j][0].length > hmax)
             hmax = data[j][0].length;
     }
@@ -3836,13 +3808,11 @@ function createLineGraph(canvasid, controlNameId, x, y, width, height, depth, da
         
         var lineGraphProps = getLineGraphProps(canvasid1, windowid1);
         if (lineGraphProps.ClickFunction != null) {
-            var data = lineGraphProps.Data;
             var linexys = lineGraphProps.LineXYs;
-            var ctx = getCtx(canvasid1);
             var clickx = e.calcX;
             var clicky = e.calcY;
-            for (i = 0; i < linexys.length; i++) {
-                for (j = 0; j < linexys[i].length - 1; j++) {
+            for (var i = 0; i < linexys.length; i++) {
+                for (var j = 0; j < linexys[i].length - 1; j++) {
                     if (clickx >= linexys[i][j][0] && clickx <= linexys[i][j + 1][0]) {
                         if ((clicky <= linexys[i][j][1] && clicky >= linexys[i][j + 1][1]) || (clicky >= linexys[i][j][1] && clicky <= linexys[i][j + 1][1])) {
                             y = (((linexys[i][j][1] - linexys[i][j + 1][1]) * (clickx - linexys[i][j][0])) / (linexys[i][j][0] - linexys[i][j + 1][0])) + linexys[i][j][1];
@@ -3879,7 +3849,7 @@ function createLineGraph(canvasid, controlNameId, x, y, width, height, depth, da
         ctx.lineTo(lineGraphProps.X + lineGraphProps.Width, lineGraphProps.Y + lineGraphProps.Height - lineGraphProps.AxisLabelsTextHeight - 8);
         ctx.stroke();
         var alternate = false;
-        for (c = 0; c < lineGraphProps.NumMarksX; c++) {
+        for (var c = 0; c < lineGraphProps.NumMarksX; c++) {
             if (alternate) {
                 ctx.fillStyle = '#C0C0C0';
                 alternate = false;
@@ -3894,7 +3864,7 @@ function createLineGraph(canvasid, controlNameId, x, y, width, height, depth, da
         ctx.fillStyle = lineGraphProps.AxisLabelsTextColor;
         ctx.font = lineGraphProps.AxisLabelsTextFontString;
         ctx.strokeStyle = '#404040';
-        for (c = 0; c < lineGraphProps.NumMarksY; c++) {
+        for (var c = 0; c < lineGraphProps.NumMarksY; c++) {
             var val = (lineGraphProps.YMaxValue / lineGraphProps.NumMarksY) * c;
             var tw = ctx.measureText(val.toString()).width;
             ctx.fillText(val.toString(), lineGraphProps.X + lineGraphProps.MarginLeft - 4 - tw, lineGraphProps.Y + lineGraphProps.Height -
@@ -3909,9 +3879,8 @@ function createLineGraph(canvasid, controlNameId, x, y, width, height, depth, da
                 16) / lineGraphProps.NumMarksY)));
             ctx.stroke();
         }
-        var xlabels;
+        var xlabels = new Array();
         if (lineGraphProps.IsLabeledXValues == 1) {
-            xlabels = new Array();
             var maxnumlabels = 0;
             for (var i = 0; i < lineGraphProps.Data.length; i++) {
                 if (lineGraphProps.Data[i][0].length > maxnumlabels) {
@@ -3935,7 +3904,7 @@ function createLineGraph(canvasid, controlNameId, x, y, width, height, depth, da
                 }
             }
         }
-        for (d = 0; d < lineGraphProps.NumMarksX; d++) {
+        for (var d = 0; d < lineGraphProps.NumMarksX; d++) {
             var val;
             var increment;
             if (lineGraphProps.IsLabeledXValues == 1) {
@@ -4008,7 +3977,7 @@ function drawline(canvasid, ctx, lineGraphProps, x, xlabels) {
         lineGraphProps.Y + lineGraphProps.Height - lineGraphProps.AxisLabelsTextHeight - 8 - ((lineGraphProps.Data[x][0][0][1] *
         (lineGraphProps.Height - lineGraphProps.TitleTextHeight - lineGraphProps.AxisLabelsTextHeight - 16)) /
         lineGraphProps.YMaxValue));
-    for (i = 1; i < lineGraphProps.H && i < lineGraphProps.Data[x][0].length; i++) {
+    for (var i = 1; i < lineGraphProps.H && i < lineGraphProps.Data[x][0].length; i++) {
         linexys = linexys.concat([[lineGraphProps.X + lineGraphProps.MarginLeft + (lineGraphProps.IsLabeledXValues == 1 ?
             (findXLabelIndexForValue(xlabels, lineGraphProps.Data[x][0][i][0]) * (lineGraphProps.Width - lineGraphProps.MarginLeft)) / xlabels.length :
             ((lineGraphProps.Data[x][0][i][0] * (lineGraphProps.Width - lineGraphProps.MarginLeft)) / lineGraphProps.XMaxValue)),
@@ -4099,7 +4068,7 @@ function createGauge(canvasid, controlNameId, x, y, width, height, depth, data, 
         ctx.fill();
         ctx.globalAlpha = gaugeChartProps.H / 100;
         ctx.strokeStyle = '#000000';
-        for (i = 0; i < ((gaugeChartProps.Data[1] / gaugeChartProps.Data[5]) + 1) ; i++) {
+        for (var i = 0; i < ((gaugeChartProps.Data[1] / gaugeChartProps.Data[5]) + 1) ; i++) {
             var angle = ((315 * i) / (gaugeChartProps.Data[1] / gaugeChartProps.Data[5])) + 112.5;
             if (angle > 360)
                 angle -= 360;
@@ -4144,7 +4113,7 @@ function createGauge(canvasid, controlNameId, x, y, width, height, depth, data, 
         }
         ctx.fillStyle = gaugeChartProps.GaugeLabelTextColor;
         ctx.font = gaugeChartProps.GaugeLabelTextFontString;
-        for (i = 0; i < ((gaugeChartProps.Data[1] / gaugeChartProps.Data[5]) + 1) ; i++) {
+        for (var i = 0; i < ((gaugeChartProps.Data[1] / gaugeChartProps.Data[5]) + 1) ; i++) {
             var angle = ((315 * i) / (gaugeChartProps.Data[1] / gaugeChartProps.Data[5])) + 112.5;
             if (angle > 360)
                 angle -= 360;
@@ -4177,7 +4146,7 @@ function createGauge(canvasid, controlNameId, x, y, width, height, depth, data, 
             }
         }
         ctx.strokeStyle = '#000000';
-        for (i = 0; i < ((((gaugeChartProps.Data[1] / gaugeChartProps.Data[5]) * gaugeChartProps.Data[6])) + 1) ; i++) {
+        for (var i = 0; i < ((((gaugeChartProps.Data[1] / gaugeChartProps.Data[5]) * gaugeChartProps.Data[6])) + 1) ; i++) {
             if (i % gaugeChartProps.Data[6] > 0) {
                 var angle = ((315 * i) / ((gaugeChartProps.Data[1] / gaugeChartProps.Data[5]) * gaugeChartProps.Data[6])) + 112.5;
                 if (angle > 360)
@@ -4483,15 +4452,14 @@ function createLineAreaGraph(canvasid, controlNameId, x, y, width, height, depth
                 16) / lineAreaGraphProps.NumMarksY)));
             ctx.stroke();
         }
-        var xlabels;
+        var xlabels = new Array();
         if (lineAreaGraphProps.IsLabledOnXAxis == 1) {
-            xlabels = new Array();
             for (var i = 0; i < lineAreaGraphProps.Data[0].length; i++) {
                 xlabels.push(lineAreaGraphProps.Data[0][i][0]);
             }
         }
         ctx.fillStyle = lineAreaGraphProps.AxisLabelsColor;
-        for (d = 0; d < lineAreaGraphProps.NumMarksX; d++) {
+        for (var d = 0; d < lineAreaGraphProps.NumMarksX; d++) {
             var val;
             if (lineAreaGraphProps.IsLabledOnXAxis == 1) {
                 increment = xlabels.length / lineAreaGraphProps.NumMarksX;
@@ -4780,7 +4748,7 @@ function createDoughnutChart(canvasid, controlNameId, x, y, width, height, depth
     labelcolor, labelheight, labelfontstring, legendwidth, legendheight, legendfontstring, sliceClickFunction, tag) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'DoughnutChart', controlNameId);
     var totalvalue = 0;
-    for (i = 0; i < data.length; i++) {
+    for (var i = 0; i < data.length; i++) {
         totalvalue += data[i][1];
     }
     doughnutChartPropsArray.push({
@@ -4794,10 +4762,7 @@ function createDoughnutChart(canvasid, controlNameId, x, y, width, height, depth
         
         var doughnutChartProps = getDoughnutChartProps(canvasid1, windowid1);
         var data = doughnutChartProps.Data;
-        var currRadius = doughnutChartProps.CurrentRadius;
-        var innerradius = doughnutChartProps.InnerRadius;
         var totalvalue = doughnutChartProps.TotalValue;
-        var canvas = getCanvas(canvasid1);
         var clickx = e.calcX;
         var clicky = e.calcY;
         var pieoutangle = -1;
@@ -4822,8 +4787,6 @@ function createDoughnutChart(canvasid, controlNameId, x, y, width, height, depth
         }
         var currangle = 0;
         var lastangle = 0;
-        var lastx = centerx + currRadius;
-        var lasty = centery;
         var founddelta = 0;
         for (i = 0; i < data.length; i++) {
             currangle += (data[i][1] * 360) / totalvalue;
@@ -4896,9 +4859,7 @@ function createDoughnutChart(canvasid, controlNameId, x, y, width, height, depth
         var centery = doughnutChartProps.Y + ((doughnutChartProps.Height - doughnutChartProps.TitleTextHeight - 8 - (doughnutChartProps.LabelHeight * 2)) / 2);
         var currangle = 0; //in degrees
         var lastangle = 0;
-        var lastx = centerx + currRadius;
-        var lasty = centery;
-        for (i = 0; i < data.length; i++) {
+        for (var i = 0; i < data.length; i++) {
             currangle += (data[i][1] * 100 * 360) / (totalvalue * 100);
             var redcomp = parseInt(data[i][2].substr(1, 2), 16);
             var greencomp = parseInt(data[i][2].substr(3, 2), 16);
@@ -4926,9 +4887,7 @@ function createDoughnutChart(canvasid, controlNameId, x, y, width, height, depth
         }
         var currangle = 0; //in degrees
         var lastangle = 0;
-        var lastx = centerx + currRadius;
-        var lasty = centery;
-        for (i = 0; i < data.length; i++) {
+        for (var i = 0; i < data.length; i++) {
             currangle += (data[i][1] * 100 * 360) / (totalvalue * 100);
             ctx.strokeStyle = data[i][2];
             drawPieChartLabels(ctx, data[i][0], currangle, lastangle, currRadius, totalvalue, data[i][1], data[i][2], 0, 0,
@@ -4937,7 +4896,7 @@ function createDoughnutChart(canvasid, controlNameId, x, y, width, height, depth
             lastangle = currangle;
         }
         ctx.font = doughnutChartProps.LegendFontString;
-        for (o = 0; o < data.length; o++) {
+        for (var o = 0; o < data.length; o++) {
             ctx.fillStyle = data[o][2];
             ctx.fillRect(doughnutChartProps.X + doughnutChartProps.Width - doughnutChartProps.LegendWidth, doughnutChartProps.Y + doughnutChartProps.Height
                 - 4 - doughnutChartProps.LegendHeight - (o * (doughnutChartProps.LegendHeight + 10)), 30, doughnutChartProps.LegendHeight);
@@ -4979,10 +4938,9 @@ function createBarsMixedWithLabledLineGraph(canvasid, controlNameId, x, y, width
     registerClickFunction(windowid, function (canvasid1, windowid1, e) {
         
         var barsMixedWithLabledLineGraphProps = getBarsMixedWithLabledLineGraphProps(canvasid1, windowid1);
-        var canvas = getCanvas(canvasid);
         var clickx = e.calcX;
         var clicky = e.calcY;
-        for (i = 0; i < barsMixedWithLabledLineGraphProps.BarLabelsWithBoundingBoxes.length; i++) {
+        for (var i = 0; i < barsMixedWithLabledLineGraphProps.BarLabelsWithBoundingBoxes.length; i++) {
             if (clickx >= barsMixedWithLabledLineGraphProps.BarLabelsWithBoundingBoxes[i].X && clickx <= barsMixedWithLabledLineGraphProps.BarLabelsWithBoundingBoxes[i].X +
                 barsMixedWithLabledLineGraphProps.BarLabelsWithBoundingBoxes[i].Width && clicky >= barsMixedWithLabledLineGraphProps.BarLabelsWithBoundingBoxes[i].Y &&
                 clicky <= barsMixedWithLabledLineGraphProps.BarLabelsWithBoundingBoxes[i].Y + barsMixedWithLabledLineGraphProps.BarLabelsWithBoundingBoxes[i].Height) {
@@ -4992,10 +4950,9 @@ function createBarsMixedWithLabledLineGraph(canvasid, controlNameId, x, y, width
                 }
             }
         }
-        var data = barsMixedWithLabledLineGraphProps.LinesData;
         var linexys = barsMixedWithLabledLineGraphProps.LineXYs;
-        for (i = 0; i < linexys.length; i++) {
-            for (j = 0; j < linexys[i].length - 1; j++) {
+        for (var i = 0; i < linexys.length; i++) {
+            for (var j = 0; j < linexys[i].length - 1; j++) {
                 if (clickx >= linexys[i][j][0] && clickx <= linexys[i][j + 1][0]) {
                     if ((clicky <= linexys[i][j][1] && clicky >= linexys[i][j + 1][1]) || (clicky >= linexys[i][j][1] && clicky <= linexys[i][j + 1][1])) {
                         y = (((linexys[i][j][1] - linexys[i][j + 1][1]) * (clickx - linexys[i][j][0])) / (linexys[i][j][0] - linexys[i][j + 1][0])) + linexys[i][j][1];
@@ -5035,7 +4992,7 @@ function createBarsMixedWithLabledLineGraph(canvasid, controlNameId, x, y, width
         ctx.lineTo(barsMixedWithLabledLineGraphProps.X + barsMixedWithLabledLineGraphProps.MarginLeft, barsMixedWithLabledLineGraphProps.Y +
             barsMixedWithLabledLineGraphProps.TitleTextHeight + 8);
         ctx.stroke();
-        for (c = 0; c < barsMixedWithLabledLineGraphProps.NumMarksY; c++) {
+        for (var c = 0; c < barsMixedWithLabledLineGraphProps.NumMarksY; c++) {
             var val = (barsMixedWithLabledLineGraphProps.MaxValue / barsMixedWithLabledLineGraphProps.NumMarksY) * c;
             val = Math.round(val * 100) / 100;
             var tw = ctx.measureText(val.toString()).width;
@@ -5053,7 +5010,7 @@ function createBarsMixedWithLabledLineGraph(canvasid, controlNameId, x, y, width
             ctx.stroke();
         }
         barsMixedWithLabledLineGraphProps.BarLabelsWithBoundingBoxes = new Array();
-        for (i = 0; i < barsMixedWithLabledLineGraphProps.Data.length; i++) {
+        for (var i = 0; i < barsMixedWithLabledLineGraphProps.Data.length; i++) {
             if (barsMixedWithLabledLineGraphProps.HasLegend != 1) {
                 var w = ctx.measureText(barsMixedWithLabledLineGraphProps.Data[i][0]).width;
                 ctx.fillStyle = barsMixedWithLabledLineGraphProps.AxisLabelsTextColor;
@@ -5103,7 +5060,7 @@ function createBarsMixedWithLabledLineGraph(canvasid, controlNameId, x, y, width
             i++;
         }
         if (barsMixedWithLabledLineGraphProps.HasLegend == 1) {
-            for (o = 0; o < barsMixedWithLabledLineGraphProps.Data.length; o++) {
+            for (var o = 0; o < barsMixedWithLabledLineGraphProps.Data.length; o++) {
                 ctx.fillStyle = data[o][2];
                 ctx.fillRect(barsMixedWithLabledLineGraphProps.X + barsMixedWithLabledLineGraphProps.Width - barsMixedWithLabledLineGraphProps.MarginRight,
                     barsMixedWithLabledLineGraphProps.Y + barsMixedWithLabledLineGraphProps.Height
@@ -5154,7 +5111,7 @@ function drawlineforbarsmixedwithlinesgraph(ctx, barsMixedWithLabledLineGraphPro
         8 - ((barsMixedWithLabledLineGraphProps.LinesData[x][0][0][1] *
         (barsMixedWithLabledLineGraphProps.Height - barsMixedWithLabledLineGraphProps.TitleTextHeight - barsMixedWithLabledLineGraphProps.AxisLabelsTextHeight - 16)) /
         barsMixedWithLabledLineGraphProps.YMaxValue));
-    for (i = 1; i < barsMixedWithLabledLineGraphProps.H && i < barsMixedWithLabledLineGraphProps.LinesData[x][0].length; i++) {
+    for (var i = 1; i < barsMixedWithLabledLineGraphProps.H && i < barsMixedWithLabledLineGraphProps.LinesData[x][0].length; i++) {
         linexys = linexys.concat([[barsMixedWithLabledLineGraphProps.X + barsMixedWithLabledLineGraphProps.MarginLeft +
             (findXLabelIndexForValue(xlabels, barsMixedWithLabledLineGraphProps.LinesData[x][0][i][0]) * (barsMixedWithLabledLineGraphProps.Width - 
             barsMixedWithLabledLineGraphProps.MarginLeft)) / xlabels.length,
@@ -5198,17 +5155,15 @@ function createStackedBarGraph(canvasid, controlNameId, x, y, width, height, dep
         MarginLeft: marginleft, Tag: tag
     });
     registerClickFunction(windowid, function (canvasid1, windowid1, e) {
-        
         var stackedBarGraphProps = getstackedBarGraphProps(canvasid1, windowid1);
         var data = stackedBarGraphProps.Data;
-        var canvas = getCanvas(canvasid1);
         var totalvalue = 0;
-        for (i = 0; i < data.length; i++) {
+        for (var i = 0; i < data.length; i++) {
             totalvalue += data[i][1];
         }
         var clickx = e.calcX;
         var clicky = e.calcY;
-        for (i = 0; i < stackedBarGraphProps.BarLabelsWithBoundingBoxes.length; i++) {
+        for (var i = 0; i < stackedBarGraphProps.BarLabelsWithBoundingBoxes.length; i++) {
             if (clickx >= stackedBarGraphProps.BarLabelsWithBoundingBoxes[i][1] && clickx <= stackedBarGraphProps.BarLabelsWithBoundingBoxes[i][3] &&
                 clicky >= stackedBarGraphProps.BarLabelsWithBoundingBoxes[i][2] && clicky <= stackedBarGraphProps.BarLabelsWithBoundingBoxes[i][4]) {
                 if (stackedBarGraphProps.BarClickFunction != null) {
@@ -5235,7 +5190,7 @@ function createStackedBarGraph(canvasid, controlNameId, x, y, width, height, dep
             stackedBarGraphProps.AxisLabelsHeight - 8);
         ctx.lineTo(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft, stackedBarGraphProps.Y + stackedBarGraphProps.TitleHeight + 8);
         ctx.stroke();
-        for (c = 0; c < stackedBarGraphProps.NumMarksY; c++) {
+        for (var c = 0; c < stackedBarGraphProps.NumMarksY; c++) {
             var val = (stackedBarGraphProps.MaxValue / stackedBarGraphProps.NumMarksY) * c;
             val = Math.round(val * 100) / 100;
             var tw = ctx.measureText(val.toString()).width;
@@ -5250,7 +5205,7 @@ function createStackedBarGraph(canvasid, controlNameId, x, y, width, height, dep
             ctx.stroke();
         }
         stackedBarGraphProps.BarLabelsWithBoundingBoxes = new Array();
-        for (i = 0; i < stackedBarGraphProps.Data.length; i++) {
+        for (var i = 0; i < stackedBarGraphProps.Data.length; i++) {
             ctx.fillStyle = stackedBarGraphProps.AxisLabelsColor;
             ctx.font = stackedBarGraphProps.AxisLabelsFontString;
             var w = ctx.measureText(stackedBarGraphProps.Data[i][0]).width;
@@ -5512,9 +5467,7 @@ function createTabControl(canvasid, controlNameId, x, y, width, height, depth, t
         });
     }, canvasid);
     registerClickFunction(windowid, function (canvasid2, windowid2, e) {
-        
         var tabProps = getTabProps(canvasid2, windowid2);
-        var canvas = getCanvas(canvasid2);
         var clickx = e.calcX;
         var clicky = e.calcY;
         for (var i = 0; i < tabProps.TabLabelHitAreas.length; i++) {
@@ -5607,9 +5560,7 @@ function createImageMapControl(canvasid, controlNameId, x, y, width, height, dep
         imageMapProps.MovingMap = 0;
     }, canvasid);
     registerClickFunction(windowid, function (canvasid5, windowid5, e) {
-        
         var imageMapProps = getImageMapProps(canvasid5, windowid5);
-        var canvas = getCanvas(canvasid5);
         var clickx = e.calcX;
         var clicky = e.calcY;
         for (var i = 0; i < imageMapProps.PinXYs.length; i++) {
@@ -5624,9 +5575,7 @@ function createImageMapControl(canvasid, controlNameId, x, y, width, height, dep
         }
     }, canvasid);
     registerMouseMoveFunction(windowid, function (canvasid6, windowid6, e) {
-        
         var imageMapProps = getImageMapProps(canvasid6, windowid6);
-        var canvas = getCanvas(canvasid6);
         var x = e.calcX;
         var y = e.calcY;
         if (imageMapProps.MovingMap == 0) {
@@ -5734,7 +5683,6 @@ function createSubMenu(canvasid, controlNameId, parentWindowId, depth, data, xof
     }, canvasid);
     registerClickFunction(windowid, function (canvasid2, windowid2, e) {
         var subMenuBarProps = getSubMenuBarProps(canvasid2, windowid2);
-        var canvas = getCanvas(canvasid2);
         var x = e.calcX;
         var y = e.calcY;
         var heightOffset = 0;
@@ -5799,7 +5747,7 @@ function checkIfAnyMenuHasFocusFromSubMenu(canvasid, windowid) {
     }
     while (isParentMenuBarWindowID == 0) {
         isParentMenuBarWindowID = 1;
-        var parentMenuBarProps = getMenuBarProps(canvasid, parentMenuBarProps.ParentMenuWindowID);
+        parentMenuBarProps = getMenuBarProps(canvasid, parentMenuBarProps.ParentMenuWindowID);
         if (parentMenuBarProps == undefined || parentMenuBarProps == null) {
             isParentMenuBarWindowID = 0;
             parentMenuBarProps = getSubMenuBarProps(canvasid, subMenuBarProps.ParentMenuWindowID);
@@ -5864,7 +5812,6 @@ function createMenuBarControl(canvasid, controlNameId, x, y, width, height, dept
     registerClickFunction(windowid, function (canvasid2, windowid2, e) {
         var menuBarProps = getMenuBarProps(canvasid2, windowid2);
         var ctx = getCtx(canvasid2);
-        var canvas = getCanvas(canvasid2);
         var x = e.calcX;
         var y = e.calcY;
         var widthOffset = 0;
@@ -5922,7 +5869,7 @@ function setStatusForAllChildWindowsFromMenuBar(canvasid, childMenuWindowIDs, st
             setStatusForAllChildWindowsFromMenuBar(canvasid, subMenuBarProps.ChildMenuWindowIDs, status, -1);
         }
     } else {
-        var subMenuBarProps;
+        var subMenuBarProps = null;
         while (parentMenuWindowID) {
             subMenuBarProps = getSubMenuBarProps(canvasid, parentMenuWindowID);
             if (!subMenuBarProps) {
@@ -5935,7 +5882,7 @@ function setStatusForAllChildWindowsFromMenuBar(canvasid, childMenuWindowIDs, st
                 var notFound = 0;
                 for (var j = 0; j < childMenuWindowIDs.length; j++) {
                     var found = 0;
-                    for (x = 0; x < menuBarPropsArray[i].ChildMenuWindowIDs.length; x++) {
+                    for (var x = 0; x < menuBarPropsArray[i].ChildMenuWindowIDs.length; x++) {
                         if (childMenuWindowIDs[j] == menuBarPropsArray[i].ChildMenuWindowIDs[x]) {
                             found = 1;
                             break;
@@ -6134,9 +6081,7 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
         if (textBoxProps.UserInputText && textBoxProps.UserInputText.length > 0) {
             textBoxProps.MouseDown = 1;
             textBoxProps.MouseDownTime = (new Date()).getTime();
-            var canvas = getCanvas(canvasid4);
             var x = e.calcX;
-            var y = e.calcY;
             var ctx = getCtx(canvasid4);
             ctx.font = textBoxProps.TextFontString;
             if (x > textBoxProps.X && x < textBoxProps.X + 4) {
@@ -6175,9 +6120,7 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
         
         var textBoxProps = getTextBoxProps(canvasid5, windowid5);
         if (textBoxProps.MouseDown == 1 && (new Date()).getTime() - textBoxProps.MouseDownTime > 500 &&  textBoxProps.UserInputText && textBoxProps.UserInputText.length > 0) {
-            var canvas = getCanvas(canvasid5);
             var x = e.calcX;
-            var y = e.calcY;
             var ctx = getCtx(canvasid5);
             ctx.font = textBoxProps.TextFontString;
             if (x > textBoxProps.X && x < textBoxProps.X + 4) {
@@ -6220,9 +6163,7 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
             if ((new Date()).getTime() - textBoxProps.MouseDownTime > 500) {
                 if (textBoxProps.UserInputText && textBoxProps.UserInputText.length > 0) {
                     textBoxProps.WasSelecting = 1;
-                    var canvas = getCanvas(canvasid6);
                     var x = e.calcX;
-                    var y = e.calcY;
                     var ctx = getCtx(canvasid6);
                     ctx.font = textBoxProps.TextFontString;
                     if (x > textBoxProps.X && x < textBoxProps.X + 4) {
@@ -6262,16 +6203,14 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
     registerClickFunction(windowid, function (canvasid2, windowid2, e) {
         
         var textBoxProps = getTextBoxProps(canvasid2, windowid2);
-        var canvas = getCanvas(canvasid2);
         var x = e.calcX;
-        var y = e.calcY;
         var ctx = getCtx(canvasid2);
         ctx.font = textBoxProps.TextFontString;
         if(x > textBoxProps.X && x < textBoxProps.X + 4){
             textBoxProps.CaretPosIndex = -1;
-        } else if (x > textBoxProps.X + ctx.measureText(textBoxProps.UserInputText).width + 4) {
+        } else if (textBoxProps.UserInputText && x > textBoxProps.X + ctx.measureText(textBoxProps.UserInputText).width + 4) {
             textBoxProps.CaretPosIndex = textBoxProps.UserInputText.length - 1;
-        } else {
+        } else if (textBoxProps.UserInputText) {
             var letterExtents = new Array();
             var lastWidth = 0;
             for (var i = 0; i < textBoxProps.UserInputText.length; i++) {
@@ -6375,7 +6314,7 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
                 window.clipboardData.setData('Text', (textBoxProps.SelectedTextEndIndex == textBoxProps.UserInputText.length - 1 ? textBoxProps.UserInputText.substring(textBoxProps.SelectedTextStartIndex) :
                     textBoxProps.UserInputText.substring(textBoxProps.SelectedTextStartIndex, textBoxProps.SelectedTextEndIndex - textBoxProps.SelectedTextStartIndex + 1)));
             }
-        } else if (textBoxProps.UserInputText.length < textBoxProps.MaxChars) {
+        } else if (textBoxProps.UserInputText && textBoxProps.UserInputText.length < textBoxProps.MaxChars) {
             var c = (e.shiftKey || e.shiftLeft ? String.fromCharCode(e.keyCode).toUpperCase() : String.fromCharCode(e.keyCode).toLowerCase());
             if (!textBoxProps.AllowedCharsRegEx || textBoxProps.AllowedCharsRegEx == null || textBoxProps.AllowedCharsRegEx.length == 0 || c.match(textBoxProps.AllowedCharsRegEx) == c) {
                 if (textBoxProps.CaretPosIndex == -1) {
@@ -6637,18 +6576,19 @@ function invokeServerSideFunction(ajaxURL, functionName, canvasid, windowid, cal
         xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
     }
     xmlhttp.onreadystatechange = function () {
-        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200 && xmlhttp.responseText && xmlhttp.responseText.length > 0) {
             //Here is where you unwrap the data
             var arr = UnWrapVars(xmlhttp.responseText);
             if (callBackFunc) {
                 callBackFunc(arr);
             }
         }
-    }
+    };
     xmlhttp.open("POST", ajaxURL, true);
     if (navigator.userAgent.toLowerCase().indexOf('msie') == -1) {
         xmlhttp.overrideMimeType("application/octet-stream");
     }
+    xmlhttp.setRequestHeader('Connection', 'close');
     xmlhttp.send("[FunctionName]" + functionName + "[/FunctionName][CanvasID]" + canvasid + "[/CanvasID][WindowID]" + windowid.toString() + "[/WindowID][Vars]" + getEncodedVariables() + "[/Vars]");
 }
 
@@ -6839,7 +6779,7 @@ function stringEncodeObject(obj) {
                     str += '[Array]' + stringEncodeObject(obj[name][i], strIndexes ) + '[/Array]';
                 }
             }
-            str += '[/' + name + ']'
+            str += '[/' + name + ']';
         } else {
             str += stringEncodeObject(obj[name]);
         }
@@ -6875,7 +6815,7 @@ function encodeArray(arr, strIndexes) {
             str += '[Array]' + stringEncodeObject(arr[i]) + '[/Array]';
         }
     }
-    return str + '[/Array]'
+    return str + '[/Array]';
 }
 
 function rectifyNullFunctions(arr) {
@@ -6895,11 +6835,11 @@ function rectifyNullFunctions(arr) {
 }
 
 function UnWrapVars(data) {
-    var xmlDoc;
+    var xmlDoc = null;
     data = data.replace(/\[/g, '<');
     data = data.replace(/\]/g, '>');
-    data = data.replace(/[&]lb[;]/g, '[')
-    data = data.replace(/[&]rb[;]/g, ']')
+    data = data.replace(/[&]lb[;]/g, '[');
+    data = data.replace(/[&]rb[;]/g, ']');
     data = data.replace(/[&]amp[;]/g, '&');
     if (window.DOMParser) {
         var parser = new DOMParser();
