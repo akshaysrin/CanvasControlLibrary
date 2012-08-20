@@ -6923,7 +6923,7 @@ function UnWrapVars(data) {
         }
     }
     for (var i = 0; i < menuBarPropsArray.length; i++) {
-        for (var c = 0; c < menuBarPropsArray[i].ChildMenuWindowIDs.length; c++) {
+        for (var c = 0; menuBarPropsArray[i].ChildMenuWindowIDs && c < menuBarPropsArray[i].ChildMenuWindowIDs.length; c++) {
             for (var k = 0; k < subMenuBarPropsArray.length; k++) {
                 if (subMenuBarPropsArray[k].CanvasID == menuBarPropsArray[i].CanvasID &&
                     subMenuBarPropsArray[k].WindowID == menuBarPropsArray[i].ChildMenuWindowIDs[c]) {
