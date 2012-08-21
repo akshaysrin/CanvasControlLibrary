@@ -19,7 +19,6 @@
     <script src="CanvasControlLibrary.js" type="text/javascript"></script>
 </head>
 <body style="background-color:#000000">
-    <form id="form1" runat="server">
     <div>
         <table style="width:100%;height:100%"><col width="50%" /><col width="1024px" /><col width="50%" /><tr><td>&nbsp;</td><td>
                 <canvas id="canvas" width="1024" height="768" tabindex="0"></canvas>
@@ -99,7 +98,6 @@
             createLabel(elemId, 'label1', 10, 220, 50, 30, 'City', '#131aa3', 16, '16pt Ariel', null, highestDepth);
             createComboBox(elemId, 'selectCityComboBox', 75, 220, 200, 30, highestDepth, ['Cities'], null, null, null, null, null, '#131aa3', 16, '16pt Ariel', '#131aa3', 16, '16pt Ariel', cityChanged);
             createLabel(elemId, 'label2', 300, 220, 120, 30, 'Multiplex', '#131aa3', 16, '16pt Ariel', null, highestDepth);
-            createLabel(elemId, 'l1', 10, 200, 100, 20, 'Test', '#131aa3', 12, '12pt Ariel', null, highestDepth);
             return createComboBox(elemId, 'selectCinemaComboBox', 400, 220, 200, 30, highestDepth, ['Select a city first'], null, null, null, null, null, '#131aa3', 16, '16pt Ariel', '#131aa3', 16, '16pt Ariel', onSelectCinema);
         }
         var windowid = form1();
@@ -107,6 +105,5 @@
         draw(elemId);
     </script>
     </div>
-    </form>
 </body>
 </html>

@@ -123,8 +123,6 @@ function onSelectCityChanged($obj, $canvasid, $windowid)
 	$selectCityComboBox = $obj->getControlPropsByControlNameID("selectCityComboBoxComboBoxTextArea");
 	$selectCinemaComboBox = $obj->getControlPropsByControlNameID("selectCinemaComboBoxComboBoxTextArea");
 	$selectCinemaComboBox->Data = array();
-	$lp = $obj->getControlPropsByControlNameID("l1");
-	$lp->Text = strval($selectCityComboBox->Data[intval($selectCityComboBox->SelectedID)]);
 	switch (strval($selectCityComboBox->Data[intval($selectCityComboBox->SelectedID)]))
 	{
 		case "Mumbai":
@@ -155,13 +153,14 @@ function onSelectCityChanged($obj, $canvasid, $windowid)
 			array_push($selectCinemaComboBox->Data, "Select a city");
 			break;
 	}
-	$obj->getControlPropsByWindowID($canvasid, $selectCinemaComboBox->VScrollBarWindowID)->MaxItems = strval(count($selectCinemaComboBox.Data));
+	$obj->getControlPropsByControlNameID("selectCinemaComboBoxVSVS")->MaxItems = strval(count($selectCinemaComboBox->Data));
 }
 
 function DoPaymentForTickets($obj, $canvasid, $windowid)
 {
+	global $parameters;
 	global $movieIndexes;
-	$buttonProps = $obj->getControlPropsByWindowID($canvasid, $windowid->__toString());
+	$buttonProps = $obj->getControlPropsByWindowID($canvasid, strval($windowid));
 	$lp = $obj->getControlPropsByControlNameID($buttonProps->Tag);
 	$textbox = $obj->getControlPropsByControlNameID("numTicketsTextBox");
 	$selectCinemaComboBox = $obj->getControlPropsByControlNameID("selectCinemaComboBoxComboBoxTextArea");
@@ -170,216 +169,216 @@ function DoPaymentForTickets($obj, $canvasid, $windowid)
 	$movieName = "";
 	for ($i = 0; $i < count($movieIndexes); $i++)
 	{
-		if ($movieIndexes[$i][0]->__toString() == $selectCinemaComboBox->Data[intval($selectCinemaComboBox->SelectedID)]->__toString())
+		if (strval($movieIndexes[$i][0]) == strval($selectCinemaComboBox->Data[intval($selectCinemaComboBox->SelectedID)]))
 		{
-			$movieName = $movieIndexes[$i][1][$movieIndex]->__toString();
+			$movieName = strval($movieIndexes[$i][1][$movieIndex]);
 		}
 	}
 	array_push($parameters, "The payment was successful.  You have " . $textbox->UserInputText . " tickets to see " . $movieName . " at " .
-		$selectCinemaComboBox->Data[intval($selectCinemaComboBox->SelectedID)]->__toString() .	" showing at time " + $lp->Text + ".");
+		strval($selectCinemaComboBox->Data[intval($selectCinemaComboBox->SelectedID)]) .	" showing at time " . $lp->Text . ".");
 }
 
 function onSelectCinemaChanged($obj, $canvasid, $windowid)
 {
+	global $parameters;
 	$pictures = array();
 	$selectCinemaComboBox = $obj->getControlPropsByControlNameID("selectCinemaComboBoxComboBoxTextArea");
-	switch ($selectCinemaComboBox->Data[intval($selectCinemaComboBox->SelectedID)]->__toString())
+	switch ($selectCinemaComboBox->Data[intval($selectCinemaComboBox->SelectedID)])
 	{
 		case "Phoenix Mills":
 			array_push($pictures, "fantastic_four.jpg");
 			array_push($pictures, "1:30 pm");
 			array_push($pictures, "5:45 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			$pictures = array();
 			array_push($pictures, "ferrisbuellersdayoff.jpg");
 			array_push($pictures, "9:00 pm");
 			array_push($pictures, "11:30 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			$pictures = array();
 			array_push($pictures, "IncredibleHulk.jpg");
 			array_push($pictures, "6:00 pm");
 			array_push($pictures, "8:30 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			break;
 		case "Juhu":
 			array_push($pictures, "ironman.jpg");
 			array_push($pictures, "4:30 pm");
 			array_push($pictures, "9:45 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			$pictures = array();
 			array_push($pictures, "pointbreak.jpg");
 			array_push($pictures, "6:00 pm");
 			array_push($pictures, "7:30 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			$pictures = array();
 			array_push($pictures, "Spider-Man-2.jpg");
 			array_push($pictures, "5:00 pm");
 			array_push($pictures, "10:30 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			break;
 		case "Nariman Point":
 			array_push($pictures, "spider-man4.jpg");
 			array_push($pictures, "7:30 pm");
 			array_push($pictures, "8:45 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			$pictures = array();
 			array_push($pictures, "spider_man3.jpg");
 			array_push($pictures, "2:00 pm");
 			array_push($pictures, "5:30 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			$pictures = array();
 			array_push($pictures, "The-Avengers.jpg");
 			array_push($pictures, "9:00 pm");
 			array_push($pictures, "9:30 pm");
 			array_push($pictures, "10:30 pm");
 			array_push($pictures, "11:30 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			break;
 		case "Chitrapur":
 			array_push($pictures, "thor.jpg");
 			array_push($pictures, "8:30 pm");
 			array_push($pictures, "10:45 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			$pictures = array();
 			array_push($pictures, "wolverine.jpg");
 			array_push($pictures, "2:00 pm");
 			array_push($pictures, "5:30 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			$pictures = array();
 			array_push($pictures, "xmen_first_class.jpg");
 			array_push($pictures, "9:00 pm");
 			array_push($pictures, "11:30 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			break;
 		case "Khari Baoli":
 			array_push($pictures, "gijoeriseofcobra.jpg");
 			array_push($pictures, "2:30 pm");
 			array_push($pictures, "5:45 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			$pictures = array();
 			array_push($pictures, "The-Avengers.jpg");
 			array_push($pictures, "8:00 pm");
 			array_push($pictures, "9:15 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			$pictures = array();
 			array_push($pictures, "wolverine.jpg");
 			array_push($pictures, "7:30 pm");
 			array_push($pictures, "10:15 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			break;
 		case "Lakshmi Garden":
 			array_push($pictures, "Thor.jpg");
 			array_push($pictures, "8:30 pm");
 			array_push($pictures, "10:45 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			$pictures = array();
 			array_push($pictures, "pointbreak.jpg");
 			array_push($pictures, "3:00 pm");
 			array_push($pictures, "4:15 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			$pictures = array();
 			array_push($pictures, "ironman.jpg");
 			array_push($pictures, "8:45 pm");
 			array_push($pictures, "9:15 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			break;
 		case "Gandhi Nagar":
 			array_push($pictures, "Spider-Man-2.jpg");
 			array_push($pictures, "4:30 pm");
 			array_push($pictures, "6:45 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			$pictures = array();
 			array_push($pictures, "IncredibleHulk.jpg");
 			array_push($pictures, "7:00 pm");
 			array_push($pictures, "9:15 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			$pictures = array();
 			array_push($pictures, "gijoeriseofcobra.jpg");
 			array_push($pictures, "3:45 pm");
 			array_push($pictures, "4:15 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			break;
 		case "Lake City":
 			array_push($pictures, "The-Avengers.jpg");
 			array_push($pictures, "9:30 pm");
 			array_push($pictures, "9:45 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			$pictures = array();
 			array_push($pictures, "xmen_first_class.jpg");
 			array_push($pictures, "6:00 pm");
 			array_push($pictures, "8:15 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			$pictures = array();
 			array_push($pictures, "ironman.jpg");
 			array_push($pictures, "8:45 pm");
 			array_push($pictures, "10:15 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			break;
 		case "Rajaji Nagar":
 			array_push($pictures, "fantastic_four.jpg");
 			array_push($pictures, "9:30 pm");
 			array_push($pictures, "11:45 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			$pictures = array();
 			array_push($pictures, "wolverine.jpg");
 			array_push($pictures, "8:00 pm");
 			array_push($pictures, "9:15 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			$pictures = array();
 			array_push($pictures, "Thor.jpg");
 			array_push($pictures, "6:45 pm");
 			array_push($pictures, "10:15 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			break;
 		case "Harrington Road":
 			array_push($pictures, "The-Avengers.jpg");
 			array_push($pictures, "10:30 pm");
 			array_push($pictures, "10:45 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			$pictures = array();
 			array_push($pictures, "xmen_first_class.jpg");
 			array_push($pictures, "9:00 pm");
 			array_push($pictures, "10:15 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			$pictures = array();
 			array_push($pictures, "ironman.jpg");
 			array_push($pictures, "8:45 pm");
 			array_push($pictures, "11:15 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			break;
 		case "Boat Club":
 			array_push($pictures, "gijoeriseofcobra.jpg");
 			array_push($pictures, "8:30 pm");
 			array_push($pictures, "8:45 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			$pictures = array();
 			array_push($pictures, "spider_man3.jpg");
 			array_push($pictures, "10:00 pm");
 			array_push($pictures, "11:15 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			$pictures = array();
 			array_push($pictures, "IncredibleHulk.jpg");
 			array_push($pictures, "8:45 pm");
 			array_push($pictures, "9:15 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			break;
 		case "Chetpet":
 			array_push($pictures, "Thor.jpg");
 			array_push($pictures, "7:30 pm");
 			array_push($pictures, "8:45 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			$pictures = array();
 			array_push($pictures, "fantastic_four.jpg");
 			array_push($pictures, "5:00 pm");
 			array_push($pictures, "6:15 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			$pictures = array();
 			array_push($pictures, "The-Avengers.jpg");
 			array_push($pictures, "10:45 pm");
 			array_push($pictures, "11:15 pm");
-			array_push($parameters, pictures);
+			array_push($parameters, $pictures);
 			break;
 	}
-	$obj->getControlPropsByWindowID($canvasid, $selectCinemaComboBox->VScrollBarWindowID)->MaxItems = strval(count($selectCinemaComboBox->Data));
 }
 ?>

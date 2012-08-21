@@ -2237,11 +2237,11 @@ function createImage(canvasid, controlNameId, x, y, width, height, depth, imgurl
         var ctx = getCtx(canvasid);
         var imageProps = getImageControlProps(canvasid, windowid);
         if (imageProps.Image && imageProps.Image.complete == true) {
-            if (navigator.userAgent.toLowerCase().indexOf('msie') == -1) {
-                ctx.drawImage(imageProps.Image, 0, 0, imageProps.Width, imageProps.Height, imageProps.X, imageProps.Y, imageProps.Width, imageProps.Height);
-            } else {
-                ctx.drawImage(imageProps.Image, imageProps.X, imageProps.Y, imageProps.Width, imageProps.Height);
-            }
+//            if (navigator.userAgent.toLowerCase().indexOf('msie') == -1) {
+//                ctx.drawImage(imageProps.Image, 0, 0, imageProps.Width, imageProps.Height, imageProps.X, imageProps.Y, imageProps.Width, imageProps.Height);
+//            } else {
+                ctx.drawImage(imageProps.Image, imageProps.X, imageProps.Y);
+//            }
         }
     }, canvasid);
     if (clickFunction != null) {
@@ -5394,6 +5394,7 @@ function createTabControl(canvasid, controlNameId, x, y, width, height, depth, t
         var currWidthOffset = 0;
         var selectedWidthOffset = 0;
         tabProps.TabLabelHitAreas = new Array();
+        var currentTabWidth = 0;
         for (var i = 0; i < tabProps.TabLabels.length; i++) {
             if (i == tabProps.SelectedTabID + 1) {
                 currWidthOffset += selectedTabWidth;
@@ -5401,7 +5402,7 @@ function createTabControl(canvasid, controlNameId, x, y, width, height, depth, t
             if (i == tabProps.SelectedTabID) {
                 selectedWidthOffset = currWidthOffset;
             } else {
-                var currentTabWidth = ctx.measureText(tabProps.TabLabels[i]).width + 8 + ((tabProps.TabLabelHeight + 8) * 2);
+                currentTabWidth = ctx.measureText(tabProps.TabLabels[i]).width + 8 + ((tabProps.TabLabelHeight + 8) * 2);
                 if (i != tabProps.SelectedTabID && currWidthOffset + currentTabWidth < tabProps.Width) {
                     var tablabelgradient = ctx.createLinearGradient(tabProps.X + currWidthOffset, tabProps.Y, tabProps.X + currWidthOffset + currentTabWidth,
                         tabProps.Y + tabProps.TabLabelHeight + 8);
@@ -5438,9 +5439,9 @@ function createTabControl(canvasid, controlNameId, x, y, width, height, depth, t
         ctx.moveTo(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs), tabProps.Y + tabProps.TabLabelHeight + 8);
         ctx.lineTo(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs), tabProps.Y + 5);
         ctx.arc(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs) + 5, tabProps.Y + 5, 5, Math.PI, (Math.PI / 180) * 270, false);
-        ctx.lineTo(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs) + currentTabWidth - 5, tabProps.Y);
-        ctx.arc(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs) + currentTabWidth - 5, tabProps.Y + 5, 5, (Math.PI / 180) * 270, Math.PI * 2, false);
-        ctx.lineTo(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs) + currentTabWidth, tabProps.Y + tabProps.TabLabelHeight + 8);
+        ctx.lineTo(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs) - 5, tabProps.Y);
+        ctx.arc(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs) - 5, tabProps.Y + 5, 5, (Math.PI / 180) * 270, Math.PI * 2, false);
+        ctx.lineTo(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs), tabProps.Y + tabProps.TabLabelHeight + 8);
         ctx.closePath();
         ctx.fill();
         ctx.fillStyle = tabProps.TabLabelColor;
@@ -5453,9 +5454,9 @@ function createTabControl(canvasid, controlNameId, x, y, width, height, depth, t
         ctx.lineTo(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs), tabProps.Y + tabProps.TabLabelHeight + 8);
         ctx.lineTo(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs), tabProps.Y + 5);
         ctx.arc(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs) + 5, tabProps.Y + 5, 5, Math.PI, (Math.PI / 180) * 270, false);
-        ctx.lineTo(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs) + currentTabWidth - 5, tabProps.Y);
-        ctx.arc(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs) + currentTabWidth - 5, tabProps.Y + 5, 5, (Math.PI / 180) * 270, Math.PI * 2, false);
-        ctx.lineTo(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs) + currentTabWidth, tabProps.Y + tabProps.TabLabelHeight + 8);
+        ctx.lineTo(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs) - 5, tabProps.Y);
+        ctx.arc(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs) - 5, tabProps.Y + 5, 5, (Math.PI / 180) * 270, Math.PI * 2, false);
+        ctx.lineTo(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs), tabProps.Y + tabProps.TabLabelHeight + 8);
         ctx.lineTo(tabProps.X + tabProps.Width, tabProps.Y + tabProps.TabLabelHeight + 8);
         ctx.lineTo(tabProps.X + tabProps.Width, tabProps.Y + tabProps.Height);
         ctx.stroke();
@@ -6568,7 +6569,8 @@ function createImageSlider(canvasid, controlNameId, x, y, width, height, depth, 
 //AJAX Postback code Starts here
 
 function invokeServerSideFunction(ajaxURL, functionName, canvasid, windowid, callBackFunc) {
-    var xmlhttp;
+	var data = "[FunctionName]" + functionName + "[/FunctionName][CanvasID]" + canvasid + "[/CanvasID][WindowID]" + windowid.toString() + "[/WindowID][Vars]" + getEncodedVariables() + "[/Vars]";
+	var xmlhttp;
     if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
         xmlhttp = new XMLHttpRequest();
     }
@@ -6589,7 +6591,10 @@ function invokeServerSideFunction(ajaxURL, functionName, canvasid, windowid, cal
         xmlhttp.overrideMimeType("application/octet-stream");
     }
     xmlhttp.setRequestHeader('Connection', 'close');
-    xmlhttp.send("[FunctionName]" + functionName + "[/FunctionName][CanvasID]" + canvasid + "[/CanvasID][WindowID]" + windowid.toString() + "[/WindowID][Vars]" + getEncodedVariables() + "[/Vars]");
+    xmlhttp.setRequestHeader("Content-Type", "text/xml");
+    xmlhttp.setRequestHeader("Content-Length", data.length);
+    xmlhttp.setRequestHeader("Cache-Control", "max-age=0");
+    xmlhttp.send(data);
 }
 
 function getEncodedVariables() {

@@ -1045,34 +1045,6 @@ class CanvasControlLibrary
         return str_replace("&amp;", "&", $str);
     }
 
-    public function FillClassObject($child2, $g)
-    {
-        foreach ($child2->children() as $child3)
-        {
-            $strName = $child3->getName();
-                if (count($child3->children()) == 0)
-                {
-                    $g->$strName = $this->DecodeXML($child3->__toString());
-                }
-                else if (count($child3->children()) > 0 || (count($child3->children()) != 0 && $this->getChildByIndex($child3, 0)->getName() == "i"))
-                {
-                    $al = array();
-                    foreach ($child3->children() as $child4)
-                    {
-                        if ($child4->getName() == "Array")
-                        {
-                            $this->AddArrayData($child4, $al);
-                        }
-                        else if (count($child4->children()) == 0)
-                        {
-                            array_push($al, $child4->__toString());
-                        }
-                    }
-                    $g->$strName = $al;
-                }
-        }
-    }
-    
     public function UnwrapVars($node)
     {
         foreach ($node->children() as $child1)
@@ -1328,6 +1300,36 @@ class CanvasControlLibrary
         foreach($child->children() as $child2){
             if($tmpidx == $idx){
                 return $child2;
+            }
+        }
+    }
+    
+    public function FillClassObject($child2, $g)
+    {
+        foreach ($child2->children() as $child3)
+        {
+            $strName = $child3->getName();
+            if (count($child3->children()) == 0)
+            {
+            	$g->$strName = $this->DecodeXML($child3->__toString());
+            }
+            else if (count($child3->children()) > 0)// || (count($child3->children()) != 0 && $this->getChildByIndex($child3, 0)->getName() == "i"))
+            {
+            	$al = array();
+                foreach ($child3->children() as $child4)
+                {
+                	if ($child4->getName() == "Array")
+                    {
+                    	$this->AddArrayData($child4, $al);
+                    }
+                    else// if (count($child4->children()) == 0)
+                    {
+                    	array_push($al, $child4->__toString());
+                    }
+            	}
+                $g->$strName = $al;
+          	} else if($child3->getName() == "Array") {
+            	$g->$strName = array();
             }
         }
     }
