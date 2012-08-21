@@ -165,7 +165,7 @@ function DoPaymentForTickets($obj, $canvasid, $windowid)
 	$textbox = $obj->getControlPropsByControlNameID("numTicketsTextBox");
 	$selectCinemaComboBox = $obj->getControlPropsByControlNameID("selectCinemaComboBoxComboBoxTextArea");
 	preg_match("/Poster[0-9]+/", $buttonProps->Tag, $match);
-	$movieIndex = intval(str_replace("Poster", "", $match));
+	$movieIndex = intval(str_replace("Poster", "", $match[0]));
 	$movieName = "";
 	for ($i = 0; $i < count($movieIndexes); $i++)
 	{
