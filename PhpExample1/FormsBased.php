@@ -27,10 +27,10 @@
         var elemId = 'canvas';
         registerCanvasElementId(elemId);
         function cityChanged(canvasid, windowid, index) {
-            invokeServerSideFunction('http://114.143.28.50:8080/PhpExample1/public/AjaxEx2.php', 'onSelectCityChanged', canvasid, windowid, null);
+            invokeServerSideFunction('http://114.143.28.50/PhpExample1/AjaxEx2.php', 'onSelectCityChanged', canvasid, windowid, null);
         }
         function onSelectCinema(canvasid, windowid, index) {
-            invokeServerSideFunction('http://114.143.28.50:8080/PhpExample1/public/AjaxEx2.php', 'onSelectCinemaChanged', canvasid, windowid, showMoviesForCinema);
+            invokeServerSideFunction('http://114.143.28.50/PhpExample1/AjaxEx2.php', 'onSelectCinemaChanged', canvasid, windowid, showMoviesForCinema);
         }
         function selectMovieTime(canvasid, windowid) {
             var labelProps = getLabelProps(canvasid, windowid);
@@ -41,7 +41,7 @@
                 1, 0, '#000000', 3, 3, 20, 1, 10, 1, '#9bacc6', '#d6e4f9', 0, null, 0, null, 0, 0, 0, null, '', '#0d2952', 'rgba(0, 0, 240, 0.2)', 1, ['test', 'this', 'out']);
             createButton(elemId, 'PaymentButton', 875, 220, 100, 30, 'Book Tickets', '#0000FF', 12, '12pt Ariel', 2, highestDepth + 1,
                 function (canvasid, windowid) {
-                    invokeServerSideFunction('http://114.143.28.50:8080/PhpExample1/public/AjaxEx2.php', 'DoPaymentForTickets', elemId, windowid, afterPayment);
+                    invokeServerSideFunction('http://114.143.28.50/PhpExample1/AjaxEx2.php', 'DoPaymentForTickets', elemId, windowid, afterPayment);
                 }, null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1', labelWindowProps.ControlNameID);
             for (var i = 0; i < controlNameIDs.length; i++) {
                 var window = getWindowByControlNameID(controlNameIDs[i]);
@@ -101,7 +101,7 @@
             return createComboBox(elemId, 'selectCinemaComboBox', 400, 220, 200, 30, highestDepth, ['Select a city first'], null, null, null, null, null, '#131aa3', 16, '16pt Ariel', '#131aa3', 16, '16pt Ariel', onSelectCinema);
         }
         var windowid = form1();
-        invokeServerSideFunction('http://114.143.28.50:8080/PhpExample1/public/AjaxEx2.php', 'InitializeForm1', elemId, windowid, null);
+        invokeServerSideFunction('http://114.143.28.50/PhpExample1/AjaxEx2.php', 'InitializeForm1', elemId, windowid, null);
         draw(elemId);
     </script>
     </div>
