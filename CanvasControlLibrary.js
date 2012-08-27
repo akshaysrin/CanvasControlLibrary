@@ -56,6 +56,24 @@ function canvasGetOffsetTop(obj) {
     }
 }
 
+function drawEllipse(ctx, x, y, w, h) {
+    var kappa = .5522848;
+    ox = (w / 2) * kappa, // control point offset horizontal
+    oy = (h / 2) * kappa, // control point offset vertical
+    xe = x + w,           // x-end
+    ye = y + h,           // y-end
+    xm = x + w / 2,       // x-middle
+    ym = y + h / 2;       // y-middle
+
+    ctx.beginPath();
+    ctx.moveTo(x, ym);
+    ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
+    ctx.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);
+    ctx.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
+    ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
+    ctx.closePath();
+}
+
 //Window Manager Code starts here
 var canvases = new Array();
 var ctxs = new Array();
@@ -1959,7 +1977,6 @@ function drawComboboxListArea(canvasid, windowid) {
 }
 
 function comboboxListAreaClick(canvasid, windowid, e) {
-    
     var comboboxProps = getComboboxPropsByListAreaWindowId(canvasid, windowid);
     var vscrollBarProps = getScrollBarProps(canvasid, comboboxProps.VScrollBarWindowID);
     var x = e.calcX;
@@ -5932,11 +5949,69 @@ function getTextBoxProps(canvasid, windowid) {
     }
 }
 
+function getTextBoxPropsByDropDownWindowID(canvasid, windowid) {
+    for (var i = 0; i < textBoxPropsArray.length; i++) {
+        if (textBoxPropsArray[i].CanvasID == canvasid && textBoxPropsArray[i].DropDownWindowID == windowid) {
+            return textBoxPropsArray[i];
+        }
+    }
+}
+
 function createTextBox(canvasid, controlNameId, x, y, width, height, depth, waterMarkText, waterMarkTextColor, waterMarkTextHeight, waterMarkTextFontString,
     textColor, textHeight, textFontString, maxChars, allowedCharsRegEx, isPassword, passwordChar, hasBorder, borderColor, borderLineWidth, hasShadow, shadowColor, shadowOffsetX, shadowOffsetY,
     shadowBlurValue, hasRoundedEdges, edgeRadius, hasBgGradient, bgGradientStartColor, bgGradientEndColor, hasBgImage, bgImageUrl, hasAutoComplete, listPossibles, 
-    dropDownPossiblesListIfThereIsInputText, limitToListPossibles, listPossiblesTextHeight, listPossiblesTextFontString, initialText, caretColor, textSelectionBgColor, hasFocusInitially, tag) {
+    dropDownPossiblesListIfThereIsInputText, limitToListPossibles, listPossiblesTextColor, listPossiblesTextHeight, listPossiblesTextFontString, initialText, caretColor,
+    textSelectionBgColor, hasFocusInitially, tag) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'TextBox', controlNameId);
+    var dropdownwindowid, vscrollbarwindowid;
+    if (hasAutoComplete == 1) {
+        dropdownwindowid = createWindow(canvasid, x, y + height, width, 100, depth, null, 'TextBoxDropDown', controlNameId + 'TextBoxDropDown');
+        vscrollbarwindowid = createScrollBar(canvasid, controlNameId + 'VS', x + width - 15, y + height, 100, depth, listPossibles.length, 1, null, null, null);
+        registerHiddenWindow(canvasid, dropdownwindowid, 1);
+        registerModalWindow(canvasid, dropdownwindowid);
+        registerHiddenWindow(canvasid, vscrollbarwindowid, 1);
+        registerModalWindow(canvasid, vscrollbarwindowid);
+        registerWindowDrawFunction(dropdownwindowid, function (canvasid9, windowid9) {
+            var textBoxProps = getTextBoxPropsByDropDownWindowID(canvasid9, windowid9);
+            var vscrollBarProps = getScrollBarProps(canvasid9, textBoxProps.VScrollBarWindowID);
+            var ctx = getCtx(canvasid9);
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.rect(textBoxProps.X, textBoxProps.Y + textBoxProps.Height, textBoxProps.Width - 15, 100);
+            ctx.fill();
+            ctx.fillStyle = textBoxProps.ListPossiblesTextColor;
+            ctx.font = textBoxProps.ListPossiblesTextFontString;
+            for (var i = vscrollBarProps.SelectedID; i < textBoxProps.ListPossibles.length && ((textBoxProps.ListPossiblesTextHeight + 6) *
+                (i - vscrollBarProps.SelectedID + 1)) < 100; i++) {
+                ctx.fillText(textBoxProps.ListPossibles[i], textBoxProps.X + 5, textBoxProps.Y + textBoxProps.Height +
+                    ((textBoxProps.ListPossiblesTextHeight + 6) * (i - vscrollBarProps.SelectedID + 1)));
+            }
+            ctx.strokeStyle = '#b7bfc8';
+            ctx.beginPath();
+            ctx.rect(textBoxProps.X, textBoxProps.Y + textBoxProps.Height, textBoxProps.Width - 15, 100);
+            ctx.stroke();
+        }, canvasid);
+        registerClickFunction(dropdownwindowid, function (canvasid10, windowid10, e) {
+            var textBoxProps = getTextBoxPropsByDropDownWindowID(canvasid10, windowid10);
+            var vscrollBarProps = getScrollBarProps(canvasid10, textBoxProps.VScrollBarWindowID);
+            var x = e.calcX;
+            var y = e.calcY;
+            for (var i = vscrollBarProps.SelectedID; i < textBoxProps.ListPossibles.length && ((textBoxProps.ListPossiblesTextHeight + 6) * (i - vscrollBarProps.SelectedID + 1)) < 100; i++) {
+                if (x > textBoxProps.X && y > textBoxProps.Y + textBoxProps.Height + ((textBoxProps.ListPossiblesTextHeight + 6) * (i - vscrollBarProps.SelectedID)) &&
+                    x < textBoxProps.X + textBoxProps.Width - 15 && y < textBoxProps.Y + textBoxProps.Height + ((textBoxProps.ListPossiblesTextHeight + 6) *
+                    (i - vscrollBarProps.SelectedID + 1))) {
+                    if (textBoxProps.ListPossiblesSelectedID != i) {
+                        textBoxProps.ListPossiblesSelectedID = i;
+                        textBoxProps.UserInputText = textBoxProps.ListPossibles[i];
+                        setHiddenWindowStatus(canvasid, textBoxProps.VScrollBarWindowID, 1);
+                        setHiddenWindowStatus(canvasid, textBoxProps.DropDownWindowID, 1);
+                        draw(canvasid);
+                    }
+                    return;
+                }
+            }
+        }, canvasid);
+    }
     if (hasFocusInitially == 1) {
         setFocusToWindowID(canvasid, windowid);
     }
@@ -5951,10 +6026,11 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
         TextFontString: textFontString, MaxChars: maxChars, AllowedCharsRegEx: allowedCharsRegEx, IsPassword: isPassword, PasswordChar: passwordChar,
         HasBorder: hasBorder, BorderColor: borderColor, BorderLineWidth: borderLineWidth, HasShadow: hasShadow, ShadowOffsetX: shadowOffsetX, ShadowOffsetY: shadowOffsetY,
         ShadowBlurValue: shadowBlurValue, HasRoundedEdges: hasRoundedEdges, EdgeRadius: edgeRadius, HasBgGradient: hasBgGradient, BgGradientStartColor: bgGradientStartColor,
-        BgGradientEndColor: bgGradientEndColor, HasBgImage: hasBgImage, BgImageUrl: bgImageUrl, Image: image, HasAutoComplete: hasAutoComplete, ListPossibles: listPossibles,
+        BgGradientEndColor: bgGradientEndColor, HasBgImage: hasBgImage, BgImageUrl: bgImageUrl, Image: image, HasAutoComplete: hasAutoComplete, ListPossibles: new Array(),
         DropDownPossiblesListIfThereIsInputText: dropDownPossiblesListIfThereIsInputText, LimitToListPossibles: limitToListPossibles, ListPossiblesTextHeight: listPossiblesTextHeight,
         ListPossiblesTextFontString: listPossiblesTextFontString, CaretPosIndex: -1, UserInputText: initialText, ShadowColor: shadowColor, ShowCaret: 0, CaretColor: caretColor,
-        SelectedTextStartIndex: -1, SelectedTextEndIndex: -1, TextSelectionBgColor: textSelectionBgColor, MouseDown: 0, WasSelecting: 0, MouseDownTime: 0, Tag: tag
+        SelectedTextStartIndex: -1, SelectedTextEndIndex: -1, TextSelectionBgColor: textSelectionBgColor, MouseDown: 0, WasSelecting: 0, MouseDownTime: 0, Tag: tag,
+        DropDownWindowID: dropdownwindowid, ListPossiblesTextColor: listPossiblesTextColor, VScrollBarWindowID: vscrollbarwindowid, ListPossiblesSelectedID: -1, ListPossiblesAllChoices: listPossibles
     });
     registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
         var textBoxProps = getTextBoxProps(canvasid1, windowid1);
@@ -6077,7 +6153,6 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
     }, canvasid);
     //This screws up initially as the canvas wont receive keystrokes
     registerMouseDownFunction(windowid, function (canvasid4, windowid4, e) {
-        
         var textBoxProps = getTextBoxProps(canvasid4, windowid4);
         if (textBoxProps.UserInputText && textBoxProps.UserInputText.length > 0) {
             textBoxProps.MouseDown = 1;
@@ -6157,7 +6232,6 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
         }
     }, canvasid);
     registerMouseUpFunction(windowid, function (canvasid6, windowid6, e) {
-        
         var textBoxProps = getTextBoxProps(canvasid6, windowid6);
         if (textBoxProps.MouseDown == 1) {
             textBoxProps.MouseDown = 0;
@@ -6202,7 +6276,6 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
         }
     }, canvasid);
     registerClickFunction(windowid, function (canvasid2, windowid2, e) {
-        
         var textBoxProps = getTextBoxProps(canvasid2, windowid2);
         var x = e.calcX;
         var ctx = getCtx(canvasid2);
@@ -6240,7 +6313,6 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
         }
     }, canvasid);
     registerKeyDownFunction(canvasid, function (canvasid3, windowid3, e) {
-        
         var textBoxProps = getTextBoxProps(canvasid3, windowid3);
         switch (e.keyCode) {
             case 37:
@@ -6281,6 +6353,7 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
                     textBoxProps.MouseDown = 0;
                     textBoxProps.WasSelecting = 0;
                 }
+                FindTextBoxPossible(textBoxProps, c);
                 return;
             case 8:
                 //backspace	 8
@@ -6305,6 +6378,7 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
                     textBoxProps.MouseDown = 0;
                     textBoxProps.WasSelecting = 0;
                 }
+                FindTextBoxPossible(textBoxProps, c);
                 return;
         }
         if (e.ctrlKey && String.fromCharCode(e.keyCode).toLowerCase() == 'a') {
@@ -6317,7 +6391,9 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
             }
         } else if (!textBoxProps.UserInputText || (textBoxProps.UserInputText && textBoxProps.UserInputText.length < textBoxProps.MaxChars)) {
             var c = (e.shiftKey || e.shiftLeft ? String.fromCharCode(e.keyCode).toUpperCase() : String.fromCharCode(e.keyCode).toLowerCase());
-            if (!textBoxProps.AllowedCharsRegEx || textBoxProps.AllowedCharsRegEx == null || textBoxProps.AllowedCharsRegEx.length == 0 || c.match(textBoxProps.AllowedCharsRegEx) == c) {
+            var foundPossibleMatch = FindTextBoxPossible(textBoxProps, c);
+            if ((!textBoxProps.AllowedCharsRegEx || textBoxProps.AllowedCharsRegEx == null || textBoxProps.AllowedCharsRegEx.length == 0 || c.match(textBoxProps.AllowedCharsRegEx) == c) &&
+                (!textBoxProps.LimitToListPossibles || (textBoxProps.LimitToListPossibles == 1 && foundPossibleMatch))) {
                 if (textBoxProps.CaretPosIndex == -1) {
                     textBoxProps.UserInputText = c + (textBoxProps.UserInputText ? textBoxProps.UserInputText : '');
                     textBoxProps.CaretPosIndex++;
@@ -6338,11 +6414,47 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
     registerAnimatedWindow(canvasid);
     registerLostFocusFunction(canvasid, windowid, function (canvasid8, windowid8) {
         var textBoxProps = getTextBoxProps(canvasid8, windowid8);
-        textBoxProps.SelectedTextStartIndex = -1;
-        textBoxProps.SelectedTextEndIndex = -1;
-        textBoxProps.MouseDown = 0;
-        textBoxProps.WasSelecting = 0;
+        if (doesWindowHaveFocus(canvasid, textBoxProps.VScrollBarWindowID) == 0 &&
+            doesWindowHaveFocus(canvasid, textBoxProps.DropDownWindowID) == 0 &&
+            doingEventForWindowID != textBoxProps.DropDownWindowID &&
+            doingEventForWindowID != textBoxProps.VScrollBarWindowID) {
+            textBoxProps.SelectedTextStartIndex = -1;
+            textBoxProps.SelectedTextEndIndex = -1;
+            textBoxProps.MouseDown = 0;
+            textBoxProps.WasSelecting = 0;
+            setHiddenWindowStatus(canvasid, textBoxProps.DropDownWindowID, 1);
+            setHiddenWindowStatus(canvasid, textBoxProps.VScrollBarWindowID, 1);
+            draw(canvasid8);
+        }
     });
+}
+
+function FindTextBoxPossible(textBoxProps, c) {
+    var str = '';
+    if (textBoxProps.CaretPosIndex == -1) {
+        str = c + (textBoxProps.UserInputText ? textBoxProps.UserInputText : '');
+    } else if (textBoxProps.UserInputText && textBoxProps.CaretPosIndex == textBoxProps.UserInputText.length - 1) {
+        str = textBoxProps.UserInputText + c;
+    } else if (textBoxProps.UserInputText) {
+        str = textBoxProps.UserInputText.substring(0, textBoxProps.CaretPosIndex + 1) + c + textBoxProps.UserInputText.substring(textBoxProps.CaretPosIndex + 1);
+    }
+    textBoxProps.ListPossibles = new Array();
+    var found = false;
+    for (var i = 0; i < textBoxProps.ListPossiblesAllChoices.length; i++) {
+        if (textBoxProps.ListPossiblesAllChoices[i].indexOf(str) == 0) {
+            found = true;
+            textBoxProps.ListPossibles.push(textBoxProps.ListPossiblesAllChoices[i]);
+        }
+    }
+    if (found) {
+        setHiddenWindowStatus(textBoxProps.CanvasID, textBoxProps.DropDownWindowID, 0);
+        setHiddenWindowStatus(textBoxProps.CanvasID, textBoxProps.VScrollBarWindowID, 0);
+    } else {
+        setHiddenWindowStatus(textBoxProps.CanvasID, textBoxProps.DropDownWindowID, 1);
+        setHiddenWindowStatus(textBoxProps.CanvasID, textBoxProps.VScrollBarWindowID, 1);
+        textBoxProps.ListPossiblesSelectedID = -1;
+    }
+    return found;
 }
 
 //Image fader code starts here
@@ -6766,6 +6878,11 @@ function createMultiLineLabel(canvasid, controlNameId, x, y, width, depth, hasMa
 }
 
 //Word processor code starts here
+
+function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth, hasMarkup, text, textColor, textHeight, textFontString, lineSpacingInPixels, wordSensitive,
+    waterMarkText, waterMarkTextColor, waterMarkTextHeight, waterMarkTextFontString, maxChars, hasShadow, shadowColor, shadowOffsetX, shadowOffsetY,
+    hasRoundedEdges, edgeRadius, hasBgGradient, bgGradientStartColor, bgGradientEndColor, hasBgImage, bgImageUrl) {
+}
 
 //Tablet, Smartphone Keyboard code starts here
 
