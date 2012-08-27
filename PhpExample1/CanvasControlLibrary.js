@@ -5456,9 +5456,9 @@ function createTabControl(canvasid, controlNameId, x, y, width, height, depth, t
         ctx.moveTo(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs), tabProps.Y + tabProps.TabLabelHeight + 8);
         ctx.lineTo(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs), tabProps.Y + 5);
         ctx.arc(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs) + 5, tabProps.Y + 5, 5, Math.PI, (Math.PI / 180) * 270, false);
-        ctx.lineTo(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs) - 5, tabProps.Y);
-        ctx.arc(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs) - 5, tabProps.Y + 5, 5, (Math.PI / 180) * 270, Math.PI * 2, false);
-        ctx.lineTo(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs), tabProps.Y + tabProps.TabLabelHeight + 8);
+        ctx.lineTo(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs) + currentTabWidth - 5, tabProps.Y);
+        ctx.arc(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs) + currentTabWidth - 5, tabProps.Y + 5, 5, (Math.PI / 180) * 270, Math.PI * 2, false);
+        ctx.lineTo(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs) + currentTabWidth, tabProps.Y + tabProps.TabLabelHeight + 8);
         ctx.closePath();
         ctx.fill();
         ctx.fillStyle = tabProps.TabLabelColor;
@@ -5471,9 +5471,9 @@ function createTabControl(canvasid, controlNameId, x, y, width, height, depth, t
         ctx.lineTo(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs), tabProps.Y + tabProps.TabLabelHeight + 8);
         ctx.lineTo(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs), tabProps.Y + 5);
         ctx.arc(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs) + 5, tabProps.Y + 5, 5, Math.PI, (Math.PI / 180) * 270, false);
-        ctx.lineTo(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs) - 5, tabProps.Y);
-        ctx.arc(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs) - 5, tabProps.Y + 5, 5, (Math.PI / 180) * 270, Math.PI * 2, false);
-        ctx.lineTo(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs), tabProps.Y + tabProps.TabLabelHeight + 8);
+        ctx.lineTo(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs) + currentTabWidth - 5, tabProps.Y);
+        ctx.arc(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs) + currentTabWidth - 5, tabProps.Y + 5, 5, (Math.PI / 180) * 270, Math.PI * 2, false);
+        ctx.lineTo(tabProps.X + currWidthOffset + ((tabProps.SelectedTabID + 1) * tabProps.GapBetweenTabs) + currentTabWidth, tabProps.Y + tabProps.TabLabelHeight + 8);
         ctx.lineTo(tabProps.X + tabProps.Width, tabProps.Y + tabProps.TabLabelHeight + 8);
         ctx.lineTo(tabProps.X + tabProps.Width, tabProps.Y + tabProps.Height);
         ctx.stroke();
