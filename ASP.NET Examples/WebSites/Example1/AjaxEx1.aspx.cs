@@ -50,7 +50,15 @@ public partial class Default2 : System.Web.UI.Page
     public void ClickMe(string canvasid, int windowid)
     {
         CanvasControlLibrary.CCLLabelProps lp = ccl.getControlPropsByControlNameID("l1") as CanvasControlLibrary.CCLLabelProps;
-        lp.Text = "Did Postback";
+        if (ccl.CurrentSessionObj.Data.Count == 0)
+        {
+            ccl.CurrentSessionObj.Data.Add("Counter", 1);
+        }
+        else
+        {
+            ccl.CurrentSessionObj.Data["Counter"] = (int)ccl.CurrentSessionObj.Data["Counter"] + 1;
+        }
+        lp.Text = ccl.CurrentSessionObj.Data["Counter"].ToString();
     }
 
     public void InitializeForm1(string canvasid, int windowid)

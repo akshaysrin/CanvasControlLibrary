@@ -111,6 +111,7 @@ var doingEventForWindowID = -1;
 var intervalID = -1;
 var windowWithAnimationCount = new Array();
 var suspendDraw = 0;
+var sessionID = null;
 
 function animatedDraw() {
     for (var i = 0; i < windowWithAnimationCount.length; i++) {
@@ -6889,7 +6890,8 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
 //AJAX Postback code Starts here
 
 function invokeServerSideFunction(ajaxURL, functionName, canvasid, windowid, callBackFunc) {
-	var data = "[FunctionName]" + functionName + "[/FunctionName][CanvasID]" + canvasid + "[/CanvasID][WindowID]" + windowid.toString() + "[/WindowID][Vars]" + getEncodedVariables() + "[/Vars]";
+    var data = "[FunctionName]" + functionName + "[/FunctionName][CanvasID]" + canvasid + "[/CanvasID][WindowID]" + windowid.toString() + "[/WindowID][Vars]" + getEncodedVariables() +
+        "[/Vars][SessionID]" + sessionID + "[/SessionID]";
 	var xmlhttp;
     if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
         xmlhttp = new XMLHttpRequest();

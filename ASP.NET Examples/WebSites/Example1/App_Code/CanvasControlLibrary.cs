@@ -23,8 +23,27 @@ using System.Collections;
 /// <summary>
 /// Summary description for CanvasControlLibrary
 /// </summary>
+public static class Sessions
+{
+    public static List<CanvasControlLibrary.Session> SessionsData = new List<CanvasControlLibrary.Session>();
+}
+
 public class CanvasControlLibrary
 {
+    public Session CurrentSessionObj;
+
+    public class Session
+    {
+        public Guid ID;
+        public Dictionary<string, object> Data;
+
+        public Session()
+        {
+            ID = Guid.NewGuid();
+            Data = new Dictionary<string,object>();
+        }
+    }
+
     public List<CCLWindow> Windows = new List<CCLWindow>();
 
     public class CCLWindow
@@ -1038,6 +1057,15 @@ public class CanvasControlLibrary
         CanvasID = vars.FirstChild.ChildNodes[1].InnerXml;
         WindowID = vars.FirstChild.ChildNodes[2].InnerXml;
         UnwrapVars(vars.FirstChild.ChildNodes[3]);
+        Guid tmp = new Guid(vars.FirstChild.ChildNodes[4].InnerXml);
+        foreach (Session s in Sessions.SessionsData)
+        {
+            if (s.ID == tmp)
+            {
+                CurrentSessionObj = s;
+                break;
+            }
+        }
         JavaScriptCodeToSendInThisCall = new List<JavaScriptFunctionsToSendAndAttachOnClientSide>();
     }
 
@@ -2268,5 +2296,12 @@ public class CanvasControlLibrary
             }
         }
         return highestCurrentWindowCount;
+    }
+
+    public static void StartSession(HtmlTextWriter writer)
+    {
+        Session session = new Session();
+        Sessions.SessionsData.Add(session);
+        writer.Write("<script  type=\"text/javascript\">sessionID='" + session.ID.ToString() + "';</script>");
     }
 }
