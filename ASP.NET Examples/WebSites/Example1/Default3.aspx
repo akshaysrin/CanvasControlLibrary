@@ -64,6 +64,10 @@
                     invokeServerSideFunction('AjaxEx1.aspx', 'ClickMe', elemId, windowid, function () { alert('Did Postback'); });
                 }, null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1');
             createLabel(elemId, 'l1', 500, 40, 100, 20, 'Label 1', '#000000', 12, '12pt Ariel', null, highestDepth);
+            createMultiLineLabel(elemId, 'mll1', 250, 400, 200, highestDepth, 0, 'This is a very long sentance to test word wrap.  My name is Akshay Srinivasan and this is a multi line label control demo.  It is a control that is one of the many controls in Canvas Control Library which is a system of building web pages that has been made possible by the new HTML5 element called canvas.',
+                '#000000', 12, '12pt Ariel', 5, 1);
+            createMultiLineLabel(elemId, 'mll1', 250, 800, 200, highestDepth, 1, '<NT>This is a </NT><N><C>#FF0000</C><F>16pt Ariel</F><T>very long</T></N><NT> sentance to test word wrap.  My name is </NT><N><C>#00FF00</C><F>bold italic 14pt Tahoma</F><T>Akshay Srinivasan</T></N><NT> and this is a multi line label control demo.  It is a control that is one of the many controls in Canvas Control Library which is a system of building web pages that has been made possible by the new </NT><N><C>#0000FF</C><F>10pt Ariel</F><T>HTML5</T></N><NT> element called canvas.</NT>',
+                '#000000', 16, '12pt Ariel', 5, 1);
             draw(elemId);
         </script>
     </div>

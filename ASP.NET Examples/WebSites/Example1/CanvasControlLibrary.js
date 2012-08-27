@@ -6562,9 +6562,212 @@ function createImageSlider(canvasid, controlNameId, x, y, width, height, depth, 
     registerAnimatedWindow(canvasid);
 }
 
+//Multi Line Label code starts here
+
+var multiLineLabelPropsArray = new Array();
+
+function getMultiLineLabelProps(canvasid, windowid) {
+    for (var i = 0; i < multiLineLabelPropsArray.length; i++) {
+        if (multiLineLabelPropsArray[i].CanvasID == canvasid && multiLineLabelPropsArray[i].WindowID == windowid) {
+            return multiLineLabelPropsArray[i];
+        }
+    }
+}
+
+//<NT> - normal text will use the default font color, height, font string - ex. <NT>some text to be drawn with default font metrics</NT>
+//<N><C>color</C><F>12 pt Ariel</F><T>some text to draw using &lt;F&gt; value which is the font string</T></N>
+
+function getMarkupFontString(idx, extents) {
+    for (var i = 0; i < extents.length; i++) {
+        if (idx >= extents[i].Start && idx <= extents[i].End) {
+            return extents[i].FontString;
+        }
+    }
+}
+
+function getMarkupFontColor(idx, extents) {
+    for (var i = 0; i < extents.length; i++) {
+        if (idx >= extents[i].Start && idx <= extents[i].End) {
+            return extents[i].FontColor;
+        }
+    }
+}
+
+function getMarkupLineNumber(idx, extents) {
+    for (var i = 0; i < extents.length; i++) {
+        if (idx <= extents[i]) {
+            return i;
+        }
+    }
+    return extents.length;
+}
+
+function createMultiLineLabel(canvasid, controlNameId, x, y, width, depth, hasMarkup, text, textColor, textHeight, textFontString, lineSpacingInPixels, wordSensitive) {
+    var height = textHeight + lineSpacingInPixels;
+    var ctx = getCtx(canvasid);
+    ctx.font = textFontString;
+    var lineBreakIndexes = new Array();
+    var markupText = '';
+    var markupTextExtents = new Array();
+    if (hasMarkup == 0) {
+        if (wordSensitive == 0) {
+            var currStrIndex = 0;
+            var lastLineBreakIndex = 0;
+            while (currStrIndex < text.length) {
+                if (ctx.measureText(text.substr(lastLineBreakIndex, currStrIndex - lastLineBreakIndex + 1)).width > width) {
+                    lineBreakIndexes.push(currStrIndex);
+                    lastLineBreakIndex = currStrIndex;
+                    height += textHeight + lineSpacingInPixels;
+                }
+                currStrIndex++;
+            }
+        } else {
+            var currStrIndex = 0;
+            var lastLineBreakIndex = 0;
+            var lastSpace = -1;
+            while (currStrIndex < text.length) {
+                if (ctx.measureText(text.substr(lastLineBreakIndex, currStrIndex - lastLineBreakIndex + 1)).width > width) {
+                    if (lastSpace > -1) {
+                        lineBreakIndexes.push(lastSpace);
+                        lastLineBreakIndex = lastSpace;
+                    } else {
+                        lineBreakIndexes.push(currStrIndex);
+                        lastLineBreakIndex = currStrIndex;
+                    }
+                    height += textHeight + lineSpacingInPixels;
+                }
+                currStrIndex++;
+                if (text.substr(currStrIndex, 1) == ' ') {
+                    lastSpace = currStrIndex;
+                }
+            }
+        }
+    } else {
+        if (window.DOMParser) {
+            var parser = new DOMParser();
+            xmlDoc = parser.parseFromString('<root>' + text + '</root>', "text/xml");
+            for (var i = 0; i < xmlDoc.firstChild.childNodes.length; i++) {
+                switch (xmlDoc.firstChild.childNodes[i].nodeName) {
+                    case 'NT':
+                        var tmp = markupText.length > 0 ? markupText.length - 1 : 0;
+                        markupText += xmlDoc.firstChild.childNodes[i].childNodes.length > 0 ? xmlDoc.firstChild.childNodes[i].childNodes[0].nodeValue : xmlDoc.firstChild.childNodes[i].nodeValue;
+                        markupTextExtents.push({ Start: tmp, End: markupText.length - 1, FontColor: textColor, FontString: textFontString });
+                        break;
+                    case 'N':
+                        var colorstr, fontstr, textstr;
+                        for (var j = 0; j < xmlDoc.firstChild.childNodes[i].childNodes.length; j++) {
+                            switch (xmlDoc.firstChild.childNodes[i].childNodes[j].nodeName) {
+                                case 'C':
+                                    colorstr = xmlDoc.firstChild.childNodes[i].childNodes[j].childNodes.length > 0 ? xmlDoc.firstChild.childNodes[i].childNodes[j].childNodes[0].nodeValue :
+                                        xmlDoc.firstChild.childNodes[i].childNodes[j].nodeValue;
+                                    break;
+                                case 'F':
+                                    fontstr = xmlDoc.firstChild.childNodes[i].childNodes[j].childNodes.length > 0 ? xmlDoc.firstChild.childNodes[i].childNodes[j].childNodes[0].nodeValue :
+                                        xmlDoc.firstChild.childNodes[i].childNodes[j].nodeValue;
+                                    break;
+                                case 'T':
+                                    textstr = xmlDoc.firstChild.childNodes[i].childNodes[j].childNodes.length > 0 ? xmlDoc.firstChild.childNodes[i].childNodes[j].childNodes[0].nodeValue :
+                                        xmlDoc.firstChild.childNodes[i].childNodes[j].nodeValue;
+                                    break;
+                            }
+                        }
+                        var tmp = markupText.length - 1;
+                        markupText += textstr;
+                        markupTextExtents.push({ Start: tmp, End: markupText.length - 1, FontColor: colorstr, FontString: fontstr });
+                        break;
+                }
+            }
+            if (wordSensitive == 0) {
+                var currStrIndex = 0;
+                var lastLineBreakIndex = 0;
+                var currLineWidth = 0;
+                while (currStrIndex < markupText.length) {
+                    ctx.font = getMarkupFontString(currStrIndex, markupTextExtents);
+                    var tmpwidth = ctx.measureText(markupText.substr(currStrIndex, 1)).width;
+                    if (currLineWidth + tmpwidth > width) {
+                        lineBreakIndexes.push(currStrIndex - 1);
+                        currLineWidth = 0;
+                        height += textHeight + lineSpacingInPixels;
+                    } else {
+                        currLineWidth += tmpwidth;
+                        currStrIndex++;
+                    }
+                }
+            } else {
+                var currStrIndex = 0;
+                var lastLineBreakIndex = 0;
+                var currLineWidth = 0;
+                var lastSpace = -1;
+                while (currStrIndex < markupText.length) {
+                    ctx.font = getMarkupFontString(currStrIndex, markupTextExtents);
+                    var tmpwidth = ctx.measureText(markupText.substr(currStrIndex, 1)).width;
+                    if (currLineWidth + tmpwidth > width) {
+                        if (lastSpace > -1) {
+                            lineBreakIndexes.push(lastSpace);
+                            currStrIndex = lastSpace;
+                        } else {
+                            lineBreakIndexes.push(currStrIndex - 1);
+                        }
+                        currLineWidth = 0;
+                        height += textHeight + lineSpacingInPixels;
+                    } else {
+                        currLineWidth += tmpwidth;
+                        currStrIndex++;
+                    }
+                    if (markupText.substr(currStrIndex, 1) == ' ') {
+                        lastSpace = currStrIndex;
+                    }
+                }
+            }
+        }
+    }
+    var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'MultiLineLabel');
+    multiLineLabelPropsArray.push({
+        CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, HasMarkup: hasMarkup, Text: text, TextColor: textColor,
+        TextHeight: textHeight, TextFontString: textFontString, LineSpacingInPixels: lineSpacingInPixels, LineBreakIndexes: lineBreakIndexes,
+        MarkupTextExtents: markupTextExtents, MarkupText: markupText
+    });
+    registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
+        var multiLineLabelProps = getMultiLineLabelProps(canvasid1, windowid1);
+        var ctx = getCtx(canvasid1);
+        if (multiLineLabelProps.HasMarkup == 0) {
+            ctx.font = multiLineLabelProps.TextFontString;
+            ctx.fillStyle = multiLineLabelProps.TextColor;
+            var lastLineBreakIndex = 0;
+            for (var i = 0; i < multiLineLabelProps.LineBreakIndexes.length; i++) {
+                ctx.fillText(multiLineLabelProps.Text.substr((i > 0 ? multiLineLabelProps.LineBreakIndexes[i - 1] : 0), multiLineLabelProps.LineBreakIndexes[i] -
+                    (i > 0 ? multiLineLabelProps.LineBreakIndexes[i - 1] : 0)), multiLineLabelProps.X, multiLineLabelProps.Y + multiLineLabelProps.TextHeight +
+                    ((multiLineLabelProps.TextHeight + multiLineLabelProps.LineSpacingInPixels) * i));
+            }
+            if (multiLineLabelProps.LineBreakIndexes[multiLineLabelProps.LineBreakIndexes.length - 1] + 1 < multiLineLabelProps.Text.length) {
+                ctx.fillText(multiLineLabelProps.Text.substr(multiLineLabelProps.LineBreakIndexes[multiLineLabelProps.LineBreakIndexes.length - 1]),
+                    multiLineLabelProps.X, multiLineLabelProps.Y + (multiLineLabelProps.TextHeight * (multiLineLabelProps.LineBreakIndexes.length + 1)) +
+                    (multiLineLabelProps.LineSpacingInPixels * multiLineLabelProps.LineBreakIndexes.length));
+            }
+        } else {
+            var currStrIndex = 0;
+            var currLineWidth = 0;
+            var lastLineNo = 0;
+            while (currStrIndex < multiLineLabelProps.MarkupText.length) {
+                ctx.font = getMarkupFontString(currStrIndex, multiLineLabelProps.MarkupTextExtents);
+                ctx.fillStyle = getMarkupFontColor(currStrIndex, multiLineLabelProps.MarkupTextExtents);
+                var lineno = getMarkupLineNumber(currStrIndex, multiLineLabelProps.LineBreakIndexes);
+                if (lineno != lastLineNo) {
+                    lastLineNo = lineno;
+                    currLineWidth = 0;
+                }
+                ctx.fillText(multiLineLabelProps.MarkupText.substr(currStrIndex, 1), multiLineLabelProps.X + currLineWidth,
+                    multiLineLabelProps.Y + multiLineLabelProps.TextHeight + ((multiLineLabelProps.TextHeight + multiLineLabelProps.LineSpacingInPixels) * lineno));
+                currLineWidth += ctx.measureText(multiLineLabelProps.MarkupText.substr(currStrIndex, 1)).width;
+                currStrIndex++;
+            }
+        }
+    }, canvasid);
+}
 
 //Word processor code starts here
 
+//Tablet, Smartphone Keyboard code starts here
 
 //AJAX Postback code Starts here
 
@@ -6845,7 +7048,6 @@ function UnWrapVars(data) {
     data = data.replace(/\]/g, '>');
     data = data.replace(/[&]lb[;]/g, '[');
     data = data.replace(/[&]rb[;]/g, ']');
-    data = data.replace(/[&]amp[;]/g, '&');
     if (window.DOMParser) {
         var parser = new DOMParser();
         xmlDoc = parser.parseFromString(data, "text/xml");
