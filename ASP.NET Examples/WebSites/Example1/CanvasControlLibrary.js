@@ -3501,7 +3501,8 @@ function drawrect(canvasid, windowid, ctx, barGraphProps, i, yaxisheight) {
         (i * (barGraphProps.BarWidth + barGraphProps.GapBetweenBars)), barGraphProps.Y + barGraphProps.TitleTextHeight + 8 + hthis);
     ctx.arc(barGraphProps.X + barGraphProps.MarginLeft + barGraphProps.GapBetweenBars + barGraphProps.BarWidth - 5 +
         (i * (barGraphProps.BarWidth + barGraphProps.GapBetweenBars)), barGraphProps.Y + barGraphProps.TitleTextHeight + 8 + 5 + hthis, 5, (Math.PI / 180) * 270, 0, false);
-    ctx.lineTo(barGraphProps.X + barGraphProps.MarginLeft + barGraphProps.GapBetweenBars + barGraphProps.BarWidth + (i * (barGraphProps.BarWidth + 20)), barGraphProps.Y + barGraphProps.TitleTextHeight + 8 + yaxisheight);
+    ctx.lineTo(barGraphProps.X + barGraphProps.MarginLeft + barGraphProps.GapBetweenBars + barGraphProps.BarWidth + (i * (barGraphProps.BarWidth + 20)),
+        barGraphProps.Y + barGraphProps.TitleTextHeight + 8 + yaxisheight);
     ctx.lineTo(barGraphProps.X + barGraphProps.MarginLeft + barGraphProps.GapBetweenBars + (i * (barGraphProps.BarWidth + barGraphProps.GapBetweenBars)),
         barGraphProps.Y + barGraphProps.TitleTextHeight + 8 + yaxisheight);
     ctx.closePath();
@@ -4449,7 +4450,8 @@ function createLineAreaGraph(canvasid, controlNameId, x, y, width, height, depth
                 ctx.fillStyle = '#D0D0D0';
                 alternate = true;
             }
-            ctx.fillRect(lineAreaGraphProps.X + lineAreaGraphProps.MarginLeft + c * ((lineAreaGraphProps.Width - lineAreaGraphProps.MarginLeft) / lineAreaGraphProps.NumMarksX), lineAreaGraphProps.Y + lineAreaGraphProps.TitleTextHeight + 8,
+            ctx.fillRect(lineAreaGraphProps.X + lineAreaGraphProps.MarginLeft + c * ((lineAreaGraphProps.Width - lineAreaGraphProps.MarginLeft) / lineAreaGraphProps.NumMarksX),
+                lineAreaGraphProps.Y + lineAreaGraphProps.TitleTextHeight + 8,
                 ((lineAreaGraphProps.Width - lineAreaGraphProps.MarginLeft) / lineAreaGraphProps.NumMarksX),
                 lineAreaGraphProps.Height - lineAreaGraphProps.TitleTextHeight - lineAreaGraphProps.AxisLabelsHeight - 16);
         }
@@ -5257,7 +5259,8 @@ function drawmultiplerect(ctx, stackedBarGraphProps, i) {
     if (stackedBarGraphProps.H < topy + (axisheight - (axisheight / stackedBarGraphProps.MaxValue) * total)) {
         hthis = topy + (axisheight - (axisheight / stackedBarGraphProps.MaxValue) * total);
     }
-    stackedBarGraphProps.BarLabelsWithBoundingBoxes.push([stackedBarGraphProps.Data[i][0], stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + ((stackedBarGraphProps.BarWidth - stackedBarGraphProps.GapBetweenBarSets) / 2) +
+    stackedBarGraphProps.BarLabelsWithBoundingBoxes.push([stackedBarGraphProps.Data[i][0], stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft +
+        ((stackedBarGraphProps.BarWidth - stackedBarGraphProps.GapBetweenBarSets) / 2) +
         (i * stackedBarGraphProps.BarWidth), stackedBarGraphProps.Y + bottomy - hthis,
         stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + stackedBarGraphProps.GapBetweenBarSets + ((stackedBarGraphProps.BarWidth -
         stackedBarGraphProps.GapBetweenBarSets) / 2) + (i * stackedBarGraphProps.BarWidth), stackedBarGraphProps.Y + bottomy]);
@@ -5667,7 +5670,8 @@ function createSubMenu(canvasid, controlNameId, parentWindowId, depth, data, xof
     var childMenuWindowIDs = new Array();
     for (var i = 0; i < data.length; i++) {
         if (data[i][6] != null) {
-            childMenuWindowIDs.push(createSubMenu(canvasid, controlNameId + 'SubMenuLevel1_' + i.toString(), windowid, depth, data[i][6], xoffset + greatestLength, yoffset + heightOffset + 5, i, dropdowncolorstart, dropdowncolorend));
+            childMenuWindowIDs.push(createSubMenu(canvasid, controlNameId + 'SubMenuLevel1_' + i.toString(), windowid, depth, data[i][6], xoffset + greatestLength,
+                yoffset + heightOffset + 5, i, dropdowncolorstart, dropdowncolorend));
         }
         heightOffset += data[i][2] + 5;
     }
@@ -6354,7 +6358,9 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
                     textBoxProps.MouseDown = 0;
                     textBoxProps.WasSelecting = 0;
                 }
-                FindTextBoxPossible(textBoxProps, c);
+                if (textBoxProps.ListPossiblesAllChoices != null) {
+                    FindTextBoxPossible(textBoxProps, c);
+                }
                 return;
             case 8:
                 //backspace	 8
@@ -6379,7 +6385,9 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
                     textBoxProps.MouseDown = 0;
                     textBoxProps.WasSelecting = 0;
                 }
-                FindTextBoxPossible(textBoxProps, c);
+                if (textBoxProps.ListPossiblesAllChoices != null) {
+                    FindTextBoxPossible(textBoxProps, c);
+                }
                 return;
         }
         if (e.ctrlKey && String.fromCharCode(e.keyCode).toLowerCase() == 'a') {
@@ -6387,12 +6395,16 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
             textBoxProps.SelectedTextEndIndex = textBoxProps.UserInputText.length - 1;
         } else if (e.ctrlKey && String.fromCharCode(e.keyCode).toLowerCase() == 'c' && window.clipboardData) {
             if (textBoxProps.SelectedTextStartIndex > -1 && textBoxProps.SelectedTextEndIndex > -1 && textBoxProps.UserInputText && textBoxProps.SelectedTextEndIndex < textBoxProps.UserInputText.length) {
-                window.clipboardData.setData('Text', (textBoxProps.UserInputText && textBoxProps.SelectedTextEndIndex == textBoxProps.UserInputText.length - 1 ? textBoxProps.UserInputText.substring(textBoxProps.SelectedTextStartIndex) :
+                window.clipboardData.setData('Text', (textBoxProps.UserInputText && textBoxProps.SelectedTextEndIndex == textBoxProps.UserInputText.length - 1 ?
+                    textBoxProps.UserInputText.substring(textBoxProps.SelectedTextStartIndex) :
                     textBoxProps.UserInputText.substring(textBoxProps.SelectedTextStartIndex, textBoxProps.SelectedTextEndIndex - textBoxProps.SelectedTextStartIndex + 1)));
             }
         } else if (!textBoxProps.UserInputText || (textBoxProps.UserInputText && textBoxProps.UserInputText.length < textBoxProps.MaxChars)) {
             var c = (e.shiftKey || e.shiftLeft ? String.fromCharCode(e.keyCode).toUpperCase() : String.fromCharCode(e.keyCode).toLowerCase());
-            var foundPossibleMatch = FindTextBoxPossible(textBoxProps, c);
+            var foundPossibleMatch;
+            if (textBoxProps.ListPossiblesAllChoices != null) {
+                foundPossibleMatch = FindTextBoxPossible(textBoxProps, c);
+            }
             if ((!textBoxProps.AllowedCharsRegEx || textBoxProps.AllowedCharsRegEx == null || textBoxProps.AllowedCharsRegEx.length == 0 || c.match(textBoxProps.AllowedCharsRegEx) == c) &&
                 (!textBoxProps.LimitToListPossibles || (textBoxProps.LimitToListPossibles == 1 && foundPossibleMatch))) {
                 if (textBoxProps.CaretPosIndex == -1) {
@@ -6441,7 +6453,7 @@ function FindTextBoxPossible(textBoxProps, c) {
     }
     textBoxProps.ListPossibles = new Array();
     var found = false;
-    for (var i = 0; i < textBoxProps.ListPossiblesAllChoices.length; i++) {
+    for (var i = 0; textBoxProps.ListPossiblesAllChoices && i < textBoxProps.ListPossiblesAllChoices.length; i++) {
         if (textBoxProps.ListPossiblesAllChoices[i].indexOf(str) == 0) {
             found = true;
             textBoxProps.ListPossibles.push(textBoxProps.ListPossiblesAllChoices[i]);
@@ -6879,10 +6891,59 @@ function createMultiLineLabel(canvasid, controlNameId, x, y, width, depth, hasMa
 }
 
 //Word processor code starts here
+//italic or normal - normal | small-caps - normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 -  xx-small | x-small | small | medium | large | x-large | xx-large
+//number pt | em | ex | % - serif | sans-serif | cursive | fantasy | monospace - highlight - text color
+
+var wordProcessorPropsArray = new Array();
+
+function getWordProcessorProps(canvasid, windowid) {
+    for (var i = 0; i < wordProcessorPropsArray.length; i++) {
+        if (wordProcessorPropsArray[i].CanvasID == canvasid && wordProcessorPropsArray[i].WindowID == windowid) {
+            return wordProcessorPropsArray[i];
+        }
+    }
+}
 
 function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth, hasMarkup, text, textColor, textHeight, textFontString, lineSpacingInPixels, wordSensitive,
     waterMarkText, waterMarkTextColor, waterMarkTextHeight, waterMarkTextFontString, maxChars, hasShadow, shadowColor, shadowOffsetX, shadowOffsetY,
-    hasRoundedEdges, edgeRadius, hasBgGradient, bgGradientStartColor, bgGradientEndColor, hasBgImage, bgImageUrl) {
+    hasRoundedEdges, edgeRadius, hasBgGradient, bgGradientStartColor, bgGradientEndColor, hasBgImage, bgImageUrl, margin, hasBorder, borderColor, borderLineWidth) {
+    var windowid;
+    if (hasMarkup == 1) {
+        windowid = createWindow(canvasid, x, y + 20, width - 15, height - 20, depth, null, 'WordProcessor', controlNameId);
+    } else {
+        windowid = createWindow(canvasid, x, y, width - 15, height, depth, null, 'WordProcessor', controlNameId);
+    }
+    vscrollbarwindowid = createScrollBar(canvasid, controlNameId + 'VS', x + width - 15, y, height, depth, (textHeight + lineSpacingInPixels) * Math.floor(height / textHeight), 1);
+    wordProcessorPropsArray.push({
+        CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, HasMarkup: hasMarkup, Text: text, TextColor: textColor, TextHeight: textHeight,
+        TextFontString: textFontString, LineSpacingInPixels: lineSpacingInPixels, WordSensitive: wordSensitive, WaterMarkText: waterMarkText, WaterMarkTextColor: waterMarkTextColor,
+        WaterMarkTextHeight: waterMarkTextHeight, WaterMarkTextFontString: waterMarkTextFontString, MaxChars: maxChars, HasShadow: hasShadow, ShadowColor: shadowColor,
+        ShadowOffsetX: shadowOffsetX, ShadowOffsetY: shadowOffsetY, HasRoundedEdges: hasRoundedEdges, EdgeRadius: edgeRadius, HasBgGradient: hasBgGradient,
+        BgGradientStartColor: bgGradientStartColor, BgGradientEndColor: bgGradientEndColor, HasBgImage: hasBgImage, BgImageUrl: bgImageUrl, Margin: margin,
+        HasBorder: hasBorder, BorderColor: borderColor, BorderLineWidth: borderLineWidth
+    });
+    registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
+        var wordProcessorProps = getWordProcessorProps(canvasid1, windowid1);
+        var ctx = getCtx(canvasid1);
+        if (wordProcessorProps.HasMarkup == 0) {
+            var g = ctx.createLinearGradient(wordProcessorProps.X, wordProcessorProps.Y, wordProcessorProps.X, wordProcessorProps.Y + wordProcessorProps.Height);
+            g.addColorStop(0, wordProcessorProps.BgGradientStartColor);
+            g.addColorStop(1, wordProcessorProps.BgGradientEndColor);
+            ctx.fillStyle = g;
+            if (wordProcessorProps.HasRoundedEdges == 1) {
+            } else {
+                ctx.beginPath();
+                ctx.rect(wordProcessorProps.X, wordProcessorProps.Y, wordProcessorProps.Width - 15, wordProcessorProps.Height);
+                ctx.fill();
+                if (wordProcessorProps.HasBorder == 1) {
+                    ctx.strokeStyle = wordProcessorProps.BorderColor;
+                    ctx.lineWidth = wordProcessorProps.BorderLineWidth;
+                    ctx.beginPath();
+
+                }
+            }
+        }
+    }, canvasid);
 }
 
 //Tablet, Smartphone Keyboard code starts here

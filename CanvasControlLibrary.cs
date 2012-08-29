@@ -1057,13 +1057,16 @@ public class CanvasControlLibrary
         CanvasID = vars.FirstChild.ChildNodes[1].InnerXml;
         WindowID = vars.FirstChild.ChildNodes[2].InnerXml;
         UnwrapVars(vars.FirstChild.ChildNodes[3]);
-        Guid tmp = new Guid(vars.FirstChild.ChildNodes[4].InnerXml);
-        foreach (Session s in Sessions.SessionsData)
+        if (vars.FirstChild.ChildNodes[4].InnerXml != null && vars.FirstChild.ChildNodes[4].InnerXml != "null")
         {
-            if (s.ID == tmp)
+            Guid tmp = new Guid(vars.FirstChild.ChildNodes[4].InnerXml);
+            foreach (Session s in Sessions.SessionsData)
             {
-                CurrentSessionObj = s;
-                break;
+                if (s.ID == tmp)
+                {
+                    CurrentSessionObj = s;
+                    break;
+                }
             }
         }
         JavaScriptCodeToSendInThisCall = new List<JavaScriptFunctionsToSendAndAttachOnClientSide>();
