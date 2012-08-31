@@ -6971,7 +6971,7 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                     wordProcessorProps.ShowCaret = 0;
                     ctx.strokeStyle = wordProcessorProps.CaretColor;
                     ctx.beginPath();
-                    var caretLineNo = -1;
+                    var caretLineNo = 0;
                     if (wordProcessorProps.LineBreakIndexes.length > 0) {
                         for (var p = 0; p < wordProcessorProps.LineBreakIndexes.length; p++) {
                             if ((p == 0 ? true : wordProcessorProps.CaretPosIndex > wordProcessorProps.LineBreakIndexes[p - 1]) &&
@@ -6979,7 +6979,7 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                                 caretLineNo = p;
                                 break;
                             } else if (wordProcessorProps.CaretPosIndex > wordProcessorProps.LineBreakIndexes[p]) {
-                                caretLineNo = p;
+                                caretLineNo = p + 1;
                             }
                         }
                     }
@@ -6992,19 +6992,19 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                         ctx.lineTo(wordProcessorProps.X + 2, wordProcessorProps.Y + wordProcessorProps.TextHeight - 4);
                     } else if (wordProcessorProps.CaretPosIndex > -1) {
                         var tempstr = (wordProcessorProps.UserInputText && wordProcessorProps.UserInputText.length - 1 >= wordProcessorProps.CaretPosIndex ?
-                            (caretLineNo > 0 ? wordProcessorProps.UserInputText.substring(wordProcessorProps.LineBreakIndexes[caretLineNo], wordProcessorProps.CaretPosIndex + 1) :
+                            (caretLineNo > 0 ? wordProcessorProps.UserInputText.substring(wordProcessorProps.LineBreakIndexes[caretLineNo - 1], wordProcessorProps.CaretPosIndex + 1) :
                             wordProcessorProps.UserInputText.substring(0, wordProcessorProps.CaretPosIndex + 1)) : '');
                         ctx.font = wordProcessorProps.TextFontString;
                         var w = ctx.measureText(tempstr).width;
-                        ctx.moveTo(wordProcessorProps.X + w, wordProcessorProps.Y + ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * (caretLineNo + 1)));
-                        ctx.lineTo(wordProcessorProps.X + 3 + w, wordProcessorProps.Y + ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * (caretLineNo + 1)));
+                        ctx.moveTo(wordProcessorProps.X + w, wordProcessorProps.Y + ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * (caretLineNo)));
+                        ctx.lineTo(wordProcessorProps.X + 3 + w, wordProcessorProps.Y + ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * (caretLineNo)));
                         ctx.moveTo(wordProcessorProps.X + w, wordProcessorProps.Y + wordProcessorProps.TextHeight + ((wordProcessorProps.TextHeight +
-                            wordProcessorProps.LineSpacingInPixels) * (caretLineNo + 1)));
+                            wordProcessorProps.LineSpacingInPixels) * (caretLineNo)));
                         ctx.moveTo(wordProcessorProps.X + 3 + w, wordProcessorProps.Y + wordProcessorProps.TextHeight + ((wordProcessorProps.TextHeight +
-                            wordProcessorProps.LineSpacingInPixels) * (caretLineNo + 1)));
-                        ctx.moveTo(wordProcessorProps.X + 2 + w, wordProcessorProps.Y + ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * (caretLineNo + 1)));
+                            wordProcessorProps.LineSpacingInPixels) * (caretLineNo)));
+                        ctx.moveTo(wordProcessorProps.X + 2 + w, wordProcessorProps.Y + ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * (caretLineNo)));
                         ctx.lineTo(wordProcessorProps.X + 2 + w, wordProcessorProps.Y + wordProcessorProps.TextHeight + ((wordProcessorProps.TextHeight +
-                            wordProcessorProps.LineSpacingInPixels) * (caretLineNo + 1)));
+                            wordProcessorProps.LineSpacingInPixels) * (caretLineNo)));
                     }
                     ctx.stroke();
                 } else {
@@ -7015,6 +7015,7 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
     }, canvasid);
     registerKeyDownFunction(canvasid, function (canvasid3, windowid3, e) {
         var wordProcessorProps = getWordProcessorProps(canvasid3, windowid3);
+        var skip = false;
         switch (e.keyCode) {
             case 37:
                 //left arrow	 37
@@ -7028,7 +7029,7 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                 return;
             case 39:
                 //right arrow	 39
-                if (wordProcessorProps.CaretPosIndex > wordProcessorProps.UserInputText.length - 1) {
+                if (wordProcessorProps.CaretPosIndex >= wordProcessorProps.UserInputText.length - 1) {
                     wordProcessorProps.CaretPosIndex = wordProcessorProps.UserInputText.length - 1;
                 } else {
                     wordProcessorProps.CaretPosIndex++;
@@ -7054,6 +7055,7 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                     wordProcessorProps.MouseDown = 0;
                     wordProcessorProps.WasSelecting = 0;
                 }
+                skip = true;
                 return;
             case 8:
                 //backspace	 8
@@ -7078,40 +7080,43 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                     wordProcessorProps.MouseDown = 0;
                     wordProcessorProps.WasSelecting = 0;
                 }
+                skip = true;
                 return;
         }
-        if (e.ctrlKey && String.fromCharCode(e.keyCode).toLowerCase() == 'a') {
-            wordProcessorProps.SelectedTextStartIndex = 0;
-            wordProcessorProps.SelectedTextEndIndex = wordProcessorProps.UserInputText.length - 1;
-        } else if (e.ctrlKey && String.fromCharCode(e.keyCode).toLowerCase() == 'c' && window.clipboardData) {
-            if (wordProcessorProps.SelectedTextStartIndex > -1 && wordProcessorProps.SelectedTextEndIndex > -1 && wordProcessorProps.UserInputText &&
-                wordProcessorProps.SelectedTextEndIndex < wordProcessorProps.UserInputText.length) {
-                window.clipboardData.setData('Text', (wordProcessorProps.UserInputText && wordProcessorProps.SelectedTextEndIndex == wordProcessorProps.UserInputText.length - 1 ?
-                    wordProcessorProps.UserInputText.substring(wordProcessorProps.SelectedTextStartIndex) :
-                    wordProcessorProps.UserInputText.substring(wordProcessorProps.SelectedTextStartIndex, wordProcessorProps.SelectedTextEndIndex -
-                    wordProcessorProps.SelectedTextStartIndex + 1)));
-            }
-        } else if (!wordProcessorProps.UserInputText || (wordProcessorProps.UserInputText && wordProcessorProps.UserInputText.length < wordProcessorProps.MaxChars)) {
-            var c = (String.fromCharCode(e.keyCode).match('[a-zA-Z0-9]') == String.fromCharCode(e.keyCode) ? (e.shiftKey || e.shiftLeft ?
-                String.fromCharCode(e.keyCode).toUpperCase() : String.fromCharCode(e.keyCode).toLowerCase()) : getCharFromKeyCode(e.keyCode));
-            var foundPossibleMatch;
-            if ((!wordProcessorProps.AllowedCharsRegEx || wordProcessorProps.AllowedCharsRegEx == null || wordProcessorProps.AllowedCharsRegEx.length == 0 ||
-                c.match(wordProcessorProps.AllowedCharsRegEx) == c)) {
-                if (wordProcessorProps.CaretPosIndex == -1) {
-                    wordProcessorProps.UserInputText = c + (wordProcessorProps.UserInputText ? wordProcessorProps.UserInputText : '');
-                    wordProcessorProps.CaretPosIndex++;
-                } else if (wordProcessorProps.UserInputText && wordProcessorProps.CaretPosIndex == wordProcessorProps.UserInputText.length - 1) {
-                    wordProcessorProps.UserInputText = wordProcessorProps.UserInputText + c;
-                    wordProcessorProps.CaretPosIndex++;
-                } else if (wordProcessorProps.UserInputText) {
-                    wordProcessorProps.UserInputText = wordProcessorProps.UserInputText.substring(0, wordProcessorProps.CaretPosIndex + 1) + c +
-                        wordProcessorProps.UserInputText.substring(wordProcessorProps.CaretPosIndex + 1);
-                    wordProcessorProps.CaretPosIndex++;
+        if (!skip) {
+            if (e.ctrlKey && String.fromCharCode(e.keyCode).toLowerCase() == 'a') {
+                wordProcessorProps.SelectedTextStartIndex = 0;
+                wordProcessorProps.SelectedTextEndIndex = wordProcessorProps.UserInputText.length - 1;
+            } else if (e.ctrlKey && String.fromCharCode(e.keyCode).toLowerCase() == 'c' && window.clipboardData) {
+                if (wordProcessorProps.SelectedTextStartIndex > -1 && wordProcessorProps.SelectedTextEndIndex > -1 && wordProcessorProps.UserInputText &&
+                    wordProcessorProps.SelectedTextEndIndex < wordProcessorProps.UserInputText.length) {
+                    window.clipboardData.setData('Text', (wordProcessorProps.UserInputText && wordProcessorProps.SelectedTextEndIndex == wordProcessorProps.UserInputText.length - 1 ?
+                        wordProcessorProps.UserInputText.substring(wordProcessorProps.SelectedTextStartIndex) :
+                        wordProcessorProps.UserInputText.substring(wordProcessorProps.SelectedTextStartIndex, wordProcessorProps.SelectedTextEndIndex -
+                        wordProcessorProps.SelectedTextStartIndex + 1)));
                 }
-                wordProcessorProps.SelectedTextStartIndex = -1;
-                wordProcessorProps.SelectedTextEndIndex = -1;
-                wordProcessorProps.MouseDown = 0;
-                wordProcessorProps.WasSelecting = 0;
+            } else if (!wordProcessorProps.UserInputText || (wordProcessorProps.UserInputText && wordProcessorProps.UserInputText.length < wordProcessorProps.MaxChars)) {
+                var c = (String.fromCharCode(e.keyCode).match('[a-zA-Z0-9]') == String.fromCharCode(e.keyCode) ? (e.shiftKey || e.shiftLeft ?
+                    String.fromCharCode(e.keyCode).toUpperCase() : String.fromCharCode(e.keyCode).toLowerCase()) : getCharFromKeyCode(e.keyCode));
+                var foundPossibleMatch;
+                if ((!wordProcessorProps.AllowedCharsRegEx || wordProcessorProps.AllowedCharsRegEx == null || wordProcessorProps.AllowedCharsRegEx.length == 0 ||
+                    c.match(wordProcessorProps.AllowedCharsRegEx) == c)) {
+                    if (wordProcessorProps.CaretPosIndex == -1) {
+                        wordProcessorProps.UserInputText = c + (wordProcessorProps.UserInputText ? wordProcessorProps.UserInputText : '');
+                        wordProcessorProps.CaretPosIndex++;
+                    } else if (wordProcessorProps.UserInputText && wordProcessorProps.CaretPosIndex == wordProcessorProps.UserInputText.length - 1) {
+                        wordProcessorProps.UserInputText = wordProcessorProps.UserInputText + c;
+                        wordProcessorProps.CaretPosIndex++;
+                    } else if (wordProcessorProps.UserInputText) {
+                        wordProcessorProps.UserInputText = wordProcessorProps.UserInputText.substring(0, wordProcessorProps.CaretPosIndex + 1) + c +
+                            wordProcessorProps.UserInputText.substring(wordProcessorProps.CaretPosIndex + 1);
+                        wordProcessorProps.CaretPosIndex++;
+                    }
+                    wordProcessorProps.SelectedTextStartIndex = -1;
+                    wordProcessorProps.SelectedTextEndIndex = -1;
+                    wordProcessorProps.MouseDown = 0;
+                    wordProcessorProps.WasSelecting = 0;
+                }
             }
         }
         wordProcessorProps.LineBreakIndexes = new Array();
