@@ -1000,6 +1000,20 @@ function destroyControlByWindowObj(w) {
                 }
             }
             break;
+        case "ImageSlider":
+            for (var i = imageSliderPropsArray.length - 1; i >= 0 ; i--) {
+                if (imageSliderPropsArray[i].CanvasID == w.CanvasID && imageSliderPropsArray[i].WindowID == w.WindowCount) {
+                    imageSliderPropsArray.splice(i, 1);
+                }
+            }
+            break;
+        case "MultiLineLabel":
+            for (var i = multiLineLabelPropsArray.length - 1; i >= 0 ; i--) {
+                if (multiLineLabelPropsArray[i].CanvasID == w.CanvasID && multiLineLabelPropsArray[i].WindowID == w.WindowCount) {
+                    multiLineLabelPropsArray.splice(i, 1);
+                }
+            }
+            break;
     }
     destroyWindow(w.CanvasID, w.WindowCount);
 }
@@ -2225,13 +2239,16 @@ function getImageControlProps(canvasid, windowid) {
     }
 }
 
-function createImage(canvasid, controlNameId, x, y, width, height, depth, imgurl, clickFunction, tag,
+function createImage(canvasid, controlNameId, x, y, width, height, depth, imgurl, clickFunction, tile, tag,
     isHyperlink, url, nobrowserhistory, isnewbrowserwindow,
     nameofnewbrowserwindow, widthofnewbrowserwindow, heightofnewbrowserwindow, newbrowserwindowisresizable, newbrowserwindowhasscrollbars,
     newbrowserwindowhastoolbar, newbrowserwindowhaslocationorurloraddressbox, newbroserwindowhasdirectoriesorextrabuttons,
     newbrowserwindowhasstatusbar, newbrowserwindowhasmenubar, newbrowserwindowcopyhistory) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Image', controlNameId);
     var image = new Image();
+    image.onload = function () {
+        draw(canvasid);
+    };
     imageControlPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width,
         Height: height, ImageURL: imgurl, ClickFunction: clickFunction, Image: image, AlreadyDrawnImage: 0, IsHyperlink: isHyperlink, URL: url,
@@ -2242,24 +2259,25 @@ function createImage(canvasid, controlNameId, x, y, width, height, depth, imgurl
         NewBrowserWindowHasLocationOrURLOrAddressBox: newbrowserwindowhaslocationorurloraddressbox,
         NewBrowserWindowHasDirectoriesOrExtraButtons: newbroserwindowhasdirectoriesorextrabuttons,
         NewBrowserWindowHasStatusBar: newbrowserwindowhasstatusbar, NewBrowserWindowHasMenuBar: newbrowserwindowhasmenubar,
-        NewBrowserWindowCopyHistory: newbrowserwindowcopyhistory, Tag: tag
+        NewBrowserWindowCopyHistory: newbrowserwindowcopyhistory, Tag: tag, Tile: tile
     });
-    image.onload = function () {
-        var imageProps = getImageControlProps(canvasid, windowid);
-        imageProps.Width = image.width;
-        imageProps.Height = image.height;
-        draw(canvasid);
-    };
     image.src = imgurl;
     registerWindowDrawFunction(windowid, function (canvasid, windowid) {
         var ctx = getCtx(canvasid);
         var imageProps = getImageControlProps(canvasid, windowid);
         if (imageProps.Image && imageProps.Image.complete == true) {
-//            if (navigator.userAgent.toLowerCase().indexOf('msie') == -1) {
-//                ctx.drawImage(imageProps.Image, 0, 0, imageProps.Width, imageProps.Height, imageProps.X, imageProps.Y, imageProps.Width, imageProps.Height);
-//            } else {
+            if (imageProps.Tile == 1) {
+                var windowProps = getWindowProps(canvasid, windowid);
+                var tilex = Math.ceil(windowProps.Width / imageProps.Image.width);
+                var tiley = Math.ceil(windowProps.Height / imageProps.Image.height);
+                for (var ytile = 0; ytile < tiley; ytile++) {
+                    for (var xtile = 0; xtile < tilex; xtile++) {
+                        ctx.drawImage(imageProps.Image, imageProps.X + (xtile * imageProps.Image.width), imageProps.Y + (ytile * imageProps.Image.height));
+                    }
+                }
+            } else {
                 ctx.drawImage(imageProps.Image, imageProps.X, imageProps.Y);
-//            }
+            }
         }
     }, canvasid);
     if (clickFunction != null) {
@@ -7147,7 +7165,7 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                         }
                     }
                     currStrIndex++;
-                    if (text.substr(currStrIndex, 1) == ' ') {
+                    if (wordProcessorProps.UserInputText.substr(currStrIndex, 1) == ' ') {
                         lastSpace = currStrIndex;
                     }
                 }
@@ -7329,7 +7347,15 @@ function getEncodedVariables() {
     for (var i = 0; i < imageFaderPropsArray.length; i++) {
         strVars += '[i]' + stringEncodeObject(imageFaderPropsArray[i]) + '[/i]';
     }
-    strVars += '[/imageFaderPropsArray]';
+    strVars += '[/imageFaderPropsArray][imageSliderPropsArray]';
+    for (var i = 0; i < imageSliderPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(imageSliderPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/imageSliderPropsArray][multiLineLabelPropsArray]';
+    for (var i = 0; i < multiLineLabelPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(multiLineLabelPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/multiLineLabelPropsArray]';
     return strVars;
 }
 

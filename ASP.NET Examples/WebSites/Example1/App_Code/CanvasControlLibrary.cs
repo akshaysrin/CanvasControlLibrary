@@ -295,6 +295,7 @@ public class CanvasControlLibrary
         public string NewBrowserWindowHasMenuBar { get; set; }
         public string NewBrowserWindowCopyHistory { get; set; }
         public object Tag { get; set; }
+        public string Tile { get; set; }
     }
 
     public List<CCLTreeViewProps> TreeViewPropsArray = new List<CCLTreeViewProps>();
@@ -990,6 +991,8 @@ public class CanvasControlLibrary
         public object Tag { get; set; }
     }
 
+    public List<CCLImageFaderProps> ImageFaderPropsArray = new List<CCLImageFaderProps>();
+
     public class CCLImageFaderProps
     {
         public string CanvasID { get; set; }
@@ -1012,6 +1015,58 @@ public class CanvasControlLibrary
         public CCLImageFaderProps()
         {
             ImageURLs = new ArrayList();
+        }
+    }
+
+    public List<CCLImageSliderProps> ImageSliderPropsArray = new List<CCLImageSliderProps>();
+
+    public class CCLImageSliderProps
+    {
+        public string CanvasID { get; set; }
+        public string WindowID { get; set; }
+        public string X { get; set; }
+        public string Y { get; set; }
+        public string Width { get; set; }
+        public string Height { get; set; }
+        public ArrayList ImageURLs { get; set; }
+        public string Direction { get; set; }
+        public string StepIncrement { get; set; }
+        public string ClickFunction { get; set; }
+        public string HoldForTicks { get; set; }
+        public string CurrentImageIndex { get; set; }
+        public string Slide { get; set; }
+        public string HoldCountDown { get; set; }
+
+        public CCLImageSliderProps()
+        {
+            ImageURLs = new ArrayList();
+        }
+    }
+
+    public List<CCLMultiLineLabelProps> MultiLineLabelPropsArray = new List<CCLMultiLineLabelProps>();
+
+    public class CCLMultiLineLabelProps
+    {
+        public string CanvasID { get; set; }
+        public string WindowID { get; set; }
+        public string X { get; set; }
+        public string Y { get; set; }
+        public string Width { get; set; }
+        public string Height { get; set; }
+        public string HasMarkup { get; set; }
+        public string Text { get; set; }
+        public string TextColor { get; set; }
+        public string TextHeight { get; set; }
+        public string TextFontString { get; set; }
+        public string LineSpacingInPixels { get; set; }
+        public ArrayList LineBreakIndexes { get; set; }
+        public ArrayList MarkupTextExtents { get; set; }
+        public string MarkupText { get; set; }
+
+        public CCLMultiLineLabelProps()
+        {
+            LineBreakIndexes = new ArrayList();
+            MarkupTextExtents = new ArrayList();
         }
     }
 
@@ -1329,6 +1384,30 @@ public class CanvasControlLibrary
                         FillClassObject(child2, sm);
                     }
                     break;
+                case "imageFaderPropsArray":
+                    foreach (XmlNode child2 in child1.ChildNodes)
+                    {
+                        CCLImageFaderProps sm = new CCLImageFaderProps();
+                        ImageFaderPropsArray.Add(sm);
+                        FillClassObject(child2, sm);
+                    }
+                    break;
+                case "imageSliderPropsArray":
+                    foreach (XmlNode child2 in child1.ChildNodes)
+                    {
+                        CCLImageSliderProps sm = new CCLImageSliderProps();
+                        ImageSliderPropsArray.Add(sm);
+                        FillClassObject(child2, sm);
+                    }
+                    break;
+                case "multiLineLabelPropsArray":
+                    foreach (XmlNode child2 in child1.ChildNodes)
+                    {
+                        CCLMultiLineLabelProps sm = new CCLMultiLineLabelProps();
+                        MultiLineLabelPropsArray.Add(sm);
+                        FillClassObject(child2, sm);
+                    }
+                    break;
             }
         }
     }
@@ -1587,7 +1666,22 @@ public class CanvasControlLibrary
         {
             strVars += "[i]" + encodeObject(smb) + "[/i]";
         }
-        strVars += "[/textBoxPropsArray]";
+        strVars += "[/textBoxPropsArray][imageFaderPropsArray]";
+        foreach (CCLImageFaderProps smb in ImageFaderPropsArray)
+        {
+            strVars += "[i]" + encodeObject(smb) + "[/i]";
+        }
+        strVars += "[/imageFaderPropsArray][imageSliderPropsArray]";
+        foreach (CCLImageSliderProps smb in ImageSliderPropsArray)
+        {
+            strVars += "[i]" + encodeObject(smb) + "[/i]";
+        }
+        strVars += "[/imageSliderPropsArray][multiLineLabelPropsArray]";
+        foreach (CCLMultiLineLabelProps smb in MultiLineLabelPropsArray)
+        {
+            strVars += "[i]" + encodeObject(smb) + "[/i]";
+        }
+        strVars += "[/multiLineLabelPropsArray]";
         strVars += "[/Vars][Params][Array]" + encodeParameters(parameters) + "[/Array][/Params][/root]";
         byte[] wdata = Encoding.ASCII.GetBytes(strVars);
         OutputStream.Write(wdata, 0, wdata.Length);
@@ -1896,6 +1990,33 @@ public class CanvasControlLibrary
                         break;
                     case "TextBox":
                         foreach (CCLTextBoxProps o in TextBoxPropsArray)
+                        {
+                            if (o.CanvasID == w.CanvasID && o.WindowID == w.WindowCount)
+                            {
+                                return (object)o;
+                            }
+                        }
+                        break;
+                    case "ImageFader":
+                        foreach (CCLImageFaderProps o in ImageFaderPropsArray)
+                        {
+                            if (o.CanvasID == w.CanvasID && o.WindowID == w.WindowCount)
+                            {
+                                return (object)o;
+                            }
+                        }
+                        break;
+                    case "ImageSlider":
+                        foreach (CCLImageSliderProps o in ImageSliderPropsArray)
+                        {
+                            if (o.CanvasID == w.CanvasID && o.WindowID == w.WindowCount)
+                            {
+                                return (object)o;
+                            }
+                        }
+                        break;
+                    case "MultiLineLabel":
+                        foreach (CCLMultiLineLabelProps o in MultiLineLabelPropsArray)
                         {
                             if (o.CanvasID == w.CanvasID && o.WindowID == w.WindowCount)
                             {
