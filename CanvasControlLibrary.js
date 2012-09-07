@@ -7150,11 +7150,10 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                         wordProcessorProps.SelectedTextStartIndex + 1)));
                 }
             } else if (!wordProcessorProps.UserInputText || (wordProcessorProps.UserInputText && wordProcessorProps.UserInputText.length < wordProcessorProps.MaxChars)) {
-                var c = (String.fromCharCode(e.keyCode).match('[a-zA-Z0-9]') == String.fromCharCode(e.keyCode) ? (e.shiftKey || e.shiftLeft ?
-                    String.fromCharCode(e.keyCode).toUpperCase() : String.fromCharCode(e.keyCode).toLowerCase()) : getCharFromKeyCode(e.keyCode));
+                var c = getCharFromKeyCode(wordProcessorProps, e);
                 var foundPossibleMatch;
                 if ((!wordProcessorProps.AllowedCharsRegEx || wordProcessorProps.AllowedCharsRegEx == null || wordProcessorProps.AllowedCharsRegEx.length == 0 ||
-                    c.match(wordProcessorProps.AllowedCharsRegEx) == c)) {
+                    c.match(wordProcessorProps.AllowedCharsRegEx) == c || c == '\n')) {
                     if (wordProcessorProps.CaretPosIndex == -1) {
                         wordProcessorProps.UserInputText = c + (wordProcessorProps.UserInputText ? wordProcessorProps.UserInputText : '');
                         wordProcessorProps.CaretPosIndex++;
@@ -7180,7 +7179,10 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                 var currStrIndex = 0;
                 var lastLineBreakIndex = 0;
                 while (currStrIndex < wordProcessorProps.UserInputText.length) {
-                    if (ctx.measureText(wordProcessorProps.UserInputText.substr(lastLineBreakIndex, currStrIndex - lastLineBreakIndex + 1)).width > wordProcessorProps.Width - 15) {
+                    if (wordProcessorProps.UserInputText.substr(lastLineBreakIndex, currStrIndex - lastLineBreakIndex + 1) == '\n') {
+                        wordProcessorProps.LineBreakIndexes.push(currStrIndex);
+                        lastLineBreakIndex = currStrIndex;
+                    } else if (ctx.measureText(wordProcessorProps.UserInputText.substr(lastLineBreakIndex, currStrIndex - lastLineBreakIndex + 1)).width > wordProcessorProps.Width - 15) {
                         wordProcessorProps.LineBreakIndexes.push(currStrIndex);
                         lastLineBreakIndex = currStrIndex;
                     }
@@ -7191,7 +7193,10 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                 var lastLineBreakIndex = 0;
                 var lastSpace = -1;
                 while (currStrIndex < wordProcessorProps.UserInputText.length) {
-                    if (ctx.measureText(wordProcessorProps.UserInputText.substr(lastLineBreakIndex, currStrIndex - lastLineBreakIndex + 1)).width > wordProcessorProps.Width - 15) {
+                    if (wordProcessorProps.UserInputText.substr(currStrIndex, 1) == '\n') {
+                        wordProcessorProps.LineBreakIndexes.push(currStrIndex);
+                        lastLineBreakIndex = currStrIndex;
+                    } else if (ctx.measureText(wordProcessorProps.UserInputText.substr(lastLineBreakIndex, currStrIndex - lastLineBreakIndex + 1)).width > wordProcessorProps.Width - 15) {
                         if (lastSpace > -1) {
                             wordProcessorProps.LineBreakIndexes.push(lastSpace);
                             lastLineBreakIndex = lastSpace;
@@ -7238,16 +7243,122 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
     registerAnimatedWindow(canvasid);
 }
 
-function getCharFromKeyCode(keycode) {
-    switch (keycode) {
-        case 190:
-            return '.';
-        case 32:
-            return ' ';
+function getCharFromKeyCode(wordProcessorProps, e) {
+    switch (e.keyCode) {
         case 16:
             return '';
+        case 190:
+            return e.shiftKey || e.shiftLeft ? '>' : '.';
+        case 32:
+            return ' ';
+        case 13:
+            return '\n';
+        case 9:
+            return '    ';
+        case 106:
+            return '*';
+        case 107:
+            return '+';
+        case 109:
+            return '-';
+        case 110:
+            return e.shiftKey || e.shiftLeft ? '>' : '.';
+        case 111:
+            return '/';
+        case 186:
+            return e.shiftKey || e.shiftLeft ? ':' : ';';
+        case 187:
+            return e.shiftKey || e.shiftLeft ? '+' : '=';
+        case 188:
+            return e.shiftKey || e.shiftLeft ? '<' : ',';
+        case 189:
+            return e.shiftKey || e.shiftLeft ? '_' : '-';
+        case 191:
+            return e.shiftKey || e.shiftLeft ? '?' : '/';
+        case 192:
+            return e.shiftKey || e.shiftLeft ? '~' : '`';
+        case 219:
+            return e.shiftKey || e.shiftLeft ? '{' : '[';
+        case 220:
+            return e.shiftKey || e.shiftLeft ? '|' : '\\';
+        case 221:
+            return e.shiftKey || e.shiftLeft ? '}' : ']';
+        case 48:
+            return e.shiftKey || e.shiftLeft ? ')' : '0';
+        case 49:
+            return e.shiftKey || e.shiftLeft ? '!' : '1';
+        case 50:
+            return e.shiftKey || e.shiftLeft ? '@' : '2';
+        case 51:
+            return e.shiftKey || e.shiftLeft ? '#' : '3';
+        case 52:
+            return e.shiftKey || e.shiftLeft ? '$' : '4';
+        case 53:
+            return e.shiftKey || e.shiftLeft ? '%' : '5';
+        case 54:
+            return e.shiftKey || e.shiftLeft ? '^' : '6';
+        case 55:
+            return e.shiftKey || e.shiftLeft ? '&' : '7';
+        case 56:
+            return e.shiftKey || e.shiftLeft ? '*' : '8';
+        case 57:
+            return e.shiftKey || e.shiftLeft ? '(' : '9';
+        case 65:
+            return e.shiftKey || e.shiftLeft ? 'A' : 'a';
+        case 66:
+            return e.shiftKey || e.shiftLeft ? 'B' : 'b';
+        case 67:
+            return e.shiftKey || e.shiftLeft ? 'C' : 'c';
+        case 68:
+            return e.shiftKey || e.shiftLeft ? 'D' : 'd';
+        case 69:
+            return e.shiftKey || e.shiftLeft ? 'E' : 'e';
+        case 70:
+            return e.shiftKey || e.shiftLeft ? 'F' : 'f';
+        case 71:
+            return e.shiftKey || e.shiftLeft ? 'G' : 'g';
+        case 72:
+            return e.shiftKey || e.shiftLeft ? 'H' : 'h';
+        case 73:
+            return e.shiftKey || e.shiftLeft ? 'I' : 'i';
+        case 74:
+            return e.shiftKey || e.shiftLeft ? 'J' : 'j';
+        case 75:
+            return e.shiftKey || e.shiftLeft ? 'K' : 'k';
+        case 76:
+            return e.shiftKey || e.shiftLeft ? 'L' : 'l';
+        case 77:
+            return e.shiftKey || e.shiftLeft ? 'M' : 'm';
+        case 78:
+            return e.shiftKey || e.shiftLeft ? 'N' : 'n';
+        case 79:
+            return e.shiftKey || e.shiftLeft ? 'O' : 'o';
+        case 80:
+            return e.shiftKey || e.shiftLeft ? 'P' : 'p';
+        case 81:
+            return e.shiftKey || e.shiftLeft ? 'Q' : 'q';
+        case 82:
+            return e.shiftKey || e.shiftLeft ? 'R' : 'r';
+        case 83:
+            return e.shiftKey || e.shiftLeft ? 'S' : 's';
+        case 84:
+            return e.shiftKey || e.shiftLeft ? 'T' : 't';
+        case 85:
+            return e.shiftKey || e.shiftLeft ? 'U' : 'u';
+        case 86:
+            return e.shiftKey || e.shiftLeft ? 'V' : 'v';
+        case 87:
+            return e.shiftKey || e.shiftLeft ? 'W' : 'w';
+        case 88:
+            return e.shiftKey || e.shiftLeft ? 'X' : 'x';
+        case 89:
+            return e.shiftKey || e.shiftLeft ? 'Y' : 'y';
+        case 90:
+            return e.shiftKey || e.shiftLeft ? 'Z' : 'z';
+        case 222:
+            return e.shiftKey || e.shiftLeft ? '"' : '\'';
         default:
-            return String.fromCharCode(keycode);
+            return '';
     }
 }
 

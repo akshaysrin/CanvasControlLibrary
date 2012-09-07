@@ -69,7 +69,7 @@
             createMultiLineLabel(elemId, 'mll1', 250, 800, 200, highestDepth, 1, '<NT>This is a </NT><N><C>#FF0000</C><F>16pt Ariel</F><T>very long</T></N><NT> sentance to test word wrap.  My name is </NT><N><C>#00FF00</C><F>bold italic 14pt Tahoma</F><T>Akshay Srinivasan</T></N><NT> and this is a multi line label control demo.  It is a control that is one of the many controls in Canvas Control Library which is a system of building web pages that has been made possible by the new </NT><N><C>#0000FF</C><F>10pt Ariel</F><T>HTML5</T></N><NT> element called canvas.</NT>',
                 '#000000', 16, '12pt Ariel', 5, 1);
             createWordProcessor(elemId, 'Wp1', 800, 400, 400, 400, highestDepth, 0, '', '#000000', 12, '12pt Ariel', 5, 1, '', '#C0C0C0', 12, '12pt Ariel', 2000, 0, '#000000', 1, 1,
-                0, 0, 0, '#FFFFFF', '#FFFF00', 0, null, 0, 1, '#000000', 1, '.', '#000000');
+                0, 0, 0, '#FFFFFF', '#FFFF00', 0, null, 0, 1, '#000000', 1, '.+', '#000000');
             draw(elemId);
         </script>
     </div>
