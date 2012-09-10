@@ -6417,7 +6417,7 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
                     textBoxProps.UserInputText.substring(textBoxProps.SelectedTextStartIndex, textBoxProps.SelectedTextEndIndex - textBoxProps.SelectedTextStartIndex + 1)));
             }
         } else if (!textBoxProps.UserInputText || (textBoxProps.UserInputText && textBoxProps.UserInputText.length < textBoxProps.MaxChars)) {
-            var c = (e.shiftKey || e.shiftLeft ? String.fromCharCode(e.keyCode).toUpperCase() : String.fromCharCode(e.keyCode).toLowerCase());
+            var c = getCharFromKeyCode(e);
             var foundPossibleMatch;
             if (textBoxProps.ListPossiblesAllChoices != null) {
                 foundPossibleMatch = FindTextBoxPossible(textBoxProps, c);
@@ -6756,7 +6756,11 @@ function createMultiLineLabel(canvasid, controlNameId, x, y, width, depth, hasMa
             var currStrIndex = 0;
             var lastLineBreakIndex = 0;
             while (currStrIndex < text.length) {
-                if (ctx.measureText(text.substr(lastLineBreakIndex, currStrIndex - lastLineBreakIndex + 1)).width > width) {
+                if (text.substr(currStrIndex, 1) == '\n') {
+                    lineBreakIndexes.push(currStrIndex);
+                    lastLineBreakIndex = currStrIndex;
+                    height += textHeight + lineSpacingInPixels;
+                } else if (ctx.measureText(text.substr(lastLineBreakIndex, currStrIndex - lastLineBreakIndex + 1)).width > width) {
                     lineBreakIndexes.push(currStrIndex);
                     lastLineBreakIndex = currStrIndex;
                     height += textHeight + lineSpacingInPixels;
@@ -6768,7 +6772,10 @@ function createMultiLineLabel(canvasid, controlNameId, x, y, width, depth, hasMa
             var lastLineBreakIndex = 0;
             var lastSpace = -1;
             while (currStrIndex < text.length) {
-                if (ctx.measureText(text.substr(lastLineBreakIndex, currStrIndex - lastLineBreakIndex + 1)).width > width) {
+                if (text.substr(currStrIndex, 1) == '\n') {
+                    lineBreakIndexes.push(currStrIndex);
+                    lastLineBreakIndex = currStrIndex;
+                } else if (ctx.measureText(text.substr(lastLineBreakIndex, currStrIndex - lastLineBreakIndex + 1)).width > width) {
                     if (lastSpace > -1) {
                         lineBreakIndexes.push(lastSpace);
                         lastLineBreakIndex = lastSpace;
@@ -6776,8 +6783,8 @@ function createMultiLineLabel(canvasid, controlNameId, x, y, width, depth, hasMa
                         lineBreakIndexes.push(currStrIndex);
                         lastLineBreakIndex = currStrIndex;
                     }
-                    height += textHeight + lineSpacingInPixels;
                 }
+                height += textHeight + lineSpacingInPixels;
                 currStrIndex++;
                 if (text.substr(currStrIndex, 1) == ' ') {
                     lastSpace = currStrIndex;
@@ -6826,7 +6833,11 @@ function createMultiLineLabel(canvasid, controlNameId, x, y, width, depth, hasMa
                 while (currStrIndex < markupText.length) {
                     ctx.font = getMarkupFontString(currStrIndex, markupTextExtents);
                     var tmpwidth = ctx.measureText(markupText.substr(currStrIndex, 1)).width;
-                    if (currLineWidth + tmpwidth > width) {
+                    if (markupText.substr(currStrIndex, 1) == '\n') {
+                        lineBreakIndexes.push(currStrIndex);
+                        currLineWidth = 0;
+                        height += textHeight + lineSpacingInPixels;
+                    } else if (currLineWidth + tmpwidth > width) {
                         lineBreakIndexes.push(currStrIndex - 1);
                         currLineWidth = 0;
                         height += textHeight + lineSpacingInPixels;
@@ -6843,7 +6854,11 @@ function createMultiLineLabel(canvasid, controlNameId, x, y, width, depth, hasMa
                 while (currStrIndex < markupText.length) {
                     ctx.font = getMarkupFontString(currStrIndex, markupTextExtents);
                     var tmpwidth = ctx.measureText(markupText.substr(currStrIndex, 1)).width;
-                    if (currLineWidth + tmpwidth > width) {
+                    if (markupText.substr(currStrIndex, 1) == '\n') {
+                        lineBreakIndexes.push(currStrIndex);
+                        currLineWidth = 0;
+                        height += textHeight + lineSpacingInPixels;
+                    } else if (currLineWidth + tmpwidth > width) {
                         if (lastSpace > -1) {
                             lineBreakIndexes.push(lastSpace);
                             currStrIndex = lastSpace;
@@ -6877,12 +6892,12 @@ function createMultiLineLabel(canvasid, controlNameId, x, y, width, depth, hasMa
             ctx.fillStyle = multiLineLabelProps.TextColor;
             var lastLineBreakIndex = 0;
             for (var i = 0; i < multiLineLabelProps.LineBreakIndexes.length; i++) {
-                ctx.fillText(multiLineLabelProps.Text.substr((i > 0 ? multiLineLabelProps.LineBreakIndexes[i - 1] : 0), multiLineLabelProps.LineBreakIndexes[i] -
-                    (i > 0 ? multiLineLabelProps.LineBreakIndexes[i - 1] : 0)), multiLineLabelProps.X, multiLineLabelProps.Y + multiLineLabelProps.TextHeight +
+                ctx.fillText(removeTrailingSpacesAndLineBreaks(multiLineLabelProps.Text.substr((i > 0 ? multiLineLabelProps.LineBreakIndexes[i - 1] : 0), multiLineLabelProps.LineBreakIndexes[i] -
+                    (i > 0 ? multiLineLabelProps.LineBreakIndexes[i - 1] : 0))), multiLineLabelProps.X, multiLineLabelProps.Y + multiLineLabelProps.TextHeight +
                     ((multiLineLabelProps.TextHeight + multiLineLabelProps.LineSpacingInPixels) * i));
             }
             if (multiLineLabelProps.LineBreakIndexes[multiLineLabelProps.LineBreakIndexes.length - 1] + 1 < multiLineLabelProps.Text.length) {
-                ctx.fillText(multiLineLabelProps.Text.substr(multiLineLabelProps.LineBreakIndexes[multiLineLabelProps.LineBreakIndexes.length - 1]),
+                ctx.fillText(removeTrailingSpacesAndLineBreaks(multiLineLabelProps.Text.substr(multiLineLabelProps.LineBreakIndexes[multiLineLabelProps.LineBreakIndexes.length - 1])),
                     multiLineLabelProps.X, multiLineLabelProps.Y + (multiLineLabelProps.TextHeight * (multiLineLabelProps.LineBreakIndexes.length + 1)) +
                     (multiLineLabelProps.LineSpacingInPixels * multiLineLabelProps.LineBreakIndexes.length));
             }
@@ -6969,16 +6984,16 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                 ctx.fillStyle = wordProcessorProps.TextColor;
                 var lastLineBreakIndex = 0;
                 if (wordProcessorProps.LineBreakIndexes.length == 0 && wordProcessorProps.UserInputText && wordProcessorProps.UserInputText.length > 0) {
-                    ctx.fillText(wordProcessorProps.UserInputText, wordProcessorProps.X, wordProcessorProps.Y + wordProcessorProps.TextHeight);
+                    ctx.fillText(removeTrailingSpacesAndLineBreaks(wordProcessorProps.UserInputText), wordProcessorProps.X, wordProcessorProps.Y + wordProcessorProps.TextHeight);
                 } else {
                     for (var i = vscrollbarProps.SelectedID; i < wordProcessorProps.LineBreakIndexes.length && (i - vscrollbarProps.SelectedID) * (wordProcessorProps.TextHeight +
                         wordProcessorProps.LineSpacingInPixels) < wordProcessorProps.Height; i++) {
-                        ctx.fillText(wordProcessorProps.UserInputText.substr((i > 0 ? wordProcessorProps.LineBreakIndexes[i - 1] : 0), wordProcessorProps.LineBreakIndexes[i] -
-                            (i > 0 ? wordProcessorProps.LineBreakIndexes[i - 1] : 0)), wordProcessorProps.X, wordProcessorProps.Y + wordProcessorProps.TextHeight +
+                        ctx.fillText(removeTrailingSpacesAndLineBreaks(wordProcessorProps.UserInputText.substr((i > 0 ? wordProcessorProps.LineBreakIndexes[i - 1] : 0), wordProcessorProps.LineBreakIndexes[i] -
+                            (i > 0 ? wordProcessorProps.LineBreakIndexes[i - 1] : 0))), wordProcessorProps.X, wordProcessorProps.Y + wordProcessorProps.TextHeight +
                             ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * i));
                     }
                     if (wordProcessorProps.LineBreakIndexes[wordProcessorProps.LineBreakIndexes.length - 1] + 1 < wordProcessorProps.UserInputText.length) {
-                        ctx.fillText(wordProcessorProps.UserInputText.substr(wordProcessorProps.LineBreakIndexes[wordProcessorProps.LineBreakIndexes.length - 1]),
+                        ctx.fillText(removeTrailingSpacesAndLineBreaks(wordProcessorProps.UserInputText.substr(wordProcessorProps.LineBreakIndexes[wordProcessorProps.LineBreakIndexes.length - 1])),
                             wordProcessorProps.X, wordProcessorProps.Y + (wordProcessorProps.TextHeight * (wordProcessorProps.LineBreakIndexes.length + 1)) +
                             (wordProcessorProps.LineSpacingInPixels * wordProcessorProps.LineBreakIndexes.length));
                     }
@@ -7009,7 +7024,7 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                         ctx.moveTo(wordProcessorProps.X + 2, wordProcessorProps.Y + 4);
                         ctx.lineTo(wordProcessorProps.X + 2, wordProcessorProps.Y + wordProcessorProps.TextHeight - 4);
                     } else if (wordProcessorProps.CaretPosIndex > -1) {
-                        var tempstr = (wordProcessorProps.UserInputText && wordProcessorProps.UserInputText.length - 1 >= wordProcessorProps.CaretPosIndex ?
+                        var tempstr = removeTrailingSpacesAndLineBreaks(wordProcessorProps.UserInputText && wordProcessorProps.UserInputText.length - 1 >= wordProcessorProps.CaretPosIndex ?
                             (caretLineNo > 0 ? wordProcessorProps.UserInputText.substring(wordProcessorProps.LineBreakIndexes[caretLineNo - 1], wordProcessorProps.CaretPosIndex + 1) :
                             wordProcessorProps.UserInputText.substring(0, wordProcessorProps.CaretPosIndex + 1)) : '');
                         ctx.font = wordProcessorProps.TextFontString;
@@ -7150,7 +7165,7 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                         wordProcessorProps.SelectedTextStartIndex + 1)));
                 }
             } else if (!wordProcessorProps.UserInputText || (wordProcessorProps.UserInputText && wordProcessorProps.UserInputText.length < wordProcessorProps.MaxChars)) {
-                var c = getCharFromKeyCode(wordProcessorProps, e);
+                var c = getCharFromKeyCode(e);
                 var foundPossibleMatch;
                 if ((!wordProcessorProps.AllowedCharsRegEx || wordProcessorProps.AllowedCharsRegEx == null || wordProcessorProps.AllowedCharsRegEx.length == 0 ||
                     c.match(wordProcessorProps.AllowedCharsRegEx) == c || c == '\n')) {
@@ -7243,7 +7258,18 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
     registerAnimatedWindow(canvasid);
 }
 
-function getCharFromKeyCode(wordProcessorProps, e) {
+function removeTrailingSpacesAndLineBreaks(str) {
+    while(str.length > 0) {
+        if (str.substr(0, 1) == '\n' || str.substr(0, 1) == ' ') {
+            str = (1 < str.length ? str.substr(1, str.length - 1) : '');
+        } else {
+            break;
+        }
+    }
+    return str;
+}
+
+function getCharFromKeyCode(e) {
     switch (e.keyCode) {
         case 16:
             return '';
@@ -7372,8 +7398,7 @@ function invokeServerSideFunction(ajaxURL, functionName, canvasid, windowid, cal
 	var xmlhttp;
     if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
         xmlhttp = new XMLHttpRequest();
-    }
-    else {// code for IE6, IE5
+    } else {// code for IE6, IE5
         xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
     }
     xmlhttp.onreadystatechange = function () {

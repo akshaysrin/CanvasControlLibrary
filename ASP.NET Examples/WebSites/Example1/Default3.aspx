@@ -32,13 +32,11 @@
             registerChildWindow(elemId, createProgressBar(elemId, 'pg1', 10, 100, 200, 20, highestDepth, '#33ec25', 100, 0, 60), panelwindowid);
             registerChildWindow(elemId, createSlider(elemId, 's1', 10, 150, 200, 20, highestDepth, 10, 100, 0, 50), panelwindowid);
             var panelwindowid2 = createPanel(elemId, 'p2', 5, 250, 150, 140, highestDepth, 1, '#c8c8c8', 1, '#d1ddff', '#a7afc6',
-                1, 150, 0, 'Test Panel', '#000000', 12, '12pt Ariel',
-                '#cfcfcf', '#ababab', 20, '#495be5', 1, 7);
+                1, 150, 0, 'Test Panel', '#000000', 12, '12pt Ariel', '#cfcfcf', '#ababab', 20, '#495be5', 1, 7);
             registerChildWindow(elemId, createProgressBar(elemId, 'pg2', 10, 290, 200, 20, highestDepth, '#33ec25', 100, 0, 60), panelwindowid2);
             registerChildWindow(elemId, createSlider(elemId, 's2', 10, 350, 200, 20, highestDepth, 10, 100, 0, 50), panelwindowid2);
             var panelwindowid3 = createPanel(elemId, 'p3', 5, 400, 150, 140, highestDepth, 1, '#c8c8c8', 1, '#d1ddff', '#a7afc6',
-                1, 150, 0, 'Test Panel', '#000000', 12, '12pt Ariel',
-                '#cfcfcf', '#ababab', 20, '#495be5', 0, 7);
+                1, 150, 0, 'Test Panel', '#000000', 12, '12pt Ariel', '#cfcfcf', '#ababab', 20, '#495be5', 0, 7);
             registerChildWindow(elemId, createProgressBar(elemId, 'pg3', 10, 430, 200, 20, highestDepth, '#33ec25', 100, 0, 60), panelwindowid3);
             registerChildWindow(elemId, createSlider(elemId, 's3', 10, 470, 200, 20, highestDepth, 10, 100, 0, 50), panelwindowid3);
             var tabwindowid = createTabControl(elemId, 'tab1', 200, 60, 250, 100, highestDepth, ['Tab 1', 'Tab 2', 'Tab 3'], '#000000', 10, '10pt Ariel',
@@ -64,7 +62,7 @@
                     invokeServerSideFunction('AjaxEx1.aspx', 'ClickMe', elemId, windowid, function () { alert('Did Postback'); });
                 }, null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1');
             createLabel(elemId, 'l1', 500, 40, 100, 20, 'Label 1', '#000000', 12, '12pt Ariel', null, highestDepth);
-            createMultiLineLabel(elemId, 'mll1', 250, 400, 200, highestDepth, 0, 'This is a very long sentance to test word wrap.  My name is Akshay Srinivasan and this is a multi line label control demo.  It is a control that is one of the many controls in Canvas Control Library which is a system of building web pages that has been made possible by the new HTML5 element called canvas.',
+            createMultiLineLabel(elemId, 'mll1', 250, 400, 200, highestDepth, 0, 'This\n is a very long sentance to test word wrap.  My name is Akshay Srinivasan\n and this is a multi line label control demo.\n  It is a control that is one of the many controls in Canvas Control Library which is a system of building web pages that has been made possible by the new HTML5 element called canvas.',
                 '#000000', 12, '12pt Ariel', 5, 1);
             createMultiLineLabel(elemId, 'mll1', 250, 800, 200, highestDepth, 1, '<NT>This is a </NT><N><C>#FF0000</C><F>16pt Ariel</F><T>very long</T></N><NT> sentance to test word wrap.  My name is </NT><N><C>#00FF00</C><F>bold italic 14pt Tahoma</F><T>Akshay Srinivasan</T></N><NT> and this is a multi line label control demo.  It is a control that is one of the many controls in Canvas Control Library which is a system of building web pages that has been made possible by the new </NT><N><C>#0000FF</C><F>10pt Ariel</F><T>HTML5</T></N><NT> element called canvas.</NT>',
                 '#000000', 16, '12pt Ariel', 5, 1);
