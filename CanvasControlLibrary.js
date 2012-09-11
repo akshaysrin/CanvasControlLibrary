@@ -1281,7 +1281,7 @@ function getScrollBarProps(canvasid, windowid) {
 
 function drawScrollBar(canvasid, windowid) {
     var scrollBarProps = getScrollBarProps(canvasid, windowid);
-    var x = scrollBarProps.X, y = scrollBarProps.Y, len = scrollBarProps.Len, maxitems = scrollBarProps.MaxItems, selindex = scrollBarProps.SelectedID;
+    var x = scrollBarProps.X, y = scrollBarProps.Y, len = scrollBarProps.Len, maxitems = (scrollBarProps.MaxItems == 0 ? 1 : scrollBarProps.MaxItems), selindex = scrollBarProps.SelectedID;
     var ctx = getCtx(canvasid);
     if (scrollBarProps.Alignment == 1) {
         var g = ctx.createLinearGradient(x, y, x + 15, y);
@@ -6967,6 +6967,25 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
             g.addColorStop(1, wordProcessorProps.BgGradientEndColor);
             ctx.fillStyle = g;
             if (wordProcessorProps.HasRoundedEdges == 1) {
+                ctx.beginPath();
+                ctx.moveTo(wordProcessorProps.X, wordProcessorProps.Y + wordProcessorProps.EdgeRadius);
+                ctx.arc(wordProcessorProps.EdgeRadius + wordProcessorProps.X, wordProcessorProps.Y + wordProcessorProps.EdgeRadius, wordProcessorProps.EdgeRadius,
+                    Math.PI, (Math.PI / 180) * 270, false);
+                ctx.lineTo(wordProcessorProps.X + wordProcessorProps.Width - 15 - wordProcessorProps.EdgeRadius, wordProcessorProps.Y);
+                ctx.arc(wordProcessorProps.X + wordProcessorProps.Width - 15 - wordProcessorProps.EdgeRadius, wordProcessorProps.Y + wordProcessorProps.EdgeRadius,
+                    wordProcessorProps.EdgeRadius, (Math.PI / 180) * 270, Math.PI * 2, false);
+                ctx.lineTo(wordProcessorProps.X + wordProcessorProps.Width - 15, wordProcessorProps.Y + wordProcessorProps.Height - wordProcessorProps.EdgeRadius);
+                ctx.arc(wordProcessorProps.X + wordProcessorProps.Width - 15 - wordProcessorProps.EdgeRadius, wordProcessorProps.Y + wordProcessorProps.Height - wordProcessorProps.EdgeRadius,
+                    wordProcessorProps.EdgeRadius, 0, Math.PI / 2, false);
+                ctx.lineTo(wordProcessorProps.X + wordProcessorProps.EdgeRadius, wordProcessorProps.Y + wordProcessorProps.Height);
+                ctx.arc(wordProcessorProps.X + wordProcessorProps.EdgeRadius, wordProcessorProps.Y + wordProcessorProps.Height - wordProcessorProps.EdgeRadius,
+                    wordProcessorProps.EdgeRadius, Math.PI / 2, Math.PI, false);
+                ctx.closePath();
+                ctx.fill();
+                if (wordProcessorProps.HasBorder == 1) {
+                    ctx.strokeStyle = wordProcessorProps.BorderColor;
+                    ctx.stroke();
+                }
             } else {
                 ctx.beginPath();
                 ctx.rect(wordProcessorProps.X, wordProcessorProps.Y, wordProcessorProps.Width - 15, wordProcessorProps.Height);
@@ -6986,16 +7005,16 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                 if (wordProcessorProps.LineBreakIndexes.length == 0 && wordProcessorProps.UserInputText && wordProcessorProps.UserInputText.length > 0) {
                     ctx.fillText(removeTrailingSpacesAndLineBreaks(wordProcessorProps.UserInputText), wordProcessorProps.X, wordProcessorProps.Y + wordProcessorProps.TextHeight);
                 } else {
-                    for (var i = vscrollbarProps.SelectedID; i < wordProcessorProps.LineBreakIndexes.length && (i - vscrollbarProps.SelectedID) * (wordProcessorProps.TextHeight +
+                    var i;
+                    for (i = vscrollbarProps.SelectedID; i < wordProcessorProps.LineBreakIndexes.length && (i - vscrollbarProps.SelectedID) * (wordProcessorProps.TextHeight +
                         wordProcessorProps.LineSpacingInPixels) < wordProcessorProps.Height; i++) {
                         ctx.fillText(removeTrailingSpacesAndLineBreaks(wordProcessorProps.UserInputText.substr((i > 0 ? wordProcessorProps.LineBreakIndexes[i - 1] : 0), wordProcessorProps.LineBreakIndexes[i] -
                             (i > 0 ? wordProcessorProps.LineBreakIndexes[i - 1] : 0))), wordProcessorProps.X, wordProcessorProps.Y + wordProcessorProps.TextHeight +
-                            ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * i));
+                            ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * (i - vscrollbarProps.SelectedID)));
                     }
                     if (wordProcessorProps.LineBreakIndexes[wordProcessorProps.LineBreakIndexes.length - 1] + 1 < wordProcessorProps.UserInputText.length) {
                         ctx.fillText(removeTrailingSpacesAndLineBreaks(wordProcessorProps.UserInputText.substr(wordProcessorProps.LineBreakIndexes[wordProcessorProps.LineBreakIndexes.length - 1])),
-                            wordProcessorProps.X, wordProcessorProps.Y + (wordProcessorProps.TextHeight * (wordProcessorProps.LineBreakIndexes.length + 1)) +
-                            (wordProcessorProps.LineSpacingInPixels * wordProcessorProps.LineBreakIndexes.length));
+                            wordProcessorProps.X, wordProcessorProps.Y + ((i - vscrollbarProps.SelectedID + 1) * (wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels)) - wordProcessorProps.LineSpacingInPixels);
                     }
                 }
             }
@@ -7029,15 +7048,16 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                             wordProcessorProps.UserInputText.substring(0, wordProcessorProps.CaretPosIndex + 1)) : '');
                         ctx.font = wordProcessorProps.TextFontString;
                         var w = ctx.measureText(tempstr).width;
-                        ctx.moveTo(wordProcessorProps.X + w, wordProcessorProps.Y + ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * (caretLineNo)));
-                        ctx.lineTo(wordProcessorProps.X + 3 + w, wordProcessorProps.Y + ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * (caretLineNo)));
+                        caretLineNo -= getScrollBarProps(canvasid1, wordProcessorProps.VScrollBarWindowID).SelectedID;
+                        ctx.moveTo(wordProcessorProps.X + w, wordProcessorProps.Y + ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * caretLineNo));
+                        ctx.lineTo(wordProcessorProps.X + 3 + w, wordProcessorProps.Y + ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * caretLineNo));
                         ctx.moveTo(wordProcessorProps.X + w, wordProcessorProps.Y + wordProcessorProps.TextHeight + ((wordProcessorProps.TextHeight +
-                            wordProcessorProps.LineSpacingInPixels) * (caretLineNo)));
+                            wordProcessorProps.LineSpacingInPixels) * ((caretLineNo == 0 ? 1 : caretLineNo) - 1)));
                         ctx.moveTo(wordProcessorProps.X + 3 + w, wordProcessorProps.Y + wordProcessorProps.TextHeight + ((wordProcessorProps.TextHeight +
-                            wordProcessorProps.LineSpacingInPixels) * (caretLineNo)));
-                        ctx.moveTo(wordProcessorProps.X + 2 + w, wordProcessorProps.Y + ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * (caretLineNo)));
+                            wordProcessorProps.LineSpacingInPixels) * caretLineNo));
+                        ctx.moveTo(wordProcessorProps.X + 2 + w, wordProcessorProps.Y + ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * caretLineNo));
                         ctx.lineTo(wordProcessorProps.X + 2 + w, wordProcessorProps.Y + wordProcessorProps.TextHeight + ((wordProcessorProps.TextHeight +
-                            wordProcessorProps.LineSpacingInPixels) * (caretLineNo)));
+                            wordProcessorProps.LineSpacingInPixels) * caretLineNo));
                     }
                     ctx.stroke();
                 } else {
@@ -7059,7 +7079,8 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                     wordProcessorProps.WasSelecting = 0;
                     wordProcessorProps.MouseDown = 0;
                 }
-                return;
+                skip = true;
+                break;
             case 38:
                 //up arrow
                 var caretLineNo = 0;
@@ -7077,7 +7098,8 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                         wordProcessorProps.CaretPosIndex = (caretLineNo == 1 ? 0 : wordProcessorProps.LineBreakIndexes[caretLineNo - 2]) + (wordProcessorProps.CaretPosIndex - wordProcessorProps.LineBreakIndexes[caretLineNo - 1]);
                     }
                 }
-                return;
+                skip = true;
+                break;
             case 39:
                 //right arrow	 39
                 if (wordProcessorProps.CaretPosIndex >= wordProcessorProps.UserInputText.length - 1) {
@@ -7089,7 +7111,8 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                 wordProcessorProps.SelectedTextEndIndex = -1;
                 wordProcessorProps.MouseDown = 0;
                 wordProcessorProps.WasSelecting = 0;
-                return;
+                skip = true;
+                break;
             case 40:
                 //down arrow key
                 var caretLineNo = 0;
@@ -7107,7 +7130,8 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                         wordProcessorProps.CaretPosIndex = wordProcessorProps.LineBreakIndexes[caretLineNo] + (wordProcessorProps.CaretPosIndex - (caretLineNo == 0 ? 0 : wordProcessorProps.LineBreakIndexes[caretLineNo - 1]));
                     }
                 }
-                return;
+                skip = true;
+                break;
             case 46:
                 //delete	 46
                 if (wordProcessorProps.CaretPosIndex < wordProcessorProps.UserInputText.length - 1) {
@@ -7125,7 +7149,7 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                     wordProcessorProps.WasSelecting = 0;
                 }
                 skip = true;
-                return;
+                break;
             case 8:
                 //backspace	 8
                 if (wordProcessorProps.CaretPosIndex > -1) {
@@ -7150,7 +7174,7 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                     wordProcessorProps.WasSelecting = 0;
                 }
                 skip = true;
-                return;
+                break;
         }
         if (!skip) {
             if (e.ctrlKey && String.fromCharCode(e.keyCode).toLowerCase() == 'a') {
@@ -7226,6 +7250,25 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                     }
                 }
             }
+            var vscrollbarProps = getScrollBarProps(canvasid3, wordProcessorProps.VScrollBarWindowID);
+            vscrollbarProps.MaxItems = wordProcessorProps.LineBreakIndexes.length;
+            var caretLineNo = 0;
+            if (wordProcessorProps.LineBreakIndexes.length > 0) {
+                for (var p = 0; p < wordProcessorProps.LineBreakIndexes.length; p++) {
+                    if ((p == 0 ? true : wordProcessorProps.CaretPosIndex > wordProcessorProps.LineBreakIndexes[p - 1]) &&
+                        wordProcessorProps.CaretPosIndex < wordProcessorProps.LineBreakIndexes[p]) {
+                        caretLineNo = p;
+                        break;
+                    } else if (wordProcessorProps.CaretPosIndex > wordProcessorProps.LineBreakIndexes[p]) {
+                        caretLineNo = p + 1;
+                    }
+                }
+            }
+            if (caretLineNo - vscrollbarProps.SelectedID + 1 > wordProcessorProps.Height / (wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels)) {
+                vscrollbarProps.SelectedID = caretLineNo - Math.floor(wordProcessorProps.Height / (wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels)) + 1;
+            } else if (caretLineNo < vscrollbarProps.SelectedID) {
+                vscrollbarProps.SelectedID = caretLineNo;
+            }
         }
     }, windowid);
     registerClickFunction(windowid, function (canvasid1, windowid1, e) {
@@ -7233,18 +7276,22 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
         var y = e.calcY;
         var wordProcessorProps = getWordProcessorProps(canvasid1, windowid1);
         var ctx = getCtx(canvasid1);
+        var vscrollbarProps = getScrollBarProps(canvasid1, wordProcessorProps.VScrollBarWindowID);
         if (wordProcessorProps.UserInputText.length > 0) {
             var caretLineNo = 0;
             if (wordProcessorProps.LineBreakIndexes.length > 0) {
-                for (var i = 0; i < wordProcessorProps.LineBreakIndexes.length; i++) {
-                    if (wordProcessorProps.Y + ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * (i + 1)) > y) {
+                for (var i = vscrollbarProps.SelectedID; i < wordProcessorProps.LineBreakIndexes.length; i++) {
+                    if (wordProcessorProps.Y + ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * (i - vscrollbarProps.SelectedID + 1)) > y) {
                         break;
                     } else {
                         caretLineNo = i + 1;
                     }
                 }
             }
-            for (var i = (caretLineNo == 0 ? 0 : wordProcessorProps.LineBreakIndexes[caretLineNo - 1]) ; i < (caretLineNo < wordProcessorProps.LineBreakIndexes.length ?
+            if (caretLineNo == 0) {
+                caretLineNo = vscrollbarProps.SelectedID;
+            }
+            for (var i = (caretLineNo == 0 ? 0 : wordProcessorProps.LineBreakIndexes[caretLineNo - 1]); i < (caretLineNo < wordProcessorProps.LineBreakIndexes.length ?
                 wordProcessorProps.LineBreakIndexes[caretLineNo] : wordProcessorProps.UserInputText.length) ; i++) {
                 if (x > wordProcessorProps.X + ctx.measureText(wordProcessorProps.UserInputText.substr((caretLineNo == 0 ? 0 : wordProcessorProps.LineBreakIndexes[caretLineNo - 1]),
                     i - (caretLineNo == 0 ? 0 : wordProcessorProps.LineBreakIndexes[caretLineNo - 1]))).width) {
