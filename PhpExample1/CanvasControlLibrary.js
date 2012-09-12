@@ -6946,6 +6946,11 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
     } else {
         windowid = createWindow(canvasid, x, y, width - 15, height, depth, null, 'WordProcessor', controlNameId);
     }
+    var image;
+    if (hasBgImage == 1) {
+        image = new Image();
+        image.src = bgImageUrl;
+    }
     vscrollbarwindowid = createScrollBar(canvasid, controlNameId + 'VS', x + width - 15, y, height, depth, (textHeight + lineSpacingInPixels) * Math.floor(height / textHeight), 1);
     wordProcessorPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, HasMarkup: hasMarkup, Text: text, TextColor: textColor, TextHeight: textHeight,
@@ -6955,68 +6960,87 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
         BgGradientStartColor: bgGradientStartColor, BgGradientEndColor: bgGradientEndColor, HasBgImage: hasBgImage, BgImageUrl: bgImageUrl, Margin: margin,
         HasBorder: hasBorder, BorderColor: borderColor, BorderLineWidth: borderLineWidth, UserInputText: '', VScrollBarWindowID: vscrollbarwindowid, CaretPosIndex: -1,
         ShowCaret: 0, CaretColor: caretColor, LineBreakIndexes: new Array(), SelectedTextStartIndex: -1, SelectedTextEndIndex: -1, MouseDown: 0, WasSelecting: 0,
-        AllowedCharsRegEx: allowedCharsRegEx
+        AllowedCharsRegEx: allowedCharsRegEx, Image: image
     });
     registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
         var wordProcessorProps = getWordProcessorProps(canvasid1, windowid1);
         var vscrollbarProps = getScrollBarProps(canvasid1, wordProcessorProps.VScrollBarWindowID);
         var ctx = getCtx(canvasid1);
-        if (wordProcessorProps.HasMarkup == 0) {
+        ctx.save();
+        if (wordProcessorProps.HasBgGradient == 1) {
             var g = ctx.createLinearGradient(wordProcessorProps.X, wordProcessorProps.Y, wordProcessorProps.X, wordProcessorProps.Y + wordProcessorProps.Height);
             g.addColorStop(0, wordProcessorProps.BgGradientStartColor);
             g.addColorStop(1, wordProcessorProps.BgGradientEndColor);
             ctx.fillStyle = g;
-            if (wordProcessorProps.HasRoundedEdges == 1) {
-                ctx.beginPath();
-                ctx.moveTo(wordProcessorProps.X, wordProcessorProps.Y + wordProcessorProps.EdgeRadius);
-                ctx.arc(wordProcessorProps.EdgeRadius + wordProcessorProps.X, wordProcessorProps.Y + wordProcessorProps.EdgeRadius, wordProcessorProps.EdgeRadius,
-                    Math.PI, (Math.PI / 180) * 270, false);
-                ctx.lineTo(wordProcessorProps.X + wordProcessorProps.Width - 15 - wordProcessorProps.EdgeRadius, wordProcessorProps.Y);
-                ctx.arc(wordProcessorProps.X + wordProcessorProps.Width - 15 - wordProcessorProps.EdgeRadius, wordProcessorProps.Y + wordProcessorProps.EdgeRadius,
-                    wordProcessorProps.EdgeRadius, (Math.PI / 180) * 270, Math.PI * 2, false);
-                ctx.lineTo(wordProcessorProps.X + wordProcessorProps.Width - 15, wordProcessorProps.Y + wordProcessorProps.Height - wordProcessorProps.EdgeRadius);
-                ctx.arc(wordProcessorProps.X + wordProcessorProps.Width - 15 - wordProcessorProps.EdgeRadius, wordProcessorProps.Y + wordProcessorProps.Height - wordProcessorProps.EdgeRadius,
-                    wordProcessorProps.EdgeRadius, 0, Math.PI / 2, false);
-                ctx.lineTo(wordProcessorProps.X + wordProcessorProps.EdgeRadius, wordProcessorProps.Y + wordProcessorProps.Height);
-                ctx.arc(wordProcessorProps.X + wordProcessorProps.EdgeRadius, wordProcessorProps.Y + wordProcessorProps.Height - wordProcessorProps.EdgeRadius,
-                    wordProcessorProps.EdgeRadius, Math.PI / 2, Math.PI, false);
-                ctx.closePath();
+        }
+        if (wordProcessorProps.HasRoundedEdges == 1) {
+            ctx.beginPath();
+            ctx.moveTo(wordProcessorProps.X, wordProcessorProps.Y + wordProcessorProps.EdgeRadius);
+            ctx.arc(wordProcessorProps.EdgeRadius + wordProcessorProps.X, wordProcessorProps.Y + wordProcessorProps.EdgeRadius, wordProcessorProps.EdgeRadius,
+                Math.PI, (Math.PI / 180) * 270, false);
+            ctx.lineTo(wordProcessorProps.X + wordProcessorProps.Width - 15 - wordProcessorProps.EdgeRadius, wordProcessorProps.Y);
+            ctx.arc(wordProcessorProps.X + wordProcessorProps.Width - 15 - wordProcessorProps.EdgeRadius, wordProcessorProps.Y + wordProcessorProps.EdgeRadius,
+                wordProcessorProps.EdgeRadius, (Math.PI / 180) * 270, Math.PI * 2, false);
+            ctx.lineTo(wordProcessorProps.X + wordProcessorProps.Width - 15, wordProcessorProps.Y + wordProcessorProps.Height - wordProcessorProps.EdgeRadius);
+            ctx.arc(wordProcessorProps.X + wordProcessorProps.Width - 15 - wordProcessorProps.EdgeRadius, wordProcessorProps.Y + wordProcessorProps.Height - wordProcessorProps.EdgeRadius,
+                wordProcessorProps.EdgeRadius, 0, Math.PI / 2, false);
+            ctx.lineTo(wordProcessorProps.X + wordProcessorProps.EdgeRadius, wordProcessorProps.Y + wordProcessorProps.Height);
+            ctx.arc(wordProcessorProps.X + wordProcessorProps.EdgeRadius, wordProcessorProps.Y + wordProcessorProps.Height - wordProcessorProps.EdgeRadius,
+                wordProcessorProps.EdgeRadius, Math.PI / 2, Math.PI, false);
+            ctx.closePath();
+            ctx.clip();
+            if (wordProcessorProps.HasBgImage == 1 && wordProcessorProps.Image.complete == true) {
+                ctx.drawImage(wordProcessorProps.Image, wordProcessorProps.X, wordProcessorProps.Y);
+            } else if(wordProcessorProps.HasBgGradient == 1) {
                 ctx.fill();
-                if (wordProcessorProps.HasBorder == 1) {
-                    ctx.strokeStyle = wordProcessorProps.BorderColor;
-                    ctx.stroke();
-                }
-            } else {
-                ctx.beginPath();
-                ctx.rect(wordProcessorProps.X, wordProcessorProps.Y, wordProcessorProps.Width - 15, wordProcessorProps.Height);
-                ctx.fill();
-                if (wordProcessorProps.HasBorder == 1) {
-                    ctx.strokeStyle = wordProcessorProps.BorderColor;
-                    ctx.lineWidth = wordProcessorProps.BorderLineWidth;
-                    ctx.beginPath();
-                    ctx.rect(wordProcessorProps.X, wordProcessorProps.Y, wordProcessorProps.Width - 15, wordProcessorProps.Height);
-                    ctx.stroke();
-                }
             }
+            if (wordProcessorProps.HasBorder == 1) {
+                ctx.strokeStyle = wordProcessorProps.BorderColor;
+                ctx.lineWidth = wordProcessorProps.BorderLineWidth;
+                ctx.stroke();
+            }
+        } else {
+            ctx.beginPath();
+            ctx.rect(wordProcessorProps.X, wordProcessorProps.Y, wordProcessorProps.Width - 15, wordProcessorProps.Height);
+            ctx.clip();
+            if (wordProcessorProps.HasBgImage == 1 && wordProcessorProps.Image.complete == true) {
+                ctx.drawImage(wordProcessorProps.Image, wordProcessorProps.X, wordProcessorProps.Y);
+            } else if (wordProcessorProps.HasBgGradient == 1) {
+                ctx.fill();
+            }
+            if (wordProcessorProps.HasBorder == 1) {
+                ctx.strokeStyle = wordProcessorProps.BorderColor;
+                ctx.lineWidth = wordProcessorProps.BorderLineWidth;
+                ctx.stroke();
+            }
+        }
+        if (wordProcessorProps.HasMarkup == 0) {
             if (wordProcessorProps.UserInputText && wordProcessorProps.UserInputText.length > 0) {
                 ctx.font = wordProcessorProps.TextFontString;
                 ctx.fillStyle = wordProcessorProps.TextColor;
                 var lastLineBreakIndex = 0;
                 if (wordProcessorProps.LineBreakIndexes.length == 0 && wordProcessorProps.UserInputText && wordProcessorProps.UserInputText.length > 0) {
-                    ctx.fillText(removeTrailingSpacesAndLineBreaks(wordProcessorProps.UserInputText), wordProcessorProps.X, wordProcessorProps.Y + wordProcessorProps.TextHeight);
+                    ctx.fillText(removeTrailingSpacesAndLineBreaks(wordProcessorProps.UserInputText), wordProcessorProps.X + wordProcessorProps.Margin,
+                        wordProcessorProps.Y + wordProcessorProps.Margin + wordProcessorProps.TextHeight);
                 } else {
                     var i;
                     for (i = vscrollbarProps.SelectedID; i < wordProcessorProps.LineBreakIndexes.length && (i - vscrollbarProps.SelectedID) * (wordProcessorProps.TextHeight +
-                        wordProcessorProps.LineSpacingInPixels) < wordProcessorProps.Height; i++) {
+                        wordProcessorProps.LineSpacingInPixels) < wordProcessorProps.Height - (wordProcessorProps.Margin * 2); i++) {
                         ctx.fillText(removeTrailingSpacesAndLineBreaks(wordProcessorProps.UserInputText.substr((i > 0 ? wordProcessorProps.LineBreakIndexes[i - 1] : 0), wordProcessorProps.LineBreakIndexes[i] -
-                            (i > 0 ? wordProcessorProps.LineBreakIndexes[i - 1] : 0))), wordProcessorProps.X, wordProcessorProps.Y + wordProcessorProps.TextHeight +
+                            (i > 0 ? wordProcessorProps.LineBreakIndexes[i - 1] : 0))), wordProcessorProps.X + wordProcessorProps.Margin,
+                            wordProcessorProps.Y + wordProcessorProps.Margin + wordProcessorProps.TextHeight +
                             ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * (i - vscrollbarProps.SelectedID)));
                     }
                     if (wordProcessorProps.LineBreakIndexes[wordProcessorProps.LineBreakIndexes.length - 1] + 1 < wordProcessorProps.UserInputText.length) {
                         ctx.fillText(removeTrailingSpacesAndLineBreaks(wordProcessorProps.UserInputText.substr(wordProcessorProps.LineBreakIndexes[wordProcessorProps.LineBreakIndexes.length - 1])),
-                            wordProcessorProps.X, wordProcessorProps.Y + ((i - vscrollbarProps.SelectedID + 1) * (wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels)) - wordProcessorProps.LineSpacingInPixels);
+                            wordProcessorProps.X + wordProcessorProps.Margin, wordProcessorProps.Y + wordProcessorProps.Margin +
+                            ((i - vscrollbarProps.SelectedID + 1) * (wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels)) - wordProcessorProps.LineSpacingInPixels);
                     }
                 }
+            } else {
+                ctx.font = wordProcessorProps.WaterMarkTextFontString;
+                ctx.fillStyle = wordProcessorProps.WaterMarkTextColor;
+                ctx.fillText(wordProcessorProps.WaterMarkText, wordProcessorProps.X + wordProcessorProps.Margin, wordProcessorProps.Y + wordProcessorProps.Margin + wordProcessorProps.WaterMarkTextHeight);
             }
             if (doesWindowHaveFocus(canvasid1, windowid1) == 1) {
                 if (wordProcessorProps.ShowCaret == 1) {
@@ -7036,12 +7060,12 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                         }
                     }
                     if (wordProcessorProps.CaretPosIndex == -1) {
-                        ctx.moveTo(wordProcessorProps.X, wordProcessorProps.Y + 4);
-                        ctx.lineTo(wordProcessorProps.X + 3, wordProcessorProps.Y + 4);
-                        ctx.moveTo(wordProcessorProps.X, wordProcessorProps.Y + wordProcessorProps.TextHeight - 4);
-                        ctx.moveTo(wordProcessorProps.X + 3, wordProcessorProps.Y + wordProcessorProps.TextHeight - 4);
-                        ctx.moveTo(wordProcessorProps.X + 2, wordProcessorProps.Y + 4);
-                        ctx.lineTo(wordProcessorProps.X + 2, wordProcessorProps.Y + wordProcessorProps.TextHeight - 4);
+                        ctx.moveTo(wordProcessorProps.X + wordProcessorProps.Margin, wordProcessorProps.Y + wordProcessorProps.Margin + 4);
+                        ctx.lineTo(wordProcessorProps.X + wordProcessorProps.Margin + 3, wordProcessorProps.Y + wordProcessorProps.Margin + 4);
+                        ctx.moveTo(wordProcessorProps.X + wordProcessorProps.Margin, wordProcessorProps.Y + wordProcessorProps.Margin + wordProcessorProps.TextHeight - 4);
+                        ctx.moveTo(wordProcessorProps.X + wordProcessorProps.Margin + 3, wordProcessorProps.Y + wordProcessorProps.Margin + wordProcessorProps.TextHeight - 4);
+                        ctx.moveTo(wordProcessorProps.X + wordProcessorProps.Margin + 2, wordProcessorProps.Y + wordProcessorProps.Margin + 4);
+                        ctx.lineTo(wordProcessorProps.X + wordProcessorProps.Margin + 2, wordProcessorProps.Y + wordProcessorProps.Margin + wordProcessorProps.TextHeight - 4);
                     } else if (wordProcessorProps.CaretPosIndex > -1) {
                         var tempstr = removeTrailingSpacesAndLineBreaks(wordProcessorProps.UserInputText && wordProcessorProps.UserInputText.length - 1 >= wordProcessorProps.CaretPosIndex ?
                             (caretLineNo > 0 ? wordProcessorProps.UserInputText.substring(wordProcessorProps.LineBreakIndexes[caretLineNo - 1], wordProcessorProps.CaretPosIndex + 1) :
@@ -7049,15 +7073,18 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                         ctx.font = wordProcessorProps.TextFontString;
                         var w = ctx.measureText(tempstr).width;
                         caretLineNo -= getScrollBarProps(canvasid1, wordProcessorProps.VScrollBarWindowID).SelectedID;
-                        ctx.moveTo(wordProcessorProps.X + w, wordProcessorProps.Y + ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * caretLineNo));
-                        ctx.lineTo(wordProcessorProps.X + 3 + w, wordProcessorProps.Y + ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * caretLineNo));
-                        ctx.moveTo(wordProcessorProps.X + w, wordProcessorProps.Y + wordProcessorProps.TextHeight + ((wordProcessorProps.TextHeight +
-                            wordProcessorProps.LineSpacingInPixels) * ((caretLineNo == 0 ? 1 : caretLineNo) - 1)));
-                        ctx.moveTo(wordProcessorProps.X + 3 + w, wordProcessorProps.Y + wordProcessorProps.TextHeight + ((wordProcessorProps.TextHeight +
-                            wordProcessorProps.LineSpacingInPixels) * caretLineNo));
-                        ctx.moveTo(wordProcessorProps.X + 2 + w, wordProcessorProps.Y + ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * caretLineNo));
-                        ctx.lineTo(wordProcessorProps.X + 2 + w, wordProcessorProps.Y + wordProcessorProps.TextHeight + ((wordProcessorProps.TextHeight +
-                            wordProcessorProps.LineSpacingInPixels) * caretLineNo));
+                        ctx.moveTo(wordProcessorProps.X + wordProcessorProps.Margin + w, wordProcessorProps.Y + wordProcessorProps.Margin +
+                            ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * caretLineNo));
+                        ctx.lineTo(wordProcessorProps.X + wordProcessorProps.Margin + 3 + w, wordProcessorProps.Y + wordProcessorProps.Margin +
+                            ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * caretLineNo));
+                        ctx.moveTo(wordProcessorProps.X + wordProcessorProps.Margin + w, wordProcessorProps.Y + wordProcessorProps.Margin + wordProcessorProps.TextHeight +
+                            ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * ((caretLineNo == 0 ? 1 : caretLineNo) - 1)));
+                        ctx.moveTo(wordProcessorProps.X + wordProcessorProps.Margin + 3 + w, wordProcessorProps.Y + wordProcessorProps.Margin +
+                            wordProcessorProps.TextHeight + ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * caretLineNo));
+                        ctx.moveTo(wordProcessorProps.X + wordProcessorProps.Margin + 2 + w, wordProcessorProps.Y + wordProcessorProps.Margin +
+                            ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * caretLineNo));
+                        ctx.lineTo(wordProcessorProps.X + wordProcessorProps.Margin + 2 + w, wordProcessorProps.Y + wordProcessorProps.Margin + wordProcessorProps.TextHeight +
+                            ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * caretLineNo));
                     }
                     ctx.stroke();
                 } else {
@@ -7065,6 +7092,7 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                 }
             }
         }
+        ctx.restore();
     }, canvasid);
     registerKeyDownFunction(canvasid, function (canvasid3, windowid3, e) {
         var wordProcessorProps = getWordProcessorProps(canvasid3, windowid3);
@@ -7221,7 +7249,8 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                     if (wordProcessorProps.UserInputText.substr(lastLineBreakIndex, currStrIndex - lastLineBreakIndex + 1) == '\n') {
                         wordProcessorProps.LineBreakIndexes.push(currStrIndex);
                         lastLineBreakIndex = currStrIndex;
-                    } else if (ctx.measureText(wordProcessorProps.UserInputText.substr(lastLineBreakIndex, currStrIndex - lastLineBreakIndex + 1)).width > wordProcessorProps.Width - 15) {
+                    } else if (ctx.measureText(wordProcessorProps.UserInputText.substr(lastLineBreakIndex, currStrIndex - lastLineBreakIndex + 1)).width +
+                        wordProcessorProps.Margin > wordProcessorProps.Width - 15) {
                         wordProcessorProps.LineBreakIndexes.push(currStrIndex);
                         lastLineBreakIndex = currStrIndex;
                     }
@@ -7235,7 +7264,8 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                     if (wordProcessorProps.UserInputText.substr(currStrIndex, 1) == '\n') {
                         wordProcessorProps.LineBreakIndexes.push(currStrIndex);
                         lastLineBreakIndex = currStrIndex;
-                    } else if (ctx.measureText(wordProcessorProps.UserInputText.substr(lastLineBreakIndex, currStrIndex - lastLineBreakIndex + 1)).width > wordProcessorProps.Width - 15) {
+                    } else if (ctx.measureText(wordProcessorProps.UserInputText.substr(lastLineBreakIndex, currStrIndex - lastLineBreakIndex + 1)).width +
+                        wordProcessorProps.Margin > wordProcessorProps.Width - 15) {
                         if (lastSpace > -1) {
                             wordProcessorProps.LineBreakIndexes.push(lastSpace);
                             lastLineBreakIndex = lastSpace;
@@ -7264,8 +7294,8 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                     }
                 }
             }
-            if (caretLineNo - vscrollbarProps.SelectedID + 1 > wordProcessorProps.Height / (wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels)) {
-                vscrollbarProps.SelectedID = caretLineNo - Math.floor(wordProcessorProps.Height / (wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels)) + 1;
+            if (caretLineNo - vscrollbarProps.SelectedID + 1 > (wordProcessorProps.Height - (wordProcessorProps.Margin * 2)) / (wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels)) {
+                vscrollbarProps.SelectedID = caretLineNo - Math.floor((wordProcessorProps.Height - (wordProcessorProps.Margin * 2)) / (wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels)) + 1;
             } else if (caretLineNo < vscrollbarProps.SelectedID) {
                 vscrollbarProps.SelectedID = caretLineNo;
             }
@@ -7281,7 +7311,7 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
             var caretLineNo = 0;
             if (wordProcessorProps.LineBreakIndexes.length > 0) {
                 for (var i = vscrollbarProps.SelectedID; i < wordProcessorProps.LineBreakIndexes.length; i++) {
-                    if (wordProcessorProps.Y + ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * (i - vscrollbarProps.SelectedID + 1)) > y) {
+                    if (wordProcessorProps.Y + wordProcessorProps.Margin + ((wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels) * (i - vscrollbarProps.SelectedID + 1)) > y) {
                         break;
                     } else {
                         caretLineNo = i + 1;
@@ -7293,8 +7323,8 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
             }
             for (var i = (caretLineNo == 0 ? 0 : wordProcessorProps.LineBreakIndexes[caretLineNo - 1]); i < (caretLineNo < wordProcessorProps.LineBreakIndexes.length ?
                 wordProcessorProps.LineBreakIndexes[caretLineNo] : wordProcessorProps.UserInputText.length) ; i++) {
-                if (x > wordProcessorProps.X + ctx.measureText(wordProcessorProps.UserInputText.substr((caretLineNo == 0 ? 0 : wordProcessorProps.LineBreakIndexes[caretLineNo - 1]),
-                    i - (caretLineNo == 0 ? 0 : wordProcessorProps.LineBreakIndexes[caretLineNo - 1]))).width) {
+                if (x > wordProcessorProps.X + wordProcessorProps.Margin + ctx.measureText(wordProcessorProps.UserInputText.substr((caretLineNo == 0 ? 0 :
+                    wordProcessorProps.LineBreakIndexes[caretLineNo - 1]), i - (caretLineNo == 0 ? 0 : wordProcessorProps.LineBreakIndexes[caretLineNo - 1]))).width) {
                     wordProcessorProps.CaretPosIndex = i;
                 } else {
                     break;
