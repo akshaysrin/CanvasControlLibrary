@@ -112,6 +112,7 @@ var intervalID = -1;
 var windowWithAnimationCount = new Array();
 var suspendDraw = 0;
 var sessionID = null;
+var imageBackups = new Array();
 
 function animatedDraw() {
     for (var i = 0; i < windowWithAnimationCount.length; i++) {
@@ -1011,6 +1012,13 @@ function destroyControlByWindowObj(w) {
             for (var i = multiLineLabelPropsArray.length - 1; i >= 0 ; i--) {
                 if (multiLineLabelPropsArray[i].CanvasID == w.CanvasID && multiLineLabelPropsArray[i].WindowID == w.WindowCount) {
                     multiLineLabelPropsArray.splice(i, 1);
+                }
+            }
+            break;
+        case "WordProcessor":
+            for (var i = wordProcessorPropsArray.length - 1; i >= 0 ; i--) {
+                if (wordProcessorPropsArray[i].CanvasID == w.CanvasID && wordProcessorPropsArray[i].WindowID == w.WindowCount) {
+                    wordProcessorPropsArray.splice(i, 1);
                 }
             }
             break;
@@ -6950,6 +6958,9 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
     if (hasBgImage == 1) {
         image = new Image();
         image.src = bgImageUrl;
+        image.onload = function () {
+            draw(canvasid);
+        };
     }
     vscrollbarwindowid = createScrollBar(canvasid, controlNameId + 'VS', x + width - 15, y, height, depth, (textHeight + lineSpacingInPixels) * Math.floor(height / textHeight), 1);
     wordProcessorPropsArray.push({
@@ -7498,7 +7509,28 @@ function invokeServerSideFunction(ajaxURL, functionName, canvasid, windowid, cal
     xmlhttp.send(data);
 }
 
+var imageControlBackupImageUrls = new Array();
+var textBoxBackupImageUrls = new Array();
+var imageSliderBackupImageUrls = new Array();
+var imageFaderBackupImageUrls = new Array();
+var wordProcessorBackupImageUrls = new Array();
+
 function getEncodedVariables() {
+    for (var i = 0; i < imageControlPropsArray.length; i++) {
+        imageControlBackupImageUrls.push({ CanvasID: imageControlPropsArray[i].CanvasID, WindowID: imageControlPropsArray[i].WindowID, ImageUrl: imageControlPropsArray[i].ImageURL });
+    }
+    for (var i = 0; i < textBoxPropsArray.length; i++) {
+        textBoxBackupImageUrls.push({ CanvasID: textBoxPropsArray[i].CanvasID, WindowID: textBoxPropsArray[i].WindowID, ImageUrl: textBoxPropsArray[i].BgImageUrl });
+    }
+    for (var i = 0; i < imageSliderPropsArray.length; i++) {
+        imageSliderBackupImageUrls.push({ CanvasID: imageSliderPropsArray[i].CanvasID, WindowID: imageSliderPropsArray[i].WindowID, ImageUrls: imageSliderPropsArray[i].ImageURLs });
+    }
+    for (var i = 0; i < imageFaderPropsArray.length; i++) {
+        imageFaderBackupImageUrls.push({ CanvasID: imageFaderPropsArray[i].CanvasID, WindowID: imageFaderPropsArray[i].WindowID, ImageUrls: imageFaderPropsArray[i].ImageURLs });
+    }
+    for (var i = 0; i < wordProcessorPropsArray.length; i++) {
+        wordProcessorBackupImageUrls.push({ CanvasID: wordProcessorPropsArray[i].CanvasID, WindowID: wordProcessorPropsArray[i].WindowID, ImageUrls: wordProcessorPropsArray[i].BgImageUrl });
+    }
     var strVars = '[Windows]';
     for (var i = 0; i < windows.length; i++) {
         strVars += '[i]' + stringEncodeObject(windows[i]) + '[/i]';
@@ -7631,7 +7663,11 @@ function getEncodedVariables() {
     for (var i = 0; i < multiLineLabelPropsArray.length; i++) {
         strVars += '[i]' + stringEncodeObject(multiLineLabelPropsArray[i]) + '[/i]';
     }
-    strVars += '[/multiLineLabelPropsArray]';
+    strVars += '[/multiLineLabelPropsArray][wordProcessorPropsArray]';
+    for (var i = 0; i < wordProcessorPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(wordProcessorPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/wordProcessorPropsArray]';
     return strVars;
 }
 
@@ -7771,10 +7807,20 @@ function UnWrapVars(data) {
             if (imageMapPropsArray[x].CanvasID == savedImagesOnPostback[i].CanvasID && imageMapPropsArray[x].WindowID == savedImagesOnPostback[i].WindowID) {
                 imageMapPropsArray[x].Image = savedImagesOnPostback[i].Image;
             }
-        } 
+        }
         for (var x = 0; x < imageControlPropsArray.length; x++) {
             if (imageControlPropsArray[x].CanvasID == savedImagesOnPostback[i].CanvasID && imageControlPropsArray[x].WindowID == savedImagesOnPostback[i].WindowID) {
                 imageControlPropsArray[x].Image = savedImagesOnPostback[i].Image;
+            }
+        }
+        for (var x = 0; x < textBoxPropsArray.length; x++) {
+            if (textBoxPropsArray[x].CanvasID == savedImagesOnPostback[i].CanvasID && textBoxPropsArray[x].WindowID == savedImagesOnPostback[i].WindowID) {
+                textBoxPropsArray[x].Image = savedImagesOnPostback[i].Image;
+            }
+        }
+        for (var x = 0; x < wordProcessorPropsArray.length; x++) {
+            if (wordProcessorPropsArray[x].CanvasID == savedImagesOnPostback[i].CanvasID && wordProcessorPropsArray[x].WindowID == savedImagesOnPostback[i].WindowID) {
+                wordProcessorPropsArray[x].Image = savedImagesOnPostback[i].Image;
             }
         }
     }
@@ -7921,6 +7967,81 @@ function UnWrapVars(data) {
     savedImagesOnPostback = new Array();
     for (var i = 0; i < canvases.length; i++) {
         draw(canvases[i][0]);
+    }
+    for (var i = 0; i < imageControlPropsArray.length; i++) {
+        for (var j = 0; j < imageControlBackupImageUrls.length; j++) {
+            if (imageControlPropsArray[i].CanvasID == imageControlBackupImageUrls[j].CanvasID && imageControlPropsArray[i].WindowID == imageControlBackupImageUrls[j].WindowID &&
+                imageControlPropsArray[i].ImageURL != imageControlBackupImageUrls[j].ImageURL) {
+                var image = new Image();
+                image.src = imageControlPropsArray[i].ImageURL;
+                imageControlPropsArray[i].Image = image;
+                image.onload = function () { draw(imageControlPropsArray[i].CanvasID); };
+            }
+        }
+    }
+    for (var i = 0; i < textBoxPropsArray.length; i++) {
+        for (var j = 0; j < textBoxBackupImageUrls.length; j++) {
+            if (textBoxPropsArray[i].CanvasID == textBoxBackupImageUrls[j].CanvasID && textBoxPropsArray[i].WindowID == textBoxBackupImageUrls[j].WindowID &&
+                textBoxPropsArray[i].BgImageUrl != textBoxBackupImageUrls[j].BgImageUrl) {
+                var image = new Image();
+                image.src = textBoxPropsArray[i].BgImageUrl;
+                textBoxPropsArray[i].Image = image;
+                image.onload = function () { draw(textBoxPropsArray[i].CanvasID); };
+            }
+        }
+    }
+    for (var i = 0; i < wordProcessorPropsArray.length; i++) {
+        for (var j = 0; j < wordProcessorBackupImageUrls.length; j++) {
+            if (wordProcessorPropsArray[i].CanvasID == wordProcessorBackupImageUrls[j].CanvasID && wordProcessorPropsArray[i].WindowID == wordProcessorBackupImageUrls[j].WindowID &&
+                wordProcessorPropsArray[i].BgImageUrl != wordProcessorBackupImageUrls[j].BgImageUrl) {
+                var image = new Image();
+                image.src = wordProcessorPropsArray[i].BgImageUrl;
+                wordProcessorPropsArray[i].Image = image;
+                image.onload = function () { draw(wordProcessorPropsArray[i].CanvasID); };
+            }
+        }
+    }
+    for (var i = 0; i < imageSliderPropsArray.length; i++) {
+        for (var j = 0; j < imageSliderPropsArray[i].ImageURLs.length; j++) {
+            for (var u = 0; u < imageSliderBackupImageUrls.length; u++) {
+                if (imageSliderPropsArray[i].CanvasID == imageSliderBackupImageUrls[u].CanvasID && imageSliderPropsArray[i].WindowID == imageSliderBackupImageUrls[u].WindowID) {
+                    var found = 0;
+                    for (var y = 0; y < imageSliderBackupImageUrls[u].ImageUrls.length; y++) {
+                        if (imageSliderBackupImageUrls[u].ImageUrls[y] == imageSliderPropsArray[i].ImageURLs[j]) {
+                            found = 1;
+                            break;
+                        }
+                    }
+                    if (found == 0) {
+                        var image = new Image();
+                        image.src = imageSliderPropsArray[i].imageURLs[j];
+                        imageSliderPropsArray[i].Images[j] = image;
+                        image.onload = function () { draw(imageSliderPropsArray[i].CanvasID); };
+                    }
+                }
+            }
+        }
+    }
+    for (var i = 0; i < imageFaderPropsArray.length; i++) {
+        for (var j = 0; j < imageFaderPropsArray[i].ImageURLs.length; j++) {
+            for (var u = 0; u < imageFaderBackupImageUrls.length; u++) {
+                if (imageFaderPropsArray[i].CanvasID == imageFaderBackupImageUrls[u].CanvasID && imageFaderPropsArray[i].WindowID == imageFaderBackupImageUrls[u].WindowID) {
+                    var found = 0;
+                    for (var y = 0; y < imageFaderBackupImageUrls[u].ImageUrls.length; y++) {
+                        if (imageFaderBackupImageUrls[u].ImageUrls[y] == imageFaderPropsArray[i].ImageURLs[j]) {
+                            found = 1;
+                            break;
+                        }
+                    }
+                    if (found == 0) {
+                        var image = new Image();
+                        image.src = imageFaderPropsArray[i].imageURLs[j];
+                        imageFaderPropsArray[i].Images[j] = image;
+                        image.onload = function () { draw(imageFaderPropsArray[i].CanvasID); };
+                    }
+                }
+            }
+        }
     }
     return getParameters(xmlDoc.firstChild.childNodes[1].childNodes[0].childNodes);
 }

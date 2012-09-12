@@ -59,6 +59,8 @@ public partial class Default2 : System.Web.UI.Page
             ccl.CurrentSessionObj.Data["Counter"] = (int)ccl.CurrentSessionObj.Data["Counter"] + 1;
         }
         lp.Text = ccl.CurrentSessionObj.Data["Counter"].ToString();
+        CanvasControlLibrary.CCLImageProps i1 = ccl.getControlPropsByControlNameID("i1") as CanvasControlLibrary.CCLImageProps;
+        i1.ImageURL = "Bombay.png";
     }
 
     public void InitializeForm1(string canvasid, int windowid)
