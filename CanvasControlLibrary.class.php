@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 class CCLWindow
 {
@@ -911,6 +911,108 @@ class CCLImageFaderProps
     }
 }
 
+class CCLImageSliderProps
+{
+    public $CanvasID;
+    public $WindowID;
+    public $X;
+    public $Y;
+    public $Width;
+    public $Height;
+    public $ImageURLs;
+    public $Direction;
+    public $StepIncrement;
+    public $ClickFunction;
+    public $HoldForTicks;
+    public $CurrentImageIndex;
+    public $Slide;
+    public $HoldCountDown;
+
+    public function __construct()
+    {
+        $this->ImageURLs = array();
+    }
+}
+
+class CCLMultiLineLabelProps
+{
+    public $CanvasID;
+    public $WindowID;
+    public $X;
+    public $Y;
+    public $Width;
+    public $Height;
+    public $HasMarkup;
+    public $Text;
+    public $TextColor;
+    public $TextHeight;
+    public $TextFontString;
+    public $LineSpacingInPixels;
+    public $LineBreakIndexes;
+    public $MarkupTextExtents;
+    public $MarkupText;
+
+    public function __construct()
+    {
+        $this->LineBreakIndexes = array();
+        $this->MarkupTextExtents = array();
+    }
+}
+
+class CCLWordProcessorProps
+{
+    public $CanvasID;
+    public $WindowID;
+    public $X;
+    public $Y;
+    public $Width;
+    public $Height;
+    public $HasMarkup;
+    public $Text;
+    public $TextColor;
+    public $TextHeight;
+    public $TextFontString;
+    public $LineSpacingInPixels;
+    public $WordSensitive;
+    public $WaterMarkText;
+    public $WaterMarkTextColor;
+    public $WaterMarkTextHeight;
+    public $WaterMarkTextFontString;
+    public $MaxChars;
+    public $HasShadow;
+    public $ShadowColor;
+    public $ShadowOffsetX;
+    public $ShadowOffsetY;
+    public $HasRoundedEdges;
+    public $EdgeRadius;
+    public $HasBgGradient;
+    public $BgGradientStartColor;
+    public $BgGradientEndColor;
+    public $HasBgImage;
+    public $BgImageUrl;
+    public $Margin;
+    public $HasBorder;
+    public $BorderColor;
+    public $BorderLineWidth;
+    public $UserInputText;
+    public $VScrollBarWindowID;
+    public $CaretPosIndex;
+    public $ShowCaret;
+    public $CaretColor;
+    public $LineBreakIndexes;
+    public $SelectedTextStartIndex;
+    public $SelectedTextEndIndex;
+    public $MouseDown;
+    public $WasSelecting;
+    public $AllowedCharsRegEx;
+
+    public function __construct()
+    {
+        $this->LineBreakIndexes = array();
+    }
+}
+
+
 class JavaScriptFunctionsToSendAndAttachOnClientSide
 {
     public $CanvasID;
@@ -934,86 +1036,85 @@ class JavaScriptFunctionsToSendAndAttachOnClientSide
 
 class CanvasControlLibrary
 {
-	public $Windows;
-	public $LabelPropsArray;
-	public $ButtonPropsArray;
-	public $ScrollBarPropsArray;
-	public $GridPropsArray;
-	public $ComboBoxPropsArray;
-	public $CheckBoxPropsArray;
-	public $RadioButtonGroupPropsArray;
-	public $ImagePropsArray;
-	public $TreeViewPropsArray;
-	public $CalenderPropsArray;
-	public $ProgressBarPropsArray;
-	public $SliderPropsArray;
-	public $DatePrickerPropsArray;
-	public $PanelPropsArray;
-	public $BarGraphPropsArray;
-	public $PieChartPropsArray;
-	public $LineGraphPropsArray;
-	public $GaugeChartPropsArray;
-	public $RadarGraphPropsArray;
-	public $LineAreaGraphPropsArray;
-	public $CandlesticksGraphPropsArray;
-	public $DoughnutChartPropsArray;
-	public $BarsMixedWithLabeledLineGraphPropsArray;
-	public $StackedBarGraphPropsArray;
-	public $TabPropsArray;
-	public $ImageMapPropsArray;
-	public $MenuBarPropsArray;
-	public $SubMenuBarPropsArray;
-	public $TextBoxPropsArray;
-	public $ImageFaderPropsArray;
-	public $JavaScriptCodeToSendInThisCall;
+    public $Windows;
+    public $LabelPropsArray;
+    public $ButtonPropsArray;
+    public $ScrollBarPropsArray;
+    public $GridPropsArray;
+    public $ComboBoxPropsArray;
+    public $CheckBoxPropsArray;
+    public $RadioButtonGroupPropsArray;
+    public $ImagePropsArray;
+    public $TreeViewPropsArray;
+    public $CalenderPropsArray;
+    public $ProgressBarPropsArray;
+    public $SliderPropsArray;
+    public $DatePrickerPropsArray;
+    public $PanelPropsArray;
+    public $BarGraphPropsArray;
+    public $PieChartPropsArray;
+    public $LineGraphPropsArray;
+    public $GaugeChartPropsArray;
+    public $RadarGraphPropsArray;
+    public $LineAreaGraphPropsArray;
+    public $CandlesticksGraphPropsArray;
+    public $DoughnutChartPropsArray;
+    public $BarsMixedWithLabeledLineGraphPropsArray;
+    public $StackedBarGraphPropsArray;
+    public $TabPropsArray;
+    public $ImageMapPropsArray;
+    public $MenuBarPropsArray;
+    public $SubMenuBarPropsArray;
+    public $TextBoxPropsArray;
+    public $ImageFaderPropsArray;
+    public $ImageSliderPropsArray;
+    public $MultiLineLabelPropsArray;
+    public $WordProcessorPropsArray;
+    public $JavaScriptCodeToSendInThisCall;
 
     public $FunctionName;
     public $CanvasID;
     public $WindowID;
 
-	public function __construct() {
-		$this->Windows = array();
-		$this->LabelPropsArray = array();
-		$this->ButtonPropsArray = array();
-		$this->ScrollBarPropsArray = array();
-		$this->GridPropsArray = array();
-		$this->ComboBoxPropsArray = array();
-		$this->CheckBoxPropsArray = array();
-		$this->RadioButtonGroupPropsArray = array();
-		$this->ImagePropsArray = array();
-		$this->TreeViewPropsArray = array();
-		$this->CalenderPropsArray = array();
-		$this->ProgressBarPropsArray = array();
-		$this->SliderPropsArray = array();
-		$this->DatePrickerPropsArray = array();
-		$this->PanelPropsArray = array();
-		$this->BarGraphPropsArray = array();
-		$this->PieChartPropsArray = array();
-		$this->LineGraphPropsArray = array();
-		$this->GaugeChartPropsArray = array();
-		$this->RadarGraphPropsArray = array();
-		$this->LineAreaGraphPropsArray = array();
-		$this->CandlesticksGraphPropsArray = array();
-		$this->DoughnutChartPropsArray = array();
-		$this->BarsMixedWithLabeledLineGraphPropsArray = array();
-		$this->StackedBarGraphPropsArray = array();
-		$this->TabPropsArray = array();
-		$this->ImageMapPropsArray = array();
-		$this->MenuBarPropsArray = array();
-		$this->SubMenuBarPropsArray = array();
-		$this->TextBoxPropsArray = array();
-		$this->ImageFaderPropsArray = array();
-		$this->JavaScriptCodeToSendInThisCall = array();
+    public function __construct() {
+        $this->Windows = array();
+        $this->LabelPropsArray = array();
+        $this->ButtonPropsArray = array();
+        $this->ScrollBarPropsArray = array();
+        $this->GridPropsArray = array();
+        $this->ComboBoxPropsArray = array();
+        $this->CheckBoxPropsArray = array();
+        $this->RadioButtonGroupPropsArray = array();
+        $this->ImagePropsArray = array();
+        $this->TreeViewPropsArray = array();
+        $this->CalenderPropsArray = array();
+        $this->ProgressBarPropsArray = array();
+        $this->SliderPropsArray = array();
+        $this->DatePrickerPropsArray = array();
+        $this->PanelPropsArray = array();
+        $this->BarGraphPropsArray = array();
+        $this->PieChartPropsArray = array();
+        $this->LineGraphPropsArray = array();
+        $this->GaugeChartPropsArray = array();
+        $this->RadarGraphPropsArray = array();
+        $this->LineAreaGraphPropsArray = array();
+        $this->CandlesticksGraphPropsArray = array();
+        $this->DoughnutChartPropsArray = array();
+        $this->BarsMixedWithLabeledLineGraphPropsArray = array();
+        $this->StackedBarGraphPropsArray = array();
+        $this->TabPropsArray = array();
+        $this->ImageMapPropsArray = array();
+        $this->MenuBarPropsArray = array();
+        $this->SubMenuBarPropsArray = array();
+        $this->TextBoxPropsArray = array();
+        $this->ImageFaderPropsArray = array();
+        $this->JavaScriptCodeToSendInThisCall = array();
 
-		$fp = fopen("php://input", 'rb');
-		$rdata = stream_get_contents($fp);
-		fclose($fp);
-        $strData = str_replace("[", "<", $rdata);
-        $strData = str_replace("]", ">", $strData);
-        $strData = str_replace("&lb;", "[", $strData);
-        $strData = str_replace("&rb;", "]", $strData);
-        $strData = str_replace("&amp;", "&", $strData);
-		$vars = simplexml_load_string("<root>" . $strData . "</root>");
+        $fp = fopen("php://input", 'rb');
+        $rdata = stream_get_contents($fp);
+        fclose($fp);
+        $strData = str_replace("&amp;", "&", str_replace("&rb;", "]", str_replace("&lb;", "[", str_replace("]", ">", str_replace("[", "<", $rdata)))));
+	$vars = simplexml_load_string("<root>" . $strData . "</root>");
         foreach($vars->children() as $child) {
             switch($child->getName()) {
                 case "FunctionName":
@@ -1040,9 +1141,7 @@ class CanvasControlLibrary
 
     public function DecodeXML($str)
     {
-    	$str = str_replace("&lb;", "[", $str);
-    	$str = str_replace("&rb;", "]", $str);
-        return str_replace("&amp;", "&", $str);
+        return str_replace("&amp;", "&", str_replace("&rb;", "]", str_replace("&lb;", "[", $str)));
     }
 
     public function UnwrapVars($node)
@@ -1288,6 +1387,38 @@ class CanvasControlLibrary
                     {
                         $tb = new CCLTextBoxProps();
                         array_push($this->TextBoxPropsArray, $tb);
+                        $this->FillClassObject($child2, $tb);
+                    }
+                    break;
+                case "imageFaderPropsArray":
+                    foreach ($child1->children() as $child2)
+                    {
+                        $tb = new CCLImageFaderProps();
+                        array_push($this->ImageFaderPropsArray, $tb);
+                        $this->FillClassObject($child2, $tb);
+                    }
+                    break;
+                case "imageSliderPropsArray":
+                    foreach ($child1->children() as $child2)
+                    {
+                        $tb = new CCLImageSliderProps();
+                        array_push($this->ImageSliderPropsArray, $tb);
+                        $this->FillClassObject($child2, $tb);
+                    }
+                    break;
+                case "multiLineLabelPropsArray":
+                    foreach ($child1->children() as $child2)
+                    {
+                        $tb = new CCLMultiLineLabelProps();
+                        array_push($this->MultiLineLabelPropsArray, $tb);
+                        $this->FillClassObject($child2, $tb);
+                    }
+                    break;
+                case "wordProcessorPropsArray":
+                    foreach ($child1->children() as $child2)
+                    {
+                        $tb = new CCLWordProcessorProps();
+                        array_push($this->WordProcessorPropsArray, $tb);
                         $this->FillClassObject($child2, $tb);
                     }
                     break;
@@ -1554,7 +1685,27 @@ class CanvasControlLibrary
         {
             $strVars .= "[i]" . $this->encodeObject($tbx) . "[/i]";
         }
-        $strVars .= "[/textBoxPropsArray]";
+        $strVars .= "[/textBoxPropsArray][imageFaderPropsArray]";
+        foreach ($this->ImageFaderPropsArray as $tbx)
+        {
+            $strVars .= "[i]" . $this->encodeObject($tbx) . "[/i]";
+        }
+        $strVars .= "[/imageFaderPropsArray][imageSliderPropsArray]";
+        foreach ($this->ImageSliderPropsArray as $tbx)
+        {
+            $strVars .= "[i]" . $this->encodeObject($tbx) . "[/i]";
+        }
+        $strVars .= "[/imageSliderPropsArray][multiLineLabelPropsArray]";
+        foreach ($this->MultiLineLabelPropsArray as $tbx)
+        {
+            $strVars .= "[i]" . $this->encodeObject($tbx) . "[/i]";
+        }
+        $strVars .= "[/multiLineLabelPropsArray][wordProcessorPropsArray]";
+        foreach ($this->WordProcessorPropsArray as $tbx)
+        {
+            $strVars .= "[i]" . $this->encodeObject($tbx) . "[/i]";
+        }
+        $strVars .= "[/wordProcessorPropsArray]";
         $strVars .= "[/Vars][Params][Array]" . $this->encodeParameters($parameters) . "[/Array][/Params][/root]";
         echo $strVars;
     }
@@ -1862,6 +2013,42 @@ class CanvasControlLibrary
                         break;
                     case "TextBox":
                         foreach ($this->TextBoxPropsArray as $o)
+                        {
+                            if ($o->CanvasID == $w->CanvasID && $o->WindowID == $w->WindowCount)
+                            {
+                                return $o;
+                            }
+                        }
+                        break;
+                    case "ImageFader":
+                        foreach ($this->ImageFaderPropsArray as $o)
+                        {
+                            if ($o->CanvasID == $w->CanvasID && $o->WindowID == $w->WindowCount)
+                            {
+                                return $o;
+                            }
+                        }
+                        break;
+                    case "ImageSlider":
+                        foreach ($this->ImageSliderPropsArray as $o)
+                        {
+                            if ($o->CanvasID == $w->CanvasID && $o->WindowID == $w->WindowCount)
+                            {
+                                return $o;
+                            }
+                        }
+                        break;
+                    case "MultiLineLabel":
+                        foreach ($this->MultiLineLabelPropsArray as $o)
+                        {
+                            if ($o->CanvasID == $w->CanvasID && $o->WindowID == $w->WindowCount)
+                            {
+                                return $o;
+                            }
+                        }
+                        break;
+                    case "WordProcessor":
+                        foreach ($this->WordProcessorPropsArray as $o)
                         {
                             if ($o->CanvasID == $w->CanvasID && $o->WindowID == $w->WindowCount)
                             {

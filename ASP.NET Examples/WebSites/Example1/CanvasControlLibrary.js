@@ -112,7 +112,6 @@ var intervalID = -1;
 var windowWithAnimationCount = new Array();
 var suspendDraw = 0;
 var sessionID = null;
-var imageBackups = new Array();
 
 function animatedDraw() {
     for (var i = 0; i < windowWithAnimationCount.length; i++) {
@@ -7477,6 +7476,55 @@ function getCharFromKeyCode(e) {
 }
 
 //Tablet, Smartphone Keyboard code starts here
+
+var virtualKeyboardPropsArray = new Array();
+
+function getVirtualKeyboardProps(canvasid, windowid) {
+    for (var i = 0; i < virtualKeyboardPropsArray.length; i++) {
+        if (virtualKeyboardPropsArray[i].CanvasID == canvasid && virtualKeyboardPropsArray[i].WindowID == windowid) {
+            return virtualKeyboardPropsArray[i];
+        }
+    }
+}
+
+function createVirtualKeyboard(canvasid, controlNameId, x, y, width, height, depth, keys, keypressFunc, gapbetweenbuttons, gapbetweenrows) {
+    var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'VirtualKeyboard', controlNameId);
+    if (!keys) {
+        var shiftButtonImage = new Image();
+        shiftButtonImage.src = 'shiftButton.png';
+        shiftButtonImage.onload = function () { draw(canvasid); };
+        var backspaceButtonImage = new Image();
+        backspaceButtonImage.src = 'backspaceButton.png';
+        backspaceButtonImage.onload = function () { draw(canvasid); };
+        var keyboardOffImage = new Image();
+        keyboardOffImage.src = 'keyboardOffButton.png';
+        keyboardOffImage.onload = function () { draw(canvasid); };
+        var spaceBarButtonImage = new Image();
+        spaceBarButtonImage.src = 'spacebarButtonImage.png';
+        spaceBarButtonImage.onload = function () { draw(canvasid); };
+        var carriageReturnImage = new Image();
+        carriageReturnImage.src = 'carriageReturnImage.png';
+        carriageReturnImage.onload = function () { draw(canvasid); };
+        keys = [[[['Q', 15, 30], ['W', 15, 30], ['E', 15, 30], ['R', 15, 30], ['T', 15, 30], ['Y', 15, 30], ['U', 15, 30], ['I', 15, 30],
+            ['O', 15, 30], ['P', 15, 30]], [['A', 15, 30], ['S', 15, 30], ['D', 15, 30], ['F', 15, 30], ['G', 15, 30],
+            ['H', 15, 30], ['J', 15, 30], ['K', 15, 30], ['L', 15, 30]], [[shiftButtonImage, 'shiftKey', 30, 30, ], ['Z', 15, 30], ['X', 15, 30],
+            ['C', 15, 30], ['V', 15, 30], ['B', 15, 30], ['N', 15, 30], ['M', 15, 30], [backspaceButtonImage, 'backspaceKey', 30, 30]],
+            [[keyboardOffImage, 'keyboardOff', 30, 30], [',', 15, 30], [spaceBarButtonImage, 'spacebarKey', 60, 30], ['.', 60, 30], ['12#', null, 30, 30, 1],
+            [carriageReturnImage, 'carriageReturnKey', 30, 30]]], [[['1', 15, 30], ['2', 15, 30], ['3', 15, 30], ['4', 15, 30],
+            ['5', 15, 30], ['6', 15, 30], ['7', 15, 30], ['8', 15, 30], ['9', 15, 30], ['0', 15, 30]], [['!', 15, 30], ['@', 15, 30],
+            ['#', 15, 30], ['$', 15, 30], ['%', 15, 30], ['&', 15, 30], ['*', 15, 30], ['?', 15, 30], ['/', 15, 30]], [['_', 15, 30],
+            ['"', 15, 30], ['\'', 15, 30], ['(', 15, 30], [')', 15, 30], ['-', 15, 30], ['+', 15, 30], [';', 15, 30],
+            [backspaceButtonImage, 'backspaceKey', 30, 30]], [[keyboardOffImage, 'keyboardOff', 15, 30], [':', 15, 30], [',', 15, 30],
+            [spaceBarButtonImage, 'spacebarKey', 45, 30], ['.', 15, 30], ['ABC', 30, 30, 0], [carriageReturnImage, 'carriageReturnKey', 30, 30]]]];
+    }
+    virtualKeyboardPropsArray.push({
+        CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Keys: keys, KeyPressFunction: keypressFunc, GapBetweenButtons: gapbetweenbuttons,
+        GapBetweenRows: gapbetweenrows
+    });
+    registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
+        var virtualKeyboardProps = getVirtualKeyboardProps(canvasid1, windowid1);
+    }, canvasid);
+}
 
 //AJAX Postback code Starts here
 
