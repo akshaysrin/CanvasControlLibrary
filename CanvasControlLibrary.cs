@@ -989,6 +989,7 @@ public class CanvasControlLibrary
         public string ShowCaret { get; set; }
         public string CaretColor { get; set; }
         public object Tag { get; set; }
+        public string CaretTime { get; set; }
     }
 
     public List<CCLImageFaderProps> ImageFaderPropsArray = new List<CCLImageFaderProps>();
@@ -1067,6 +1068,62 @@ public class CanvasControlLibrary
         {
             LineBreakIndexes = new ArrayList();
             MarkupTextExtents = new ArrayList();
+        }
+    }
+
+    public List<CCLWordProcessorProps> WordProcessorPropsArray = new List<CCLWordProcessorProps>();
+
+    public class CCLWordProcessorProps
+    {
+        public string CanvasID { get; set; }
+        public string WindowID { get; set; }
+        public string X { get; set; }
+        public string Y { get; set; }
+        public string Width { get; set; }
+        public string Height { get; set; }
+        public string HasMarkup { get; set; }
+        public string Text { get; set; }
+        public string TextColor { get; set; }
+        public string TextHeight { get; set; }
+        public string TextFontString { get; set; }
+        public string LineSpacingInPixels { get; set; }
+        public string WordSensitive { get; set; }
+        public string WaterMarkText { get; set; }
+        public string WaterMarkTextColor { get; set; }
+        public string WaterMarkTextHeight { get; set; }
+        public string WaterMarkTextFontString { get; set; }
+        public string MaxChars { get; set; }
+        public string HasShadow { get; set; }
+        public string ShadowColor { get; set; }
+        public string ShadowOffsetX { get; set; }
+        public string ShadowOffsetY { get; set; }
+        public string HasRoundedEdges { get; set; }
+        public string EdgeRadius { get; set; }
+        public string HasBgGradient { get; set; }
+        public string BgGradientStartColor { get; set; }
+        public string BgGradientEndColor { get; set; }
+        public string HasBgImage { get; set; }
+        public string BgImageUrl { get; set; }
+        public string Margin { get; set; }
+        public string HasBorder { get; set; }
+        public string BorderColor { get; set; }
+        public string BorderLineWidth { get; set; }
+        public string UserInputText { get; set; }
+        public string VScrollBarWindowID { get; set; }
+        public string CaretPosIndex { get; set; }
+        public string ShowCaret { get; set; }
+        public string CaretColor { get; set; }
+        public ArrayList LineBreakIndexes { get; set; }
+        public string SelectedTextStartIndex { get; set; }
+        public string SelectedTextEndIndex { get; set; }
+        public string MouseDown { get; set; }
+        public string WasSelecting { get; set; }
+        public string AllowedCharsRegEx { get; set; }
+        public string CaretTime { get; set; }
+
+        public CCLWordProcessorProps()
+        {
+            LineBreakIndexes = new ArrayList();
         }
     }
 
@@ -1408,6 +1465,14 @@ public class CanvasControlLibrary
                         FillClassObject(child2, sm);
                     }
                     break;
+                case "wordProcessorPropsArray":
+                    foreach (XmlNode child2 in child1.ChildNodes)
+                    {
+                        CCLWordProcessorProps sm = new CCLWordProcessorProps();
+                        WordProcessorPropsArray.Add(sm);
+                        FillClassObject(child2, sm);
+                    }
+                    break;
             }
         }
     }
@@ -1681,7 +1746,12 @@ public class CanvasControlLibrary
         {
             strVars += "[i]" + encodeObject(smb) + "[/i]";
         }
-        strVars += "[/multiLineLabelPropsArray]";
+        strVars += "[/multiLineLabelPropsArray][wordProcessorPropsArray]";
+        foreach (CCLWordProcessorProps smb in WordProcessorPropsArray)
+        {
+            strVars += "[i]" + encodeObject(smb) + "[/i]";
+        }
+        strVars += "[/wordProcessorPropsArray]";
         strVars += "[/Vars][Params][Array]" + encodeParameters(parameters) + "[/Array][/Params][/root]";
         byte[] wdata = Encoding.ASCII.GetBytes(strVars);
         OutputStream.Write(wdata, 0, wdata.Length);
@@ -2017,6 +2087,15 @@ public class CanvasControlLibrary
                         break;
                     case "MultiLineLabel":
                         foreach (CCLMultiLineLabelProps o in MultiLineLabelPropsArray)
+                        {
+                            if (o.CanvasID == w.CanvasID && o.WindowID == w.WindowCount)
+                            {
+                                return (object)o;
+                            }
+                        }
+                        break;
+                    case "WordProcessor":
+                        foreach (CCLWordProcessorProps o in WordProcessorPropsArray)
                         {
                             if (o.CanvasID == w.CanvasID && o.WindowID == w.WindowCount)
                             {

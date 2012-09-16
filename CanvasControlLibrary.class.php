@@ -884,6 +884,7 @@ class CCLTextBoxProps
     public $ShowCaret;
     public $CaretColor;
     public $Tag;
+    public $CaretTime;
 }
 
 class CCLImageFaderProps
@@ -1005,6 +1006,7 @@ class CCLWordProcessorProps
     public $MouseDown;
     public $WasSelecting;
     public $AllowedCharsRegEx;
+    public $CaretTime;
 
     public function __construct()
     {
