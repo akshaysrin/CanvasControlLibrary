@@ -989,6 +989,7 @@ public class CanvasControlLibrary
         public string ShowCaret { get; set; }
         public string CaretColor { get; set; }
         public object Tag { get; set; }
+        public string CaretTime { get; set; }
     }
 
     public List<CCLImageFaderProps> ImageFaderPropsArray = new List<CCLImageFaderProps>();
@@ -1118,6 +1119,7 @@ public class CanvasControlLibrary
         public string MouseDown { get; set; }
         public string WasSelecting { get; set; }
         public string AllowedCharsRegEx { get; set; }
+        public string CaretTime { get; set; }
 
         public CCLWordProcessorProps()
         {

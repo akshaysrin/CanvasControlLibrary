@@ -59,7 +59,7 @@
                 1, -1, 100, function (canvasid, windowid, e, idx) { alert(idx.toString()); });
             createButton(elemId, 'b8', 500, 74, 250, 40, 'Custom Click Function', '#0000FF', 12, '12pt Ariel', 2, highestDepth,
                 function (canvasid, windowid) {
-                    invokeServerSideFunction('AjaxEx1.aspx', 'ClickMe', elemId, windowid, function () { alert('Did Postback'); });
+                    invokeServerSideFunction('AjaxEx1.aspx', 'ClickMe2', elemId, windowid, function () { alert('Did Postback'); });
                 }, null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1');
             createLabel(elemId, 'l1', 500, 40, 100, 20, 'Label 1', '#000000', 12, '12pt Ariel', null, highestDepth);
             createMultiLineLabel(elemId, 'mll1', 250, 400, 200, highestDepth, 0, 'This\n is a very long sentance to test word wrap.  My name is Akshay Srinivasan\n and this is a multi line label control demo.\n  It is a control that is one of the many controls in Canvas Control Library which is a system of building web pages that has been made possible by the new HTML5 element called canvas.',

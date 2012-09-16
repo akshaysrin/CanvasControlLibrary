@@ -63,6 +63,10 @@ public partial class Default2 : System.Web.UI.Page
         i1.ImageURL = "Bombay.png";
     }
 
+    public void ClickMe2(string canvasid, int windowid)
+    {
+    }
+
     public void InitializeForm1(string canvasid, int windowid)
     {
         CanvasControlLibrary.CCLComboBoxProps selectCityComboBox = ccl.getControlPropsByControlNameID("selectCityComboBoxComboBoxTextArea") as CanvasControlLibrary.CCLComboBoxProps;

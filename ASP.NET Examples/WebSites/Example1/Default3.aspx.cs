@@ -22,4 +22,10 @@ public partial class Default3 : System.Web.UI.Page
     {
 
     }
+
+    protected override void Render(HtmlTextWriter writer)
+    {
+        base.Render(writer);
+        CanvasControlLibrary.StartSession(writer);
+    }
 }

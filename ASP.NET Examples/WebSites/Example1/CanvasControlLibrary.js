@@ -6061,7 +6061,7 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
         ListPossiblesTextFontString: listPossiblesTextFontString, CaretPosIndex: -1, UserInputText: initialText, ShadowColor: shadowColor, ShowCaret: 0, CaretColor: caretColor,
         SelectedTextStartIndex: -1, SelectedTextEndIndex: -1, TextSelectionBgColor: textSelectionBgColor, MouseDown: 0, WasSelecting: 0, MouseDownTime: 0, Tag: tag,
         DropDownWindowID: dropdownwindowid, ListPossiblesTextColor: listPossiblesTextColor, VScrollBarWindowID: vscrollbarwindowid, ListPossiblesSelectedID: -1,
-        ListPossiblesAllChoices: listPossibles
+        ListPossiblesAllChoices: listPossibles, CaretTime: Date.now()
     });
     registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
         var textBoxProps = getTextBoxProps(canvasid1, windowid1);
@@ -6154,7 +6154,10 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
         }
         if (doesWindowHaveFocus(canvasid1, windowid1) == 1) {
             if (textBoxProps.ShowCaret == 1) {
-                textBoxProps.ShowCaret = 0;
+                if (Date.now() - textBoxProps.CaretTime > 250) {
+                    textBoxProps.ShowCaret = 0;
+                    textBoxProps.CaretTime = Date.now();
+                }
                 ctx.strokeStyle = textBoxProps.CaretColor;
                 ctx.beginPath();
                 if (textBoxProps.CaretPosIndex == -1) {
@@ -6178,7 +6181,10 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
                 }
                 ctx.stroke();
             } else {
-                textBoxProps.ShowCaret = 1;
+                if (Date.now() - textBoxProps.CaretTime > 500) {
+                    textBoxProps.ShowCaret = 1;
+                    textBoxProps.CaretTime = Date.now();
+                }
             }
         }
     }, canvasid);
@@ -6728,16 +6734,16 @@ function getMultiLineLabelProps(canvasid, windowid) {
 
 function getMarkupFontString(idx, extents) {
     for (var i = 0; i < extents.length; i++) {
-        if (idx >= extents[i].Start && idx <= extents[i].End) {
-            return extents[i].FontString;
+        if (idx >= extents[i][0] && idx <= extents[i][1]) {
+            return extents[i][3];
         }
     }
 }
 
 function getMarkupFontColor(idx, extents) {
     for (var i = 0; i < extents.length; i++) {
-        if (idx >= extents[i].Start && idx <= extents[i].End) {
-            return extents[i].FontColor;
+        if (idx >= extents[i][0] && idx <= extents[i][1]) {
+            return extents[i][2];
         }
     }
 }
@@ -6807,7 +6813,7 @@ function createMultiLineLabel(canvasid, controlNameId, x, y, width, depth, hasMa
                     case 'NT':
                         var tmp = markupText.length > 0 ? markupText.length - 1 : 0;
                         markupText += xmlDoc.firstChild.childNodes[i].childNodes.length > 0 ? xmlDoc.firstChild.childNodes[i].childNodes[0].nodeValue : xmlDoc.firstChild.childNodes[i].nodeValue;
-                        markupTextExtents.push({ Start: tmp, End: markupText.length - 1, FontColor: textColor, FontString: textFontString });
+                        markupTextExtents.push([tmp, markupText.length - 1, textColor, textFontString ]);
                         break;
                     case 'N':
                         var colorstr, fontstr, textstr;
@@ -6829,7 +6835,7 @@ function createMultiLineLabel(canvasid, controlNameId, x, y, width, depth, hasMa
                         }
                         var tmp = markupText.length - 1;
                         markupText += textstr;
-                        markupTextExtents.push({ Start: tmp, End: markupText.length - 1, FontColor: colorstr, FontString: fontstr });
+                        markupTextExtents.push([tmp, markupText.length - 1, colorstr, fontstr]);
                         break;
                 }
             }
@@ -6970,7 +6976,7 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
         BgGradientStartColor: bgGradientStartColor, BgGradientEndColor: bgGradientEndColor, HasBgImage: hasBgImage, BgImageUrl: bgImageUrl, Margin: margin,
         HasBorder: hasBorder, BorderColor: borderColor, BorderLineWidth: borderLineWidth, UserInputText: '', VScrollBarWindowID: vscrollbarwindowid, CaretPosIndex: -1,
         ShowCaret: 0, CaretColor: caretColor, LineBreakIndexes: new Array(), SelectedTextStartIndex: -1, SelectedTextEndIndex: -1, MouseDown: 0, WasSelecting: 0,
-        AllowedCharsRegEx: allowedCharsRegEx, Image: image
+        AllowedCharsRegEx: allowedCharsRegEx, Image: image, CaretTime: Date.now()
     });
     registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
         var wordProcessorProps = getWordProcessorProps(canvasid1, windowid1);
@@ -7054,7 +7060,10 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
             }
             if (doesWindowHaveFocus(canvasid1, windowid1) == 1) {
                 if (wordProcessorProps.ShowCaret == 1) {
-                    wordProcessorProps.ShowCaret = 0;
+                    if (Date.now() - wordProcessorProps.CaretTime > 250) {
+                        wordProcessorProps.ShowCaret = 0;
+                        wordProcessorProps.CaretTime = Date.now();
+                    }
                     ctx.strokeStyle = wordProcessorProps.CaretColor;
                     ctx.beginPath();
                     var caretLineNo = 0;
@@ -7098,7 +7107,10 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                     }
                     ctx.stroke();
                 } else {
-                    wordProcessorProps.ShowCaret = 1;
+                    if (Date.now() - wordProcessorProps.CaretTime > 500) {
+                        wordProcessorProps.ShowCaret = 1;
+                        wordProcessorProps.CaretTime = Date.now();
+                    }
                 }
             }
         }
@@ -7540,10 +7552,12 @@ function invokeServerSideFunction(ajaxURL, functionName, canvasid, windowid, cal
     xmlhttp.onreadystatechange = function () {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200 && xmlhttp.responseText && xmlhttp.responseText.length > 0) {
             //Here is where you unwrap the data
+            suspendDraw = 1;
             var arr = UnWrapVars(xmlhttp.responseText);
             if (callBackFunc) {
                 callBackFunc(arr);
             }
+            suspendDraw = 0;
         }
     };
     xmlhttp.open("POST", ajaxURL, true);
@@ -7786,9 +7800,11 @@ function stringEncodeObject(obj) {
 }
 
 function encodeAllBrackets(str) {
-    str = str.replace('&', '&amp;');
-    str = str.replace('[', '&lb;');
-    return str.replace(']', '&rb;');
+    str = str.replace(/</g, '&lt;');
+    str = str.replace(/>/g, '&gt;');
+    str = str.replace(/&/g, '&amp;');
+    str = str.replace(/\[/g, '&lb;');
+    return str.replace(/\]/g, '&rb;');
 }
 
 function encodeArray(arr, strIndexes) {
@@ -7872,13 +7888,6 @@ function UnWrapVars(data) {
             }
         }
     }
-    for (var i = 0; i < savedImageArrayOnPostback.length; i++) {
-        for (var x = 0; x < imageFaderPropsArray.length; x++) {
-            if (imageFaderPropsArray[x].CanvasID == savedImageArrayOnPostback[i].CanvasID && imageFaderPropsArray[x].WindowID == savedImageArrayOnPostback[i].WindowID) {
-                imageFaderPropsArray[x].Images.push(savedImageArrayOnPostback[i].Image);
-            }
-        }
-    }
     for (var i = 0; i < savedDrawingCanvas.length; i++) {
         for (var x = 0; x < imageFaderPropsArray.length; x++) {
             if (imageFaderPropsArray[x].CanvasID == savedDrawingCanvas[i].CanvasID && imageFaderPropsArray[x].WindowID == savedDrawingCanvas[i].WindowID) {
@@ -7890,6 +7899,68 @@ function UnWrapVars(data) {
         for (var x = 0; x < imageFaderPropsArray.length; x++) {
             if (imageFaderPropsArray[x].CanvasID == savedDrawingCanvasCtx[i].CanvasID && imageFaderPropsArray[x].WindowID == savedDrawingCanvasCtx[i].WindowID) {
                 imageFaderPropsArray[x].DrawingCanvasCtx = savedDrawingCanvasCtx[i].DrawingCanvasCtx;
+            }
+        }
+    }
+    for (var i = 0; i < imageFaderPropsArray.length; i++) {
+        imageFaderPropsArray[i].Images = new Array();
+    }
+    for (var i = 0; i < savedImageArrayOnPostback.length; i++) {
+        for (var x = 0; x < imageFaderPropsArray.length; x++) {
+            if (imageFaderPropsArray[x].CanvasID == savedImageArrayOnPostback[i].CanvasID && imageFaderPropsArray[x].WindowID == savedImageArrayOnPostback[i].WindowID) {
+                imageFaderPropsArray[x].Images.push(savedImageArrayOnPostback[i].Image);
+            }
+        }
+    }
+    for (var i = 0; i < imageSliderPropsArray.length; i++) {
+        imageSliderPropsArray[i].Images = new Array();
+    }
+    for (var i = 0; i < savedImageArrayOnPostback.length; i++) {
+        for (var x = 0; x < imageSliderPropsArray.length; x++) {
+            if (imageSliderPropsArray[x].CanvasID == savedImageArrayOnPostback[i].CanvasID && imageSliderPropsArray[x].WindowID == savedImageArrayOnPostback[i].WindowID) {
+                imageSliderPropsArray[x].Images.push(savedImageArrayOnPostback[i].Image);
+            }
+        }
+    }
+    for (var i = 0; i < imageSliderPropsArray.length; i++) {
+        for (var j = 0; j < imageSliderPropsArray[i].ImageURLs.length; j++) {
+            for (var u = 0; u < imageSliderBackupImageUrls.length; u++) {
+                if (imageSliderPropsArray[i].CanvasID == imageSliderBackupImageUrls[u].CanvasID && imageSliderPropsArray[i].WindowID == imageSliderBackupImageUrls[u].WindowID) {
+                    var found = 0;
+                    for (var y = 0; y < imageSliderBackupImageUrls[u].ImageUrls.length; y++) {
+                        if (imageSliderBackupImageUrls[u].ImageUrls[y] == imageSliderPropsArray[i].ImageURLs[j]) {
+                            found = 1;
+                            break;
+                        }
+                    }
+                    if (found == 0) {
+                        var image = new Image();
+                        image.src = imageSliderPropsArray[i].imageURLs[j];
+                        imageSliderPropsArray[i].Images[j] = image;
+                        image.onload = function () { draw(imageSliderPropsArray[i].CanvasID); };
+                    }
+                }
+            }
+        }
+    }
+    for (var i = 0; i < imageFaderPropsArray.length; i++) {
+        for (var j = 0; j < imageFaderPropsArray[i].ImageURLs.length; j++) {
+            for (var u = 0; u < imageFaderBackupImageUrls.length; u++) {
+                if (imageFaderPropsArray[i].CanvasID == imageFaderBackupImageUrls[u].CanvasID && imageFaderPropsArray[i].WindowID == imageFaderBackupImageUrls[u].WindowID) {
+                    var found = 0;
+                    for (var y = 0; y < imageFaderBackupImageUrls[u].ImageUrls.length; y++) {
+                        if (imageFaderBackupImageUrls[u].ImageUrls[y] == imageFaderPropsArray[i].ImageURLs[j]) {
+                            found = 1;
+                            break;
+                        }
+                    }
+                    if (found == 0) {
+                        var image = new Image();
+                        image.src = imageFaderPropsArray[i].imageURLs[j];
+                        imageFaderPropsArray[i].Images[j] = image;
+                        image.onload = function () { draw(imageFaderPropsArray[i].CanvasID); };
+                    }
+                }
             }
         }
     }
@@ -8049,48 +8120,6 @@ function UnWrapVars(data) {
             }
         }
     }
-    for (var i = 0; i < imageSliderPropsArray.length; i++) {
-        for (var j = 0; j < imageSliderPropsArray[i].ImageURLs.length; j++) {
-            for (var u = 0; u < imageSliderBackupImageUrls.length; u++) {
-                if (imageSliderPropsArray[i].CanvasID == imageSliderBackupImageUrls[u].CanvasID && imageSliderPropsArray[i].WindowID == imageSliderBackupImageUrls[u].WindowID) {
-                    var found = 0;
-                    for (var y = 0; y < imageSliderBackupImageUrls[u].ImageUrls.length; y++) {
-                        if (imageSliderBackupImageUrls[u].ImageUrls[y] == imageSliderPropsArray[i].ImageURLs[j]) {
-                            found = 1;
-                            break;
-                        }
-                    }
-                    if (found == 0) {
-                        var image = new Image();
-                        image.src = imageSliderPropsArray[i].imageURLs[j];
-                        imageSliderPropsArray[i].Images[j] = image;
-                        image.onload = function () { draw(imageSliderPropsArray[i].CanvasID); };
-                    }
-                }
-            }
-        }
-    }
-    for (var i = 0; i < imageFaderPropsArray.length; i++) {
-        for (var j = 0; j < imageFaderPropsArray[i].ImageURLs.length; j++) {
-            for (var u = 0; u < imageFaderBackupImageUrls.length; u++) {
-                if (imageFaderPropsArray[i].CanvasID == imageFaderBackupImageUrls[u].CanvasID && imageFaderPropsArray[i].WindowID == imageFaderBackupImageUrls[u].WindowID) {
-                    var found = 0;
-                    for (var y = 0; y < imageFaderBackupImageUrls[u].ImageUrls.length; y++) {
-                        if (imageFaderBackupImageUrls[u].ImageUrls[y] == imageFaderPropsArray[i].ImageURLs[j]) {
-                            found = 1;
-                            break;
-                        }
-                    }
-                    if (found == 0) {
-                        var image = new Image();
-                        image.src = imageFaderPropsArray[i].imageURLs[j];
-                        imageFaderPropsArray[i].Images[j] = image;
-                        image.onload = function () { draw(imageFaderPropsArray[i].CanvasID); };
-                    }
-                }
-            }
-        }
-    }
     return getParameters(xmlDoc.firstChild.childNodes[1].childNodes[0].childNodes);
 }
 
@@ -8138,6 +8167,10 @@ function recurseFillVars(varname, node, obj) {
 function correctValueTypes(o) {
     if (typeof o == 'string' && (parseInt(o) >= 0 || parseInt(o) < 0) && parseInt(o).toString() == o) {
         return parseInt(o);
+    } else if (typeof o == 'string' && (parseFloat(o) >= 0 || parseFloat(o) < 0) && parseFloat(o).toString() == o) {
+        return parseFloat(o);
+    } else if (typeof o == 'string') {
+        return o.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
     }
     return o;
 }
