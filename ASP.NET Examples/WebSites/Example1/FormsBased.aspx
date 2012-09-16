@@ -83,7 +83,6 @@
             draw(elemId);
         }
         function form1() {
-            createImage(elemId, 'bgImage', 0, 0, 1024, 768, highestDepth, 'BgGrill.png', null, 1);
             createImage(elemId, 'imgTitle', 312, 10, 400, 100, highestDepth + 1, 'Title.png');
             createMenuBarControl(elemId, 'menuBar1', 0, 120, 1024, 60, highestDepth, [['HOME', '#000000', 20, '20pt Ariel', 0, null, null], ['TICKETS', '#000000', 20, '20pt Ariel', 0, null, null],
                 ['MOVIES', '#000000', 20, '20pt Ariel', 0, null, null], ['CINEMAS', '#000000', 20, '20pt Ariel', 0, null, null], ['TRAILERS', '#000000', 20, '20pt Ariel', 0, null, null],

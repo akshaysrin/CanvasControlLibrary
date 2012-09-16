@@ -2526,7 +2526,7 @@ function drawTreeViewNode(ctx, x, y, state, text, textcolor, textfontstring, tex
     if (hasChildNodes == 1) {
         ctx.strokeStyle = '#3c7fb1';
         ctx.beginPath();
-        ctx.rect(x, y, 9, 9);
+        ctx.rect(x, y, 10, 10);
         treeviewProps.ClickButtonExtents.push({X: x, Y: y, Index: i});
         ctx.stroke();
         ctx.fillStyle = '#dcf0fb';
@@ -2540,21 +2540,21 @@ function drawTreeViewNode(ctx, x, y, state, text, textcolor, textfontstring, tex
         ctx.strokeStyle = '#000000';
         ctx.beginPath();
         ctx.moveTo(x + 2, y + 5);
-        ctx.lineTo(x + 7, y + 5);
+        ctx.lineTo(x + 8, y + 5);
         ctx.stroke();
         numOfChildNodes = checkHowManyChildNodesAreExpanded(treeviewProps, i);
         if (numOfChildNodes == 0) {
             ctx.strokeStyle = '#000000';
             ctx.beginPath();
             ctx.moveTo(x + 5, y + 2);
-            ctx.lineTo(x + 5, y + 7);
+            ctx.lineTo(x + 5, y + 8);
             ctx.stroke();
         } else {
             if (numOfChildNodes > 0) {
                 ctx.strokeStyle = '#C0C0C0';
                 ctx.beginPath();
-                ctx.moveTo(x + 5, y + 9);
-                ctx.lineTo(x + 5, y + 9 + (numOfChildNodes * ((textheight > 9 ? textheight : 9) + 8)) - 4);
+                ctx.moveTo(x + 5, y + 10);
+                ctx.lineTo(x + 5, y + 10 + (numOfChildNodes * ((textheight > 9 ? textheight : 9) + 8)) - 4);
                 ctx.stroke();
             }
         }
@@ -2568,8 +2568,8 @@ function drawTreeViewNode(ctx, x, y, state, text, textcolor, textfontstring, tex
     } else if (level > 0) {
         ctx.strokeStyle = '#C0C0C0';
         ctx.beginPath();
-        ctx.moveTo(x - 11, y + 9 + (numOfChildNodes * ((textheight > 9 ? textheight : 9) + 8)) - 4);
-        ctx.lineTo(x + 8, y + 9 + (numOfChildNodes * ((textheight > 9 ? textheight : 9) + 8)) - 4);
+        ctx.moveTo(x - 11, y + 10 + (numOfChildNodes * ((textheight > 9 ? textheight : 9) + 8)) - 4);
+        ctx.lineTo(x + 8, y + 10 + (numOfChildNodes * ((textheight > 9 ? textheight : 9) + 8)) - 4);
         ctx.stroke();
     }
     ctx.fillStyle = textcolor;
