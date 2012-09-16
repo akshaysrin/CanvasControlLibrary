@@ -136,6 +136,8 @@ public class CanvasControlLibrary
         public string NewBrowserWindowHasMenuBar { get; set; }
         public string NewBrowserWindowCopyHistory { get; set; }
         public object Tag { get; set; }
+        public string Theme { get; set; }
+        public string HasGloss { get; set; }
     }
 
     public List<CCLScrollBarProps> ScrollBarPropsArray = new List<CCLScrollBarProps>();

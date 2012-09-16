@@ -29,27 +29,27 @@
         <script type="text/javascript">
             var elemId = 'canvas';
             registerCanvasElementId(elemId);
-            createButton(elemId, 'b1', 10, 10, 100, 40, 'Google Search', '#0000FF', 12, '12pt Ariel', 2, highestDepth,
-                null, null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1', null, 1, 'http://www.google.com', 1);
-            createButton(elemId, 'b2', 50, 38, 100, 40, 'CodeProject', '#0000FF', 12, '12pt Ariel', 2, highestDepth + 1,
+            createButton(elemId, 'b1', 10, 10, 100, 40, 'Google Search', '#0000FF', 12, '12pt Ariel', 5, highestDepth, 1, 1,
+                null, null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1', null, 1, 'http://www.google.com');
+            createButton(elemId, 'b2', 50, 38, 100, 40, 'CodeProject', '#0000FF', 12, '12pt Ariel', 10, highestDepth + 1, 1, 1,
                 null, null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1', null,
                 1, 'http://www.codeproject.com', 0, 1, 'CodeProject', '600', '400', 'no', 'no', 'no', 'no', 'no', 'no', 'no', 'no');
-            createButton(elemId, 'b3', 400, 300, 100, 40, 'Example 2', '#0000FF', 12, '12pt Ariel', 2, highestDepth + 1,
+            createButton(elemId, 'b3', 400, 300, 100, 40, 'Example 2', '#0000FF', 12, '12pt Ariel', 2, highestDepth + 1, 0, 0,
                 null, null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1', null,
                 1, 'http://114.143.28.50/Default2.aspx');
-            createButton(elemId, 'b4', 400, 350, 100, 40, 'Example 3', '#0000FF', 12, '12pt Ariel', 2, highestDepth + 1,
+            createButton(elemId, 'b4', 400, 350, 100, 40, 'Example 3', '#0000FF', 12, '12pt Ariel', 2, highestDepth + 1, 0, 0,
                 null, null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1', null,
                 1, 'http://114.143.28.50/Default3.aspx');
-            createButton(elemId, 'b5', 400, 390, 100, 40, 'Example 4', '#0000FF', 12, '12pt Ariel', 2, highestDepth + 1,
+            createButton(elemId, 'b5', 400, 390, 100, 40, 'Example 4', '#0000FF', 12, '12pt Ariel', 2, highestDepth + 1, 0, 0,
                 null, null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1', null,
                 1, 'http://114.143.28.50/Default4.aspx');
-            createButton(elemId, 'b6', 400, 430, 200, 40, 'Calenders Example', '#0000FF', 12, '12pt Ariel', 2, highestDepth + 1,
+            createButton(elemId, 'b6', 400, 430, 200, 40, 'Calenders Example', '#0000FF', 12, '12pt Ariel', 2, highestDepth + 1, 0, 0,
                 null, null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1', null,
                 1, 'http://114.143.28.50/Calenders.aspx');
-            createButton(elemId, 'b7', 400, 480, 300, 40, 'New Forms Based System Example', '#0000FF', 12, '12pt Ariel', 2, highestDepth + 1,
+            createButton(elemId, 'b7', 400, 480, 300, 40, 'New Forms Based System Example', '#0000FF', 12, '12pt Ariel', 2, highestDepth + 1, 0, 0,
                 null, null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1', null,
                 1, 'http://114.143.28.50/FormsBased.aspx');
-            createButton(elemId, 'b8', 30, 74, 250, 40, 'Custom Click Function', '#0000FF', 12, '12pt Ariel', 2, highestDepth + 1,
+            createButton(elemId, 'b8', 500, 74, 250, 56, 'Custom Click Function', '#0000FF', 12, '12pt Ariel', 7, highestDepth + 1, 2, 1,
                 function (canvasid, windowid) {
                     invokeServerSideFunction('AjaxEx1.aspx', 'ClickMe', elemId, windowid, function () { alert('Did Postback'); });
                 }, null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1');

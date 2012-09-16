@@ -1150,53 +1150,183 @@ function defaultButtonDrawFunction(canvasid, windowid) {
     var buttonOffsetX = 0;
     var buttonOffsetY = 0;
     var ctx = getCtx(canvasid);
+    ctx.save();
     var buttonProps = getButtonProps(canvasid, windowid);
     if (buttonProps.IsPressed == 1) {
         buttonProps.IsPressed = 0;
         buttonOffsetX = 5;
         buttonOffsetY = 5;
     }
-    ctx.beginPath();
-    ctx.moveTo(buttonOffsetX + buttonProps.X, buttonOffsetY + buttonProps.Y + buttonProps.EdgeRadius);
-    ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius, buttonOffsetY + buttonProps.Y + buttonProps.EdgeRadius,
-        buttonProps.EdgeRadius, Math.PI, (Math.PI / 180) * 270, false);
-    ctx.lineTo(buttonOffsetX + buttonProps.X + buttonProps.Width - buttonProps.EdgeRadius, buttonOffsetY + buttonProps.Y);
-    ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.Width - buttonProps.EdgeRadius, buttonOffsetY + buttonProps.Y +
-        buttonProps.EdgeRadius, buttonProps.EdgeRadius, (Math.PI / 180) * 270, Math.PI * 2, false);
-    ctx.lineTo(buttonOffsetX + buttonProps.X + buttonProps.Width, buttonOffsetY + buttonProps.Y + buttonProps.Height - buttonProps.EdgeRadius);
-    ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.Width - buttonProps.EdgeRadius, buttonOffsetY + buttonProps.Y +
-        buttonProps.Height - buttonProps.EdgeRadius, buttonProps.EdgeRadius, 0, Math.PI / 2, false);
-    ctx.lineTo(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius, buttonOffsetY + buttonProps.Y + buttonProps.Height);
-    ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius, buttonOffsetY + buttonProps.Y + buttonProps.Height -
-        buttonProps.EdgeRadius, buttonProps.EdgeRadius, Math.PI / 2, Math.PI, false);
-    ctx.closePath();
-    ctx.fillStyle = buttonProps.BorderColor;
-    ctx.fill();
-    var g1 = ctx.createLinearGradient(buttonOffsetX + buttonProps.X, buttonOffsetY + buttonProps.Y, buttonOffsetX +
-        buttonProps.X, buttonOffsetY + buttonProps.Y + buttonProps.Height);
-    g1.addColorStop(0, buttonProps.TopColorStart);
-    g1.addColorStop(1, buttonProps.TopColorEnd);
-    ctx.fillStyle = g1;
-    ctx.beginPath();
-    ctx.rect(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius, buttonOffsetY + buttonProps.Y + buttonProps.EdgeRadius,
-        buttonProps.Width - (2 * buttonProps.EdgeRadius), (buttonProps.Height / 2) - buttonProps.EdgeRadius);
-    ctx.fill();
-    var g2 = ctx.createLinearGradient(buttonOffsetX + buttonProps.X, buttonOffsetY + buttonProps.Y, buttonOffsetX +
-        buttonProps.X, buttonOffsetY + buttonProps.Y + buttonProps.Height);
-    g2.addColorStop(0, buttonProps.BottomColorStart);
-    g2.addColorStop(1, buttonProps.BottomColorEnd);
-    ctx.fillStyle = g2;
-    ctx.beginPath();
-    ctx.rect(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius, buttonOffsetY + buttonProps.Y + (buttonProps.Height / 2),
-        buttonProps.Width - (2 * buttonProps.EdgeRadius), (buttonProps.Height / 2) - buttonProps.EdgeRadius);
-    ctx.fill();
-    ctx.font = buttonProps.TextFontString;
-    ctx.fillStyle = buttonProps.TextColor;
-    ctx.fillText(buttonProps.Text, buttonOffsetX + buttonProps.X + ((buttonProps.Width - ctx.measureText(buttonProps.Text).width) / 2),
-        buttonOffsetY + buttonProps.Y + buttonProps.Height - ((buttonProps.Height - buttonProps.TextHeight) / 2));
+    if (buttonProps.Theme == 1) {
+        ctx.beginPath();
+        ctx.moveTo(buttonOffsetX + buttonProps.X, buttonOffsetY + buttonProps.Y + buttonProps.EdgeRadius);
+        ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius, buttonOffsetY + buttonProps.Y + buttonProps.EdgeRadius,
+            buttonProps.EdgeRadius, Math.PI, (Math.PI / 180) * 270, false);
+        ctx.lineTo(buttonOffsetX + buttonProps.X + buttonProps.Width - buttonProps.EdgeRadius, buttonOffsetY + buttonProps.Y);
+        ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.Width - buttonProps.EdgeRadius, buttonOffsetY + buttonProps.Y +
+            buttonProps.EdgeRadius, buttonProps.EdgeRadius, (Math.PI / 180) * 270, Math.PI * 2, false);
+        ctx.lineTo(buttonOffsetX + buttonProps.X + buttonProps.Width, buttonOffsetY + buttonProps.Y + buttonProps.Height - buttonProps.EdgeRadius);
+        ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.Width - buttonProps.EdgeRadius, buttonOffsetY + buttonProps.Y +
+            buttonProps.Height - buttonProps.EdgeRadius, buttonProps.EdgeRadius, 0, Math.PI / 2, false);
+        ctx.lineTo(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius, buttonOffsetY + buttonProps.Y + buttonProps.Height);
+        ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius, buttonOffsetY + buttonProps.Y + buttonProps.Height -
+            buttonProps.EdgeRadius, buttonProps.EdgeRadius, Math.PI / 2, Math.PI, false);
+        ctx.closePath();
+        var g = ctx.createLinearGradient(buttonOffsetX + buttonProps.X, buttonOffsetY + buttonProps.Y, buttonOffsetX + buttonProps.X, buttonOffsetY + buttonProps.Y + buttonProps.Height);
+        g.addColorStop(0, '#536fa0');
+        g.addColorStop(1, '#274580');
+        ctx.fillStyle = g;
+        ctx.fill();
+        ctx.strokeStyle = '#1f3a73';
+        ctx.stroke();
+        g = ctx.createLinearGradient(buttonOffsetX + buttonProps.X, buttonOffsetY + buttonProps.Y + ((buttonProps.Height - buttonProps.TextHeight) / 2), buttonOffsetX + buttonProps.X,
+            buttonOffsetY + buttonProps.Y - ((buttonProps.Height - buttonProps.TextHeight) / 2) + buttonProps.Height);
+        g.addColorStop(0, '#fafbfc');
+        g.addColorStop(1, '#dde2ea');
+        ctx.fillStyle = g;
+        ctx.shadowBlur = 5;
+        ctx.shadowColor = '#636e7f';
+        ctx.fillText(buttonProps.Text, buttonOffsetX + buttonProps.X + ((buttonProps.Width - ctx.measureText(buttonProps.Text).width) / 2),
+            buttonOffsetY + buttonProps.Y + buttonProps.Height - ((buttonProps.Height - buttonProps.TextHeight) / 2));
+    } else if (buttonProps.Theme == 2) {
+        var g = ctx.createLinearGradient(buttonOffsetX + buttonProps.X, buttonOffsetY + buttonProps.Y, buttonOffsetX + buttonProps.X, buttonOffsetY + buttonProps.Y + buttonProps.Height);
+        g.addColorStop(0, '#7888ff');
+        g.addColorStop(1, '#d0d3fe');
+        ctx.shadowBlur = 5;
+        ctx.shadowColor = g;
+        ctx.beginPath();
+        ctx.moveTo(buttonOffsetX + buttonProps.X, buttonOffsetY + buttonProps.Y + buttonProps.EdgeRadius);
+        ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius, buttonOffsetY + buttonProps.Y + buttonProps.EdgeRadius,
+            buttonProps.EdgeRadius, Math.PI, (Math.PI / 180) * 270, false);
+        ctx.lineTo(buttonOffsetX + buttonProps.X + buttonProps.Width - buttonProps.EdgeRadius - 5, buttonOffsetY + buttonProps.Y);
+        ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.Width - buttonProps.EdgeRadius - 5, buttonOffsetY + buttonProps.Y +
+            buttonProps.EdgeRadius, buttonProps.EdgeRadius, (Math.PI / 180) * 270, Math.PI * 2, false);
+        ctx.lineTo(buttonOffsetX + buttonProps.X + buttonProps.Width - 5, buttonOffsetY + buttonProps.Y + buttonProps.Height - buttonProps.EdgeRadius - 5);
+        ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.Width - buttonProps.EdgeRadius - 5, buttonOffsetY + buttonProps.Y +
+            buttonProps.Height - buttonProps.EdgeRadius - 5, buttonProps.EdgeRadius, 0, Math.PI / 2, false);
+        ctx.lineTo(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius, buttonOffsetY + buttonProps.Y + buttonProps.Height - 5);
+        ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius, buttonOffsetY + buttonProps.Y + buttonProps.Height -
+            buttonProps.EdgeRadius - 5, buttonProps.EdgeRadius, Math.PI / 2, Math.PI, false);
+        ctx.closePath();
+        g = ctx.createLinearGradient(buttonOffsetX + buttonProps.X, buttonOffsetY + buttonProps.Y + 9, buttonOffsetX + buttonProps.X, buttonOffsetY + buttonProps.Y + buttonProps.Height - 9);
+        g.addColorStop(0, '#7a83c6');
+        g.addColorStop(1, '#5787dc');
+        ctx.strokeStyle = g;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(buttonOffsetX + buttonProps.X + 1, buttonOffsetY + buttonProps.Y + buttonProps.EdgeRadius + 1);
+        ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius + 1, buttonOffsetY + buttonProps.Y + buttonProps.EdgeRadius + 1,
+            buttonProps.EdgeRadius, Math.PI, (Math.PI / 180) * 270, false);
+        ctx.lineTo(buttonOffsetX + buttonProps.X + buttonProps.Width - buttonProps.EdgeRadius - 6, buttonOffsetY + buttonProps.Y + 1);
+        ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.Width - buttonProps.EdgeRadius - 6, buttonOffsetY + buttonProps.Y +
+            buttonProps.EdgeRadius + 1, buttonProps.EdgeRadius, (Math.PI / 180) * 270, Math.PI * 2, false);
+        ctx.lineTo(buttonOffsetX + buttonProps.X + buttonProps.Width - 6, buttonOffsetY + buttonProps.Y + buttonProps.Height - buttonProps.EdgeRadius - 6);
+        ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.Width - buttonProps.EdgeRadius - 6, buttonOffsetY + buttonProps.Y +
+            buttonProps.Height - buttonProps.EdgeRadius - 6, buttonProps.EdgeRadius, 0, Math.PI / 2, false);
+        ctx.lineTo(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius + 1, buttonOffsetY + buttonProps.Y + buttonProps.Height - 6);
+        ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius + 1, buttonOffsetY + buttonProps.Y + buttonProps.Height -
+            buttonProps.EdgeRadius - 6, buttonProps.EdgeRadius, Math.PI / 2, Math.PI, false);
+        ctx.closePath();
+        g = ctx.createLinearGradient(buttonOffsetX + buttonProps.X, buttonOffsetY + buttonProps.Y + 1, buttonOffsetX + buttonProps.X, buttonOffsetY + buttonProps.Y + buttonProps.Height - 6);
+        g.addColorStop(0, '#a0abe9');
+        g.addColorStop(1, '#80b2fb');
+        ctx.strokeStyle = g;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(buttonOffsetX + buttonProps.X + 2, buttonOffsetY + buttonProps.Y + buttonProps.EdgeRadius + 2);
+        ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius + 2, buttonOffsetY + buttonProps.Y + buttonProps.EdgeRadius + 2,
+            buttonProps.EdgeRadius, Math.PI, (Math.PI / 180) * 270, false);
+        ctx.lineTo(buttonOffsetX + buttonProps.X + buttonProps.Width - buttonProps.EdgeRadius - 7, buttonOffsetY + buttonProps.Y + 2);
+        ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.Width - buttonProps.EdgeRadius - 7, buttonOffsetY + buttonProps.Y +
+            buttonProps.EdgeRadius + 2, buttonProps.EdgeRadius, (Math.PI / 180) * 270, Math.PI * 2, false);
+        ctx.lineTo(buttonOffsetX + buttonProps.X + buttonProps.Width - 7, buttonOffsetY + buttonProps.Y + buttonProps.Height - buttonProps.EdgeRadius - 7);
+        ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.Width - buttonProps.EdgeRadius - 7, buttonOffsetY + buttonProps.Y +
+            buttonProps.Height - buttonProps.EdgeRadius - 7, buttonProps.EdgeRadius, 0, Math.PI / 2, false);
+        ctx.lineTo(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius + 2, buttonOffsetY + buttonProps.Y + buttonProps.Height - 7);
+        ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius + 2, buttonOffsetY + buttonProps.Y + buttonProps.Height -
+            buttonProps.EdgeRadius - 7, buttonProps.EdgeRadius, Math.PI / 2, Math.PI, false);
+        ctx.closePath();
+        g = ctx.createLinearGradient(buttonOffsetX + buttonProps.X, buttonOffsetY + buttonProps.Y + 2, buttonOffsetX + buttonProps.X, buttonOffsetY + buttonProps.Y + buttonProps.Height - 7);
+        g.addColorStop(0, '#99a4e4');
+        g.addColorStop(1, '#4c7ce2');
+        ctx.fillStyle = g;
+        ctx.fill();
+        g = ctx.createLinearGradient(buttonOffsetX + buttonProps.X, buttonOffsetY + buttonProps.Y + ((buttonProps.Height - buttonProps.TextHeight) / 2), buttonOffsetX + buttonProps.X,
+            buttonOffsetY + buttonProps.Y - ((buttonProps.Height - buttonProps.TextHeight) / 2) + buttonProps.Height);
+        g.addColorStop(0, '#fafbfc');
+        g.addColorStop(1, '#dde2ea');
+        ctx.fillStyle = g;
+        ctx.shadowBlur = 5;
+        ctx.shadowColor = '#636e7f';
+        ctx.fillText(buttonProps.Text, buttonOffsetX + buttonProps.X + ((buttonProps.Width - ctx.measureText(buttonProps.Text).width - 5) / 2),
+            buttonOffsetY + buttonProps.Y + buttonProps.Height - 5 - ((buttonProps.Height - buttonProps.TextHeight - 5) / 2));
+    } else {
+        ctx.beginPath();
+        ctx.moveTo(buttonOffsetX + buttonProps.X, buttonOffsetY + buttonProps.Y + buttonProps.EdgeRadius);
+        ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius, buttonOffsetY + buttonProps.Y + buttonProps.EdgeRadius,
+            buttonProps.EdgeRadius, Math.PI, (Math.PI / 180) * 270, false);
+        ctx.lineTo(buttonOffsetX + buttonProps.X + buttonProps.Width - buttonProps.EdgeRadius, buttonOffsetY + buttonProps.Y);
+        ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.Width - buttonProps.EdgeRadius, buttonOffsetY + buttonProps.Y +
+            buttonProps.EdgeRadius, buttonProps.EdgeRadius, (Math.PI / 180) * 270, Math.PI * 2, false);
+        ctx.lineTo(buttonOffsetX + buttonProps.X + buttonProps.Width, buttonOffsetY + buttonProps.Y + buttonProps.Height - buttonProps.EdgeRadius);
+        ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.Width - buttonProps.EdgeRadius, buttonOffsetY + buttonProps.Y +
+            buttonProps.Height - buttonProps.EdgeRadius, buttonProps.EdgeRadius, 0, Math.PI / 2, false);
+        ctx.lineTo(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius, buttonOffsetY + buttonProps.Y + buttonProps.Height);
+        ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius, buttonOffsetY + buttonProps.Y + buttonProps.Height -
+            buttonProps.EdgeRadius, buttonProps.EdgeRadius, Math.PI / 2, Math.PI, false);
+        ctx.closePath();
+        ctx.fillStyle = buttonProps.BorderColor;
+        ctx.fill();
+        var g1 = ctx.createLinearGradient(buttonOffsetX + buttonProps.X, buttonOffsetY + buttonProps.Y, buttonOffsetX +
+            buttonProps.X, buttonOffsetY + buttonProps.Y + buttonProps.Height);
+        g1.addColorStop(0, buttonProps.TopColorStart);
+        g1.addColorStop(1, buttonProps.TopColorEnd);
+        ctx.fillStyle = g1;
+        ctx.beginPath();
+        ctx.rect(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius, buttonOffsetY + buttonProps.Y + buttonProps.EdgeRadius,
+            buttonProps.Width - (2 * buttonProps.EdgeRadius), (buttonProps.Height / 2) - buttonProps.EdgeRadius);
+        ctx.fill();
+        var g2 = ctx.createLinearGradient(buttonOffsetX + buttonProps.X, buttonOffsetY + buttonProps.Y, buttonOffsetX +
+            buttonProps.X, buttonOffsetY + buttonProps.Y + buttonProps.Height);
+        g2.addColorStop(0, buttonProps.BottomColorStart);
+        g2.addColorStop(1, buttonProps.BottomColorEnd);
+        ctx.fillStyle = g2;
+        ctx.beginPath();
+        ctx.rect(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius, buttonOffsetY + buttonProps.Y + (buttonProps.Height / 2),
+            buttonProps.Width - (2 * buttonProps.EdgeRadius), (buttonProps.Height / 2) - buttonProps.EdgeRadius);
+        ctx.fill();
+        ctx.font = buttonProps.TextFontString;
+        ctx.fillStyle = buttonProps.TextColor;
+        ctx.fillText(buttonProps.Text, buttonOffsetX + buttonProps.X + ((buttonProps.Width - ctx.measureText(buttonProps.Text).width) / 2),
+            buttonOffsetY + buttonProps.Y + buttonProps.Height - ((buttonProps.Height - buttonProps.TextHeight) / 2));
+    }
+    if (buttonProps.HasGloss == 1) {
+        ctx.beginPath();
+        ctx.moveTo(buttonOffsetX + buttonProps.X + 2, buttonOffsetY + buttonProps.Y + buttonProps.EdgeRadius + 2);
+        ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius + 2, buttonOffsetY + buttonProps.Y + buttonProps.EdgeRadius + 2,
+            buttonProps.EdgeRadius, Math.PI, (Math.PI / 180) * 270, false);
+        ctx.lineTo(buttonOffsetX + buttonProps.X + buttonProps.Width - buttonProps.EdgeRadius - 2, buttonOffsetY + buttonProps.Y + 2);
+        ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.Width - buttonProps.EdgeRadius - 2, buttonOffsetY + buttonProps.Y +
+            buttonProps.EdgeRadius + 2, buttonProps.EdgeRadius, (Math.PI / 180) * 270, Math.PI * 2, false);
+        ctx.lineTo(buttonOffsetX + buttonProps.X + buttonProps.Width - 2, buttonOffsetY + buttonProps.Y + ((buttonProps.Height - 4) / 2) - buttonProps.EdgeRadius + 2);
+        ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.Width - buttonProps.EdgeRadius - 2, buttonOffsetY + buttonProps.Y +
+            ((buttonProps.Height - 4) / 2) - buttonProps.EdgeRadius + 2, buttonProps.EdgeRadius, 0, Math.PI / 2, false);
+        ctx.lineTo(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius + 2, buttonOffsetY + buttonProps.Y + ((buttonProps.Height - 4) / 2) + 2);
+        ctx.arc(buttonOffsetX + buttonProps.X + buttonProps.EdgeRadius + 2, buttonOffsetY + buttonProps.Y + ((buttonProps.Height - 4) / 2) -
+            buttonProps.EdgeRadius + 2, buttonProps.EdgeRadius, Math.PI / 2, Math.PI, false);
+        ctx.closePath();
+        var g = ctx.createLinearGradient(buttonOffsetX + buttonProps.X, buttonOffsetY + buttonProps.Y + 2, buttonOffsetX + buttonProps.X, buttonOffsetY + buttonProps.Y + ((buttonProps.Height - 4) / 2) + 5);
+        g.addColorStop(0, 'rgba(255,255,255,0.4)');
+        g.addColorStop(1, 'rgba(255,255,255,0.05)');
+        ctx.fillStyle = g;
+        ctx.fill();
+    }
+    ctx.restore();
 }
 
-function createButton(canvasid, controlNameId, x, y, width, height, text, textColor, textHeight, textFontString, edgeRadius, depth, clickFunction,
+function createButton(canvasid, controlNameId, x, y, width, height, text, textColor, textHeight, textFontString, edgeRadius, depth, theme, hasgloss, clickFunction,
     drawFunction, bottomColorStart, bottomColorEnd, topColorStart, topColorEnd, borderColor, tag, isHyperlink, url, nobrowserhistory, isnewbrowserwindow,
     nameofnewbrowserwindow, widthofnewbrowserwindow, heightofnewbrowserwindow, newbrowserwindowisresizable, newbrowserwindowhasscrollbars,
     newbrowserwindowhastoolbar, newbrowserwindowhaslocationorurloraddressbox, newbroserwindowhasdirectoriesorextrabuttons,
@@ -1214,7 +1344,7 @@ function createButton(canvasid, controlNameId, x, y, width, height, text, textCo
         NewBrowserWindowHasLocationOrURLOrAddressBox: newbrowserwindowhaslocationorurloraddressbox, 
         NewBrowserWindowHasDirectoriesOrExtraButtons: newbroserwindowhasdirectoriesorextrabuttons,
         NewBrowserWindowHasStatusBar: newbrowserwindowhasstatusbar, NewBrowserWindowHasMenuBar: newbrowserwindowhasmenubar, 
-        NewBrowserWindowCopyHistory: newbrowserwindowcopyhistory, Tag: tag
+        NewBrowserWindowCopyHistory: newbrowserwindowcopyhistory, Tag: tag, Theme: theme, HasGloss: hasgloss
     });
     registerClickFunction(windowid, function () {
         if (isHyperlink == 1) {

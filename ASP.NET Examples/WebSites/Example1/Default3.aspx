@@ -57,7 +57,7 @@
                 0, 1, 0.01, 100, function (canvasid, windowid, e, i) { var imageFaderProps = getImageFaderProps(canvasid, windowid); alert(imageFaderProps.ImageURLs[i]); }, 1);
             createImageSlider(elemId, 'MoviePosters2', 500, 500, 135, 200, highestDepth, ['fantastic_four.jpg', 'IncredibleHulk.jpg', 'Thor.jpg', 'xmen_first_class.jpg'],
                 1, -1, 100, function (canvasid, windowid, e, idx) { alert(idx.toString()); });
-            createButton(elemId, 'b8', 500, 74, 250, 40, 'Custom Click Function', '#0000FF', 12, '12pt Ariel', 2, highestDepth,
+            createButton(elemId, 'b8', 500, 74, 250, 40, 'Custom Click Function', '#0000FF', 12, '12pt Ariel', 2, highestDepth, 0, 0,
                 function (canvasid, windowid) {
                     invokeServerSideFunction('AjaxEx1.aspx', 'ClickMe2', elemId, windowid, function () { alert('Did Postback'); });
                 }, null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1');
