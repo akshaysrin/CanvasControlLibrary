@@ -443,7 +443,7 @@ function registerCanvasElementId(canvasId) {
             }
         }
     };
-    if (navigator.userAgent.toLowerCase().indexOf('ipad') > -1 || navigator.userAgent.toLowerCase().indexOf('iphone') > -1 || navigator.userAgent.toLowerCase().indexOf('ipod') > -1) {
+    if (navigator.userAgent.toLowerCase().indexOf('android') > -1 || navigator.userAgent.toLowerCase().indexOf('ipad') > -1 || navigator.userAgent.toLowerCase().indexOf('iphone') > -1 || navigator.userAgent.toLowerCase().indexOf('ipod') > -1) {
         canvas.addEventListener("touchstart", function (e) {
             e.pageX = e.touches[0].pageX;
             e.pageY = e.touches[0].pageY;
@@ -1186,6 +1186,7 @@ function defaultButtonDrawFunction(canvasid, windowid) {
         ctx.fillStyle = g;
         ctx.shadowBlur = 5;
         ctx.shadowColor = '#636e7f';
+        ctx.font = buttonProps.TextFontString;
         ctx.fillText(buttonProps.Text, buttonOffsetX + buttonProps.X + ((buttonProps.Width - ctx.measureText(buttonProps.Text).width) / 2),
             buttonOffsetY + buttonProps.Y + buttonProps.Height - ((buttonProps.Height - buttonProps.TextHeight) / 2));
     } else if (buttonProps.Theme == 2) {
@@ -2518,7 +2519,6 @@ function toggleAllChildNodesExpandedState(treeViewProps, p) {
 }
 
 function clickTreeView(canvasid, windowid, e) {
-    
     var treeViewProps = getTreeViewProps(canvasid, windowid);
     var x = e.calcX;
     var y = e.calcY;
@@ -2928,7 +2928,6 @@ function getMonthName(x) {
 }
 
 function calenderClick(canvasid, windowid, e) {
-    
     var calenderProps = getCalenderProps(canvasid, windowid);
     var x = e.calcX;
     var y = e.calcY;
@@ -2980,7 +2979,6 @@ function calenderClick(canvasid, windowid, e) {
 }
 
 function calenderMouseOver(canvasid, windowid, e) {
-    
     var calenderProps = getCalenderProps(canvasid, windowid);
     var x = e.calcX;
     var y = e.calcY;
@@ -3140,7 +3138,6 @@ function sliderMouseDown(canvasid, windowid) {
 }
 
 function sliderMouseMove(canvasid, windowid, e) {
-    
     var sliderProps = getSliderProps(canvasid, windowid);
     if (sliderProps.MouseDownState == 1) {
         var x = e.calcX;
@@ -5771,7 +5768,6 @@ function createImageMapControl(canvasid, controlNameId, x, y, width, height, dep
     }, canvasid);
     if (hasZoom == 1) {
         registerMouseWheelFunction(windowid, function (canvasid7, windowid7, e) {
-            
             var imageMapProps = getImageMapProps(canvasid7, windowid7);
             var lastscale = imageMapProps.Scale;
             imageMapProps.Scale += (e.wheelDelta / 120) * imageMapProps.ScaleIncrementFactor;
@@ -5781,6 +5777,7 @@ function createImageMapControl(canvasid, controlNameId, x, y, width, height, dep
             }
         }, canvasid);
     }
+    return windowid;
 }
 
 //Menu Bar code starts here
@@ -6034,6 +6031,7 @@ function createMenuBarControl(canvasid, controlNameId, x, y, width, height, dept
             }
         }
     });
+    return windowid;
 }
 
 function setStatusForAllChildWindowsFromMenuBar(canvasid, childMenuWindowIDs, status, idx, parentMenuWindowID) {
@@ -6117,11 +6115,103 @@ function getTextBoxPropsByDropDownWindowID(canvasid, windowid) {
     }
 }
 
+function getTextBoxPropsByKeyboardID(canvasid, windowid) {
+    for (var i = 0; i < textBoxPropsArray.length; i++) {
+        if (textBoxPropsArray[i].CanvasID == canvasid && textBoxPropsArray[i].CustomKeyboardWindowID == windowid) {
+            return textBoxPropsArray[i];
+        }
+    }
+}
+
+function textBoxTouchKeyPress(canvasid, windowid, keyboardChar) {
+    var textBoxProps = getTextBoxPropsByKeyboardID(canvasid, windowid);
+    switch (keyboardChar) {
+        case 'left':
+            //left arrow	 37
+            if (textBoxProps.CaretPosIndex > -1) {
+                textBoxProps.CaretPosIndex--;
+                textBoxProps.SelectedTextStartIndex = -1;
+                textBoxProps.SelectedTextEndIndex = -1;
+                textBoxProps.WasSelecting = 0;
+                textBoxProps.MouseDown = 0;
+            }
+            return;
+        case 'right':
+            //right arrow	 39
+            if (textBoxProps.CaretPosIndex > textBoxProps.UserInputText.length - 1) {
+                textBoxProps.CaretPosIndex = textBoxProps.UserInputText.length - 1;
+            } else {
+                textBoxProps.CaretPosIndex++;
+            }
+            textBoxProps.SelectedTextStartIndex = -1;
+            textBoxProps.SelectedTextEndIndex = -1;
+            textBoxProps.MouseDown = 0;
+            textBoxProps.WasSelecting = 0;
+            return;
+        case 'backspaceKey':
+            //backspace	 8
+            if (textBoxProps.CaretPosIndex > -1) {
+                if (textBoxProps.CaretPosIndex == 0) {
+                    if (textBoxProps.UserInputText.length > 1) {
+                        textBoxProps.UserInputText = textBoxProps.UserInputText.substring(1, textBoxProps.UserInputText.length - 1);
+                    } else {
+                        textBoxProps.UserInputText = '';
+                    }
+                    textBoxProps.CaretPosIndex = -1;
+                } else if (textBoxProps.CaretPosIndex == textBoxProps.UserInputText.length - 1) {
+                    textBoxProps.UserInputText = textBoxProps.UserInputText.substring(0, textBoxProps.UserInputText.length - 1);
+                    textBoxProps.CaretPosIndex--;
+                } else if (textBoxProps.CaretPosIndex > 0) {
+                    textBoxProps.UserInputText = textBoxProps.UserInputText.substring(0, textBoxProps.CaretPosIndex) +
+                        textBoxProps.UserInputText.substring(textBoxProps.CaretPosIndex + 1);
+                    textBoxProps.CaretPosIndex--;
+                }
+                textBoxProps.SelectedTextStartIndex = -1;
+                textBoxProps.SelectedTextEndIndex = -1;
+                textBoxProps.MouseDown = 0;
+                textBoxProps.WasSelecting = 0;
+            }
+            if (textBoxProps.ListPossiblesAllChoices != null) {
+                FindTextBoxPossible(textBoxProps, c);
+            }
+            return;
+        case 'spacebarKey':
+            keyboardChar = ' ';
+            break;
+        case 'carriageReturnKey':
+            return;
+    }
+    if (!textBoxProps.UserInputText || (textBoxProps.UserInputText && textBoxProps.UserInputText.length < textBoxProps.MaxChars)) {
+        var c = keyboardChar;
+        var foundPossibleMatch;
+        if (textBoxProps.ListPossiblesAllChoices != null) {
+            foundPossibleMatch = FindTextBoxPossible(textBoxProps, c);
+        }
+        if ((!textBoxProps.AllowedCharsRegEx || textBoxProps.AllowedCharsRegEx == null || textBoxProps.AllowedCharsRegEx.length == 0 || c.match(textBoxProps.AllowedCharsRegEx) == c) &&
+            (!textBoxProps.LimitToListPossibles || (textBoxProps.LimitToListPossibles == 1 && foundPossibleMatch))) {
+            if (textBoxProps.CaretPosIndex == -1) {
+                textBoxProps.UserInputText = c + (textBoxProps.UserInputText ? textBoxProps.UserInputText : '');
+                textBoxProps.CaretPosIndex++;
+            } else if (textBoxProps.UserInputText && textBoxProps.CaretPosIndex == textBoxProps.UserInputText.length - 1) {
+                textBoxProps.UserInputText = textBoxProps.UserInputText + c;
+                textBoxProps.CaretPosIndex++;
+            } else if (textBoxProps.UserInputText) {
+                textBoxProps.UserInputText = textBoxProps.UserInputText.substring(0, textBoxProps.CaretPosIndex + 1) + c + textBoxProps.UserInputText.substring(textBoxProps.CaretPosIndex + 1);
+                textBoxProps.CaretPosIndex++;
+            }
+            textBoxProps.SelectedTextStartIndex = -1;
+            textBoxProps.SelectedTextEndIndex = -1;
+            textBoxProps.MouseDown = 0;
+            textBoxProps.WasSelecting = 0;
+        }
+    }
+}
+
 function createTextBox(canvasid, controlNameId, x, y, width, height, depth, waterMarkText, waterMarkTextColor, waterMarkTextHeight, waterMarkTextFontString,
     textColor, textHeight, textFontString, maxChars, allowedCharsRegEx, isPassword, passwordChar, hasBorder, borderColor, borderLineWidth, hasShadow, shadowColor, shadowOffsetX, shadowOffsetY,
     shadowBlurValue, hasRoundedEdges, edgeRadius, hasBgGradient, bgGradientStartColor, bgGradientEndColor, hasBgImage, bgImageUrl, hasAutoComplete, listPossibles, 
     dropDownPossiblesListIfThereIsInputText, limitToListPossibles, listPossiblesTextColor, listPossiblesTextHeight, listPossiblesTextFontString, initialText, caretColor,
-    textSelectionBgColor, hasFocusInitially, tag) {
+    textSelectionBgColor, hasFocusInitially, tag, customKeyboardWindowID) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'TextBox', controlNameId);
     var dropdownwindowid, vscrollbarwindowid;
     if (hasAutoComplete == 1) {
@@ -6180,6 +6270,13 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
     image.onload = function () {
         draw(canvasid);
     };
+    if (navigator.userAgent.toLowerCase().indexOf('android') > -1 || navigator.userAgent.toLowerCase().indexOf('ipad') > -1 || navigator.userAgent.toLowerCase().indexOf('iphone') > -1 || navigator.userAgent.toLowerCase().indexOf('ipod') > -1) {
+        if (!customKeyboardWindowID) {
+            customKeyboardWindowID = createVirtualKeyboard(canvasid, controlNameId + 'VKB', x, y + height, 250, 180, depth, null, textBoxTouchKeyPress, 5, 5, 1, 12, '12pt Ariel', null);
+            registerModalWindow(canvasid, customKeyboardWindowID);
+            registerHiddenWindow(canvasid, customKeyboardWindowID, 0);
+        }
+    }
     textBoxPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, WaterMarkText: waterMarkText,
         WaterMarkTextColor: waterMarkTextColor, WaterMarkTextFontString: waterMarkTextFontString, TextColor: textColor, TextHeight: textHeight,
@@ -6191,7 +6288,7 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
         ListPossiblesTextFontString: listPossiblesTextFontString, CaretPosIndex: -1, UserInputText: initialText, ShadowColor: shadowColor, ShowCaret: 0, CaretColor: caretColor,
         SelectedTextStartIndex: -1, SelectedTextEndIndex: -1, TextSelectionBgColor: textSelectionBgColor, MouseDown: 0, WasSelecting: 0, MouseDownTime: 0, Tag: tag,
         DropDownWindowID: dropdownwindowid, ListPossiblesTextColor: listPossiblesTextColor, VScrollBarWindowID: vscrollbarwindowid, ListPossiblesSelectedID: -1,
-        ListPossiblesAllChoices: listPossibles, CaretTime: Date.now()
+        ListPossiblesAllChoices: listPossibles, CaretTime: Date.now(), CustomKeyboardWindowID: customKeyboardWindowID
     });
     registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
         var textBoxProps = getTextBoxProps(canvasid1, windowid1);
@@ -6477,113 +6574,115 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
             textBoxProps.SelectedTextEndIndex = -1;
         }
     }, canvasid);
-    registerKeyDownFunction(canvasid, function (canvasid3, windowid3, e) {
-        var textBoxProps = getTextBoxProps(canvasid3, windowid3);
-        switch (e.keyCode) {
-            case 37:
-                //left arrow	 37
-                if (textBoxProps.CaretPosIndex > -1) {
-                    textBoxProps.CaretPosIndex--;
-                    textBoxProps.SelectedTextStartIndex = -1;
-                    textBoxProps.SelectedTextEndIndex = -1;
-                    textBoxProps.WasSelecting = 0;
-                    textBoxProps.MouseDown = 0;
-                }
-                return;
-            case 39:
-                //right arrow	 39
-                if (textBoxProps.CaretPosIndex > textBoxProps.UserInputText.length - 1) {
-                    textBoxProps.CaretPosIndex = textBoxProps.UserInputText.length - 1;
-                } else {
-                    textBoxProps.CaretPosIndex++;
-                }
-                textBoxProps.SelectedTextStartIndex = -1;
-                textBoxProps.SelectedTextEndIndex = -1;
-                textBoxProps.MouseDown = 0;
-                textBoxProps.WasSelecting = 0;
-                return;
-            case 46:
-                //delete	 46
-                if (textBoxProps.CaretPosIndex < textBoxProps.UserInputText.length - 1) {
-                    if (textBoxProps.CaretPosIndex == -1) {
-                        textBoxProps.UserInputText = textBoxProps.UserInputText.substring(1);
-                    } else if (textBoxProps.CaretPosIndex == textBoxProps.UserInputText.length - 2) {
-                        textBoxProps.UserInputText = textBoxProps.UserInputText.substring(0, textBoxProps.UserInputText.length - 1);
+    if (!(navigator.userAgent.toLowerCase().indexOf('android') > -1 || navigator.userAgent.toLowerCase().indexOf('ipad') > -1 || navigator.userAgent.toLowerCase().indexOf('iphone') > -1 || navigator.userAgent.toLowerCase().indexOf('ipod') > -1)) {
+        registerKeyDownFunction(canvasid, function (canvasid3, windowid3, e) {
+            var textBoxProps = getTextBoxProps(canvasid3, windowid3);
+            switch (e.keyCode) {
+                case 37:
+                    //left arrow	 37
+                    if (textBoxProps.CaretPosIndex > -1) {
+                        textBoxProps.CaretPosIndex--;
+                        textBoxProps.SelectedTextStartIndex = -1;
+                        textBoxProps.SelectedTextEndIndex = -1;
+                        textBoxProps.WasSelecting = 0;
+                        textBoxProps.MouseDown = 0;
+                    }
+                    return;
+                case 39:
+                    //right arrow	 39
+                    if (textBoxProps.CaretPosIndex > textBoxProps.UserInputText.length - 1) {
+                        textBoxProps.CaretPosIndex = textBoxProps.UserInputText.length - 1;
                     } else {
-                        textBoxProps.UserInputText = textBoxProps.UserInputText.substring(0, textBoxProps.CaretPosIndex + 1) +
-                            textBoxProps.UserInputText.substring(textBoxProps.CaretPosIndex + 2);
+                        textBoxProps.CaretPosIndex++;
                     }
                     textBoxProps.SelectedTextStartIndex = -1;
                     textBoxProps.SelectedTextEndIndex = -1;
                     textBoxProps.MouseDown = 0;
                     textBoxProps.WasSelecting = 0;
-                }
-                if (textBoxProps.ListPossiblesAllChoices != null) {
-                    FindTextBoxPossible(textBoxProps, c);
-                }
-                return;
-            case 8:
-                //backspace	 8
-                if (textBoxProps.CaretPosIndex > -1) {
-                    if (textBoxProps.CaretPosIndex == 0) {
-                        if (textBoxProps.UserInputText.length > 1) {
-                            textBoxProps.UserInputText = textBoxProps.UserInputText.substring(1, textBoxProps.UserInputText.length - 1);
+                    return;
+                case 46:
+                    //delete	 46
+                    if (textBoxProps.CaretPosIndex < textBoxProps.UserInputText.length - 1) {
+                        if (textBoxProps.CaretPosIndex == -1) {
+                            textBoxProps.UserInputText = textBoxProps.UserInputText.substring(1);
+                        } else if (textBoxProps.CaretPosIndex == textBoxProps.UserInputText.length - 2) {
+                            textBoxProps.UserInputText = textBoxProps.UserInputText.substring(0, textBoxProps.UserInputText.length - 1);
                         } else {
-                            textBoxProps.UserInputText = '';
+                            textBoxProps.UserInputText = textBoxProps.UserInputText.substring(0, textBoxProps.CaretPosIndex + 1) +
+                                textBoxProps.UserInputText.substring(textBoxProps.CaretPosIndex + 2);
                         }
-                        textBoxProps.CaretPosIndex = -1;
-                    } else if (textBoxProps.CaretPosIndex == textBoxProps.UserInputText.length - 1) {
-                        textBoxProps.UserInputText = textBoxProps.UserInputText.substring(0, textBoxProps.UserInputText.length - 1);
-                        textBoxProps.CaretPosIndex--;
-                    } else if (textBoxProps.CaretPosIndex > 0) {
-                        textBoxProps.UserInputText = textBoxProps.UserInputText.substring(0, textBoxProps.CaretPosIndex) +
-                            textBoxProps.UserInputText.substring(textBoxProps.CaretPosIndex + 1);
-                        textBoxProps.CaretPosIndex--;
+                        textBoxProps.SelectedTextStartIndex = -1;
+                        textBoxProps.SelectedTextEndIndex = -1;
+                        textBoxProps.MouseDown = 0;
+                        textBoxProps.WasSelecting = 0;
+                    }
+                    if (textBoxProps.ListPossiblesAllChoices != null) {
+                        FindTextBoxPossible(textBoxProps, c);
+                    }
+                    return;
+                case 8:
+                    //backspace	 8
+                    if (textBoxProps.CaretPosIndex > -1) {
+                        if (textBoxProps.CaretPosIndex == 0) {
+                            if (textBoxProps.UserInputText.length > 1) {
+                                textBoxProps.UserInputText = textBoxProps.UserInputText.substring(1, textBoxProps.UserInputText.length - 1);
+                            } else {
+                                textBoxProps.UserInputText = '';
+                            }
+                            textBoxProps.CaretPosIndex = -1;
+                        } else if (textBoxProps.CaretPosIndex == textBoxProps.UserInputText.length - 1) {
+                            textBoxProps.UserInputText = textBoxProps.UserInputText.substring(0, textBoxProps.UserInputText.length - 1);
+                            textBoxProps.CaretPosIndex--;
+                        } else if (textBoxProps.CaretPosIndex > 0) {
+                            textBoxProps.UserInputText = textBoxProps.UserInputText.substring(0, textBoxProps.CaretPosIndex) +
+                                textBoxProps.UserInputText.substring(textBoxProps.CaretPosIndex + 1);
+                            textBoxProps.CaretPosIndex--;
+                        }
+                        textBoxProps.SelectedTextStartIndex = -1;
+                        textBoxProps.SelectedTextEndIndex = -1;
+                        textBoxProps.MouseDown = 0;
+                        textBoxProps.WasSelecting = 0;
+                    }
+                    if (textBoxProps.ListPossiblesAllChoices != null) {
+                        FindTextBoxPossible(textBoxProps, c);
+                    }
+                    return;
+            }
+            if (e.ctrlKey && String.fromCharCode(e.keyCode).toLowerCase() == 'a') {
+                textBoxProps.SelectedTextStartIndex = 0;
+                textBoxProps.SelectedTextEndIndex = textBoxProps.UserInputText.length - 1;
+            } else if (e.ctrlKey && String.fromCharCode(e.keyCode).toLowerCase() == 'c' && window.clipboardData) {
+                if (textBoxProps.SelectedTextStartIndex > -1 && textBoxProps.SelectedTextEndIndex > -1 && textBoxProps.UserInputText && textBoxProps.SelectedTextEndIndex < textBoxProps.UserInputText.length) {
+                    window.clipboardData.setData('Text', (textBoxProps.UserInputText && textBoxProps.SelectedTextEndIndex == textBoxProps.UserInputText.length - 1 ?
+                        textBoxProps.UserInputText.substring(textBoxProps.SelectedTextStartIndex) :
+                        textBoxProps.UserInputText.substring(textBoxProps.SelectedTextStartIndex, textBoxProps.SelectedTextEndIndex - textBoxProps.SelectedTextStartIndex + 1)));
+                }
+            } else if (!textBoxProps.UserInputText || (textBoxProps.UserInputText && textBoxProps.UserInputText.length < textBoxProps.MaxChars)) {
+                var c = getCharFromKeyCode(e);
+                var foundPossibleMatch;
+                if (textBoxProps.ListPossiblesAllChoices != null) {
+                    foundPossibleMatch = FindTextBoxPossible(textBoxProps, c);
+                }
+                if ((!textBoxProps.AllowedCharsRegEx || textBoxProps.AllowedCharsRegEx == null || textBoxProps.AllowedCharsRegEx.length == 0 || c.match(textBoxProps.AllowedCharsRegEx) == c) &&
+                    (!textBoxProps.LimitToListPossibles || (textBoxProps.LimitToListPossibles == 1 && foundPossibleMatch))) {
+                    if (textBoxProps.CaretPosIndex == -1) {
+                        textBoxProps.UserInputText = c + (textBoxProps.UserInputText ? textBoxProps.UserInputText : '');
+                        textBoxProps.CaretPosIndex++;
+                    } else if (textBoxProps.UserInputText && textBoxProps.CaretPosIndex == textBoxProps.UserInputText.length - 1) {
+                        textBoxProps.UserInputText = textBoxProps.UserInputText + c;
+                        textBoxProps.CaretPosIndex++;
+                    } else if (textBoxProps.UserInputText) {
+                        textBoxProps.UserInputText = textBoxProps.UserInputText.substring(0, textBoxProps.CaretPosIndex + 1) + c + textBoxProps.UserInputText.substring(textBoxProps.CaretPosIndex + 1);
+                        textBoxProps.CaretPosIndex++;
                     }
                     textBoxProps.SelectedTextStartIndex = -1;
                     textBoxProps.SelectedTextEndIndex = -1;
                     textBoxProps.MouseDown = 0;
                     textBoxProps.WasSelecting = 0;
                 }
-                if (textBoxProps.ListPossiblesAllChoices != null) {
-                    FindTextBoxPossible(textBoxProps, c);
-                }
-                return;
-        }
-        if (e.ctrlKey && String.fromCharCode(e.keyCode).toLowerCase() == 'a') {
-            textBoxProps.SelectedTextStartIndex = 0;
-            textBoxProps.SelectedTextEndIndex = textBoxProps.UserInputText.length - 1;
-        } else if (e.ctrlKey && String.fromCharCode(e.keyCode).toLowerCase() == 'c' && window.clipboardData) {
-            if (textBoxProps.SelectedTextStartIndex > -1 && textBoxProps.SelectedTextEndIndex > -1 && textBoxProps.UserInputText && textBoxProps.SelectedTextEndIndex < textBoxProps.UserInputText.length) {
-                window.clipboardData.setData('Text', (textBoxProps.UserInputText && textBoxProps.SelectedTextEndIndex == textBoxProps.UserInputText.length - 1 ?
-                    textBoxProps.UserInputText.substring(textBoxProps.SelectedTextStartIndex) :
-                    textBoxProps.UserInputText.substring(textBoxProps.SelectedTextStartIndex, textBoxProps.SelectedTextEndIndex - textBoxProps.SelectedTextStartIndex + 1)));
             }
-        } else if (!textBoxProps.UserInputText || (textBoxProps.UserInputText && textBoxProps.UserInputText.length < textBoxProps.MaxChars)) {
-            var c = getCharFromKeyCode(e);
-            var foundPossibleMatch;
-            if (textBoxProps.ListPossiblesAllChoices != null) {
-                foundPossibleMatch = FindTextBoxPossible(textBoxProps, c);
-            }
-            if ((!textBoxProps.AllowedCharsRegEx || textBoxProps.AllowedCharsRegEx == null || textBoxProps.AllowedCharsRegEx.length == 0 || c.match(textBoxProps.AllowedCharsRegEx) == c) &&
-                (!textBoxProps.LimitToListPossibles || (textBoxProps.LimitToListPossibles == 1 && foundPossibleMatch))) {
-                if (textBoxProps.CaretPosIndex == -1) {
-                    textBoxProps.UserInputText = c + (textBoxProps.UserInputText ? textBoxProps.UserInputText : '');
-                    textBoxProps.CaretPosIndex++;
-                } else if (textBoxProps.UserInputText && textBoxProps.CaretPosIndex == textBoxProps.UserInputText.length - 1) {
-                    textBoxProps.UserInputText = textBoxProps.UserInputText + c;
-                    textBoxProps.CaretPosIndex++;
-                } else if (textBoxProps.UserInputText) {
-                    textBoxProps.UserInputText = textBoxProps.UserInputText.substring(0, textBoxProps.CaretPosIndex + 1) + c + textBoxProps.UserInputText.substring(textBoxProps.CaretPosIndex + 1);
-                    textBoxProps.CaretPosIndex++;
-                }
-                textBoxProps.SelectedTextStartIndex = -1;
-                textBoxProps.SelectedTextEndIndex = -1;
-                textBoxProps.MouseDown = 0;
-                textBoxProps.WasSelecting = 0;
-            }
-        }
-    }, windowid);
+        }, windowid);
+    }
     registerAnimatedWindow(canvasid);
     registerLostFocusFunction(canvasid, windowid, function (canvasid8, windowid8) {
         var textBoxProps = getTextBoxProps(canvasid8, windowid8);
@@ -6600,6 +6699,7 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
             draw(canvasid8);
         }
     });
+    return windowid;
 }
 
 function FindTextBoxPossible(textBoxProps, c) {
@@ -6717,6 +6817,7 @@ function createImageFader(canvasid, controlNameId, x, y, width, height, depth, i
         }, canvasid);
     }
     registerAnimatedWindow(canvasid);
+    return windowid;
 }
 
 //Image slider code starts here
@@ -6845,6 +6946,7 @@ function createImageSlider(canvasid, controlNameId, x, y, width, height, depth, 
         }, canvasid);
     }
     registerAnimatedWindow(canvasid);
+    return windowid;
 }
 
 //Multi Line Label code starts here
@@ -7063,6 +7165,7 @@ function createMultiLineLabel(canvasid, controlNameId, x, y, width, depth, hasMa
             }
         }
     }, canvasid);
+    return windowid;
 }
 
 //Word processor code starts here
@@ -7079,10 +7182,203 @@ function getWordProcessorProps(canvasid, windowid) {
     }
 }
 
+function getWordProcessorPropsByKeyboardID(canvasid, windowid) {
+    for (var i = 0; i < wordProcessorPropsArray.length; i++) {
+        if (wordProcessorPropsArray[i].CanvasID == canvasid && wordProcessorPropsArray[i].CustomKeyboardWindowID == windowid) {
+            return wordProcessorPropsArray[i];
+        }
+    }
+}
+
+function wordProcessorTouchKeyPress(canvasid, windowid, keyboardChar) {
+    var wordProcessorProps = getWordProcessorPropsByKeyboardID(canvasid, windowid);
+    var skip = false;
+    switch (keyboardChar) {
+        case 'left':
+            //left arrow	 37
+            if (wordProcessorProps.CaretPosIndex > -1) {
+                wordProcessorProps.CaretPosIndex--;
+                wordProcessorProps.SelectedTextStartIndex = -1;
+                wordProcessorProps.SelectedTextEndIndex = -1;
+                wordProcessorProps.WasSelecting = 0;
+                wordProcessorProps.MouseDown = 0;
+            }
+            skip = true;
+            break;
+        case 'up':
+            //up arrow
+            var caretLineNo = 0;
+            if (wordProcessorProps.LineBreakIndexes.length > 0) {
+                for (var p = 0; p < wordProcessorProps.LineBreakIndexes.length; p++) {
+                    if ((p == 0 ? true : wordProcessorProps.CaretPosIndex > wordProcessorProps.LineBreakIndexes[p - 1]) &&
+                        wordProcessorProps.CaretPosIndex < wordProcessorProps.LineBreakIndexes[p]) {
+                        caretLineNo = p;
+                        break;
+                    } else if (wordProcessorProps.CaretPosIndex > wordProcessorProps.LineBreakIndexes[p]) {
+                        caretLineNo = p + 1;
+                    }
+                }
+                if (caretLineNo > 0) {
+                    wordProcessorProps.CaretPosIndex = (caretLineNo == 1 ? 0 : wordProcessorProps.LineBreakIndexes[caretLineNo - 2]) + (wordProcessorProps.CaretPosIndex - wordProcessorProps.LineBreakIndexes[caretLineNo - 1]);
+                }
+            }
+            skip = true;
+            break;
+        case 'right':
+            //right arrow	 39
+            if (wordProcessorProps.CaretPosIndex >= wordProcessorProps.UserInputText.length - 1) {
+                wordProcessorProps.CaretPosIndex = wordProcessorProps.UserInputText.length - 1;
+            } else {
+                wordProcessorProps.CaretPosIndex++;
+            }
+            wordProcessorProps.SelectedTextStartIndex = -1;
+            wordProcessorProps.SelectedTextEndIndex = -1;
+            wordProcessorProps.MouseDown = 0;
+            wordProcessorProps.WasSelecting = 0;
+            skip = true;
+            break;
+        case 'down':
+            //down arrow key
+            var caretLineNo = 0;
+            if (wordProcessorProps.LineBreakIndexes.length > 0) {
+                for (var p = 0; p < wordProcessorProps.LineBreakIndexes.length; p++) {
+                    if ((p == 0 ? true : wordProcessorProps.CaretPosIndex > wordProcessorProps.LineBreakIndexes[p - 1]) &&
+                        wordProcessorProps.CaretPosIndex < wordProcessorProps.LineBreakIndexes[p]) {
+                        caretLineNo = p;
+                        break;
+                    } else if (wordProcessorProps.CaretPosIndex > wordProcessorProps.LineBreakIndexes[p]) {
+                        caretLineNo = p + 1;
+                    }
+                }
+                if (caretLineNo < wordProcessorProps.LineBreakIndexes.length) {
+                    wordProcessorProps.CaretPosIndex = wordProcessorProps.LineBreakIndexes[caretLineNo] + (wordProcessorProps.CaretPosIndex - (caretLineNo == 0 ? 0 : wordProcessorProps.LineBreakIndexes[caretLineNo - 1]));
+                }
+            }
+            skip = true;
+            break;
+        case 'backspaceKey':
+            //backspace	 8
+            if (wordProcessorProps.CaretPosIndex > -1) {
+                if (wordProcessorProps.CaretPosIndex == 0) {
+                    if (wordProcessorProps.UserInputText.length > 1) {
+                        wordProcessorProps.UserInputText = wordProcessorProps.UserInputText.substring(1, wordProcessorProps.UserInputText.length - 1);
+                    } else {
+                        wordProcessorProps.UserInputText = '';
+                    }
+                    wordProcessorProps.CaretPosIndex = -1;
+                } else if (wordProcessorProps.CaretPosIndex == wordProcessorProps.UserInputText.length - 1) {
+                    wordProcessorProps.UserInputText = wordProcessorProps.UserInputText.substring(0, wordProcessorProps.UserInputText.length - 1);
+                    wordProcessorProps.CaretPosIndex--;
+                } else if (wordProcessorProps.CaretPosIndex > 0) {
+                    wordProcessorProps.UserInputText = wordProcessorProps.UserInputText.substring(0, wordProcessorProps.CaretPosIndex) +
+                        wordProcessorProps.UserInputText.substring(wordProcessorProps.CaretPosIndex + 1);
+                    wordProcessorProps.CaretPosIndex--;
+                }
+                wordProcessorProps.SelectedTextStartIndex = -1;
+                wordProcessorProps.SelectedTextEndIndex = -1;
+                wordProcessorProps.MouseDown = 0;
+                wordProcessorProps.WasSelecting = 0;
+            }
+            skip = true;
+            break;
+        case 'spacebarKey':
+            keyboardChar = ' ';
+            break;
+        case 'carriageReturnKey':
+            keyboardChar = '\n';
+            break;
+    }
+    if (!skip) {
+        if (!wordProcessorProps.UserInputText || (wordProcessorProps.UserInputText && wordProcessorProps.UserInputText.length < wordProcessorProps.MaxChars)) {
+            var c = keyboardChar;
+            var foundPossibleMatch;
+            if ((!wordProcessorProps.AllowedCharsRegEx || wordProcessorProps.AllowedCharsRegEx == null || wordProcessorProps.AllowedCharsRegEx.length == 0 ||
+                c.match(wordProcessorProps.AllowedCharsRegEx) == c || c == '\n')) {
+                if (wordProcessorProps.CaretPosIndex == -1) {
+                    wordProcessorProps.UserInputText = c + (wordProcessorProps.UserInputText ? wordProcessorProps.UserInputText : '');
+                    wordProcessorProps.CaretPosIndex++;
+                } else if (wordProcessorProps.UserInputText && wordProcessorProps.CaretPosIndex == wordProcessorProps.UserInputText.length - 1) {
+                    wordProcessorProps.UserInputText = wordProcessorProps.UserInputText + c;
+                    wordProcessorProps.CaretPosIndex++;
+                } else if (wordProcessorProps.UserInputText) {
+                    wordProcessorProps.UserInputText = wordProcessorProps.UserInputText.substring(0, wordProcessorProps.CaretPosIndex + 1) + c +
+                        wordProcessorProps.UserInputText.substring(wordProcessorProps.CaretPosIndex + 1);
+                    wordProcessorProps.CaretPosIndex++;
+                }
+                wordProcessorProps.SelectedTextStartIndex = -1;
+                wordProcessorProps.SelectedTextEndIndex = -1;
+                wordProcessorProps.MouseDown = 0;
+                wordProcessorProps.WasSelecting = 0;
+            }
+        }
+    }
+    wordProcessorProps.LineBreakIndexes = new Array();
+    if (wordProcessorProps.UserInputText && wordProcessorProps.UserInputText.length > 0) {
+        var ctx = getCtx(canvasid3);
+        if (wordProcessorProps.WordSensitive == 0) {
+            var currStrIndex = 0;
+            var lastLineBreakIndex = 0;
+            while (currStrIndex < wordProcessorProps.UserInputText.length) {
+                if (wordProcessorProps.UserInputText.substr(lastLineBreakIndex, currStrIndex - lastLineBreakIndex + 1) == '\n') {
+                    wordProcessorProps.LineBreakIndexes.push(currStrIndex);
+                    lastLineBreakIndex = currStrIndex;
+                } else if (ctx.measureText(wordProcessorProps.UserInputText.substr(lastLineBreakIndex, currStrIndex - lastLineBreakIndex + 1)).width +
+                    wordProcessorProps.Margin > wordProcessorProps.Width - 15) {
+                    wordProcessorProps.LineBreakIndexes.push(currStrIndex);
+                    lastLineBreakIndex = currStrIndex;
+                }
+                currStrIndex++;
+            }
+        } else {
+            var currStrIndex = 0;
+            var lastLineBreakIndex = 0;
+            var lastSpace = -1;
+            while (currStrIndex < wordProcessorProps.UserInputText.length) {
+                if (wordProcessorProps.UserInputText.substr(currStrIndex, 1) == '\n') {
+                    wordProcessorProps.LineBreakIndexes.push(currStrIndex);
+                    lastLineBreakIndex = currStrIndex;
+                } else if (ctx.measureText(wordProcessorProps.UserInputText.substr(lastLineBreakIndex, currStrIndex - lastLineBreakIndex + 1)).width +
+                    wordProcessorProps.Margin > wordProcessorProps.Width - 15) {
+                    if (lastSpace > -1) {
+                        wordProcessorProps.LineBreakIndexes.push(lastSpace);
+                        lastLineBreakIndex = lastSpace;
+                    } else {
+                        wordProcessorProps.LineBreakIndexes.push(currStrIndex);
+                        lastLineBreakIndex = currStrIndex;
+                    }
+                }
+                currStrIndex++;
+                if (wordProcessorProps.UserInputText.substr(currStrIndex, 1) == ' ') {
+                    lastSpace = currStrIndex;
+                }
+            }
+        }
+        var vscrollbarProps = getScrollBarProps(canvasid3, wordProcessorProps.VScrollBarWindowID);
+        vscrollbarProps.MaxItems = wordProcessorProps.LineBreakIndexes.length;
+        var caretLineNo = 0;
+        if (wordProcessorProps.LineBreakIndexes.length > 0) {
+            for (var p = 0; p < wordProcessorProps.LineBreakIndexes.length; p++) {
+                if ((p == 0 ? true : wordProcessorProps.CaretPosIndex > wordProcessorProps.LineBreakIndexes[p - 1]) &&
+                    wordProcessorProps.CaretPosIndex < wordProcessorProps.LineBreakIndexes[p]) {
+                    caretLineNo = p;
+                    break;
+                } else if (wordProcessorProps.CaretPosIndex > wordProcessorProps.LineBreakIndexes[p]) {
+                    caretLineNo = p + 1;
+                }
+            }
+        }
+        if (caretLineNo - vscrollbarProps.SelectedID + 1 > (wordProcessorProps.Height - (wordProcessorProps.Margin * 2)) / (wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels)) {
+            vscrollbarProps.SelectedID = caretLineNo - Math.floor((wordProcessorProps.Height - (wordProcessorProps.Margin * 2)) / (wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels)) + 1;
+        } else if (caretLineNo < vscrollbarProps.SelectedID) {
+            vscrollbarProps.SelectedID = caretLineNo;
+        }
+    }
+}
+
 function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth, hasMarkup, text, textColor, textHeight, textFontString, lineSpacingInPixels, wordSensitive,
     waterMarkText, waterMarkTextColor, waterMarkTextHeight, waterMarkTextFontString, maxChars, hasShadow, shadowColor, shadowOffsetX, shadowOffsetY,
     hasRoundedEdges, edgeRadius, hasBgGradient, bgGradientStartColor, bgGradientEndColor, hasBgImage, bgImageUrl, margin, hasBorder, borderColor, borderLineWidth,
-    allowedCharsRegEx, caretColor) {
+    allowedCharsRegEx, caretColor, customKeyboardWindowID) {
     var windowid;
     if (hasMarkup == 1) {
         windowid = createWindow(canvasid, x, y + 20, width - 15, height - 20, depth, null, 'WordProcessor', controlNameId);
@@ -7098,6 +7394,11 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
         };
     }
     vscrollbarwindowid = createScrollBar(canvasid, controlNameId + 'VS', x + width - 15, y, height, depth, (textHeight + lineSpacingInPixels) * Math.floor(height / textHeight), 1);
+    if (navigator.userAgent.toLowerCase().indexOf('android') > -1 || navigator.userAgent.toLowerCase().indexOf('ipad') > -1 || navigator.userAgent.toLowerCase().indexOf('iphone') > -1 || navigator.userAgent.toLowerCase().indexOf('ipod') > -1) {
+        if (!customKeyboardWindowID) {
+            customKeyboardWindowID = createVirtualKeyboard(canvasid, controlNameId + 'VKB', x, y + height, 250, 180, depth, null, wordProcessorTouchKeyPress, 5, 5, 1, 12, '12pt Ariel', null);
+        }
+    }
     wordProcessorPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, HasMarkup: hasMarkup, Text: text, TextColor: textColor, TextHeight: textHeight,
         TextFontString: textFontString, LineSpacingInPixels: lineSpacingInPixels, WordSensitive: wordSensitive, WaterMarkText: waterMarkText, WaterMarkTextColor: waterMarkTextColor,
@@ -7106,7 +7407,7 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
         BgGradientStartColor: bgGradientStartColor, BgGradientEndColor: bgGradientEndColor, HasBgImage: hasBgImage, BgImageUrl: bgImageUrl, Margin: margin,
         HasBorder: hasBorder, BorderColor: borderColor, BorderLineWidth: borderLineWidth, UserInputText: '', VScrollBarWindowID: vscrollbarwindowid, CaretPosIndex: -1,
         ShowCaret: 0, CaretColor: caretColor, LineBreakIndexes: new Array(), SelectedTextStartIndex: -1, SelectedTextEndIndex: -1, MouseDown: 0, WasSelecting: 0,
-        AllowedCharsRegEx: allowedCharsRegEx, Image: image, CaretTime: Date.now()
+        AllowedCharsRegEx: allowedCharsRegEx, Image: image, CaretTime: Date.now(), CustomKeyboardWindowID: customKeyboardWindowID
     });
     registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
         var wordProcessorProps = getWordProcessorProps(canvasid1, windowid1);
@@ -7246,213 +7547,215 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
         }
         ctx.restore();
     }, canvasid);
-    registerKeyDownFunction(canvasid, function (canvasid3, windowid3, e) {
-        var wordProcessorProps = getWordProcessorProps(canvasid3, windowid3);
-        var skip = false;
-        switch (e.keyCode) {
-            case 37:
-                //left arrow	 37
-                if (wordProcessorProps.CaretPosIndex > -1) {
-                    wordProcessorProps.CaretPosIndex--;
-                    wordProcessorProps.SelectedTextStartIndex = -1;
-                    wordProcessorProps.SelectedTextEndIndex = -1;
-                    wordProcessorProps.WasSelecting = 0;
-                    wordProcessorProps.MouseDown = 0;
-                }
-                skip = true;
-                break;
-            case 38:
-                //up arrow
-                var caretLineNo = 0;
-                if (wordProcessorProps.LineBreakIndexes.length > 0) {
-                    for (var p = 0; p < wordProcessorProps.LineBreakIndexes.length; p++) {
-                        if ((p == 0 ? true : wordProcessorProps.CaretPosIndex > wordProcessorProps.LineBreakIndexes[p - 1]) &&
-                            wordProcessorProps.CaretPosIndex < wordProcessorProps.LineBreakIndexes[p]) {
-                            caretLineNo = p;
-                            break;
-                        } else if (wordProcessorProps.CaretPosIndex > wordProcessorProps.LineBreakIndexes[p]) {
-                            caretLineNo = p + 1;
+    if (!(navigator.userAgent.toLowerCase().indexOf('android') > -1 || navigator.userAgent.toLowerCase().indexOf('ipad') > -1 || navigator.userAgent.toLowerCase().indexOf('iphone') > -1 || navigator.userAgent.toLowerCase().indexOf('ipod') > -1)) {
+        registerKeyDownFunction(canvasid, function (canvasid3, windowid3, e) {
+            var wordProcessorProps = getWordProcessorProps(canvasid3, windowid3);
+            var skip = false;
+            switch (e.keyCode) {
+                case 37:
+                    //left arrow	 37
+                    if (wordProcessorProps.CaretPosIndex > -1) {
+                        wordProcessorProps.CaretPosIndex--;
+                        wordProcessorProps.SelectedTextStartIndex = -1;
+                        wordProcessorProps.SelectedTextEndIndex = -1;
+                        wordProcessorProps.WasSelecting = 0;
+                        wordProcessorProps.MouseDown = 0;
+                    }
+                    skip = true;
+                    break;
+                case 38:
+                    //up arrow
+                    var caretLineNo = 0;
+                    if (wordProcessorProps.LineBreakIndexes.length > 0) {
+                        for (var p = 0; p < wordProcessorProps.LineBreakIndexes.length; p++) {
+                            if ((p == 0 ? true : wordProcessorProps.CaretPosIndex > wordProcessorProps.LineBreakIndexes[p - 1]) &&
+                                wordProcessorProps.CaretPosIndex < wordProcessorProps.LineBreakIndexes[p]) {
+                                caretLineNo = p;
+                                break;
+                            } else if (wordProcessorProps.CaretPosIndex > wordProcessorProps.LineBreakIndexes[p]) {
+                                caretLineNo = p + 1;
+                            }
+                        }
+                        if (caretLineNo > 0) {
+                            wordProcessorProps.CaretPosIndex = (caretLineNo == 1 ? 0 : wordProcessorProps.LineBreakIndexes[caretLineNo - 2]) + (wordProcessorProps.CaretPosIndex - wordProcessorProps.LineBreakIndexes[caretLineNo - 1]);
                         }
                     }
-                    if (caretLineNo > 0) {
-                        wordProcessorProps.CaretPosIndex = (caretLineNo == 1 ? 0 : wordProcessorProps.LineBreakIndexes[caretLineNo - 2]) + (wordProcessorProps.CaretPosIndex - wordProcessorProps.LineBreakIndexes[caretLineNo - 1]);
-                    }
-                }
-                skip = true;
-                break;
-            case 39:
-                //right arrow	 39
-                if (wordProcessorProps.CaretPosIndex >= wordProcessorProps.UserInputText.length - 1) {
-                    wordProcessorProps.CaretPosIndex = wordProcessorProps.UserInputText.length - 1;
-                } else {
-                    wordProcessorProps.CaretPosIndex++;
-                }
-                wordProcessorProps.SelectedTextStartIndex = -1;
-                wordProcessorProps.SelectedTextEndIndex = -1;
-                wordProcessorProps.MouseDown = 0;
-                wordProcessorProps.WasSelecting = 0;
-                skip = true;
-                break;
-            case 40:
-                //down arrow key
-                var caretLineNo = 0;
-                if (wordProcessorProps.LineBreakIndexes.length > 0) {
-                    for (var p = 0; p < wordProcessorProps.LineBreakIndexes.length; p++) {
-                        if ((p == 0 ? true : wordProcessorProps.CaretPosIndex > wordProcessorProps.LineBreakIndexes[p - 1]) &&
-                            wordProcessorProps.CaretPosIndex < wordProcessorProps.LineBreakIndexes[p]) {
-                            caretLineNo = p;
-                            break;
-                        } else if (wordProcessorProps.CaretPosIndex > wordProcessorProps.LineBreakIndexes[p]) {
-                            caretLineNo = p + 1;
-                        }
-                    }
-                    if (caretLineNo < wordProcessorProps.LineBreakIndexes.length) {
-                        wordProcessorProps.CaretPosIndex = wordProcessorProps.LineBreakIndexes[caretLineNo] + (wordProcessorProps.CaretPosIndex - (caretLineNo == 0 ? 0 : wordProcessorProps.LineBreakIndexes[caretLineNo - 1]));
-                    }
-                }
-                skip = true;
-                break;
-            case 46:
-                //delete	 46
-                if (wordProcessorProps.CaretPosIndex < wordProcessorProps.UserInputText.length - 1) {
-                    if (wordProcessorProps.CaretPosIndex == -1) {
-                        wordProcessorProps.UserInputText = wordProcessorProps.UserInputText.substring(1);
-                    } else if (wordProcessorProps.CaretPosIndex == wordProcessorProps.UserInputText.length - 2) {
-                        wordProcessorProps.UserInputText = wordProcessorProps.UserInputText.substring(0, wordProcessorProps.UserInputText.length - 1);
+                    skip = true;
+                    break;
+                case 39:
+                    //right arrow	 39
+                    if (wordProcessorProps.CaretPosIndex >= wordProcessorProps.UserInputText.length - 1) {
+                        wordProcessorProps.CaretPosIndex = wordProcessorProps.UserInputText.length - 1;
                     } else {
-                        wordProcessorProps.UserInputText = wordProcessorProps.UserInputText.substring(0, wordProcessorProps.CaretPosIndex + 1) +
-                            wordProcessorProps.UserInputText.substring(wordProcessorProps.CaretPosIndex + 2);
+                        wordProcessorProps.CaretPosIndex++;
                     }
                     wordProcessorProps.SelectedTextStartIndex = -1;
                     wordProcessorProps.SelectedTextEndIndex = -1;
                     wordProcessorProps.MouseDown = 0;
                     wordProcessorProps.WasSelecting = 0;
-                }
-                skip = true;
-                break;
-            case 8:
-                //backspace	 8
-                if (wordProcessorProps.CaretPosIndex > -1) {
-                    if (wordProcessorProps.CaretPosIndex == 0) {
-                        if (wordProcessorProps.UserInputText.length > 1) {
-                            wordProcessorProps.UserInputText = wordProcessorProps.UserInputText.substring(1, wordProcessorProps.UserInputText.length - 1);
-                        } else {
-                            wordProcessorProps.UserInputText = '';
+                    skip = true;
+                    break;
+                case 40:
+                    //down arrow key
+                    var caretLineNo = 0;
+                    if (wordProcessorProps.LineBreakIndexes.length > 0) {
+                        for (var p = 0; p < wordProcessorProps.LineBreakIndexes.length; p++) {
+                            if ((p == 0 ? true : wordProcessorProps.CaretPosIndex > wordProcessorProps.LineBreakIndexes[p - 1]) &&
+                                wordProcessorProps.CaretPosIndex < wordProcessorProps.LineBreakIndexes[p]) {
+                                caretLineNo = p;
+                                break;
+                            } else if (wordProcessorProps.CaretPosIndex > wordProcessorProps.LineBreakIndexes[p]) {
+                                caretLineNo = p + 1;
+                            }
                         }
-                        wordProcessorProps.CaretPosIndex = -1;
-                    } else if (wordProcessorProps.CaretPosIndex == wordProcessorProps.UserInputText.length - 1) {
-                        wordProcessorProps.UserInputText = wordProcessorProps.UserInputText.substring(0, wordProcessorProps.UserInputText.length - 1);
-                        wordProcessorProps.CaretPosIndex--;
-                    } else if (wordProcessorProps.CaretPosIndex > 0) {
-                        wordProcessorProps.UserInputText = wordProcessorProps.UserInputText.substring(0, wordProcessorProps.CaretPosIndex) +
-                            wordProcessorProps.UserInputText.substring(wordProcessorProps.CaretPosIndex + 1);
-                        wordProcessorProps.CaretPosIndex--;
+                        if (caretLineNo < wordProcessorProps.LineBreakIndexes.length) {
+                            wordProcessorProps.CaretPosIndex = wordProcessorProps.LineBreakIndexes[caretLineNo] + (wordProcessorProps.CaretPosIndex - (caretLineNo == 0 ? 0 : wordProcessorProps.LineBreakIndexes[caretLineNo - 1]));
+                        }
                     }
-                    wordProcessorProps.SelectedTextStartIndex = -1;
-                    wordProcessorProps.SelectedTextEndIndex = -1;
-                    wordProcessorProps.MouseDown = 0;
-                    wordProcessorProps.WasSelecting = 0;
-                }
-                skip = true;
-                break;
-        }
-        if (!skip) {
-            if (e.ctrlKey && String.fromCharCode(e.keyCode).toLowerCase() == 'a') {
-                wordProcessorProps.SelectedTextStartIndex = 0;
-                wordProcessorProps.SelectedTextEndIndex = wordProcessorProps.UserInputText.length - 1;
-            } else if (e.ctrlKey && String.fromCharCode(e.keyCode).toLowerCase() == 'c' && window.clipboardData) {
-                if (wordProcessorProps.SelectedTextStartIndex > -1 && wordProcessorProps.SelectedTextEndIndex > -1 && wordProcessorProps.UserInputText &&
-                    wordProcessorProps.SelectedTextEndIndex < wordProcessorProps.UserInputText.length) {
-                    window.clipboardData.setData('Text', (wordProcessorProps.UserInputText && wordProcessorProps.SelectedTextEndIndex == wordProcessorProps.UserInputText.length - 1 ?
-                        wordProcessorProps.UserInputText.substring(wordProcessorProps.SelectedTextStartIndex) :
-                        wordProcessorProps.UserInputText.substring(wordProcessorProps.SelectedTextStartIndex, wordProcessorProps.SelectedTextEndIndex -
-                        wordProcessorProps.SelectedTextStartIndex + 1)));
-                }
-            } else if (!wordProcessorProps.UserInputText || (wordProcessorProps.UserInputText && wordProcessorProps.UserInputText.length < wordProcessorProps.MaxChars)) {
-                var c = getCharFromKeyCode(e);
-                var foundPossibleMatch;
-                if ((!wordProcessorProps.AllowedCharsRegEx || wordProcessorProps.AllowedCharsRegEx == null || wordProcessorProps.AllowedCharsRegEx.length == 0 ||
-                    c.match(wordProcessorProps.AllowedCharsRegEx) == c || c == '\n')) {
-                    if (wordProcessorProps.CaretPosIndex == -1) {
-                        wordProcessorProps.UserInputText = c + (wordProcessorProps.UserInputText ? wordProcessorProps.UserInputText : '');
-                        wordProcessorProps.CaretPosIndex++;
-                    } else if (wordProcessorProps.UserInputText && wordProcessorProps.CaretPosIndex == wordProcessorProps.UserInputText.length - 1) {
-                        wordProcessorProps.UserInputText = wordProcessorProps.UserInputText + c;
-                        wordProcessorProps.CaretPosIndex++;
-                    } else if (wordProcessorProps.UserInputText) {
-                        wordProcessorProps.UserInputText = wordProcessorProps.UserInputText.substring(0, wordProcessorProps.CaretPosIndex + 1) + c +
-                            wordProcessorProps.UserInputText.substring(wordProcessorProps.CaretPosIndex + 1);
-                        wordProcessorProps.CaretPosIndex++;
+                    skip = true;
+                    break;
+                case 46:
+                    //delete	 46
+                    if (wordProcessorProps.CaretPosIndex < wordProcessorProps.UserInputText.length - 1) {
+                        if (wordProcessorProps.CaretPosIndex == -1) {
+                            wordProcessorProps.UserInputText = wordProcessorProps.UserInputText.substring(1);
+                        } else if (wordProcessorProps.CaretPosIndex == wordProcessorProps.UserInputText.length - 2) {
+                            wordProcessorProps.UserInputText = wordProcessorProps.UserInputText.substring(0, wordProcessorProps.UserInputText.length - 1);
+                        } else {
+                            wordProcessorProps.UserInputText = wordProcessorProps.UserInputText.substring(0, wordProcessorProps.CaretPosIndex + 1) +
+                                wordProcessorProps.UserInputText.substring(wordProcessorProps.CaretPosIndex + 2);
+                        }
+                        wordProcessorProps.SelectedTextStartIndex = -1;
+                        wordProcessorProps.SelectedTextEndIndex = -1;
+                        wordProcessorProps.MouseDown = 0;
+                        wordProcessorProps.WasSelecting = 0;
                     }
-                    wordProcessorProps.SelectedTextStartIndex = -1;
-                    wordProcessorProps.SelectedTextEndIndex = -1;
-                    wordProcessorProps.MouseDown = 0;
-                    wordProcessorProps.WasSelecting = 0;
+                    skip = true;
+                    break;
+                case 8:
+                    //backspace	 8
+                    if (wordProcessorProps.CaretPosIndex > -1) {
+                        if (wordProcessorProps.CaretPosIndex == 0) {
+                            if (wordProcessorProps.UserInputText.length > 1) {
+                                wordProcessorProps.UserInputText = wordProcessorProps.UserInputText.substring(1, wordProcessorProps.UserInputText.length - 1);
+                            } else {
+                                wordProcessorProps.UserInputText = '';
+                            }
+                            wordProcessorProps.CaretPosIndex = -1;
+                        } else if (wordProcessorProps.CaretPosIndex == wordProcessorProps.UserInputText.length - 1) {
+                            wordProcessorProps.UserInputText = wordProcessorProps.UserInputText.substring(0, wordProcessorProps.UserInputText.length - 1);
+                            wordProcessorProps.CaretPosIndex--;
+                        } else if (wordProcessorProps.CaretPosIndex > 0) {
+                            wordProcessorProps.UserInputText = wordProcessorProps.UserInputText.substring(0, wordProcessorProps.CaretPosIndex) +
+                                wordProcessorProps.UserInputText.substring(wordProcessorProps.CaretPosIndex + 1);
+                            wordProcessorProps.CaretPosIndex--;
+                        }
+                        wordProcessorProps.SelectedTextStartIndex = -1;
+                        wordProcessorProps.SelectedTextEndIndex = -1;
+                        wordProcessorProps.MouseDown = 0;
+                        wordProcessorProps.WasSelecting = 0;
+                    }
+                    skip = true;
+                    break;
+            }
+            if (!skip) {
+                if (e.ctrlKey && String.fromCharCode(e.keyCode).toLowerCase() == 'a') {
+                    wordProcessorProps.SelectedTextStartIndex = 0;
+                    wordProcessorProps.SelectedTextEndIndex = wordProcessorProps.UserInputText.length - 1;
+                } else if (e.ctrlKey && String.fromCharCode(e.keyCode).toLowerCase() == 'c' && window.clipboardData) {
+                    if (wordProcessorProps.SelectedTextStartIndex > -1 && wordProcessorProps.SelectedTextEndIndex > -1 && wordProcessorProps.UserInputText &&
+                        wordProcessorProps.SelectedTextEndIndex < wordProcessorProps.UserInputText.length) {
+                        window.clipboardData.setData('Text', (wordProcessorProps.UserInputText && wordProcessorProps.SelectedTextEndIndex == wordProcessorProps.UserInputText.length - 1 ?
+                            wordProcessorProps.UserInputText.substring(wordProcessorProps.SelectedTextStartIndex) :
+                            wordProcessorProps.UserInputText.substring(wordProcessorProps.SelectedTextStartIndex, wordProcessorProps.SelectedTextEndIndex -
+                            wordProcessorProps.SelectedTextStartIndex + 1)));
+                    }
+                } else if (!wordProcessorProps.UserInputText || (wordProcessorProps.UserInputText && wordProcessorProps.UserInputText.length < wordProcessorProps.MaxChars)) {
+                    var c = getCharFromKeyCode(e);
+                    var foundPossibleMatch;
+                    if ((!wordProcessorProps.AllowedCharsRegEx || wordProcessorProps.AllowedCharsRegEx == null || wordProcessorProps.AllowedCharsRegEx.length == 0 ||
+                        c.match(wordProcessorProps.AllowedCharsRegEx) == c || c == '\n')) {
+                        if (wordProcessorProps.CaretPosIndex == -1) {
+                            wordProcessorProps.UserInputText = c + (wordProcessorProps.UserInputText ? wordProcessorProps.UserInputText : '');
+                            wordProcessorProps.CaretPosIndex++;
+                        } else if (wordProcessorProps.UserInputText && wordProcessorProps.CaretPosIndex == wordProcessorProps.UserInputText.length - 1) {
+                            wordProcessorProps.UserInputText = wordProcessorProps.UserInputText + c;
+                            wordProcessorProps.CaretPosIndex++;
+                        } else if (wordProcessorProps.UserInputText) {
+                            wordProcessorProps.UserInputText = wordProcessorProps.UserInputText.substring(0, wordProcessorProps.CaretPosIndex + 1) + c +
+                                wordProcessorProps.UserInputText.substring(wordProcessorProps.CaretPosIndex + 1);
+                            wordProcessorProps.CaretPosIndex++;
+                        }
+                        wordProcessorProps.SelectedTextStartIndex = -1;
+                        wordProcessorProps.SelectedTextEndIndex = -1;
+                        wordProcessorProps.MouseDown = 0;
+                        wordProcessorProps.WasSelecting = 0;
+                    }
                 }
             }
-        }
-        wordProcessorProps.LineBreakIndexes = new Array();
-        if (wordProcessorProps.UserInputText && wordProcessorProps.UserInputText.length > 0) {
-            var ctx = getCtx(canvasid3);
-            if (wordProcessorProps.WordSensitive == 0) {
-                var currStrIndex = 0;
-                var lastLineBreakIndex = 0;
-                while (currStrIndex < wordProcessorProps.UserInputText.length) {
-                    if (wordProcessorProps.UserInputText.substr(lastLineBreakIndex, currStrIndex - lastLineBreakIndex + 1) == '\n') {
-                        wordProcessorProps.LineBreakIndexes.push(currStrIndex);
-                        lastLineBreakIndex = currStrIndex;
-                    } else if (ctx.measureText(wordProcessorProps.UserInputText.substr(lastLineBreakIndex, currStrIndex - lastLineBreakIndex + 1)).width +
-                        wordProcessorProps.Margin > wordProcessorProps.Width - 15) {
-                        wordProcessorProps.LineBreakIndexes.push(currStrIndex);
-                        lastLineBreakIndex = currStrIndex;
-                    }
-                    currStrIndex++;
-                }
-            } else {
-                var currStrIndex = 0;
-                var lastLineBreakIndex = 0;
-                var lastSpace = -1;
-                while (currStrIndex < wordProcessorProps.UserInputText.length) {
-                    if (wordProcessorProps.UserInputText.substr(currStrIndex, 1) == '\n') {
-                        wordProcessorProps.LineBreakIndexes.push(currStrIndex);
-                        lastLineBreakIndex = currStrIndex;
-                    } else if (ctx.measureText(wordProcessorProps.UserInputText.substr(lastLineBreakIndex, currStrIndex - lastLineBreakIndex + 1)).width +
-                        wordProcessorProps.Margin > wordProcessorProps.Width - 15) {
-                        if (lastSpace > -1) {
-                            wordProcessorProps.LineBreakIndexes.push(lastSpace);
-                            lastLineBreakIndex = lastSpace;
-                        } else {
+            wordProcessorProps.LineBreakIndexes = new Array();
+            if (wordProcessorProps.UserInputText && wordProcessorProps.UserInputText.length > 0) {
+                var ctx = getCtx(canvasid3);
+                if (wordProcessorProps.WordSensitive == 0) {
+                    var currStrIndex = 0;
+                    var lastLineBreakIndex = 0;
+                    while (currStrIndex < wordProcessorProps.UserInputText.length) {
+                        if (wordProcessorProps.UserInputText.substr(lastLineBreakIndex, currStrIndex - lastLineBreakIndex + 1) == '\n') {
+                            wordProcessorProps.LineBreakIndexes.push(currStrIndex);
+                            lastLineBreakIndex = currStrIndex;
+                        } else if (ctx.measureText(wordProcessorProps.UserInputText.substr(lastLineBreakIndex, currStrIndex - lastLineBreakIndex + 1)).width +
+                            wordProcessorProps.Margin > wordProcessorProps.Width - 15) {
                             wordProcessorProps.LineBreakIndexes.push(currStrIndex);
                             lastLineBreakIndex = currStrIndex;
                         }
+                        currStrIndex++;
                     }
-                    currStrIndex++;
-                    if (wordProcessorProps.UserInputText.substr(currStrIndex, 1) == ' ') {
-                        lastSpace = currStrIndex;
+                } else {
+                    var currStrIndex = 0;
+                    var lastLineBreakIndex = 0;
+                    var lastSpace = -1;
+                    while (currStrIndex < wordProcessorProps.UserInputText.length) {
+                        if (wordProcessorProps.UserInputText.substr(currStrIndex, 1) == '\n') {
+                            wordProcessorProps.LineBreakIndexes.push(currStrIndex);
+                            lastLineBreakIndex = currStrIndex;
+                        } else if (ctx.measureText(wordProcessorProps.UserInputText.substr(lastLineBreakIndex, currStrIndex - lastLineBreakIndex + 1)).width +
+                            wordProcessorProps.Margin > wordProcessorProps.Width - 15) {
+                            if (lastSpace > -1) {
+                                wordProcessorProps.LineBreakIndexes.push(lastSpace);
+                                lastLineBreakIndex = lastSpace;
+                            } else {
+                                wordProcessorProps.LineBreakIndexes.push(currStrIndex);
+                                lastLineBreakIndex = currStrIndex;
+                            }
+                        }
+                        currStrIndex++;
+                        if (wordProcessorProps.UserInputText.substr(currStrIndex, 1) == ' ') {
+                            lastSpace = currStrIndex;
+                        }
                     }
                 }
-            }
-            var vscrollbarProps = getScrollBarProps(canvasid3, wordProcessorProps.VScrollBarWindowID);
-            vscrollbarProps.MaxItems = wordProcessorProps.LineBreakIndexes.length;
-            var caretLineNo = 0;
-            if (wordProcessorProps.LineBreakIndexes.length > 0) {
-                for (var p = 0; p < wordProcessorProps.LineBreakIndexes.length; p++) {
-                    if ((p == 0 ? true : wordProcessorProps.CaretPosIndex > wordProcessorProps.LineBreakIndexes[p - 1]) &&
-                        wordProcessorProps.CaretPosIndex < wordProcessorProps.LineBreakIndexes[p]) {
-                        caretLineNo = p;
-                        break;
-                    } else if (wordProcessorProps.CaretPosIndex > wordProcessorProps.LineBreakIndexes[p]) {
-                        caretLineNo = p + 1;
+                var vscrollbarProps = getScrollBarProps(canvasid3, wordProcessorProps.VScrollBarWindowID);
+                vscrollbarProps.MaxItems = wordProcessorProps.LineBreakIndexes.length;
+                var caretLineNo = 0;
+                if (wordProcessorProps.LineBreakIndexes.length > 0) {
+                    for (var p = 0; p < wordProcessorProps.LineBreakIndexes.length; p++) {
+                        if ((p == 0 ? true : wordProcessorProps.CaretPosIndex > wordProcessorProps.LineBreakIndexes[p - 1]) &&
+                            wordProcessorProps.CaretPosIndex < wordProcessorProps.LineBreakIndexes[p]) {
+                            caretLineNo = p;
+                            break;
+                        } else if (wordProcessorProps.CaretPosIndex > wordProcessorProps.LineBreakIndexes[p]) {
+                            caretLineNo = p + 1;
+                        }
                     }
                 }
+                if (caretLineNo - vscrollbarProps.SelectedID + 1 > (wordProcessorProps.Height - (wordProcessorProps.Margin * 2)) / (wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels)) {
+                    vscrollbarProps.SelectedID = caretLineNo - Math.floor((wordProcessorProps.Height - (wordProcessorProps.Margin * 2)) / (wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels)) + 1;
+                } else if (caretLineNo < vscrollbarProps.SelectedID) {
+                    vscrollbarProps.SelectedID = caretLineNo;
+                }
             }
-            if (caretLineNo - vscrollbarProps.SelectedID + 1 > (wordProcessorProps.Height - (wordProcessorProps.Margin * 2)) / (wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels)) {
-                vscrollbarProps.SelectedID = caretLineNo - Math.floor((wordProcessorProps.Height - (wordProcessorProps.Margin * 2)) / (wordProcessorProps.TextHeight + wordProcessorProps.LineSpacingInPixels)) + 1;
-            } else if (caretLineNo < vscrollbarProps.SelectedID) {
-                vscrollbarProps.SelectedID = caretLineNo;
-            }
-        }
-    }, windowid);
+        }, windowid);
+    }
     registerClickFunction(windowid, function (canvasid1, windowid1, e) {
         var x = e.calcX;
         var y = e.calcY;
@@ -7485,6 +7788,7 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
         }
     }, canvasid);
     registerAnimatedWindow(canvasid);
+    return windowid;
 }
 
 function removeTrailingSpacesAndLineBreaks(str) {
@@ -7629,43 +7933,203 @@ function getVirtualKeyboardProps(canvasid, windowid) {
     }
 }
 
-function createVirtualKeyboard(canvasid, controlNameId, x, y, width, height, depth, keys, keypressFunc, gapbetweenbuttons, gapbetweenrows) {
+function createVirtualKeyboard(canvasid, controlNameId, x, y, width, height, depth, keys, keypressFunc, gapbetweenbuttons, gapbetweenrows, hasgloss, textheight, textfontstring, customDrawLetterFunc) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'VirtualKeyboard', controlNameId);
+    var customkeys = (keys == null ? 0 : 1);
     if (!keys) {
-        var shiftButtonImage = new Image();
-        shiftButtonImage.src = 'shiftButton.png';
-        shiftButtonImage.onload = function () { draw(canvasid); };
-        var backspaceButtonImage = new Image();
-        backspaceButtonImage.src = 'backspaceButton.png';
-        backspaceButtonImage.onload = function () { draw(canvasid); };
-        var keyboardOffImage = new Image();
-        keyboardOffImage.src = 'keyboardOffButton.png';
-        keyboardOffImage.onload = function () { draw(canvasid); };
-        var spaceBarButtonImage = new Image();
-        spaceBarButtonImage.src = 'spacebarButtonImage.png';
-        spaceBarButtonImage.onload = function () { draw(canvasid); };
-        var carriageReturnImage = new Image();
-        carriageReturnImage.src = 'carriageReturnImage.png';
-        carriageReturnImage.onload = function () { draw(canvasid); };
         keys = [[[['Q', 15, 30], ['W', 15, 30], ['E', 15, 30], ['R', 15, 30], ['T', 15, 30], ['Y', 15, 30], ['U', 15, 30], ['I', 15, 30],
             ['O', 15, 30], ['P', 15, 30]], [['A', 15, 30], ['S', 15, 30], ['D', 15, 30], ['F', 15, 30], ['G', 15, 30],
-            ['H', 15, 30], ['J', 15, 30], ['K', 15, 30], ['L', 15, 30]], [[shiftButtonImage, 'shiftKey', 30, 30, ], ['Z', 15, 30], ['X', 15, 30],
-            ['C', 15, 30], ['V', 15, 30], ['B', 15, 30], ['N', 15, 30], ['M', 15, 30], [backspaceButtonImage, 'backspaceKey', 30, 30]],
-            [[keyboardOffImage, 'keyboardOff', 30, 30], [',', 15, 30], [spaceBarButtonImage, 'spacebarKey', 60, 30], ['.', 60, 30], ['12#', null, 30, 30, 1],
-            [carriageReturnImage, 'carriageReturnKey', 30, 30]]], [[['1', 15, 30], ['2', 15, 30], ['3', 15, 30], ['4', 15, 30],
+            ['H', 15, 30], ['J', 15, 30], ['K', 15, 30], ['L', 15, 30]], [['shiftKey', 30, 30, ], ['Z', 15, 30], ['X', 15, 30],
+            ['C', 15, 30], ['V', 15, 30], ['B', 15, 30], ['N', 15, 30], ['M', 15, 30], ['backspaceKey', 30, 30]],
+            [['keyboardOff', 30, 30], [',', 15, 30], ['spacebarKey', 60, 30], ['.', 15, 30], ['12#', 30, 30, 1],
+            ['carriageReturnKey', 30, 30]], [['up', 30, 30], ['down', 30, 30], ['left', 30, 30], ['right', 30, 30]]], [[['1', 15, 30], ['2', 15, 30], ['3', 15, 30], ['4', 15, 30],
             ['5', 15, 30], ['6', 15, 30], ['7', 15, 30], ['8', 15, 30], ['9', 15, 30], ['0', 15, 30]], [['!', 15, 30], ['@', 15, 30],
             ['#', 15, 30], ['$', 15, 30], ['%', 15, 30], ['&', 15, 30], ['*', 15, 30], ['?', 15, 30], ['/', 15, 30]], [['_', 15, 30],
             ['"', 15, 30], ['\'', 15, 30], ['(', 15, 30], [')', 15, 30], ['-', 15, 30], ['+', 15, 30], [';', 15, 30],
-            [backspaceButtonImage, 'backspaceKey', 30, 30]], [[keyboardOffImage, 'keyboardOff', 15, 30], [':', 15, 30], [',', 15, 30],
-            [spaceBarButtonImage, 'spacebarKey', 45, 30], ['.', 15, 30], ['ABC', 30, 30, 0], [carriageReturnImage, 'carriageReturnKey', 30, 30]]]];
+            ['backspaceKey', 30, 30]], [['keyboardOff', 15, 30], [':', 15, 30], [',', 15, 30],
+            ['spacebarKey', 45, 30], ['.', 15, 30], ['ABC', 40, 30, 0], ['carriageReturnKey', 30, 30]]]];
     }
     virtualKeyboardPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Keys: keys, KeyPressFunction: keypressFunc, GapBetweenButtons: gapbetweenbuttons,
-        GapBetweenRows: gapbetweenrows
+        GapBetweenRows: gapbetweenrows, CurrentKeyboardIndex: 0, KeyExtents: null, TextHeight: textheight, TextFontString: textfontstring, CustomKeys: customkeys,
+        CustomDrawLetterFunction: customDrawLetterFunc, HasGloss: hasgloss, ShiftKeyPressed: 0
     });
     registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
         var virtualKeyboardProps = getVirtualKeyboardProps(canvasid1, windowid1);
+        virtualKeyboardProps.KeyExtents = new Array();
+        var ctx = getCtx(canvasid1);
+        ctx.fillStyle = '#3c4243';
+        ctx.beginPath();
+        ctx.rect(virtualKeyboardProps.X, virtualKeyboardProps.Y, virtualKeyboardProps.Width, virtualKeyboardProps.Height);
+        ctx.fill();
+        ctx.strokeStyle = '#353a3b';
+        var extraWidth = (virtualKeyboardProps.Height / Math.tan(Math.PI/4));
+        for (var i = 0; i < (virtualKeyboardProps.Width + extraWidth) / 10; i++) {
+            ctx.beginPath();
+            ctx.moveTo(virtualKeyboardProps.X - extraWidth + (i * 10), virtualKeyboardProps.Y);
+            ctx.lineTo(virtualKeyboardProps.X + (i * 10), virtualKeyboardProps.Y + virtualKeyboardProps.Height);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(virtualKeyboardProps.X - extraWidth + (i * 10), virtualKeyboardProps.Y + virtualKeyboardProps.Height);
+            ctx.lineTo(virtualKeyboardProps.X + (i * 10), virtualKeyboardProps.Y);
+            ctx.stroke();
+        }
+        var offsetY = virtualKeyboardProps.GapBetweenRows;
+        for (var row = 0; row < virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex].length; row++) {
+            var rowWidth = 0;
+            for (var c = 0; c < virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row].length; c++) {
+                rowWidth += virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1] + virtualKeyboardProps.GapBetweenButtons;
+            }
+            var offsetX = virtualKeyboardProps.GapBetweenButtons + ((virtualKeyboardProps.Width - virtualKeyboardProps.GapBetweenButtons - rowWidth) / 2);
+            for (var c = 0; c < virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row].length; c++) {
+                ctx.beginPath();
+                ctx.moveTo(offsetX + virtualKeyboardProps.X, offsetY + virtualKeyboardProps.Y + 5);
+                ctx.arc(offsetX + virtualKeyboardProps.X + 5, offsetY + virtualKeyboardProps.Y + 5, 5, Math.PI, (Math.PI / 180) * 270, false);
+                ctx.lineTo(offsetX + virtualKeyboardProps.X + virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1] - 5, offsetY + virtualKeyboardProps.Y);
+                ctx.arc(offsetX + virtualKeyboardProps.X + virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1] - 5, offsetY + virtualKeyboardProps.Y + 5, 5,
+                    (Math.PI / 180) * 270, Math.PI * 2, false);
+                ctx.lineTo(offsetX + virtualKeyboardProps.X + virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1], offsetY + virtualKeyboardProps.Y +
+                    virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2] - 5);
+                ctx.arc(offsetX + virtualKeyboardProps.X + virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1] - 5, offsetY + virtualKeyboardProps.Y +
+                    virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2] - 5, 5, 0, Math.PI / 2, false);
+                ctx.lineTo(offsetX + virtualKeyboardProps.X + 5, offsetY + virtualKeyboardProps.Y + virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2]);
+                ctx.arc(offsetX + virtualKeyboardProps.X + 5, offsetY + virtualKeyboardProps.Y + virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2] - 5,
+                    5, Math.PI / 2, Math.PI, false);
+                ctx.closePath();
+                virtualKeyboardProps.KeyExtents.push([offsetX + virtualKeyboardProps.X, offsetY + virtualKeyboardProps.Y, virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1],
+                    virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2], virtualKeyboardProps.ShiftKeyPressed == 1 ?
+                    virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][0] : virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][0].toLowerCase(),
+                    row, c]);
+                var g = ctx.createLinearGradient(offsetX + virtualKeyboardProps.X, offsetY + virtualKeyboardProps.Y, offsetX + virtualKeyboardProps.X, offsetY + virtualKeyboardProps.Y +
+                    virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2]);
+                g.addColorStop(0, '#536fa0');
+                g.addColorStop(1, '#274580');
+                ctx.fillStyle = g;
+                ctx.fill();
+                ctx.strokeStyle = '#1f3a73';
+                ctx.stroke();
+                if (virtualKeyboardProps.CustomKeys == 0) {
+                    g = ctx.createLinearGradient(offsetX + virtualKeyboardProps.X, offsetY + virtualKeyboardProps.Y + ((virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2]
+                        - virtualKeyboardProps.TextHeight) / 2), offsetX + virtualKeyboardProps.X,
+                        offsetY + virtualKeyboardProps.Y - ((virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2] - virtualKeyboardProps.TextHeight) / 2) +
+                        virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2]);
+                    g.addColorStop(0, '#fafbfc');
+                    g.addColorStop(1, '#dde2ea');
+                    ctx.fillStyle = g;
+                    ctx.shadowBlur = 5;
+                    ctx.shadowColor = '#636e7f';
+                    ctx.font = virtualKeyboardProps.TextFontString;
+                    switch (virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][0]) {
+                        case 'shiftKey':
+                            ctx.beginPath();
+                            ctx.moveTo(offsetX + virtualKeyboardProps.X + (virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1] / 2),
+                                offsetY + virtualKeyboardProps.Y + 5);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + 5, offsetY + virtualKeyboardProps.Y + 15);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + (virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1] / 2) - 3,
+                                offsetY + virtualKeyboardProps.Y + 15);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + (virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1] / 2) - 3,
+                                offsetY + virtualKeyboardProps.Y + virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1] - 5);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + (virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1] / 2) + 3,
+                                offsetY + virtualKeyboardProps.Y + virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1] - 5);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + (virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1] / 2) + 3,
+                                offsetY + virtualKeyboardProps.Y + 15);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1] - 5,
+                                offsetY + virtualKeyboardProps.Y + 15);
+                            ctx.closePath();
+                            if (virtualKeyboardProps.ShiftKeyPressed == 1) {
+                                ctx.save();
+                                var g2 = ctx.createLinearGradient(offsetX + virtualKeyboardProps.X, offsetY + virtualKeyboardProps.Y, offsetX + virtualKeyboardProps.X, offsetY +
+                                    virtualKeyboardProps.Y + virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2]);
+                                g2.addColorStop(0, '#00FF00');
+                                g2.addColorStop(1, '#FFFFFF');
+                                ctx.fillStyle = g2;
+                                ctx.fill();
+                                ctx.restore();
+                            } else {
+                                ctx.fill();
+                            }
+                            break;
+                        case 'backspaceKey':
+                        case 'keyboardOff':
+                        case 'spacebarKey':
+                        case 'carriageReturnKey':
+                        case 'up':
+                        case 'down':
+                        case 'left':
+                        case 'right':
+                            break;
+                        case '12#':
+                        case 'ABC':
+                            ctx.fillText(virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][0], offsetX + virtualKeyboardProps.X +
+                                ((virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1] -
+                                ctx.measureText(virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][0]).width) / 2),
+                                offsetY + virtualKeyboardProps.Y + virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2] -
+                                ((virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2] - virtualKeyboardProps.TextHeight) / 2));
+                            break;
+                        default:
+                            ctx.fillText(virtualKeyboardProps.ShiftKeyPressed == 1 ? virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][0] :
+                                virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][0].toLowerCase(), offsetX + virtualKeyboardProps.X +
+                                ((virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1] -
+                                ctx.measureText(virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][0]).width) / 2),
+                                offsetY + virtualKeyboardProps.Y + virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2] -
+                                ((virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2] - virtualKeyboardProps.TextHeight) / 2));
+                            break;
+                    }
+                } else {
+                    virtualKeyboardProps.CustomDrawLetterFunction(ctx, virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][0],
+                        offsetX + virtualKeyboardProps.X, offsetY + virtualKeyboardProps.Y, virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1],
+                        virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2]);
+                }
+                if (virtualKeyboardProps.HasGloss == 1) {
+                    ctx.beginPath();
+                    ctx.moveTo(offsetX + virtualKeyboardProps.X + 2, offsetY + virtualKeyboardProps.Y + 5 + 2);
+                    ctx.arc(offsetX + virtualKeyboardProps.X + 5 + 2, offsetY + virtualKeyboardProps.Y + 5 + 2, 5, Math.PI, (Math.PI / 180) * 270, false);
+                    ctx.lineTo(offsetX + virtualKeyboardProps.X + virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1] - 5 - 2, offsetY + virtualKeyboardProps.Y + 2);
+                    ctx.arc(offsetX + virtualKeyboardProps.X + virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1] - 5 - 2, offsetY + virtualKeyboardProps.Y + 5 + 2, 5,
+                        (Math.PI / 180) * 270, Math.PI * 2, false);
+                    ctx.lineTo(offsetX + virtualKeyboardProps.X + virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1] - 2, offsetY + virtualKeyboardProps.Y +
+                        virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2] - 5 + 2);
+                    ctx.arc(offsetX + virtualKeyboardProps.X + virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1] - 5 - 2, offsetY + virtualKeyboardProps.Y +
+                        virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2] - 5 + 2, 5, 0, Math.PI / 2, false);
+                    ctx.lineTo(offsetX + virtualKeyboardProps.X + 5 + 2, offsetY + virtualKeyboardProps.Y + virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2] + 2);
+                    ctx.arc(offsetX + virtualKeyboardProps.X + 5 + 2, offsetY + virtualKeyboardProps.Y + virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2] - 5 + 2,
+                        5, Math.PI / 2, Math.PI, false);
+                    ctx.closePath();
+                    var g = ctx.createLinearGradient(offsetX + virtualKeyboardProps.X + 2, offsetY + virtualKeyboardProps.Y + 2, offsetX + virtualKeyboardProps.X + 2, offsetY + virtualKeyboardProps.Y +
+                    (virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2] / 2));;
+                    g.addColorStop(0, 'rgba(255,255,255,0.4)');
+                    g.addColorStop(1, 'rgba(255,255,255,0.05)');
+                    ctx.fillStyle = g;
+                    ctx.fill();
+                }
+                offsetX += virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1] + virtualKeyboardProps.GapBetweenButtons;
+            }
+            offsetY += virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][0][2] + virtualKeyboardProps.GapBetweenRows;
+        }
+        registerClickFunction(windowid, function (canvasid1, windowid1, e) {
+            var x = e.calcX;
+            var y = e.calcY;
+            var virtualKeyboardProps = getVirtualKeyboardProps(canvasid1, windowid1);
+            for (var i = 0; i < virtualKeyboardProps.KeyExtents.length; i++) {
+                if (x > virtualKeyboardProps.KeyExtents[i][0] && x < virtualKeyboardProps.KeyExtents[i][0] + virtualKeyboardProps.KeyExtents[i][2] &&
+                    y > virtualKeyboardProps.KeyExtents[i][1] && y < virtualKeyboardProps.KeyExtents[i][1] + virtualKeyboardProps.KeyExtents[i][3]) {
+                    if (virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][virtualKeyboardProps.KeyExtents[i][5]][virtualKeyboardProps.KeyExtents[i][6]].length == 4) {
+                        virtualKeyboardProps.CurrentKeyboardIndex =
+                            virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][virtualKeyboardProps.KeyExtents[i][5]][virtualKeyboardProps.KeyExtents[i][6]][3];
+                        draw(canvasid1);
+                        return;
+                    } else {
+                        if (virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][virtualKeyboardProps.KeyExtents[i][5]][virtualKeyboardProps.KeyExtents[i][6]][0] == 'shiftKey') {
+                            virtualKeyboardProps.ShiftKeyPressed = (virtualKeyboardProps.ShiftKeyPressed == 1 ? 0 : 1);
+                        } else {
+                            virtualKeyboardProps.KeyPressFunction(canvasid1, windowid1, virtualKeyboardProps.KeyExtents[i][4]);
+                        }
+                    }
+                }
+            }
+        }, canvasid);
     }, canvasid);
+    return windowid;
 }
 
 //AJAX Postback code Starts here

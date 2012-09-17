@@ -29,7 +29,7 @@
         <script type="text/javascript">
             var elemId = 'canvas';
             registerCanvasElementId(elemId);
-            createButton(elemId, 'b1', 10, 10, 100, 40, 'Google Search', '#0000FF', 12, '12pt Ariel', 5, highestDepth, 1, 1,
+            createButton(elemId, 'b1', 10, 10, 30, 30, '', '#0000FF', 12, '12pt Ariel', 5, highestDepth, 1, 0,
                 null, null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1', null, 1, 'http://www.google.com');
             createButton(elemId, 'b2', 50, 38, 100, 40, 'CodeProject', '#0000FF', 12, '12pt Ariel', 10, highestDepth + 1, 1, 1,
                 null, null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1', null,
@@ -69,9 +69,10 @@
                 , [6, 5, 'Six', 1], [7, 6, 'Seven', 1], [8, 6, 'Eight', 1], [9, 8, 'Nine', 1]], 0, 1, 3, 2, '#00FF00', '10pt Ariel', 10, 
                 function (canvasid, windowid, selectedNodeIndex) { alert(selectedNodeIndex); });
             createTextBox(elemId, 'textbox1', 400, 10, 300, 60, highestDepth, 'Type your name here', '#F0F0F0', 18, '18pt Ariel', '#051329', 18, '18pt Ariel', 50, '[a-zA-Z ]', 0, null, 1, '#2e3642',
-                1, 0, '#000000', 3, 3, 20, 1, 10, 1, '#9bacc6', '#d6e4f9', 0, 'Title.png', 1, ['India','America','China','Russia','Brazil'], 0, 0, '#D0D000', 12, '12pt Ariel', '', '#0d2952', 'rgba(0, 0, 240, 0.2)', 1);
-            alert(navigator.userAgent);
+                1, 0, '#000000', 3, 3, 20, 1, 10, 1, '#9bacc6', '#d6e4f9', 0, 'Title.png', 1, ['India', 'America', 'China', 'Russia', 'Brazil'], 0, 0, '#D0D000', 12, '12pt Ariel', '', '#0d2952', 'rgba(0, 0, 240, 0.2)', 1);
+            createVirtualKeyboard(elemId, 'vkb1', 500, 600, 250, 180, highestDepth, null, function (c, w, l) { alert(l); }, 5, 5, 1, 12, '12pt Ariel');
             draw(elemId);
+            alert(navigator.userAgent);
         </script>
     </div>
     </form>
