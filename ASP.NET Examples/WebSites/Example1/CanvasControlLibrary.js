@@ -126,7 +126,7 @@ function registerAnimatedWindow(canvasid) {
         if (windowWithAnimationCount[i].CanvasID == canvasid) {
             windowWithAnimationCount[i].Count++;
             if (intervalID == -1) {
-                intervalID = setInterval(animatedDraw, 20);
+                intervalID = setInterval(animatedDraw, 200);
             }
             return;
         }
@@ -1261,6 +1261,7 @@ function defaultButtonDrawFunction(canvasid, windowid) {
         ctx.fillStyle = g;
         ctx.shadowBlur = 5;
         ctx.shadowColor = '#636e7f';
+        ctx.font = buttonProps.TextFontString;
         ctx.fillText(buttonProps.Text, buttonOffsetX + buttonProps.X + ((buttonProps.Width - ctx.measureText(buttonProps.Text).width - 5) / 2),
             buttonOffsetY + buttonProps.Y + buttonProps.Height - 5 - ((buttonProps.Height - buttonProps.TextHeight - 5) / 2));
     } else {
@@ -6125,7 +6126,7 @@ function getTextBoxPropsByKeyboardID(canvasid, windowid) {
 
 function textBoxTouchKeyPress(canvasid, windowid, keyboardChar) {
     var textBoxProps = getTextBoxPropsByKeyboardID(canvasid, windowid);
-    switch (keyboardChar) {
+    switch (keyboardChar.toLowerCase()) {
         case 'left':
             //left arrow	 37
             if (textBoxProps.CaretPosIndex > -1) {
@@ -6148,7 +6149,7 @@ function textBoxTouchKeyPress(canvasid, windowid, keyboardChar) {
             textBoxProps.MouseDown = 0;
             textBoxProps.WasSelecting = 0;
             return;
-        case 'backspaceKey':
+        case 'backspacekey':
             //backspace	 8
             if (textBoxProps.CaretPosIndex > -1) {
                 if (textBoxProps.CaretPosIndex == 0) {
@@ -6175,10 +6176,10 @@ function textBoxTouchKeyPress(canvasid, windowid, keyboardChar) {
                 FindTextBoxPossible(textBoxProps, c);
             }
             return;
-        case 'spacebarKey':
+        case 'spacebarkey':
             keyboardChar = ' ';
             break;
-        case 'carriageReturnKey':
+        case 'carriagereturnkey':
             return;
     }
     if (!textBoxProps.UserInputText || (textBoxProps.UserInputText && textBoxProps.UserInputText.length < textBoxProps.MaxChars)) {
@@ -6272,7 +6273,7 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
     };
     if (navigator.userAgent.toLowerCase().indexOf('android') > -1 || navigator.userAgent.toLowerCase().indexOf('ipad') > -1 || navigator.userAgent.toLowerCase().indexOf('iphone') > -1 || navigator.userAgent.toLowerCase().indexOf('ipod') > -1) {
         if (!customKeyboardWindowID) {
-            customKeyboardWindowID = createVirtualKeyboard(canvasid, controlNameId + 'VKB', x, y + height, 250, 180, depth, null, textBoxTouchKeyPress, 5, 5, 1, 12, '12pt Ariel', null);
+            customKeyboardWindowID = createVirtualKeyboard(canvasid, controlNameId + 'VKB', x, y + height, 360, 180, depth, null, textBoxTouchKeyPress, 5, 5, 1, 12, '12pt Ariel', null);
             registerModalWindow(canvasid, customKeyboardWindowID);
             registerHiddenWindow(canvasid, customKeyboardWindowID, 0);
         }
@@ -6686,18 +6687,29 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
     registerAnimatedWindow(canvasid);
     registerLostFocusFunction(canvasid, windowid, function (canvasid8, windowid8) {
         var textBoxProps = getTextBoxProps(canvasid8, windowid8);
-        if (doesWindowHaveFocus(canvasid, textBoxProps.VScrollBarWindowID) == 0 &&
-            doesWindowHaveFocus(canvasid, textBoxProps.DropDownWindowID) == 0 &&
+        if (navigator.userAgent.toLowerCase().indexOf('android') > -1 || navigator.userAgent.toLowerCase().indexOf('ipad') > -1 || navigator.userAgent.toLowerCase().indexOf('iphone') > -1 || navigator.userAgent.toLowerCase().indexOf('ipod') > -1) {
+            if (doesWindowHaveFocus(canvasid8, textBoxProps.CustomKeyboardWindowID) == 0 && doingEventForWindowID != textBoxProps.CustomKeyboardWindowID) {
+                setHiddenWindowStatus(canvasid8, textBoxProps.CustomKeyboardWindowID, 1);
+            } else {
+                setHiddenWindowStatus(canvasid8, textBoxProps.CustomKeyboardWindowID, 0);
+            }
+        }
+        if (doesWindowHaveFocus(canvasid8, textBoxProps.VScrollBarWindowID) == 0 &&
+            doesWindowHaveFocus(canvasid8, textBoxProps.DropDownWindowID) == 0 &&
             doingEventForWindowID != textBoxProps.DropDownWindowID &&
             doingEventForWindowID != textBoxProps.VScrollBarWindowID) {
             textBoxProps.SelectedTextStartIndex = -1;
             textBoxProps.SelectedTextEndIndex = -1;
             textBoxProps.MouseDown = 0;
             textBoxProps.WasSelecting = 0;
-            setHiddenWindowStatus(canvasid, textBoxProps.DropDownWindowID, 1);
-            setHiddenWindowStatus(canvasid, textBoxProps.VScrollBarWindowID, 1);
+            setHiddenWindowStatus(canvasid8, textBoxProps.DropDownWindowID, 1);
+            setHiddenWindowStatus(canvasid8, textBoxProps.VScrollBarWindowID, 1);
             draw(canvasid8);
         }
+    });
+    registerGotFocusFunction(canvasid, windowid, function (canvasid1, windowid1) {
+        var textBoxProps = getTextBoxProps(canvasid1, windowid1);
+        setHiddenWindowStatus(canvasid1, textBoxProps.CustomKeyboardWindowID, 0);
     });
     return windowid;
 }
@@ -7193,7 +7205,7 @@ function getWordProcessorPropsByKeyboardID(canvasid, windowid) {
 function wordProcessorTouchKeyPress(canvasid, windowid, keyboardChar) {
     var wordProcessorProps = getWordProcessorPropsByKeyboardID(canvasid, windowid);
     var skip = false;
-    switch (keyboardChar) {
+    switch (keyboardChar.toLowerCase()) {
         case 'left':
             //left arrow	 37
             if (wordProcessorProps.CaretPosIndex > -1) {
@@ -7256,7 +7268,7 @@ function wordProcessorTouchKeyPress(canvasid, windowid, keyboardChar) {
             }
             skip = true;
             break;
-        case 'backspaceKey':
+        case 'backspacekey':
             //backspace	 8
             if (wordProcessorProps.CaretPosIndex > -1) {
                 if (wordProcessorProps.CaretPosIndex == 0) {
@@ -7281,10 +7293,10 @@ function wordProcessorTouchKeyPress(canvasid, windowid, keyboardChar) {
             }
             skip = true;
             break;
-        case 'spacebarKey':
+        case 'spacebarkey':
             keyboardChar = ' ';
             break;
-        case 'carriageReturnKey':
+        case 'carriagereturnkey':
             keyboardChar = '\n';
             break;
     }
@@ -7314,7 +7326,7 @@ function wordProcessorTouchKeyPress(canvasid, windowid, keyboardChar) {
     }
     wordProcessorProps.LineBreakIndexes = new Array();
     if (wordProcessorProps.UserInputText && wordProcessorProps.UserInputText.length > 0) {
-        var ctx = getCtx(canvasid3);
+        var ctx = getCtx(canvasid);
         if (wordProcessorProps.WordSensitive == 0) {
             var currStrIndex = 0;
             var lastLineBreakIndex = 0;
@@ -7353,7 +7365,7 @@ function wordProcessorTouchKeyPress(canvasid, windowid, keyboardChar) {
                 }
             }
         }
-        var vscrollbarProps = getScrollBarProps(canvasid3, wordProcessorProps.VScrollBarWindowID);
+        var vscrollbarProps = getScrollBarProps(canvasid, wordProcessorProps.VScrollBarWindowID);
         vscrollbarProps.MaxItems = wordProcessorProps.LineBreakIndexes.length;
         var caretLineNo = 0;
         if (wordProcessorProps.LineBreakIndexes.length > 0) {
@@ -7396,7 +7408,7 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
     vscrollbarwindowid = createScrollBar(canvasid, controlNameId + 'VS', x + width - 15, y, height, depth, (textHeight + lineSpacingInPixels) * Math.floor(height / textHeight), 1);
     if (navigator.userAgent.toLowerCase().indexOf('android') > -1 || navigator.userAgent.toLowerCase().indexOf('ipad') > -1 || navigator.userAgent.toLowerCase().indexOf('iphone') > -1 || navigator.userAgent.toLowerCase().indexOf('ipod') > -1) {
         if (!customKeyboardWindowID) {
-            customKeyboardWindowID = createVirtualKeyboard(canvasid, controlNameId + 'VKB', x, y + height, 250, 180, depth, null, wordProcessorTouchKeyPress, 5, 5, 1, 12, '12pt Ariel', null);
+            customKeyboardWindowID = createVirtualKeyboard(canvasid, controlNameId + 'VKB', x, y + height, 360, 180, depth, null, wordProcessorTouchKeyPress, 5, 5, 1, 12, '12pt Ariel', null);
         }
     }
     wordProcessorPropsArray.push({
@@ -7788,6 +7800,20 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
         }
     }, canvasid);
     registerAnimatedWindow(canvasid);
+    registerLostFocusFunction(canvasid, windowid, function (canvasid8, windowid8) {
+        var wordProcessorProps = getWordProcessorProps(canvasid8, windowid8);
+        if (navigator.userAgent.toLowerCase().indexOf('android') > -1 || navigator.userAgent.toLowerCase().indexOf('ipad') > -1 || navigator.userAgent.toLowerCase().indexOf('iphone') > -1 || navigator.userAgent.toLowerCase().indexOf('ipod') > -1) {
+            if (doesWindowHaveFocus(canvasid8, wordProcessorProps.CustomKeyboardWindowID) == 0 && doingEventForWindowID != wordProcessorProps.CustomKeyboardWindowID) {
+                setHiddenWindowStatus(canvasid8, wordProcessorProps.CustomKeyboardWindowID, 1);
+            } else {
+                setHiddenWindowStatus(canvasid8, wordProcessorProps.CustomKeyboardWindowID, 0);
+            }
+        }
+    });
+    registerGotFocusFunction(canvasid, windowid, function (canvasid1, windowid1) {
+        var wordProcessorProps = getWordProcessorProps(canvasid1, windowid1);
+        setHiddenWindowStatus(canvasid1, wordProcessorProps.CustomKeyboardWindowID, 0);
+    });
     return windowid;
 }
 
@@ -7937,17 +7963,17 @@ function createVirtualKeyboard(canvasid, controlNameId, x, y, width, height, dep
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'VirtualKeyboard', controlNameId);
     var customkeys = (keys == null ? 0 : 1);
     if (!keys) {
-        keys = [[[['Q', 15, 30], ['W', 15, 30], ['E', 15, 30], ['R', 15, 30], ['T', 15, 30], ['Y', 15, 30], ['U', 15, 30], ['I', 15, 30],
-            ['O', 15, 30], ['P', 15, 30]], [['A', 15, 30], ['S', 15, 30], ['D', 15, 30], ['F', 15, 30], ['G', 15, 30],
-            ['H', 15, 30], ['J', 15, 30], ['K', 15, 30], ['L', 15, 30]], [['shiftKey', 30, 30, ], ['Z', 15, 30], ['X', 15, 30],
-            ['C', 15, 30], ['V', 15, 30], ['B', 15, 30], ['N', 15, 30], ['M', 15, 30], ['backspaceKey', 30, 30]],
-            [['keyboardOff', 30, 30], [',', 15, 30], ['spacebarKey', 60, 30], ['.', 15, 30], ['12#', 30, 30, 1],
-            ['carriageReturnKey', 30, 30]], [['up', 30, 30], ['down', 30, 30], ['left', 30, 30], ['right', 30, 30]]], [[['1', 15, 30], ['2', 15, 30], ['3', 15, 30], ['4', 15, 30],
-            ['5', 15, 30], ['6', 15, 30], ['7', 15, 30], ['8', 15, 30], ['9', 15, 30], ['0', 15, 30]], [['!', 15, 30], ['@', 15, 30],
-            ['#', 15, 30], ['$', 15, 30], ['%', 15, 30], ['&', 15, 30], ['*', 15, 30], ['?', 15, 30], ['/', 15, 30]], [['_', 15, 30],
-            ['"', 15, 30], ['\'', 15, 30], ['(', 15, 30], [')', 15, 30], ['-', 15, 30], ['+', 15, 30], [';', 15, 30],
-            ['backspaceKey', 30, 30]], [['keyboardOff', 15, 30], [':', 15, 30], [',', 15, 30],
-            ['spacebarKey', 45, 30], ['.', 15, 30], ['ABC', 40, 30, 0], ['carriageReturnKey', 30, 30]]]];
+        keys = [[[['Q', 30, 30], ['W', 30, 30], ['E', 30, 30], ['R', 30, 30], ['T', 30, 30], ['Y', 30, 30], ['U', 30, 30], ['I', 30, 30],
+            ['O', 30, 30], ['P', 30, 30]], [['A', 30, 30], ['S', 30, 30], ['D', 30, 30], ['F', 30, 30], ['G', 30, 30],
+            ['H', 30, 30], ['J', 30, 30], ['K', 30, 30], ['L', 30, 30]], [['shiftKey', 30, 30, ], ['Z', 30, 30], ['X', 30, 30],
+            ['C', 30, 30], ['V', 30, 30], ['B', 30, 30], ['N', 30, 30], ['M', 30, 30], ['backspaceKey', 30, 30]],
+            [['keyboardOff', 30, 30], [',', 30, 30], ['spacebarKey', 60, 30], ['.', 30, 30], ['12#', 30, 30, 1],
+            ['carriageReturnKey', 30, 30]], [['up', 30, 30], ['down', 30, 30], ['left', 30, 30], ['right', 30, 30]]], [[['1', 30, 30], ['2', 30, 30], ['3', 30, 30], ['4', 30, 30],
+            ['5', 30, 30], ['6', 30, 30], ['7', 30, 30], ['8', 30, 30], ['9', 30, 30], ['0', 30, 30]], [['!', 30, 30], ['@', 30, 30],
+            ['#', 30, 30], ['$', 30, 30], ['%', 30, 30], ['&', 30, 30], ['*', 30, 30], ['?', 30, 30], ['/', 30, 30]], [['_', 30, 30],
+            ['"', 30, 30], ['\'', 30, 30], ['(', 30, 30], [')', 30, 30], ['-', 30, 30], ['+', 30, 30], [';', 30, 30],
+            ['backspaceKey', 30, 30]], [['keyboardOff', 30, 30], [':', 30, 30], [',', 30, 30],
+            ['spacebarKey', 45, 30], ['.', 30, 30], ['ABC', 40, 30, 0], ['carriageReturnKey', 30, 30]], [['up', 30, 30], ['down', 30, 30], ['left', 30, 30], ['right', 30, 30]]]];
     }
     virtualKeyboardPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Keys: keys, KeyPressFunction: keypressFunc, GapBetweenButtons: gapbetweenbuttons,
@@ -8016,6 +8042,7 @@ function createVirtualKeyboard(canvasid, controlNameId, x, y, width, height, dep
                     g.addColorStop(0, '#fafbfc');
                     g.addColorStop(1, '#dde2ea');
                     ctx.fillStyle = g;
+                    ctx.strokeStyle = g;
                     ctx.shadowBlur = 5;
                     ctx.shadowColor = '#636e7f';
                     ctx.font = virtualKeyboardProps.TextFontString;
@@ -8050,13 +8077,88 @@ function createVirtualKeyboard(canvasid, controlNameId, x, y, width, height, dep
                             }
                             break;
                         case 'backspaceKey':
+                            ctx.beginPath();
+                            ctx.moveTo(offsetX + virtualKeyboardProps.X + 5, offsetY + virtualKeyboardProps.Y + (virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2] / 2));
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + 14, offsetY + virtualKeyboardProps.Y + 5);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + 14, offsetY + virtualKeyboardProps.Y + (virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2] / 2) - 3);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1] - 5,
+                                offsetY + virtualKeyboardProps.Y + (virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2] / 2) - 3);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1] - 5,
+                                offsetY + virtualKeyboardProps.Y + (virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2] / 2) + 3);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + 14, offsetY + virtualKeyboardProps.Y + (virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2] / 2) + 3);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + 14, offsetY + virtualKeyboardProps.Y + virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2] - 5);
+                            ctx.closePath();
+                            ctx.fill();
+                            break;
                         case 'keyboardOff':
+                            ctx.beginPath();
+                            ctx.rect(offsetX + virtualKeyboardProps.X + 5, offsetY + virtualKeyboardProps.Y + 5, virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1] - 10,
+                                virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2] - 10);
+                            ctx.stroke();
+                            for (var w = 0; w < (virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1] - 10) / 4; w++) {
+                                for (var f = 0; f < (virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2] - 10) / 4; f++) {
+                                    ctx.beginPath();
+                                    ctx.rect(offsetX + virtualKeyboardProps.X + 5 + (w * 4), offsetY + virtualKeyboardProps.Y + 5 + (f * 4), 3, 3);
+                                    ctx.stroke();
+                                }
+                            }
+                            break;
                         case 'spacebarKey':
+                            ctx.beginPath();
+                            ctx.moveTo(offsetX + virtualKeyboardProps.X + 5, offsetY + virtualKeyboardProps.Y + virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2] - 10);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + 5, offsetY + virtualKeyboardProps.Y + virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2] - 5);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1] - 5,
+                                offsetY + virtualKeyboardProps.Y + virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2] - 5);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1] - 5,
+                                offsetY + virtualKeyboardProps.Y + virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2] - 10);
+                            ctx.stroke();
+                            break;
                         case 'carriageReturnKey':
+                            ctx.beginPath();
+                            ctx.moveTo(offsetX + virtualKeyboardProps.X + 5, offsetY + virtualKeyboardProps.Y + 22);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + 14, offsetY + virtualKeyboardProps.Y + 15);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + 14, offsetY + virtualKeyboardProps.Y + 19);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + 19, offsetY + virtualKeyboardProps.Y + 19);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + 19, offsetY + virtualKeyboardProps.Y + 5);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + 25, offsetY + virtualKeyboardProps.Y + 5);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + 25, offsetY + virtualKeyboardProps.Y + 25);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + 14, offsetY + virtualKeyboardProps.Y + 25);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + 14, offsetY + virtualKeyboardProps.Y + 29);
+                            ctx.closePath();
+                            ctx.fill();
+                            break;
                         case 'up':
+                            ctx.beginPath();
+                            ctx.moveTo(offsetX + virtualKeyboardProps.X + 15, offsetY + virtualKeyboardProps.Y + 5);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + 25, offsetY + virtualKeyboardProps.Y + 25);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + 5, offsetY + virtualKeyboardProps.Y + 25);
+                            ctx.closePath();
+                            ctx.fill();
+                            break;
                         case 'down':
+                            ctx.beginPath();
+                            ctx.moveTo(offsetX + virtualKeyboardProps.X + 15, offsetY + virtualKeyboardProps.Y + 25);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + 5, offsetY + virtualKeyboardProps.Y + 5);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + 25, offsetY + virtualKeyboardProps.Y + 5);
+                            ctx.closePath();
+                            ctx.fill();
+                            break;
                         case 'left':
+                            ctx.beginPath();
+                            ctx.moveTo(offsetX + virtualKeyboardProps.X + 5, offsetY + virtualKeyboardProps.Y + 15);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + 25, offsetY + virtualKeyboardProps.Y + 5);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + 25, offsetY + virtualKeyboardProps.Y + 25);
+                            ctx.closePath();
+                            ctx.fill();
+                            break;
                         case 'right':
+                            ctx.beginPath();
+                            ctx.moveTo(offsetX + virtualKeyboardProps.X + 25, offsetY + virtualKeyboardProps.Y + 15);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + 5, offsetY + virtualKeyboardProps.Y + 25);
+                            ctx.lineTo(offsetX + virtualKeyboardProps.X + 5, offsetY + virtualKeyboardProps.Y + 5);
+                            ctx.closePath();
+                            ctx.fill();
+                            break;
                             break;
                         case '12#':
                         case 'ABC':
@@ -8070,7 +8172,8 @@ function createVirtualKeyboard(canvasid, controlNameId, x, y, width, height, dep
                             ctx.fillText(virtualKeyboardProps.ShiftKeyPressed == 1 ? virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][0] :
                                 virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][0].toLowerCase(), offsetX + virtualKeyboardProps.X +
                                 ((virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][1] -
-                                ctx.measureText(virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][0]).width) / 2),
+                                ctx.measureText(virtualKeyboardProps.ShiftKeyPressed == 1 ? virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][0] :
+                                virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][0].toLowerCase()).width) / 2),
                                 offsetY + virtualKeyboardProps.Y + virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2] -
                                 ((virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][c][2] - virtualKeyboardProps.TextHeight) / 2));
                             break;
@@ -8117,7 +8220,6 @@ function createVirtualKeyboard(canvasid, controlNameId, x, y, width, height, dep
                         virtualKeyboardProps.CurrentKeyboardIndex =
                             virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][virtualKeyboardProps.KeyExtents[i][5]][virtualKeyboardProps.KeyExtents[i][6]][3];
                         draw(canvasid1);
-                        return;
                     } else {
                         if (virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][virtualKeyboardProps.KeyExtents[i][5]][virtualKeyboardProps.KeyExtents[i][6]][0] == 'shiftKey') {
                             virtualKeyboardProps.ShiftKeyPressed = (virtualKeyboardProps.ShiftKeyPressed == 1 ? 0 : 1);
@@ -8125,6 +8227,7 @@ function createVirtualKeyboard(canvasid, controlNameId, x, y, width, height, dep
                             virtualKeyboardProps.KeyPressFunction(canvasid1, windowid1, virtualKeyboardProps.KeyExtents[i][4]);
                         }
                     }
+                    return;
                 }
             }
         }, canvasid);
