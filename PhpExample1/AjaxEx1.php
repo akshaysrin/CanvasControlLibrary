@@ -20,7 +20,17 @@ $ccl->SendVars($parameters);
 function ClickMe($obj, $canvasid, $windowid)
 {
     $lp = $obj->getControlPropsByControlNameID("l1");
-    $lp->Text = "Did Postback";
+    if (count($obj->CurrentSessionObj->Data) == 0)
+    {
+        array_push($obj->CurrentSessionObj->Data, 1);
+    }
+    else
+    {
+        $obj->CurrentSessionObj->Data[0] = $obj->CurrentSessionObj->Data[0] + 1;
+    }
+    $lp->Text = $obj->CurrentSessionObj->Data[0];
+    $i1 = $obj->getControlPropsByControlNameID("i1");
+    $i1->ImageURL = "Bombay.png";
 }
 
 ?>

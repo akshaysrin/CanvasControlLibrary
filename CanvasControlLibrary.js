@@ -2682,7 +2682,7 @@ function drawTreeView(canvasid, windowid) {
             var level = findNodeLevel(treeViewProps, i);
             drawTreeViewNode(ctx, 4 + treeViewProps.X + (level * 8), 4 + treeViewProps.Y + heightoffset, treeViewProps.Data[i][treeViewProps.ExpandedColIndex],
                 treeViewProps.Data[i][treeViewProps.LabelColIndex], treeViewProps.TextColor, treeViewProps.TextFontString, treeViewProps.TextHeight,
-                level, o, (o == 0 ? 0 : numberOfChildNodes(treeViewProps, i)), treeViewProps, i);
+                level, o, (o == 0 ? 0 : numberOfChildNodes(treeViewProps, i)), treeViewProps, i, vscrollbarProps.SelectedID);
             heightoffset += (treeViewProps.TextHeight > 9 ? treeViewProps.TextHeight : 9) + 8;
         }
     }
@@ -2749,7 +2749,7 @@ function checkHowManyChildNodesAreExpanded(treeviewProps, p) {
     return count - lastchildcount;
 }
 
-function drawTreeViewNode(ctx, x, y, state, text, textcolor, textfontstring, textheight, level, hasChildNodes, numOfChildNodes, treeviewProps, i) {
+function drawTreeViewNode(ctx, x, y, state, text, textcolor, textfontstring, textheight, level, hasChildNodes, numOfChildNodes, treeviewProps, i, selectednodeid) {
     x += level * 8;
     if (hasChildNodes == 1) {
         ctx.strokeStyle = '#3c7fb1';
@@ -2792,6 +2792,12 @@ function drawTreeViewNode(ctx, x, y, state, text, textcolor, textfontstring, tex
             ctx.moveTo(x - 11, y + 5);
             ctx.lineTo(x, y + 5);
             ctx.stroke();
+            if (treeviewProps.Data[i][treeviewProps.ParentIDColIndex] - 1 < selectednodeid) {
+                ctx.beginPath();
+                ctx.moveTo(x - 11, y + 5);
+                ctx.lineTo(x - 11, treeviewProps.Y);
+                ctx.stroke();
+            }
         }
     } else if (level > 0) {
         ctx.strokeStyle = '#C0C0C0';
@@ -2799,6 +2805,12 @@ function drawTreeViewNode(ctx, x, y, state, text, textcolor, textfontstring, tex
         ctx.moveTo(x - 11, y + 10 + (numOfChildNodes * ((textheight > 9 ? textheight : 9) + 8)) - 4);
         ctx.lineTo(x + 8, y + 10 + (numOfChildNodes * ((textheight > 9 ? textheight : 9) + 8)) - 4);
         ctx.stroke();
+        if (treeviewProps.Data[i][treeviewProps.ParentIDColIndex] - 1 < selectednodeid) {
+            ctx.beginPath();
+            ctx.moveTo(x - 11, y + 5);
+            ctx.lineTo(x - 11, treeviewProps.Y);
+            ctx.stroke();
+        }
     }
     ctx.fillStyle = textcolor;
     ctx.font = textfontstring;
