@@ -115,38 +115,40 @@ var sessionID = null;
 
 function animatedDraw() {
     for (var i = 0; i < windowWithAnimationCount.length; i++) {
-        if (windowWithAnimationCount[i].Count > 0) {
-            draw(windowWithAnimationCount[i].CanvasID);
-        }
+        var wprops = getWindowProps(windowWithAnimationCount[i].CanvasID, windowWithAnimationCount[i].WindowID);
+        invalidateRect(windowWithAnimationCount[i].CanvasID, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
     }
 }
 
-function registerAnimatedWindow(canvasid) {
+function registerAnimatedWindow(canvasid, windowid) {
     for (var i = 0; i < windowWithAnimationCount.length; i++) {
         if (windowWithAnimationCount[i].CanvasID == canvasid) {
-            windowWithAnimationCount[i].Count++;
             if (intervalID == -1) {
                 intervalID = setInterval(animatedDraw, 200);
             }
             return;
         }
     }
-    windowWithAnimationCount.push({ CanvasID: canvasid, Count: 1 });
+    windowWithAnimationCount.push({ CanvasID: canvasid, WindowID: windowid });
     intervalID = setInterval(animatedDraw, 20);
 }
 
-function unregisterAnimatedWindow(canvasid) {
+function unregisterAnimatedWindow(canvasid, windowid) {
+    for (var i = 0; i < windowWithAnimationCount.length; i++) {
+        if (windowWithAnimationCount[i].CanvasID == canvasid && windowWithAnimationCount[i].WindowID == windowid) {
+            windowWithAnimationCount.splice(i, 1);
+            break;
+        }
+    }
+    var found = 0;
     for (var i = 0; i < windowWithAnimationCount.length; i++) {
         if (windowWithAnimationCount[i].CanvasID == canvasid) {
-            windowWithAnimationCount[i].Count--;
-            if (windowWithAnimationCount[i].Count <= 0) {
-                if (intervalID > -1) {
-                    clearInterval(intervalID);
-                    intervalID = -1;
-                }
-            }
-            return;
+            found = 1;
+            break;
         }
+    }
+    if (!found) {
+        clearInterval(intervalID);
     }
 }
 
@@ -177,6 +179,7 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
     var x = e.calcX;
     var y = e.calcY;
     var consumeevent = 0;
+    var dodrawforwindowids = new Array();
     var dodraw = 0;
     for (var d = highestDepth; d >= 0; d--) {
         for (var i = 0; i < windows.length; i++) {
@@ -194,12 +197,14 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
                                 if (lostFocusFunctions[f][0] == canvasId && lostFocusFunctions[f][1] == windowIdWithFocus[k][1] &&
                                     lostFocusFunctions[f][1] != windows[i].WindowCount) {
                                     lostFocusFunctions[f][2](canvasId, windowIdWithFocus[k][1]);
+                                    dodrawforwindowids.push(lostFocusFunctions[f][1]);
                                 }
                             }
                             windowIdWithFocus[k][1] = windows[i].WindowCount;
                             for (var f = 0; f < gotFocusFunctions.length; f++) {
                                 if (gotFocusFunctions[f][0] == canvasId && gotFocusFunctions[f][1] == windowIdWithFocus[k][1]) {
                                     gotFocusFunctions[f][2](canvasId, windowIdWithFocus[k][1]);
+                                    dodrawforwindowids.push(gotFocusFunctions[f][1]);
                                 }
                             }
                             dodraw = 1;
@@ -212,6 +217,7 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
                         for (var f = 0; f < gotFocusFunctions.length; f++) {
                             if (gotFocusFunctions[f][0] == canvasId && gotFocusFunctions[f][1] == windows[i].WindowCount && windowIdWithFocus[k][1] != -1) {
                                 gotFocusFunctions[f][2](canvasId, windows[i].WindowCount);
+                                dodrawforwindowids.push(gotFocusFunctions[f][1]);
                             }
                         }
                         dodraw = 1;
@@ -226,7 +232,7 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
                         } else {
                             eventArray[u][1](canvasId, windows[i].WindowCount, e);
                         }
-                        draw(canvasId);
+                        invalidateRect(canvasId, null, windows[i].X, windows[i].Y, windows[i].Width, windows[i].Height);
                         if (windows[i].ControlType != 'TextBox' && suppressPreventDefault != 1) {
                             if (e.preventDefault)
                                 e.preventDefault();
@@ -255,12 +261,14 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
                                 if (lostFocusFunctions[f][0] == canvasId && lostFocusFunctions[f][1] == windowIdWithFocus[k][1] &&
                                     lostFocusFunctions[f][1] != windows[i].WindowCount) {
                                     lostFocusFunctions[f][2](canvasId, windowIdWithFocus[k][1]);
+                                    dodrawforwindowids.push(lostFocusFunctions[f][1]);
                                 }
                             }
                             windowIdWithFocus[k][1] = windows[i].WindowCount;
                             for (var f = 0; f < gotFocusFunctions.length; f++) {
                                 if (gotFocusFunctions[f][0] == canvasId && gotFocusFunctions[f][1] == windowIdWithFocus[k][1]) {
                                     gotFocusFunctions[f][2](canvasId, windowIdWithFocus[k][1]);
+                                    dodrawforwindowids.push(gotFocusFunctions[f][1]);
                                 }
                             }
                             dodraw = 1;
@@ -273,6 +281,7 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
                         for (var f = 0; f < gotFocusFunctions.length; f++) {
                             if (gotFocusFunctions[f][0] == canvasId && gotFocusFunctions[f][1] == windows[i].WindowCount) {
                                 gotFocusFunctions[f][2](canvasId, windows[i].WindowCount);
+                                dodrawforwindowids.push(gotFocusFunctions[f][1]);
                             }
                         }
                         dodraw = 1;
@@ -288,7 +297,7 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
                         } else {
                             eventArray[u][1](canvasId, windows[i].WindowCount, e);
                         }
-                        draw(canvasId);
+                        invalidateRect(canvasId, null, windows[i].X, windows[i].Y, windows[i].Width, windows[i].Height);
                         if (windows[i].ControlType != 'TextBox' && suppressPreventDefault != 1) {
                             if (e.preventDefault)
                                 e.preventDefault();
@@ -311,6 +320,7 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
                 for (var f = 0; f < lostFocusFunctions.length; f++) {
                     if (lostFocusFunctions[f][0] == canvasId && lostFocusFunctions[f][1] == windowIdWithFocus[q][1] && windowIdWithFocus[q][1] != -1) {
                         lostFocusFunctions[f][2](canvasId, windowIdWithFocus[q][1]);
+                        dodrawforwindowids.push(lostFocusFunctions[f][1]);
                     }
                 }
                 windowIdWithFocus[q][1] = -1;
@@ -319,7 +329,10 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
         }
     }
     if (dodraw == 1) {
-        draw(canvasId);
+        for (var i = 0; i < dodrawforwindowids.length; i++) {
+            var wprops = getWindowProps(canvasId, dodrawforwindowids[i]);
+            invalidateRect(canvasId, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
+        }
     }
     return 0;
 }
@@ -422,7 +435,8 @@ function registerCanvasElementId(canvasId) {
             for (var j = 0; j < windowIdWithFocus.length; j++) {
                 if (windowIdWithFocus[j][0] == keyPressFunctions[i].CanvasID && windowIdWithFocus[j][1] == keyPressFunctions[i].WindowID) {
                     keyPressFunctions[i].KeyPressFunction(keyPressFunctions[i].CanvasID, keyPressFunctions[i].WindowID, e);
-                    draw(keyPressFunctions[i].CanvasID);
+                    var wprops = getWindowProps(keyPressFunctions[i].CanvasID, keyPressFunctions[i].WindowID);
+                    invalidateRect(keyPressFunctions[i].CanvasID, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
                     if (e.preventDefault)
                         e.preventDefault();
                     e.returnValue = false;
@@ -435,7 +449,8 @@ function registerCanvasElementId(canvasId) {
             for (var j = 0; j < windowIdWithFocus.length; j++) {
                 if (windowIdWithFocus[j][0] == keyDownFunctions[i].CanvasID && windowIdWithFocus[j][1] == keyDownFunctions[i].WindowID) {
                     keyDownFunctions[i].KeyDownFunction(keyDownFunctions[i].CanvasID, keyDownFunctions[i].WindowID, e);
-                    draw(keyDownFunctions[i].CanvasID);
+                    var wprops = getWindowProps(keyDownFunctions[i].CanvasID, keyDownFunctions[i].WindowID);
+                    invalidateRect(keyDownFunctions[i].CanvasID, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
                     if (e.preventDefault)
                         e.preventDefault();
                     e.returnValue = false;
@@ -631,7 +646,8 @@ function setHiddenWindowStatus(canvasid, windowid, status) {
     for (var i = 0; i < hiddenWindows.length; i++) {
         if (hiddenWindows[i].HiddenStatus != status && hiddenWindows[i].CanvasID == canvasid && hiddenWindows[i].WindowID == windowid) {
             hiddenWindows[i].HiddenStatus = status;
-            draw(canvasid);
+            var wprops = getWindowProps(hiddenWindows[i].CanvasID, hiddenWindows[i].WindowID);
+            invalidateRect(hiddenWindows[i].CanvasID, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
         }
     }
 }
@@ -652,6 +668,7 @@ function getWindowProps(canvasid, windowid) {
     }
 }
 
+/*
 function draw(canvasId, parentwindowid) {
     if (suspendDraw == 0) {
         var canvas = getCanvas(canvasId);
@@ -696,6 +713,56 @@ function draw(canvasId, parentwindowid) {
         }
     }
 }
+*/
+
+function invalidateRect(canvasId, parentwindowid, x, y, width, height) {
+    if (suspendDraw == 0) {
+        var canvas = getCanvas(canvasId);
+        if (parentwindowid == null) {
+            getCtx(canvasId).clearRect(x, y, width, height);
+        }
+        for (var d = 0; d <= highestDepth; d++) {
+            for (var i = 0; i < windowDrawFunctions.length; i++) {
+                var windowProps = getWindowProps(canvasId, windowDrawFunctions[i][0]);
+                if (windowProps.ParentWindowID == parentwindowid && checkIfHiddenWindow(canvasId, windowDrawFunctions[i][0]) == 0 &&
+                    checkIfModalWindow(canvasId, windowDrawFunctions[i][0]) == 0 &&
+                    getWindowDepth(windowDrawFunctions[i][0], windowDrawFunctions[i][2]) == d && windowDrawFunctions[i][2] == canvasId &&
+                    x < windowProps.X + windowProps.Width && x + width > windowProps.X && y < windowProps.Y + windowProps.Height && y + height > windowProps.Y) {
+                    var ctx = getCtx(canvasId);
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.rect(windowProps.X, windowProps.Y, windowProps.Width, windowProps.Height);
+                    ctx.clip();
+                    windowDrawFunctions[i][1](canvasId, windowDrawFunctions[i][0]);
+                    if (windowProps.ChildWindowIDs && windowProps.ChildWindowIDs.length > 0) {
+                        invalidateRect(canvasId, windowDrawFunctions[i][0], x, y, width, height);
+                    }
+                    ctx.restore();
+                }
+            }
+        }
+        for (var d = 0; d <= highestDepth; d++) {
+            for (var i = 0; i < windowDrawFunctions.length; i++) {
+                var windowProps = getWindowProps(canvasId, windowDrawFunctions[i][0]);
+                if (windowProps.ParentWindowID == parentwindowid && checkIfHiddenWindow(canvasId, windowDrawFunctions[i][0]) == 0 &&
+                    checkIfModalWindow(canvasId, windowDrawFunctions[i][0]) == 1 &&
+                    getWindowDepth(windowDrawFunctions[i][0], windowDrawFunctions[i][2]) == d && windowDrawFunctions[i][2] == canvasId &&
+                    x < windowProps.X + windowProps.Width && x + width > windowProps.X && y < windowProps.Y + windowProps.Height && y + height > windowProps.Y) {
+                    var ctx = getCtx(canvasId);
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.rect(windowProps.X, windowProps.Y, windowProps.Width, windowProps.Height);
+                    ctx.clip();
+                    windowDrawFunctions[i][1](canvasId, windowDrawFunctions[i][0]);
+                    if (windowProps.ChildWindowIDs && windowProps.ChildWindowIDs.length > 0) {
+                        invalidateRect(canvasId, windowDrawFunctions[i][0], x, y, width, height);
+                    }
+                    ctx.restore();
+                }
+            }
+        }
+    }
+}
 
 function getCtx(canvasId) {
     for (var i = 0; i < ctxs.length; i++) {
@@ -734,6 +801,7 @@ function destroyWindow(canvasid, windowid){
         if (windows[i].CanvasID == canvasid && windows[i].WindowCount == windowid) {
             removeEventHooks(windows[i]);
             windows.splice(i, 1);
+            unregisterAnimatedWindow(canvasid, windowid);
         }
     }
 }
@@ -768,7 +836,6 @@ function removeEventHooks(w) {
     removeEventFunctions(lostFocusFunctions, w.CanvasID, w.WindowCount);
     removeEventFunctions(keyPressFunctions, w.CanvasID, w.WindowCount);
     removeEventFunctions(keyDownFunctions, w.CanvasID, w.WindowCount);
-    removeEventFunctions(windowDrawFunctions, w.CanvasID, w.WindowCount);
 }
 
 function destroyControlByWindowObj(w) {
@@ -1394,12 +1461,11 @@ function createButton(canvasid, controlNameId, x, y, width, height, text, textCo
             }
         } else {
             getButtonProps(canvasid, windowid).IsPressed = 0;
-            draw(canvasid);
             clickFunction(canvasid, windowid);
         }
     }, canvasid);
-    registerMouseDownFunction(windowid, function (canvasid, windowid) { getButtonProps(canvasid, windowid).IsPressed = 1; draw(canvasid); }, canvasid);
-    registerMouseUpFunction(canvasid, function (canvasid, windowid) { getButtonProps(canvasid, windowid).IsPressed = 0; draw(canvasid); }, canvasid);
+    registerMouseDownFunction(windowid, function (canvasid, windowid) { getButtonProps(canvasid, windowid).IsPressed = 1; }, canvasid);
+    registerMouseUpFunction(canvasid, function (canvasid, windowid) { getButtonProps(canvasid, windowid).IsPressed = 0; }, canvasid);
     if (drawFunction != undefined && drawFunction != null)
         registerWindowDrawFunction(windowid, function () { drawFunction(canvasid, windowid); }, canvasid);
     else
@@ -1662,20 +1728,16 @@ function scrollBarClick(canvasid, windowid, e) {
     if (scrollBarProps.Alignment == 1) {
         if (xm > scrollBarProps.X && xm < scrollBarProps.X + 15 && ym > scrollBarProps.Y && ym < scrollBarProps.Y + 15 && scrollBarProps.SelectedID - 1 >= 0) {
             --scrollBarProps.SelectedID;
-            draw(canvasid);
         } else if (xm > scrollBarProps.X && xm < scrollBarProps.X + 15 && ym > scrollBarProps.Y + scrollBarProps.Len - 15 &&
             ym < scrollBarProps.Y + scrollBarProps.Len && scrollBarProps.SelectedID + 1 < scrollBarProps.MaxItems) {
             ++scrollBarProps.SelectedID;
-            draw(canvasid);
         }
     } else {
         if (xm > scrollBarProps.X && xm < scrollBarProps.X + 15 && ym > scrollBarProps.Y && ym < scrollBarProps.Y + 15 && scrollBarProps.SelectedID - 1 >= 0) {
             --scrollBarProps.SelectedID;
-            draw(canvasid);
         } else if (xm > scrollBarProps.X + scrollBarProps.Len - 15 && xm < scrollBarProps.X + scrollBarProps.Len &&
             ym > scrollBarProps.Y && ym < scrollBarProps.Y + 15 && scrollBarProps.SelectedID + 1 < scrollBarProps.MaxItems) {
             ++scrollBarProps.SelectedID;
-            draw(canvasid);
         }
     }
 }
@@ -1721,7 +1783,6 @@ function scrollBarMouseMove(canvasid, windowid, e) {
                 scrollBarProps.SelectedID = Math.floor(((x - scrollBarProps.X) * scrollBarProps.MaxItems) / scrollBarProps.Len);
             }
         }
-        draw(canvasid);
     }
 }
 
@@ -2106,7 +2167,7 @@ function comboboxButtonClick(canvasid, windowid) {
         setHiddenWindowStatus(canvasid, comboboxProps.VScrollBarWindowID, 1);
         setHiddenWindowStatus(canvasid, comboboxProps.ListAreaWindowID, 1);
     }
-    draw(canvasid);
+    invalidateRect(canvasid, null, comboboxProps.X, comboboxProps.Y, comboboxProps.Width, comboboxProps.Height);
 }
 
 function drawComboboxListArea(canvasid, windowid) {
@@ -2143,7 +2204,8 @@ function comboboxListAreaClick(canvasid, windowid, e) {
                 comboboxProps.SelectedID = i;
                 setHiddenWindowStatus(canvasid, comboboxProps.VScrollBarWindowID, 1);
                 setHiddenWindowStatus(canvasid, comboboxProps.ListAreaWindowID, 1);
-                draw(canvasid);
+                var canvas = getCanvas(canvasid);
+                invalidateRect(canvasid, null, 0, 0, canvas.width, canvas.height);
                 if (comboboxProps.OnSelectionChanged != null) {
                     comboboxProps.OnSelectionChanged(canvasid, comboboxProps.TextAreaWindowID, i);
                 }
@@ -2162,7 +2224,10 @@ function comboboxListAreaLostFocus(canvasid, windowid) {
         doingEventForWindowID != comboboxProps.VScrollBarWindowID) {
         setHiddenWindowStatus(canvasid, comboboxProps.VScrollBarWindowID, 1);
         setHiddenWindowStatus(canvasid, comboboxProps.ListAreaWindowID, 1);
-        draw(canvasid);
+        var vswprops = getWindowProps(canvasid, comboboxProps.VScrollBarWindowID);
+        invalidateRect(canvasid, null, vswprops.X, vswprops.Y, vswprops.Width, vswprops.Height);
+        var lawprops = getWindowProps(canvasid, comboboxProps.ListAreaWindowID);
+        invalidateRect(canvasid, null, lawprops.X, lawprops.Y, lawprops.Width, lawprops.Height);
     }
 }
 
@@ -2175,7 +2240,10 @@ function comboboxTextAreaLostFocus(canvasid, windowid) {
         doingEventForWindowID != comboboxProps.VScrollBarWindowID) {
         setHiddenWindowStatus(canvasid, comboboxProps.VScrollBarWindowID, 1);
         setHiddenWindowStatus(canvasid, comboboxProps.ListAreaWindowID, 1);
-        draw(canvasid);
+        var vswprops = getWindowProps(canvasid, comboboxProps.VScrollBarWindowID);
+        invalidateRect(canvasid, null, vswprops.X, vswprops.Y, vswprops.Width, vswprops.Height);
+        var lawprops = getWindowProps(canvasid, comboboxProps.ListAreaWindowID);
+        invalidateRect(canvasid, null, lawprops.X, lawprops.Y, lawprops.Width, lawprops.Height);
     }
 }
 
@@ -2188,7 +2256,10 @@ function comboboxButtonLostFocus(canvasid, windowid) {
         doingEventForWindowID != comboboxProps.VScrollBarWindowID) {
         setHiddenWindowStatus(canvasid, comboboxProps.VScrollBarWindowID, 1);
         setHiddenWindowStatus(canvasid, comboboxProps.ListAreaWindowID, 1);
-        draw(canvasid);
+        var vswprops = getWindowProps(canvasid, comboboxProps.VScrollBarWindowID);
+        invalidateRect(canvasid, null, vswprops.X, vswprops.Y, vswprops.Width, vswprops.Height);
+        var lawprops = getWindowProps(canvasid, comboboxProps.ListAreaWindowID);
+        invalidateRect(canvasid, null, lawprops.X, lawprops.Y, lawprops.Width, lawprops.Height);
     }
 }
 
@@ -2201,7 +2272,10 @@ function comboboxScrollBarLostFocus(canvasid, windowid) {
         doingEventForWindowID != comboboxProps.VScrollBarWindowID) {
         setHiddenWindowStatus(canvasid, comboboxProps.VScrollBarWindowID, 1);
         setHiddenWindowStatus(canvasid, comboboxProps.ListAreaWindowID, 1);
-        draw(canvasid);
+        var vswprops = getWindowProps(canvasid, comboboxProps.VScrollBarWindowID);
+        invalidateRect(canvasid, null, vswprops.X, vswprops.Y, vswprops.Width, vswprops.Height);
+        var lawprops = getWindowProps(canvasid, comboboxProps.ListAreaWindowID);
+        invalidateRect(canvasid, null, lawprops.X, lawprops.Y, lawprops.Width, lawprops.Height);
     }
 }
 
@@ -2267,7 +2341,6 @@ function createCheckbox(canvasid, controlNameId, x, y, depth, status, tag) {
         } else {
             checkboxProps.Status = 1;
         }
-        draw(canvasid);
     }, canvasid);
     registerWindowDrawFunction(windowid, function () { drawCheckbox(canvasid, windowid); }, canvasid);
     return windowid;
@@ -2386,7 +2459,7 @@ function createImage(canvasid, controlNameId, x, y, width, height, depth, imgurl
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Image', controlNameId);
     var image = new Image();
     image.onload = function () {
-        draw(canvasid);
+        invalidateRect(canvasid, null, x, y, width, height);
     };
     imageControlPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width,
@@ -2527,7 +2600,7 @@ function clickTreeView(canvasid, windowid, e) {
         if (x > treeViewProps.ClickButtonExtents[i].X && x < treeViewProps.ClickButtonExtents[i].X + 9 &&
             y > treeViewProps.ClickButtonExtents[i].Y && y < treeViewProps.ClickButtonExtents[i].Y + 9) {
             toggleAllChildNodesExpandedState(treeViewProps, treeViewProps.Data[treeViewProps.ClickButtonExtents[i].Index][treeViewProps.IDColumnIndex]);
-            draw(canvasid);
+            invalidateRect(canvasid, null, treeViewProps.X, treeViewProps.Y, treeViewProps.Width, treeViewProps.Height);
             return;
         }
     }
@@ -2536,7 +2609,7 @@ function clickTreeView(canvasid, windowid, e) {
             y > treeViewProps.ClickLabelExtents[i].Y && y < treeViewProps.ClickLabelExtents[i].Y + treeViewProps.ClickLabelExtents[i].TextHeight) {
             treeViewProps.ClickNodeFunction(canvasid, windowid, treeViewProps.Data[treeViewProps.ClickLabelExtents[i].Index][treeViewProps.IDColumnIndex]);
             treeViewProps.SelectedNodeIndex = i;
-            draw(canvasid);
+            invalidateRect(canvasid, null, treeViewProps.X, treeViewProps.Y, treeViewProps.Width, treeViewProps.Height);
             return;
         }
     }
@@ -2944,7 +3017,6 @@ function calenderClick(canvasid, windowid, e) {
                     } else {
                         calenderProps.VisibleMonth = getMonthName(visibleMonth.getMonth() - 1);
                     }
-                    draw(canvasid);
                     return;
                 case 1:
                     if (visibleMonth.getMonth() == 11) {
@@ -2953,15 +3025,12 @@ function calenderClick(canvasid, windowid, e) {
                     } else {
                         calenderProps.VisibleMonth = getMonthName(visibleMonth.getMonth() + 1);
                     }
-                    draw(canvasid);
                     return;
                 case 2:
                     calenderProps.VisibleYear = (parseInt(calenderProps.VisibleYear, 10) - 1).toString();
-                    draw(canvasid);
                     return;
                 case 3:
                     calenderProps.VisibleYear = (parseInt(calenderProps.VisibleYear, 10) + 1).toString();
-                    draw(canvasid);
                     return;
             }
         }
@@ -2970,7 +3039,6 @@ function calenderClick(canvasid, windowid, e) {
         if (x > calenderProps.DateClickExtents[i].X && x < calenderProps.DateClickExtents[i].X + calenderProps.DayCellWidth &&
             y > calenderProps.DateClickExtents[i].Y && y < calenderProps.DateClickExtents[i].Y + calenderProps.DayCellHeight) {
             calenderProps.SelectedDay = calenderProps.DateClickExtents[i].Date;
-            draw(canvasid);
             if (calenderProps.OnDayClickFunction != null) {
                 calenderProps.OnDayClickFunction(calenderProps.CanvasID, calenderProps.WindowID, calenderProps.SelectedDay);
             }
@@ -2987,7 +3055,6 @@ function calenderMouseOver(canvasid, windowid, e) {
         if (x > calenderProps.DateClickExtents[i].X && x < calenderProps.DateClickExtents[i].X + calenderProps.DayCellWidth &&
             y > calenderProps.DateClickExtents[i].Y && y < calenderProps.DateClickExtents[i].Y + calenderProps.DayCellHeight) {
             calenderProps.MouseHoverDate = calenderProps.DateClickExtents[i].Date;
-            draw(canvasid);
             return;
         }
     }
@@ -3018,7 +3085,7 @@ function createProgressBar(canvasid, controlNameId, x, y, width, height, depth, 
 function setProgressBarCurrentValue(canvasid, windowid, value) {
     var progressBarProps = getProgressBarProps(canvasid, windowid);
     progressBarProps.CurrentValue = value;
-    draw(canvasid);
+    invalidateRect(canvasid, null, progressBarProps.X, progressBarProps.Y, progressBarProps.Width, progressBarProps.Height);
 }
 
 function drawProgressBar(canvasid, windowid) {
@@ -3149,7 +3216,6 @@ function sliderMouseMove(canvasid, windowid, e) {
         } else {
             sliderProps.CurrentValue = sliderProps.MinValue + (((x - sliderProps.X) * (sliderProps.MaxValue - sliderProps.MinValue)) / sliderProps.Width);
         }
-        draw(canvasid);
     }
 }
 
@@ -3221,7 +3287,6 @@ function createDatePicker(canvasid, controlNameId, x, y, width, height, depth, v
                 ondayClickFunction(canvasid, datePickerProps.CalenderWindowID, calenderProps.SelectedDay);
             }
             setHiddenWindowStatus(canvasid, datePickerProps.CalenderWindowID, 1);
-            draw(canvasid);
         }, dayLabelTextColor, dayLabelTextHeight, dayLabelTextFontString);
     datePickerPropsArray.push({
         CanvasID: canvasid, WindowID: textboxAreaWindowID, TextBoxAreaWindowID: textboxAreaWindowID, ButtonWindowID: buttonWindowID,
@@ -3302,7 +3367,6 @@ function datePickerCalenderWindowLostFocus(canvasid, windowid) {
         doesWindowHaveFocus(canvasid, datePickerProps.ButtonWindowID) == 0 &&
         doingEventForWindowID != datePickerProps.CalenderWindowID) {
         setHiddenWindowStatus(canvasid, datePickerProps.CalenderWindowID, 1);
-        draw(canvasid);
     }
 }
 
@@ -3312,7 +3376,6 @@ function datePickerTextBoxWindowLostFocus(canvasid, windowid) {
         doesWindowHaveFocus(canvasid, datePickerProps.ButtonWindowID) == 0 &&
         doingEventForWindowID != datePickerProps.CalenderWindowID) {
         setHiddenWindowStatus(canvasid, datePickerProps.CalenderWindowID, 1);
-        draw(canvasid);
     }
 }
 
@@ -3322,7 +3385,6 @@ function datePickerButtonLostFocus(canvasid, windowid) {
         doesWindowHaveFocus(canvasid, datePickerProps.TextBoxAreaWindowID) == 0 &&
         doingEventForWindowID != datePickerProps.CalenderWindowID) {
         setHiddenWindowStatus(canvasid, datePickerProps.CalenderWindowID, 1);
-        draw(canvasid);
     }
 }
 
@@ -3474,7 +3536,6 @@ function createPanel(canvasid, controlNameId, x, y, width, height, depth, hasBor
     }, canvasid);
     if (iscollapsable == 1) {
         registerClickFunction(windowid, function (canvasid3, windowid3, e) {
-            
             var panelProps = getPanelProps(canvasid3, windowid3);
             var windowProps = getWindowProps(canvasid3, windowid3);
             var x = e.calcX;
@@ -3497,7 +3558,6 @@ function createPanel(canvasid, controlNameId, x, y, width, height, depth, hasBor
                     windowProps.Width = panelProps.OriginalWidth;
                     windowProps.Height = panelProps.OriginalHeight;
                 }
-                draw(canvasid3);
             }
         }, canvasid);
     } else {
@@ -3556,7 +3616,7 @@ function createBarGraph(canvasid, controlNameId, x, y, width, height, depth, dat
         var h = barGraphProps.H;
         if (barGraphProps.AlreadyUnregisteredAnimation == 0 && h < barGraphProps.TitleTextHeight + 8) {
             barGraphProps.AlreadyUnregisteredAnimation = 1;
-            unregisterAnimatedWindow(canvasid2);
+            unregisterAnimatedWindow(canvasid2, windowid2);
         }
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.save();
@@ -3616,7 +3676,7 @@ function createBarGraph(canvasid, controlNameId, x, y, width, height, depth, dat
         }
         ctx.restore();
     }, canvasid);
-    registerAnimatedWindow(canvasid);
+    registerAnimatedWindow(canvasid, windowid);
     return windowid;
 }
 
@@ -3834,7 +3894,7 @@ function createPieChart(canvasid, controlNameId, x, y, width, height, depth, dat
         var currRadius = pieChartProps.CurrentRadius;
         if (pieChartProps.AlreadyUnregisteredAnimation == 0 && currRadius >= (pieChartProps.Height - pieChartProps.TitleTextHeight - 24 - (pieChartProps.LabelTextHeight * 2)) / 2) {
             pieChartProps.AlreadyUnregisteredAnimation = 1;
-            unregisterAnimatedWindow(canvasid2);
+            unregisterAnimatedWindow(canvasid2, windowid2);
         }
         var data = pieChartProps.Data;
         var centerx = pieChartProps.X + (pieChartProps.Width - (currRadius * 2)) / 2 + currRadius;
@@ -3914,7 +3974,7 @@ function createPieChart(canvasid, controlNameId, x, y, width, height, depth, dat
         }
         ctx.restore();
     }, canvasid);
-    registerAnimatedWindow(canvasid);
+    registerAnimatedWindow(canvasid, windowid);
     return windowid;
 }
 
@@ -4001,7 +4061,7 @@ function createLineGraph(canvasid, controlNameId, x, y, width, height, depth, da
         var lineGraphProps = getLineGraphProps(canvasid2, windowid2);
         if (lineGraphProps.AlreadyUnregisteredAnimation == 0 && lineGraphProps.H > lineGraphProps.HMax) {
             lineGraphProps.AlreadyUnregisteredAnimation = 1;
-            unregisterAnimatedWindow(canvasid2);
+            unregisterAnimatedWindow(canvasid2, windowid2);
         }
         lineGraphProps.LineXYs = new Array();
         var ctx = getCtx(canvasid2);
@@ -4109,7 +4169,7 @@ function createLineGraph(canvasid, controlNameId, x, y, width, height, depth, da
         }
         ctx.restore();
     }, canvasid);
-    registerAnimatedWindow(canvasid);
+    registerAnimatedWindow(canvasid, windowid);
     return windowid;
 }
 
@@ -4192,7 +4252,7 @@ function createGauge(canvasid, controlNameId, x, y, width, height, depth, data, 
         var ctx = getCtx(canvasid1);
         if (gaugeChartProps.AlreadyUnregisteredAnimation == 0 && gaugeChartProps.H > 100) {
             gaugeChartProps.AlreadyUnregisteredAnimation = 1;
-            unregisterAnimatedWindow(canvaisd1);
+            unregisterAnimatedWindow(canvaisd1, windowid1);
         }
         ctx.save();
         ctx.globalAlpha = gaugeChartProps.H / 100;
@@ -4402,7 +4462,7 @@ function createGauge(canvasid, controlNameId, x, y, width, height, depth, data, 
             gaugeChartProps.H++;
         }
     }, canvasid);
-    registerAnimatedWindow(canvasid);
+    registerAnimatedWindow(canvasid, windowid);
     return windowid;
 }
 
@@ -4477,7 +4537,7 @@ function createRadarGraph(canvasid, controlNameId, x, y, width, height, depth, d
         if (radarGraphProps.AlreadyUnregisteredAnimation == 0 && radarGraphProps.H >= ((radarGraphProps.Height - radarGraphProps.TitleTextHeight
             - 8 - radarGraphProps.MarkLabelTextHeight - 8 - 4) / 2)) {
             radarGraphProps.AlreadyUnregisteredAnimation = 1;
-            unregisterAnimatedWindow(canvasid1);
+            unregisterAnimatedWindow(canvasid1, windowid1);
         }
         ctx.save();
         ctx.fillStyle = radarGraphProps.TitleTextColor;
@@ -4547,7 +4607,7 @@ function createRadarGraph(canvasid, controlNameId, x, y, width, height, depth, d
             radarGraphProps.H = ((radarGraphProps.Height - radarGraphProps.TitleTextHeight - 8 - radarGraphProps.MarkLabelTextHeight - 8 - 4) / 2);
         }
     }, canvasid);
-    registerAnimatedWindow(canvasid);
+    registerAnimatedWindow(canvasid, windowid);
 }
 
 //Line Area Graph code starts here
@@ -4577,7 +4637,7 @@ function createLineAreaGraph(canvasid, controlNameId, x, y, width, height, depth
         var lineAreaGraphProps = getLineAreaGraphProps(canvasid1, windowid1);
         if (lineAreaGraphProps.AlreadyUnregisteredAnimation == 0 && lineAreaGraphProps.H >= lineAreaGraphProps.Data[0].length - 1) {
             lineAreaGraphProps.AlreadyUnregisteredAnimation = 1;
-            unregisterAnimatedWindow(canvasid1);
+            unregisterAnimatedWindow(canvasid1, windowid1);
         }
         var ctx = getCtx(canvasid1);
         ctx.save();
@@ -4702,7 +4762,7 @@ function createLineAreaGraph(canvasid, controlNameId, x, y, width, height, depth
             lineAreaGraphProps.H++;
         }
     }, canvasid);
-    registerAnimatedWindow(canvasid);
+    registerAnimatedWindow(canvasid, windowid);
 }
 
 function sumyvalues(data, c, i) {
@@ -5019,7 +5079,7 @@ function createDoughnutChart(canvasid, controlNameId, x, y, width, height, depth
         var currRadius = doughnutChartProps.CurrentRadius;
         if (doughnutChartProps.AnimationCompleted == 0 && currRadius >= (doughnutChartProps.Width - (doughnutChartProps.MarginSides * 2) -
             doughnutChartProps.LegendWidth) / 2) {
-            unregisterAnimatedWindow(canvasid2);
+            unregisterAnimatedWindow(canvasid2, windowid2);
             doughnutChartProps.AnimationCompleted = 1;
         }
         ctx.save();
@@ -5079,7 +5139,8 @@ function createDoughnutChart(canvasid, controlNameId, x, y, width, height, depth
         }
         ctx.restore();
     }, canvasid);
-    registerAnimatedWindow(canvasid);
+    registerAnimatedWindow(canvasid, windowid);
+    return windowid;
 }
 
 //Bars mixed with labeled line graph
@@ -5143,7 +5204,7 @@ function createBarsMixedWithLabledLineGraph(canvasid, controlNameId, x, y, width
         var h = barsMixedWithLabledLineGraphProps.H;
         if (barsMixedWithLabledLineGraphProps.AlreadyUnregisteredAnimation == 0 && h < barsMixedWithLabledLineGraphProps.TitleTextHeight + 8) {
             barsMixedWithLabledLineGraphProps.AlreadyUnregisteredAnimation = 1;
-            unregisterAnimatedWindow(canvasid2);
+            unregisterAnimatedWindow(canvasid2, windowid2);
         }
         barsMixedWithLabledLineGraphProps.LineXYs = new Array();
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -5249,7 +5310,7 @@ function createBarsMixedWithLabledLineGraph(canvasid, controlNameId, x, y, width
         }
         ctx.restore();
     }, canvasid);
-    registerAnimatedWindow(canvasid);
+    registerAnimatedWindow(canvasid, windowid);
     return windowid;
 }
 
@@ -5348,7 +5409,7 @@ function createStackedBarGraph(canvasid, controlNameId, x, y, width, height, dep
     registerWindowDrawFunction(windowid, function (canvasid2, windowid2) {
         var stackedBarGraphProps = getstackedBarGraphProps(canvasid2, windowid2);
         if (stackedBarGraphProps.AlreadyUnregisteredAnimation == 0 && stackedBarGraphProps.H < 100) {
-            unregisterAnimatedWindow(canvasid2);
+            unregisterAnimatedWindow(canvasid2, windowid2);
             stackedBarGraphProps.AlreadyUnregisteredAnimation = 1;
         }
         var ctx = getCtx(canvasid2);
@@ -5396,7 +5457,8 @@ function createStackedBarGraph(canvasid, controlNameId, x, y, width, height, dep
         }
         ctx.restore();
     }, canvasid);
-    registerAnimatedWindow(canvasid);
+    registerAnimatedWindow(canvasid, windowid);
+    return windowid;
 }
 
 function drawmultiplerect(ctx, stackedBarGraphProps, i) {
@@ -5679,7 +5741,7 @@ function createImageMapControl(canvasid, controlNameId, x, y, width, height, dep
     var image = new Image();
     image.src = imgurl;
     image.onload = function () {
-        draw(canvasid);
+        invalidateRect(canvasid, null, x, y, width, height);
     };
     imageMapPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height,
@@ -6256,7 +6318,6 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
                         textBoxProps.UserInputText = textBoxProps.ListPossibles[i];
                         setHiddenWindowStatus(canvasid, textBoxProps.VScrollBarWindowID, 1);
                         setHiddenWindowStatus(canvasid, textBoxProps.DropDownWindowID, 1);
-                        draw(canvasid);
                     }
                     return;
                 }
@@ -6269,7 +6330,7 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
     var image = new Image(width, height);
     image.src = bgImageUrl;
     image.onload = function () {
-        draw(canvasid);
+        invalidateRect(canvasid, null, x, y, width, height);
     };
     if (navigator.userAgent.toLowerCase().indexOf('android') > -1 || navigator.userAgent.toLowerCase().indexOf('ipad') > -1 || navigator.userAgent.toLowerCase().indexOf('iphone') > -1 || navigator.userAgent.toLowerCase().indexOf('ipod') > -1) {
         if (!customKeyboardWindowID) {
@@ -6684,7 +6745,6 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
             }
         }, windowid);
     }
-    registerAnimatedWindow(canvasid);
     registerLostFocusFunction(canvasid, windowid, function (canvasid8, windowid8) {
         var textBoxProps = getTextBoxProps(canvasid8, windowid8);
         if (navigator.userAgent.toLowerCase().indexOf('android') > -1 || navigator.userAgent.toLowerCase().indexOf('ipad') > -1 || navigator.userAgent.toLowerCase().indexOf('iphone') > -1 || navigator.userAgent.toLowerCase().indexOf('ipod') > -1) {
@@ -6704,13 +6764,13 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
             textBoxProps.WasSelecting = 0;
             setHiddenWindowStatus(canvasid8, textBoxProps.DropDownWindowID, 1);
             setHiddenWindowStatus(canvasid8, textBoxProps.VScrollBarWindowID, 1);
-            draw(canvasid8);
         }
     });
     registerGotFocusFunction(canvasid, windowid, function (canvasid1, windowid1) {
         var textBoxProps = getTextBoxProps(canvasid1, windowid1);
         setHiddenWindowStatus(canvasid1, textBoxProps.CustomKeyboardWindowID, 0);
     });
+    registerAnimatedWindow(canvasid, windowid);
     return windowid;
 }
 
@@ -6761,7 +6821,7 @@ function createImageFader(canvasid, controlNameId, x, y, width, height, depth, i
         var image = new Image();
         images.push(image);
         image.onload = function () {
-            draw(canvasid);
+            invalidateRect(canvasid, null, x, y, width, height);
         };
         image.src = imageURLs[i];
     }
@@ -6828,7 +6888,7 @@ function createImageFader(canvasid, controlNameId, x, y, width, height, depth, i
             imageFaderProps.ClickFunction(canvasid2, windowid2, e, imageFaderProps.CurrentImageIndex);
         }, canvasid);
     }
-    registerAnimatedWindow(canvasid);
+    registerAnimatedWindow(canvasid, windowid);
     return windowid;
 }
 
@@ -6851,7 +6911,7 @@ function createImageSlider(canvasid, controlNameId, x, y, width, height, depth, 
         var image = new Image();
         images.push(image);
         image.onload = function () {
-            draw(canvasid);
+            invalidateRect(canvasid, null, x, y, width, height);
         };
         image.src = imageURLs[i];
     }
@@ -6957,7 +7017,7 @@ function createImageSlider(canvasid, controlNameId, x, y, width, height, depth, 
             imageSliderProps.ClickFunction(canvasid2, windowid2, e, imageSliderProps.CurrentImageIndex);
         }, canvasid);
     }
-    registerAnimatedWindow(canvasid);
+    registerAnimatedWindow(canvasid, windowid);
     return windowid;
 }
 
@@ -7402,7 +7462,7 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
         image = new Image();
         image.src = bgImageUrl;
         image.onload = function () {
-            draw(canvasid);
+            invalidateRect(canvasid, x, y, width, height);
         };
     }
     vscrollbarwindowid = createScrollBar(canvasid, controlNameId + 'VS', x + width - 15, y, height, depth, (textHeight + lineSpacingInPixels) * Math.floor(height / textHeight), 1);
@@ -7799,7 +7859,6 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
             }
         }
     }, canvasid);
-    registerAnimatedWindow(canvasid);
     registerLostFocusFunction(canvasid, windowid, function (canvasid8, windowid8) {
         var wordProcessorProps = getWordProcessorProps(canvasid8, windowid8);
         if (navigator.userAgent.toLowerCase().indexOf('android') > -1 || navigator.userAgent.toLowerCase().indexOf('ipad') > -1 || navigator.userAgent.toLowerCase().indexOf('iphone') > -1 || navigator.userAgent.toLowerCase().indexOf('ipod') > -1) {
@@ -7814,6 +7873,7 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
         var wordProcessorProps = getWordProcessorProps(canvasid1, windowid1);
         setHiddenWindowStatus(canvasid1, wordProcessorProps.CustomKeyboardWindowID, 0);
     });
+    registerAnimatedWindow(canvasid, windowid);
     return windowid;
 }
 
@@ -8219,7 +8279,6 @@ function createVirtualKeyboard(canvasid, controlNameId, x, y, width, height, dep
                     if (virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][virtualKeyboardProps.KeyExtents[i][5]][virtualKeyboardProps.KeyExtents[i][6]].length == 4) {
                         virtualKeyboardProps.CurrentKeyboardIndex =
                             virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][virtualKeyboardProps.KeyExtents[i][5]][virtualKeyboardProps.KeyExtents[i][6]][3];
-                        draw(canvasid1);
                     } else {
                         if (virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][virtualKeyboardProps.KeyExtents[i][5]][virtualKeyboardProps.KeyExtents[i][6]][0] == 'shiftKey') {
                             virtualKeyboardProps.ShiftKeyPressed = (virtualKeyboardProps.ShiftKeyPressed == 1 ? 0 : 1);
@@ -8251,10 +8310,10 @@ function invokeServerSideFunction(ajaxURL, functionName, canvasid, windowid, cal
             //Here is where you unwrap the data
             suspendDraw = 1;
             var arr = UnWrapVars(xmlhttp.responseText);
+            suspendDraw = 0;
             if (callBackFunc) {
                 callBackFunc(arr);
             }
-            suspendDraw = 0;
         }
     };
     xmlhttp.open("POST", ajaxURL, true);
@@ -8634,7 +8693,8 @@ function UnWrapVars(data) {
                         var image = new Image();
                         image.src = imageSliderPropsArray[i].imageURLs[j];
                         imageSliderPropsArray[i].Images[j] = image;
-                        image.onload = function () { draw(imageSliderPropsArray[i].CanvasID); };
+                        image.onload = function () { invalidateRect(imageSliderPropsArray[i].CanvasID, null, imageSliderPropsArray[i].X, imageSliderPropsArray[i].Y,
+                            imageSliderPropsArray[i].Width, imageSliderPropsArray[i].Height); };
                     }
                 }
             }
@@ -8655,7 +8715,8 @@ function UnWrapVars(data) {
                         var image = new Image();
                         image.src = imageFaderPropsArray[i].imageURLs[j];
                         imageFaderPropsArray[i].Images[j] = image;
-                        image.onload = function () { draw(imageFaderPropsArray[i].CanvasID); };
+                        image.onload = function () { invalidateRect(imageFaderPropsArray[i].CanvasID, null, imageFaderPropsArray[i].X, imageFaderPropsArray[i].Y, 
+                            imageFaderPropsArray[i].Width, imageFaderPropsArray[i].Height); };
                     }
                 }
             }
@@ -8781,9 +8842,6 @@ function UnWrapVars(data) {
         if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
     }
     savedImagesOnPostback = new Array();
-    for (var i = 0; i < canvases.length; i++) {
-        draw(canvases[i][0]);
-    }
     for (var i = 0; i < imageControlPropsArray.length; i++) {
         for (var j = 0; j < imageControlBackupImageUrls.length; j++) {
             if (imageControlPropsArray[i].CanvasID == imageControlBackupImageUrls[j].CanvasID && imageControlPropsArray[i].WindowID == imageControlBackupImageUrls[j].WindowID &&
@@ -8791,7 +8849,8 @@ function UnWrapVars(data) {
                 var image = new Image();
                 image.src = imageControlPropsArray[i].ImageURL;
                 imageControlPropsArray[i].Image = image;
-                image.onload = function () { draw(imageControlPropsArray[i].CanvasID); };
+                image.onload = function () { invalidateRect(imageControlPropsArray[i].CanvasID, null, imageControlPropsArray[i].X, imageControlPropsArray[i].Y,
+                    imageControlPropsArray[i].Width, imageControlPropsArray[i].Height); };
             }
         }
     }
@@ -8802,7 +8861,8 @@ function UnWrapVars(data) {
                 var image = new Image();
                 image.src = textBoxPropsArray[i].BgImageUrl;
                 textBoxPropsArray[i].Image = image;
-                image.onload = function () { draw(textBoxPropsArray[i].CanvasID); };
+                image.onload = function () { invalidateRect(textBoxPropsArray[i].CanvasID, null, textBoxPropsArray[i].X, textBoxPropsArray[i].Y, textBoxPropsArray[i].Width,
+                    textBoxPropsArray[i].Height); };
             }
         }
     }
@@ -8813,7 +8873,8 @@ function UnWrapVars(data) {
                 var image = new Image();
                 image.src = wordProcessorPropsArray[i].BgImageUrl;
                 wordProcessorPropsArray[i].Image = image;
-                image.onload = function () { draw(wordProcessorPropsArray[i].CanvasID); };
+                image.onload = function () { invalidateRect(wordProcessorPropsArray[i].CanvasID, null, wordProcessorPropsArray[i].X, wordProcessorPropsArray[i].Y,
+                    wordProcessorPropsArray[i].Width, wordProcessorPropsArray[i].Height); };
             }
         }
     }
