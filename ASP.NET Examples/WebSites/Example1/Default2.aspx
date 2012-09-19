@@ -30,7 +30,7 @@
             registerCanvasElementId('canvas1');
             createComboBox('canvas1', 'cb1', 10, 10, 150, 20, highestDepth, ['Bombay', 'Pune', 'Madras', 'Delhi'], null, null, drawListAreaCustom, null,
                 listAreaCustomClickFunction, '#364635', 10, '10pt Ariel', '#1b213b', 10, '10pt Ariel');
-            draw('canvas1');
+            invalidateRect(elemId, null, 0, 0, 500, 500);
             function drawListAreaCustom(canvasid, windowid) {
                 var comboboxProps = getComboboxPropsByListAreaWindowId(canvasid, windowid);
                 var vscrollBarProps = getScrollBarProps(canvasid, comboboxProps.VScrollBarWindowID);

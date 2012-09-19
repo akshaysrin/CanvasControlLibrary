@@ -68,7 +68,7 @@
                 '#000000', 16, '12pt Ariel', 5, 1);
             createWordProcessor(elemId, 'Wp1', 800, 400, 400, 224, highestDepth, 0, '', '#051329', 12, '12pt Ariel', 5, 1, 'Type a paragraph here.', '#F0F0F0', 14, '14pt Ariel', 2000, 0, '#000000', 1, 1,
                 1, 10, 1, '#9bacc6', '#d6e4f9', 0, null, 10, 1, '#2e3642', 1, '.+', '#0d2952');
-            draw(elemId);
+            invalidateRect(elemId, null, 0, 0, 1800, 1200);
         </script>
     </div>
     </form>

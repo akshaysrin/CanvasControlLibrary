@@ -49,7 +49,7 @@
                 '#7979AE', '#bbbbc8', '#202020', 8, '8pt Ariel', '#000000', 8, '8pt Ariel',
                 '#D0D0D0', 8, '8pt Ariel', '#d2d2fd', 8, '8pt Ariel', '#9898b7', '#FFFFFF', 8, '8pt Ariel', '#b4b4ff', '#d3d3fb',
                 null, '#6f7791', 8, '8pt Ariel', '#000000', 12, '12pt Ariel', 168);
-            draw(elemId);
+            invalidateRect(elemId, null, 0, 0, 1500, 1500);
         </script>
     </div>
     </form>

@@ -1740,6 +1740,8 @@ function scrollBarClick(canvasid, windowid, e) {
             ++scrollBarProps.SelectedID;
         }
     }
+    var wprops = getWindowProps(canvasid, scrollBarProps.OwnedByWindowID);
+    invalidateRect(canvasid, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
 }
 
 function scrollBarMouseDown(canvasid, windowid, e) {
@@ -1784,6 +1786,8 @@ function scrollBarMouseMove(canvasid, windowid, e) {
             }
         }
     }
+    var wprops = getWindowProps(canvasid, scrollBarProps.OwnedByWindowID);
+    invalidateRect(canvasid, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
 }
 
 function scrollBarMouseUp(canvasid, windowid) {
@@ -1796,7 +1800,7 @@ function scrollBarLostFocus(canvasid, windowid) {
     scrollBarProps.MouseDownState = 0;
 }
 
-function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, alignment, drawFunction, clickFunction, tag) {
+function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, alignment, ownedbywindowid, drawFunction, clickFunction, tag) {
     var windowid;
     if (alignment == 1) {
         windowid = createWindow(canvasid, x, y, 15, len, depth, null, 'ScrollBar', controlNameId);
@@ -1805,7 +1809,7 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
     }
     scrollBarPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Len: len, SelectedID: 0,
-        MaxItems: maxitems, Alignment: alignment, MouseDownState: 0, Tag: tag
+        MaxItems: maxitems, Alignment: alignment, MouseDownState: 0, Tag: tag, OwnedByWindowID: ownedbywindowid
     });
     if (clickFunction == null) {
         registerClickFunction(windowid, scrollBarClick, canvasid);
@@ -1848,11 +1852,11 @@ function createGrid(canvasid, controlNameId, x, y, width, height, depth, rowData
     var effectiveHeight = headerRowHeight + (dataRowHeight * rowData.length);
     var vscrollBarWindowId = null;
     if (effectiveHeight > height) {
-        vscrollBarWindowId = createScrollBar(canvasid, controlNameId + 'VS', x + width, y, height, depth, rowData.length, 1);
+        vscrollBarWindowId = createScrollBar(canvasid, controlNameId + 'VS', x + width, y, height, depth, rowData.length, 1, windowid);
     }
     var hscrollBarWindowId = null;
     if (effectiveWidth > width) {
-        hscrollBarWindowId = createScrollBar(canvasid, controlNameId + 'HS', x, y + height, width, depth, columnWidthArray.length, 0);
+        hscrollBarWindowId = createScrollBar(canvasid, controlNameId + 'HS', x, y + height, width, depth, columnWidthArray.length, 0, windowid);
     }
     gridPropsArray.push({CanvasID: canvasid, WindowID: windowid,
         X: x, Y: y, 
@@ -2056,7 +2060,7 @@ function createComboBox(canvasid, controlNameId, x, y, width, height, depth, dat
     var buttonwindowid = createWindow(canvasid, x + width - height, y, height, height, depth, null, 'ComboBoxButton', controlNameId + 'ComboBoxButton');
     var dropdownlistareawindowid = createWindow(canvasid, x, y + height, width - 15, 100, depth, null, 'ComboBoxListArea', controlNameId + 'ComboBoxListArea');
     registerModalWindow(canvasid, dropdownlistareawindowid);
-    var vscrollBarComboboxWindowId = createScrollBar(canvasid, controlNameId + 'VS', x + width - 15, y + height, 100, depth, data.length, 1,
+    var vscrollBarComboboxWindowId = createScrollBar(canvasid, controlNameId + 'VS', x + width - 15, y + height, 100, depth, data.length, 1, dropdownlistareawindowid,
         function () { drawComboboxScrollBar(canvasid, vscrollBarComboboxWindowId); }, null);
     comboboxPropsArray.push({
         CanvasID: canvasid, WindowID: textareawindowid, TextAreaWindowID: textareawindowid,
@@ -2564,8 +2568,8 @@ function createTreeView(canvasid, controlNameId, x, y, width, height, depth, dat
             shownitemscount++;
         }
     }
-    var vscrollbarwindowid = createScrollBar(canvasid, controlNameId + 'VS', x + width, y, height, depth, shownitemscount, 1, null);
-    var hscrollbarwindowid = createScrollBar(canvasid, controlNameId + 'HS', x, y + height, width, depth, 10, 0, null);
+    var vscrollbarwindowid = createScrollBar(canvasid, controlNameId + 'VS', x + width, y, height, depth, shownitemscount, 1, windowid);
+    var hscrollbarwindowid = createScrollBar(canvasid, controlNameId + 'HS', x, y + height, width, depth, 10, 0, windowid);
     var clickButtonExtents = new Array();
     var clickLabelExtents = new Array();
     treeViewPropsArray.push({
@@ -6279,7 +6283,7 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
     var dropdownwindowid, vscrollbarwindowid;
     if (hasAutoComplete == 1) {
         dropdownwindowid = createWindow(canvasid, x, y + height, width, 100, depth, null, 'TextBoxDropDown', controlNameId + 'TextBoxDropDown');
-        vscrollbarwindowid = createScrollBar(canvasid, controlNameId + 'VS', x + width - 15, y + height, 100, depth, listPossibles.length, 1, null, null, null);
+        vscrollbarwindowid = createScrollBar(canvasid, controlNameId + 'VS', x + width - 15, y + height, 100, depth, listPossibles.length, 1, windowid);
         registerHiddenWindow(canvasid, dropdownwindowid, 1);
         registerModalWindow(canvasid, dropdownwindowid);
         registerHiddenWindow(canvasid, vscrollbarwindowid, 1);
@@ -7465,7 +7469,7 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
             invalidateRect(canvasid, x, y, width, height);
         };
     }
-    vscrollbarwindowid = createScrollBar(canvasid, controlNameId + 'VS', x + width - 15, y, height, depth, (textHeight + lineSpacingInPixels) * Math.floor(height / textHeight), 1);
+    vscrollbarwindowid = createScrollBar(canvasid, controlNameId + 'VS', x + width - 15, y, height, depth, (textHeight + lineSpacingInPixels) * Math.floor(height / textHeight), 1, windowid);
     if (navigator.userAgent.toLowerCase().indexOf('android') > -1 || navigator.userAgent.toLowerCase().indexOf('ipad') > -1 || navigator.userAgent.toLowerCase().indexOf('iphone') > -1 || navigator.userAgent.toLowerCase().indexOf('ipod') > -1) {
         if (!customKeyboardWindowID) {
             customKeyboardWindowID = createVirtualKeyboard(canvasid, controlNameId + 'VKB', x, y + height, 360, 180, depth, null, wordProcessorTouchKeyPress, 5, 5, 1, 12, '12pt Ariel', null);

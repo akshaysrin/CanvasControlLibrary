@@ -79,7 +79,7 @@
                     var p = getstackedBarGraphProps(c, w);
                     alert("You clicked on the " + p.Data[i][0] + " stacked bar!");
                 }, 50);
-            draw(elemId);
+            invalidateRect(elemId, null, 0, 0, 3000, 1500);
         </script>
     </div>
     </form>
