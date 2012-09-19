@@ -112,6 +112,7 @@ var intervalID = -1;
 var windowWithAnimationCount = new Array();
 var suspendDraw = 0;
 var sessionID = null;
+var donotredaw = null;
 
 function animatedDraw() {
     for (var i = 0; i < windowWithAnimationCount.length; i++) {
@@ -122,9 +123,9 @@ function animatedDraw() {
 
 function registerAnimatedWindow(canvasid, windowid) {
     for (var i = 0; i < windowWithAnimationCount.length; i++) {
-        if (windowWithAnimationCount[i].CanvasID == canvasid) {
+        if (windowWithAnimationCount[i].CanvasID == canvasid && windowWithAnimationCount[i].WindowID == windowid) {
             if (intervalID == -1) {
-                intervalID = setInterval(animatedDraw, 200);
+                intervalID = setInterval(animatedDraw, 20);
             }
             return;
         }
@@ -197,14 +198,18 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
                                 if (lostFocusFunctions[f][0] == canvasId && lostFocusFunctions[f][1] == windowIdWithFocus[k][1] &&
                                     lostFocusFunctions[f][1] != windows[i].WindowCount) {
                                     lostFocusFunctions[f][2](canvasId, windowIdWithFocus[k][1]);
-                                    dodrawforwindowids.push(lostFocusFunctions[f][1]);
+                                    if (!donotredaw) {
+                                        dodrawforwindowids.push(lostFocusFunctions[f][1]);
+                                    }
                                 }
                             }
                             windowIdWithFocus[k][1] = windows[i].WindowCount;
                             for (var f = 0; f < gotFocusFunctions.length; f++) {
                                 if (gotFocusFunctions[f][0] == canvasId && gotFocusFunctions[f][1] == windowIdWithFocus[k][1]) {
                                     gotFocusFunctions[f][2](canvasId, windowIdWithFocus[k][1]);
-                                    dodrawforwindowids.push(gotFocusFunctions[f][1]);
+                                    if (!donotredaw) {
+                                        dodrawforwindowids.push(gotFocusFunctions[f][1]);
+                                    }
                                 }
                             }
                             dodraw = 1;
@@ -217,7 +222,9 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
                         for (var f = 0; f < gotFocusFunctions.length; f++) {
                             if (gotFocusFunctions[f][0] == canvasId && gotFocusFunctions[f][1] == windows[i].WindowCount && windowIdWithFocus[k][1] != -1) {
                                 gotFocusFunctions[f][2](canvasId, windows[i].WindowCount);
-                                dodrawforwindowids.push(gotFocusFunctions[f][1]);
+                                if (!donotredaw) {
+                                    dodrawforwindowids.push(gotFocusFunctions[f][1]);
+                                }
                             }
                         }
                         dodraw = 1;
@@ -232,7 +239,9 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
                         } else {
                             eventArray[u][1](canvasId, windows[i].WindowCount, e);
                         }
-                        invalidateRect(canvasId, null, windows[i].X, windows[i].Y, windows[i].Width, windows[i].Height);
+                        if (!donotredaw) {
+                            invalidateRect(canvasId, null, windows[i].X, windows[i].Y, windows[i].Width, windows[i].Height);
+                        }
                         if (windows[i].ControlType != 'TextBox' && suppressPreventDefault != 1) {
                             if (e.preventDefault)
                                 e.preventDefault();
@@ -261,14 +270,18 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
                                 if (lostFocusFunctions[f][0] == canvasId && lostFocusFunctions[f][1] == windowIdWithFocus[k][1] &&
                                     lostFocusFunctions[f][1] != windows[i].WindowCount) {
                                     lostFocusFunctions[f][2](canvasId, windowIdWithFocus[k][1]);
-                                    dodrawforwindowids.push(lostFocusFunctions[f][1]);
+                                    if (!donotredaw) {
+                                        dodrawforwindowids.push(lostFocusFunctions[f][1]);
+                                    }
                                 }
                             }
                             windowIdWithFocus[k][1] = windows[i].WindowCount;
                             for (var f = 0; f < gotFocusFunctions.length; f++) {
                                 if (gotFocusFunctions[f][0] == canvasId && gotFocusFunctions[f][1] == windowIdWithFocus[k][1]) {
                                     gotFocusFunctions[f][2](canvasId, windowIdWithFocus[k][1]);
-                                    dodrawforwindowids.push(gotFocusFunctions[f][1]);
+                                    if (!donotredaw) {
+                                        dodrawforwindowids.push(gotFocusFunctions[f][1]);
+                                    }
                                 }
                             }
                             dodraw = 1;
@@ -281,7 +294,9 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
                         for (var f = 0; f < gotFocusFunctions.length; f++) {
                             if (gotFocusFunctions[f][0] == canvasId && gotFocusFunctions[f][1] == windows[i].WindowCount) {
                                 gotFocusFunctions[f][2](canvasId, windows[i].WindowCount);
-                                dodrawforwindowids.push(gotFocusFunctions[f][1]);
+                                if (!donotredaw) {
+                                    dodrawforwindowids.push(gotFocusFunctions[f][1]);
+                                }
                             }
                         }
                         dodraw = 1;
@@ -297,7 +312,9 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
                         } else {
                             eventArray[u][1](canvasId, windows[i].WindowCount, e);
                         }
-                        invalidateRect(canvasId, null, windows[i].X, windows[i].Y, windows[i].Width, windows[i].Height);
+                        if (!donotredaw) {
+                            invalidateRect(canvasId, null, windows[i].X, windows[i].Y, windows[i].Width, windows[i].Height);
+                        }
                         if (windows[i].ControlType != 'TextBox' && suppressPreventDefault != 1) {
                             if (e.preventDefault)
                                 e.preventDefault();
@@ -320,7 +337,9 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
                 for (var f = 0; f < lostFocusFunctions.length; f++) {
                     if (lostFocusFunctions[f][0] == canvasId && lostFocusFunctions[f][1] == windowIdWithFocus[q][1] && windowIdWithFocus[q][1] != -1) {
                         lostFocusFunctions[f][2](canvasId, windowIdWithFocus[q][1]);
-                        dodrawforwindowids.push(lostFocusFunctions[f][1]);
+                        if (!donotredaw) {
+                            dodrawforwindowids.push(lostFocusFunctions[f][1]);
+                        }
                     }
                 }
                 windowIdWithFocus[q][1] = -1;
@@ -328,12 +347,13 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
             }
         }
     }
-    if (dodraw == 1) {
+    if (dodraw == 1 && !donotredaw) {
         for (var i = 0; i < dodrawforwindowids.length; i++) {
             var wprops = getWindowProps(canvasId, dodrawforwindowids[i]);
             invalidateRect(canvasId, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
         }
     }
+    donotredaw = null;
     return 0;
 }
 
@@ -6202,6 +6222,7 @@ function textBoxTouchKeyPress(canvasid, windowid, keyboardChar) {
                 textBoxProps.WasSelecting = 0;
                 textBoxProps.MouseDown = 0;
             }
+            invalidateRect(canvasid, null, textBoxProps.X, textBoxProps.Y, textBoxProps.Width, textBoxProps.Height);
             return;
         case 'right':
             //right arrow	 39
@@ -6214,6 +6235,7 @@ function textBoxTouchKeyPress(canvasid, windowid, keyboardChar) {
             textBoxProps.SelectedTextEndIndex = -1;
             textBoxProps.MouseDown = 0;
             textBoxProps.WasSelecting = 0;
+            invalidateRect(canvasid, null, textBoxProps.X, textBoxProps.Y, textBoxProps.Width, textBoxProps.Height);
             return;
         case 'backspacekey':
             //backspace	 8
@@ -6241,6 +6263,7 @@ function textBoxTouchKeyPress(canvasid, windowid, keyboardChar) {
             if (textBoxProps.ListPossiblesAllChoices != null) {
                 FindTextBoxPossible(textBoxProps, c);
             }
+            invalidateRect(canvasid, null, textBoxProps.X, textBoxProps.Y, textBoxProps.Width, textBoxProps.Height);
             return;
         case 'spacebarkey':
             keyboardChar = ' ';
@@ -6272,6 +6295,7 @@ function textBoxTouchKeyPress(canvasid, windowid, keyboardChar) {
             textBoxProps.WasSelecting = 0;
         }
     }
+    invalidateRect(canvasid, null, textBoxProps.X, textBoxProps.Y, textBoxProps.Width, textBoxProps.Height);
 }
 
 function createTextBox(canvasid, controlNameId, x, y, width, height, depth, waterMarkText, waterMarkTextColor, waterMarkTextHeight, waterMarkTextFontString,
@@ -8274,6 +8298,7 @@ function createVirtualKeyboard(canvasid, controlNameId, x, y, width, height, dep
             offsetY += virtualKeyboardProps.Keys[virtualKeyboardProps.CurrentKeyboardIndex][row][0][2] + virtualKeyboardProps.GapBetweenRows;
         }
         registerClickFunction(windowid, function (canvasid1, windowid1, e) {
+            donotredaw = 1;
             var x = e.calcX;
             var y = e.calcY;
             var virtualKeyboardProps = getVirtualKeyboardProps(canvasid1, windowid1);

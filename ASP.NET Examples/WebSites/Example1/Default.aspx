@@ -29,7 +29,7 @@
         <script type="text/javascript">
             var elemId = 'canvas';
             registerCanvasElementId(elemId);
-            createButton(elemId, 'b1', 10, 10, 30, 30, '', '#0000FF', 12, '12pt Ariel', 5, highestDepth, 1, 0,
+            createButton(elemId, 'b1', 10, 10, 100, 30, 'Google Search', '#0000FF', 12, '12pt Ariel', 5, highestDepth, 1, 0,
                 null, null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1', null, 1, 'http://www.google.com');
             createButton(elemId, 'b2', 50, 38, 100, 40, 'CodeProject', '#0000FF', 12, '12pt Ariel', 10, highestDepth + 1, 1, 1,
                 null, null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1', null,
