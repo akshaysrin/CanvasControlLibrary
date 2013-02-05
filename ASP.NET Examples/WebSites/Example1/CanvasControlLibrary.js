@@ -2618,12 +2618,14 @@ function toggleAllChildNodesExpandedState(treeViewProps, p) {
 
 function clickTreeView(canvasid, windowid, e) {
     var treeViewProps = getTreeViewProps(canvasid, windowid);
+    var scrollBarProps = getScrollBarProps(canvasid, treeViewProps.VScrollBarWindowID);
     var x = e.calcX;
     var y = e.calcY;
     for (var i = 0; i < treeViewProps.ClickButtonExtents.length; i++) {
         if (x > treeViewProps.ClickButtonExtents[i].X && x < treeViewProps.ClickButtonExtents[i].X + 9 &&
             y > treeViewProps.ClickButtonExtents[i].Y && y < treeViewProps.ClickButtonExtents[i].Y + 9) {
             toggleAllChildNodesExpandedState(treeViewProps, treeViewProps.Data[treeViewProps.ClickButtonExtents[i].Index][treeViewProps.IDColumnIndex]);
+            scrollBarProps.MaxItems = checkHowManyChildNodesAreExpandedInAll(treeViewProps);
             invalidateRect(canvasid, null, treeViewProps.X, treeViewProps.Y, treeViewProps.Width, treeViewProps.Height);
             return;
         }
@@ -2762,6 +2764,17 @@ function checkHowManyChildNodesAreExpandedX(treeviewProps, p) {
     }
     return count;
 }
+
+function checkHowManyChildNodesAreExpandedInAll(treeviewProps) {
+    var count = 0;
+    for (var i = 0; i < treeviewProps.Data.length; i++) {
+        if (treeviewProps.Data[i][treeviewProps.ExpandedColIndex] == 1) {
+            count++;
+        }
+    }
+    return count;
+}
+
 function drawTreeViewNode(ctx, x, y, state, text, textcolor, textfontstring, textheight, level, hasChildNodes, numOfChildNodes, treeviewProps, i, selectednodeid) {
     x += level * 8;
     if (hasChildNodes == 1) {
