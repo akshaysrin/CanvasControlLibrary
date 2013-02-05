@@ -2772,11 +2772,11 @@ function drawTreeViewNode(ctx, x, y, state, text, textcolor, textfontstring, tex
         ctx.stroke();
         ctx.fillStyle = '#dcf0fb';
         ctx.beginPath();
-        ctx.rect(x + 1, y + 1, 7, 5);
+        ctx.rect(x + 1, y + 1, 8, 5);
         ctx.fill();
         ctx.fillStyle = '#a7d8f3';
         ctx.beginPath();
-        ctx.rect(x + 1, y + 6, 7, 4);
+        ctx.rect(x + 1, y + 6, 8, 4);
         ctx.fill();
         ctx.strokeStyle = '#000000';
         ctx.beginPath();
