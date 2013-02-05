@@ -2742,13 +2742,26 @@ function checkHowManyChildNodesAreExpanded(treeviewProps, p) {
         if (treeviewProps.Data[i][treeviewProps.ParentIDColIndex] == f && treeviewProps.Data[i][treeviewProps.ExpandedColIndex] == 1) {
             count++;
             if (count < cnodes && hasChildNodes(treeviewProps, i)) {
-                count += lastchildcount = checkHowManyChildNodesAreExpanded(treeviewProps, i);
+                count += lastchildcount = checkHowManyChildNodesAreExpandedX(treeviewProps, i);
             }
         }
     }
     return count - lastchildcount;
 }
 
+function checkHowManyChildNodesAreExpandedX(treeviewProps, p) {
+    var f = treeviewProps.Data[p][treeviewProps.IDColumnIndex];
+    var count = 0;
+    for (var i = 0; i < treeviewProps.Data.length; i++) {
+        if (treeviewProps.Data[i][treeviewProps.ParentIDColIndex] == f && treeviewProps.Data[i][treeviewProps.ExpandedColIndex] == 1) {
+            count++;
+            if (hasChildNodes(treeviewProps, i)) {
+                count += checkHowManyChildNodesAreExpandedX(treeviewProps, i);
+            }
+        }
+    }
+    return count;
+}
 function drawTreeViewNode(ctx, x, y, state, text, textcolor, textfontstring, textheight, level, hasChildNodes, numOfChildNodes, treeviewProps, i, selectednodeid) {
     x += level * 8;
     if (hasChildNodes == 1) {
