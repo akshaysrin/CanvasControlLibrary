@@ -117,7 +117,9 @@ var donotredaw = null;
 function animatedDraw() {
     for (var i = 0; i < windowWithAnimationCount.length; i++) {
         var wprops = getWindowProps(windowWithAnimationCount[i].CanvasID, windowWithAnimationCount[i].WindowID);
-        invalidateRect(windowWithAnimationCount[i].CanvasID, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
+        if (wprops) {
+            invalidateRect(windowWithAnimationCount[i].CanvasID, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
+        }
     }
 }
 
@@ -350,7 +352,9 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
     if (dodraw == 1 && !donotredaw) {
         for (var i = 0; i < dodrawforwindowids.length; i++) {
             var wprops = getWindowProps(canvasId, dodrawforwindowids[i]);
-            invalidateRect(canvasId, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
+            if (wprops) {
+                invalidateRect(canvasId, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
+            }
         }
     }
     donotredaw = null;
@@ -456,7 +460,9 @@ function registerCanvasElementId(canvasId) {
                 if (windowIdWithFocus[j][0] == keyPressFunctions[i].CanvasID && windowIdWithFocus[j][1] == keyPressFunctions[i].WindowID) {
                     keyPressFunctions[i].KeyPressFunction(keyPressFunctions[i].CanvasID, keyPressFunctions[i].WindowID, e);
                     var wprops = getWindowProps(keyPressFunctions[i].CanvasID, keyPressFunctions[i].WindowID);
-                    invalidateRect(keyPressFunctions[i].CanvasID, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
+                    if (wprops) {
+                        invalidateRect(keyPressFunctions[i].CanvasID, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
+                    }
                     if (e.preventDefault)
                         e.preventDefault();
                     e.returnValue = false;
@@ -470,7 +476,9 @@ function registerCanvasElementId(canvasId) {
                 if (windowIdWithFocus[j][0] == keyDownFunctions[i].CanvasID && windowIdWithFocus[j][1] == keyDownFunctions[i].WindowID) {
                     keyDownFunctions[i].KeyDownFunction(keyDownFunctions[i].CanvasID, keyDownFunctions[i].WindowID, e);
                     var wprops = getWindowProps(keyDownFunctions[i].CanvasID, keyDownFunctions[i].WindowID);
-                    invalidateRect(keyDownFunctions[i].CanvasID, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
+                    if (wprops) {
+                        invalidateRect(keyDownFunctions[i].CanvasID, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
+                    }
                     if (e.preventDefault)
                         e.preventDefault();
                     e.returnValue = false;
@@ -520,7 +528,10 @@ function registerChildWindow(canvasid, windowid, parentwindowid) {
     for (var i = 0; i < windows.length; i++) {
         if (windows[i].WindowCount == parentwindowid) {
             windows[i].ChildWindowIDs.push(windowid);
-            getWindowProps(canvasid, windowid).ParentWindowID = parentwindowid;
+            var wprops = getWindowProps(canvasid, windowid);
+            if (wprops) {
+                wprops.ParentWindowID = parentwindowid;
+            }
         }
     }
 }
@@ -667,7 +678,9 @@ function setHiddenWindowStatus(canvasid, windowid, status) {
         if (hiddenWindows[i].HiddenStatus != status && hiddenWindows[i].CanvasID == canvasid && hiddenWindows[i].WindowID == windowid) {
             hiddenWindows[i].HiddenStatus = status;
             var wprops = getWindowProps(hiddenWindows[i].CanvasID, hiddenWindows[i].WindowID);
-            invalidateRect(hiddenWindows[i].CanvasID, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
+            if (wprops) {
+                invalidateRect(hiddenWindows[i].CanvasID, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
+            }
         }
     }
 }
@@ -744,7 +757,7 @@ function invalidateRect(canvasId, parentwindowid, x, y, width, height) {
         for (var d = 0; d <= highestDepth; d++) {
             for (var i = 0; i < windowDrawFunctions.length; i++) {
                 var windowProps = getWindowProps(canvasId, windowDrawFunctions[i][0]);
-                if (windowProps.ParentWindowID == parentwindowid && checkIfHiddenWindow(canvasId, windowDrawFunctions[i][0]) == 0 &&
+                if (windowProps && windowProps.ParentWindowID == parentwindowid && checkIfHiddenWindow(canvasId, windowDrawFunctions[i][0]) == 0 &&
                     checkIfModalWindow(canvasId, windowDrawFunctions[i][0]) == 0 &&
                     getWindowDepth(windowDrawFunctions[i][0], windowDrawFunctions[i][2]) == d && windowDrawFunctions[i][2] == canvasId &&
                     x < windowProps.X + windowProps.Width && x + width > windowProps.X && y < windowProps.Y + windowProps.Height && y + height > windowProps.Y) {
@@ -764,7 +777,7 @@ function invalidateRect(canvasId, parentwindowid, x, y, width, height) {
         for (var d = 0; d <= highestDepth; d++) {
             for (var i = 0; i < windowDrawFunctions.length; i++) {
                 var windowProps = getWindowProps(canvasId, windowDrawFunctions[i][0]);
-                if (windowProps.ParentWindowID == parentwindowid && checkIfHiddenWindow(canvasId, windowDrawFunctions[i][0]) == 0 &&
+                if (windowProps && windowProps.ParentWindowID == parentwindowid && checkIfHiddenWindow(canvasId, windowDrawFunctions[i][0]) == 0 &&
                     checkIfModalWindow(canvasId, windowDrawFunctions[i][0]) == 1 &&
                     getWindowDepth(windowDrawFunctions[i][0], windowDrawFunctions[i][2]) == d && windowDrawFunctions[i][2] == canvasId &&
                     x < windowProps.X + windowProps.Width && x + width > windowProps.X && y < windowProps.Y + windowProps.Height && y + height > windowProps.Y) {
@@ -1761,7 +1774,9 @@ function scrollBarClick(canvasid, windowid, e) {
         }
     }
     var wprops = getWindowProps(canvasid, scrollBarProps.OwnedByWindowID);
-    invalidateRect(canvasid, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
+    if (wprops) {
+        invalidateRect(canvasid, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
+    }
 }
 
 function scrollBarMouseDown(canvasid, windowid, e) {
@@ -1807,7 +1822,9 @@ function scrollBarMouseMove(canvasid, windowid, e) {
         }
     }
     var wprops = getWindowProps(canvasid, scrollBarProps.OwnedByWindowID);
-    invalidateRect(canvasid, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
+    if (wprops) {
+        invalidateRect(canvasid, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
+    }
 }
 
 function scrollBarMouseUp(canvasid, windowid) {
@@ -2249,9 +2266,13 @@ function comboboxListAreaLostFocus(canvasid, windowid) {
         setHiddenWindowStatus(canvasid, comboboxProps.VScrollBarWindowID, 1);
         setHiddenWindowStatus(canvasid, comboboxProps.ListAreaWindowID, 1);
         var vswprops = getWindowProps(canvasid, comboboxProps.VScrollBarWindowID);
-        invalidateRect(canvasid, null, vswprops.X, vswprops.Y, vswprops.Width, vswprops.Height);
+        if (vswprops) {
+            invalidateRect(canvasid, null, vswprops.X, vswprops.Y, vswprops.Width, vswprops.Height);
+        }
         var lawprops = getWindowProps(canvasid, comboboxProps.ListAreaWindowID);
-        invalidateRect(canvasid, null, lawprops.X, lawprops.Y, lawprops.Width, lawprops.Height);
+        if (lawprops) {
+            invalidateRect(canvasid, null, lawprops.X, lawprops.Y, lawprops.Width, lawprops.Height);
+        }
     }
 }
 
@@ -2265,9 +2286,13 @@ function comboboxTextAreaLostFocus(canvasid, windowid) {
         setHiddenWindowStatus(canvasid, comboboxProps.VScrollBarWindowID, 1);
         setHiddenWindowStatus(canvasid, comboboxProps.ListAreaWindowID, 1);
         var vswprops = getWindowProps(canvasid, comboboxProps.VScrollBarWindowID);
-        invalidateRect(canvasid, null, vswprops.X, vswprops.Y, vswprops.Width, vswprops.Height);
+        if (vswprops) {
+            invalidateRect(canvasid, null, vswprops.X, vswprops.Y, vswprops.Width, vswprops.Height);
+        }
         var lawprops = getWindowProps(canvasid, comboboxProps.ListAreaWindowID);
-        invalidateRect(canvasid, null, lawprops.X, lawprops.Y, lawprops.Width, lawprops.Height);
+        if (lawprops) {
+            invalidateRect(canvasid, null, lawprops.X, lawprops.Y, lawprops.Width, lawprops.Height);
+        }
     }
 }
 
@@ -2281,9 +2306,13 @@ function comboboxButtonLostFocus(canvasid, windowid) {
         setHiddenWindowStatus(canvasid, comboboxProps.VScrollBarWindowID, 1);
         setHiddenWindowStatus(canvasid, comboboxProps.ListAreaWindowID, 1);
         var vswprops = getWindowProps(canvasid, comboboxProps.VScrollBarWindowID);
-        invalidateRect(canvasid, null, vswprops.X, vswprops.Y, vswprops.Width, vswprops.Height);
+        if (vswprops) {
+            invalidateRect(canvasid, null, vswprops.X, vswprops.Y, vswprops.Width, vswprops.Height);
+        }
         var lawprops = getWindowProps(canvasid, comboboxProps.ListAreaWindowID);
-        invalidateRect(canvasid, null, lawprops.X, lawprops.Y, lawprops.Width, lawprops.Height);
+        if (lawprops) {
+            invalidateRect(canvasid, null, lawprops.X, lawprops.Y, lawprops.Width, lawprops.Height);
+        }
     }
 }
 
@@ -2297,9 +2326,13 @@ function comboboxScrollBarLostFocus(canvasid, windowid) {
         setHiddenWindowStatus(canvasid, comboboxProps.VScrollBarWindowID, 1);
         setHiddenWindowStatus(canvasid, comboboxProps.ListAreaWindowID, 1);
         var vswprops = getWindowProps(canvasid, comboboxProps.VScrollBarWindowID);
-        invalidateRect(canvasid, null, vswprops.X, vswprops.Y, vswprops.Width, vswprops.Height);
+        if (vswprops) {
+            invalidateRect(canvasid, null, vswprops.X, vswprops.Y, vswprops.Width, vswprops.Height);
+        }
         var lawprops = getWindowProps(canvasid, comboboxProps.ListAreaWindowID);
-        invalidateRect(canvasid, null, lawprops.X, lawprops.Y, lawprops.Width, lawprops.Height);
+        if (lawprops) {
+            invalidateRect(canvasid, null, lawprops.X, lawprops.Y, lawprops.Width, lawprops.Height);
+        }
     }
 }
 
@@ -2504,11 +2537,13 @@ function createImage(canvasid, controlNameId, x, y, width, height, depth, imgurl
         if (imageProps.Image && imageProps.Image.complete == true) {
             if (imageProps.Tile == 1) {
                 var windowProps = getWindowProps(canvasid, windowid);
-                var tilex = Math.ceil(windowProps.Width / imageProps.Image.width);
-                var tiley = Math.ceil(windowProps.Height / imageProps.Image.height);
-                for (var ytile = 0; ytile < tiley; ytile++) {
-                    for (var xtile = 0; xtile < tilex; xtile++) {
-                        ctx.drawImage(imageProps.Image, imageProps.X + (xtile * imageProps.Image.width), imageProps.Y + (ytile * imageProps.Image.height));
+                if (windowProps) {
+                    var tilex = Math.ceil(windowProps.Width / imageProps.Image.width);
+                    var tiley = Math.ceil(windowProps.Height / imageProps.Image.height);
+                    for (var ytile = 0; ytile < tiley; ytile++) {
+                        for (var xtile = 0; xtile < tilex; xtile++) {
+                            ctx.drawImage(imageProps.Image, imageProps.X + (xtile * imageProps.Image.width), imageProps.Y + (ytile * imageProps.Image.height));
+                        }
                     }
                 }
             } else {
@@ -3600,25 +3635,27 @@ function createPanel(canvasid, controlNameId, x, y, width, height, depth, hasBor
         registerClickFunction(windowid, function (canvasid3, windowid3, e) {
             var panelProps = getPanelProps(canvasid3, windowid3);
             var windowProps = getWindowProps(canvasid3, windowid3);
-            var x = e.calcX;
-            var y = e.calcY;
-            if (x > panelProps.X + panelProps.Width - 4 - (panelProps.ExpandCollapseButtonRadius * 2) &&
-                x < panelProps.X + panelProps.Width - 4 && y > panelProps.Y + +
-                ((panelProps.HeaderHeight - (panelProps.ExpandCollapseButtonRadius * 2)) / 2) &&
-                y < panelProps.Y + panelProps.HeaderHeight -
-                ((panelProps.HeaderHeight - (panelProps.ExpandCollapseButtonRadius * 2)) / 2)) {
-                if (panelProps.IsExpanded == 1) {
-                    panelProps.IsExpanded = 0;
-                    panelProps.Width = panelProps.CollapsedWidth;
-                    panelProps.Height = panelProps.HeaderHeight + panelProps.CollapsedHeight;
-                    windowProps.Width = panelProps.CollapsedWidth;
-                    windowProps.Height = panelProps.HeaderHeight + panelProps.CollapsedHeight;
-                } else {
-                    panelProps.IsExpanded = 1;
-                    panelProps.Width = panelProps.OriginalWidth;
-                    panelProps.Height = panelProps.OriginalHeight;
-                    windowProps.Width = panelProps.OriginalWidth;
-                    windowProps.Height = panelProps.OriginalHeight;
+            if (windowProps) {
+                var x = e.calcX;
+                var y = e.calcY;
+                if (x > panelProps.X + panelProps.Width - 4 - (panelProps.ExpandCollapseButtonRadius * 2) &&
+                    x < panelProps.X + panelProps.Width - 4 && y > panelProps.Y + +
+                    ((panelProps.HeaderHeight - (panelProps.ExpandCollapseButtonRadius * 2)) / 2) &&
+                    y < panelProps.Y + panelProps.HeaderHeight -
+                    ((panelProps.HeaderHeight - (panelProps.ExpandCollapseButtonRadius * 2)) / 2)) {
+                    if (panelProps.IsExpanded == 1) {
+                        panelProps.IsExpanded = 0;
+                        panelProps.Width = panelProps.CollapsedWidth;
+                        panelProps.Height = panelProps.HeaderHeight + panelProps.CollapsedHeight;
+                        windowProps.Width = panelProps.CollapsedWidth;
+                        windowProps.Height = panelProps.HeaderHeight + panelProps.CollapsedHeight;
+                    } else {
+                        panelProps.IsExpanded = 1;
+                        panelProps.Width = panelProps.OriginalWidth;
+                        panelProps.Height = panelProps.OriginalHeight;
+                        windowProps.Width = panelProps.OriginalWidth;
+                        windowProps.Height = panelProps.OriginalHeight;
+                    }
                 }
             }
         }, canvasid);
