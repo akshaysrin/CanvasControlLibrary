@@ -243,6 +243,19 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
                         }
                         if (!donotredaw) {
                             invalidateRect(canvasId, null, windows[i].X, windows[i].Y, windows[i].Width, windows[i].Height);
+                            if (windows[i].ControlType == 'ScrollBar') {
+                                var scrollbarprops = getScrollBarProps(canvasId, windows[i].WindowCount);
+                                var parentofscrollbarwindowprops = getWindowProps(canvasId, scrollbarprops.OwnedByWindowID);
+                                if (parentofscrollbarwindowprops) {
+                                    invalidateRect(canvasId, null, parentofscrollbarwindowprops.X, parentofscrollbarwindowprops.Y,
+                                        parentofscrollbarwindowprops.Width, parentofscrollbarwindowprops.Height);
+                                    if (scrollbarprops.DrawFunction) {
+                                        scrollbarprops.DrawFunction(canvasId, windows[i].WindowCount);
+                                    } else {
+                                        drawScrollBar(canvasId, windows[i].WindowCount);
+                                    }
+                                }
+                            }
                         }
                         if (windows[i].ControlType != 'TextBox' && suppressPreventDefault != 1) {
                             if (e.preventDefault)
@@ -316,6 +329,19 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
                         }
                         if (!donotredaw) {
                             invalidateRect(canvasId, null, windows[i].X, windows[i].Y, windows[i].Width, windows[i].Height);
+                            if (windows[i].ControlType == 'ScrollBar') {
+                                var scrollbarprops = getScrollBarProps(canvasId, windows[i].WindowCount);
+                                var parentofscrollbarwindowprops = getWindowProps(canvasId, scrollbarprops.OwnedByWindowID);
+                                if (parentofscrollbarwindowprops) {
+                                    invalidateRect(canvasId, null, parentofscrollbarwindowprops.X, parentofscrollbarwindowprops.Y,
+                                        parentofscrollbarwindowprops.Width, parentofscrollbarwindowprops.Height);
+                                    if (scrollbarprops.DrawFunction) {
+                                        scrollbarprops.DrawFunction(canvasId, windows[i].WindowCount);
+                                    } else {
+                                        drawScrollBar(canvasId, windows[i].WindowCount);
+                                    }
+                                }
+                            }
                         }
                         if (windows[i].ControlType != 'TextBox' && suppressPreventDefault != 1) {
                             if (e.preventDefault)
@@ -677,10 +703,12 @@ function setHiddenWindowStatus(canvasid, windowid, status) {
     for (var i = 0; i < hiddenWindows.length; i++) {
         if (hiddenWindows[i].HiddenStatus != status && hiddenWindows[i].CanvasID == canvasid && hiddenWindows[i].WindowID == windowid) {
             hiddenWindows[i].HiddenStatus = status;
+            /*
             var wprops = getWindowProps(hiddenWindows[i].CanvasID, hiddenWindows[i].WindowID);
             if (wprops) {
                 invalidateRect(hiddenWindows[i].CanvasID, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
             }
+            */
         }
     }
 }
@@ -751,9 +779,9 @@ function draw(canvasId, parentwindowid) {
 function invalidateRect(canvasId, parentwindowid, x, y, width, height) {
     if (suspendDraw == 0) {
         var canvas = getCanvas(canvasId);
-        if (parentwindowid == null) {
+//        if (parentwindowid == null) {
             getCtx(canvasId).clearRect(x, y, width, height);
-        }
+//        }
         for (var d = 0; d <= highestDepth; d++) {
             for (var i = 0; i < windowDrawFunctions.length; i++) {
                 var windowProps = getWindowProps(canvasId, windowDrawFunctions[i][0]);
@@ -1522,6 +1550,7 @@ function drawScrollBar(canvasid, windowid) {
     var x = scrollBarProps.X, y = scrollBarProps.Y, len = scrollBarProps.Len, maxitems = (scrollBarProps.MaxItems == 0 ? 1 : scrollBarProps.MaxItems), selindex = scrollBarProps.SelectedID;
     var ctx = getCtx(canvasid);
     if (scrollBarProps.Alignment == 1) {
+        ctx.clearRect(scrollBarProps.X, scrollBarProps.Y, 15, scrollBarProps.Len);
         var g = ctx.createLinearGradient(x, y, x + 15, y);
         g.addColorStop(0, '#e3e3e3');
         g.addColorStop(0.5, '#ededed');
@@ -1637,6 +1666,7 @@ function drawScrollBar(canvasid, windowid) {
         ctx.lineTo(x + 10, y + ((selindex * (len - 55)) / maxitems) + 16 + 15);
         ctx.stroke();
     } else {
+        ctx.clearRect(scrollBarProps.X, scrollBarProps.Y, scrollBarProps.Len, 15);
         var g = ctx.createLinearGradient(x, y, x, y + 15);
         g.addColorStop(0, '#e3e3e3');
         g.addColorStop(0.5, '#ededed');
@@ -1800,6 +1830,7 @@ function scrollBarMouseDown(canvasid, windowid, e) {
 
 function scrollBarMouseMove(canvasid, windowid, e) {
     var scrollBarProps = getScrollBarProps(canvasid, windowid);
+    var tmp = scrollBarProps.SelectedID;
     if (scrollBarProps.MouseDownState == 1) {
         if (scrollBarProps.Alignment == 1) {
             var y = e.calcY;
@@ -1821,10 +1852,13 @@ function scrollBarMouseMove(canvasid, windowid, e) {
             }
         }
     }
-    var wprops = getWindowProps(canvasid, scrollBarProps.OwnedByWindowID);
-    if (wprops) {
-        invalidateRect(canvasid, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
-    }
+    /*
+    if (scrollBarProps.SelectedID != tmp) {
+        var wprops = getWindowProps(canvasid, scrollBarProps.OwnedByWindowID);
+        if (wprops) {
+            invalidateRect(canvasid, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
+        }
+    }*/
 }
 
 function scrollBarMouseUp(canvasid, windowid) {
@@ -1846,7 +1880,7 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
     }
     scrollBarPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Len: len, SelectedID: 0,
-        MaxItems: maxitems, Alignment: alignment, MouseDownState: 0, Tag: tag, OwnedByWindowID: ownedbywindowid
+        MaxItems: maxitems, Alignment: alignment, MouseDownState: 0, Tag: tag, OwnedByWindowID: ownedbywindowid, DrawFunction: drawFunction
     });
     if (clickFunction == null) {
         registerClickFunction(windowid, scrollBarClick, canvasid);
@@ -2096,7 +2130,6 @@ function createComboBox(canvasid, controlNameId, x, y, width, height, depth, dat
     var textareawindowid = createWindow(canvasid, x, y, width - height, height, depth, null, 'ComboBoxTextArea', controlNameId + 'ComboBoxTextArea');
     var buttonwindowid = createWindow(canvasid, x + width - height, y, height, height, depth, null, 'ComboBoxButton', controlNameId + 'ComboBoxButton');
     var dropdownlistareawindowid = createWindow(canvasid, x, y + height, width - 15, 100, depth, null, 'ComboBoxListArea', controlNameId + 'ComboBoxListArea');
-    registerModalWindow(canvasid, dropdownlistareawindowid);
     var vscrollBarComboboxWindowId = createScrollBar(canvasid, controlNameId + 'VS', x + width - 15, y + height, 100, depth, data.length, 1, dropdownlistareawindowid,
         function () { drawComboboxScrollBar(canvasid, vscrollBarComboboxWindowId); }, null);
     comboboxPropsArray.push({
@@ -2107,7 +2140,7 @@ function createComboBox(canvasid, controlNameId, x, y, width, height, depth, dat
         TextAreaTextColor: textAreaTextColor, TextAreaTextHeight: textAreaTextHeight,
         TextAreaFontString: textAreaFontString, ListAreaTextColor: listAreaTextColor,
         ListAreaTextHeight: listAreaTextHeight, ListAreaFontString: listAreaFontString,
-        OnSelectionChanged: onSelectionChanged, Tag: tag
+        OnSelectionChanged: onSelectionChanged, Tag: tag, DrawListAreaFunction: drawListAreaFunction
     });
     if (drawTextAreaFunction != null) {
         registerWindowDrawFunction(textareawindowid, function () { drawTextAreaFunction(canvasid, textareawindowid); }, canvasid);
@@ -2152,6 +2185,7 @@ function drawComboboxScrollBar(canvasid, windowid) {
 function drawComboboxTextArea(canvasid, windowid) {
     var comboboxProps = getComboboxPropsByTextAreaWindowId(canvasid, windowid);
     var ctx = getCtx(canvasid);
+    ctx.clearRect(comboboxProps.X, comboboxProps.Y, comboboxProps.Width, comboboxProps.Height);
     ctx.fillStyle = comboboxProps.TextAreaTextColor;
     ctx.font = comboboxProps.TextAreaFontString;
     if (comboboxProps.SelectedID < comboboxProps.Data.length && comboboxProps.SelectedID >= 0) {
@@ -2208,7 +2242,7 @@ function comboboxButtonClick(canvasid, windowid) {
         setHiddenWindowStatus(canvasid, comboboxProps.VScrollBarWindowID, 1);
         setHiddenWindowStatus(canvasid, comboboxProps.ListAreaWindowID, 1);
     }
-    invalidateRect(canvasid, null, comboboxProps.X, comboboxProps.Y, comboboxProps.Width, comboboxProps.Height);
+    invalidateRect(canvasid, null, comboboxProps.X, comboboxProps.Y, comboboxProps.Width + 1, comboboxProps.Height + 101);
 }
 
 function drawComboboxListArea(canvasid, windowid) {
@@ -2265,6 +2299,8 @@ function comboboxListAreaLostFocus(canvasid, windowid) {
         doingEventForWindowID != comboboxProps.VScrollBarWindowID) {
         setHiddenWindowStatus(canvasid, comboboxProps.VScrollBarWindowID, 1);
         setHiddenWindowStatus(canvasid, comboboxProps.ListAreaWindowID, 1);
+        invalidateRect(canvasid, null, comboboxProps.X, comboboxProps.Y, comboboxProps.Width + 1, comboboxProps.Height + 101);
+        /*
         var vswprops = getWindowProps(canvasid, comboboxProps.VScrollBarWindowID);
         if (vswprops) {
             invalidateRect(canvasid, null, vswprops.X, vswprops.Y, vswprops.Width, vswprops.Height);
@@ -2273,6 +2309,7 @@ function comboboxListAreaLostFocus(canvasid, windowid) {
         if (lawprops) {
             invalidateRect(canvasid, null, lawprops.X, lawprops.Y, lawprops.Width, lawprops.Height);
         }
+        */
     }
 }
 
@@ -2285,6 +2322,8 @@ function comboboxTextAreaLostFocus(canvasid, windowid) {
         doingEventForWindowID != comboboxProps.VScrollBarWindowID) {
         setHiddenWindowStatus(canvasid, comboboxProps.VScrollBarWindowID, 1);
         setHiddenWindowStatus(canvasid, comboboxProps.ListAreaWindowID, 1);
+        invalidateRect(canvasid, null, comboboxProps.X, comboboxProps.Y, comboboxProps.Width + 1, comboboxProps.Height + 101);
+        /*
         var vswprops = getWindowProps(canvasid, comboboxProps.VScrollBarWindowID);
         if (vswprops) {
             invalidateRect(canvasid, null, vswprops.X, vswprops.Y, vswprops.Width, vswprops.Height);
@@ -2292,7 +2331,7 @@ function comboboxTextAreaLostFocus(canvasid, windowid) {
         var lawprops = getWindowProps(canvasid, comboboxProps.ListAreaWindowID);
         if (lawprops) {
             invalidateRect(canvasid, null, lawprops.X, lawprops.Y, lawprops.Width, lawprops.Height);
-        }
+        }*/
     }
 }
 
@@ -2305,6 +2344,8 @@ function comboboxButtonLostFocus(canvasid, windowid) {
         doingEventForWindowID != comboboxProps.VScrollBarWindowID) {
         setHiddenWindowStatus(canvasid, comboboxProps.VScrollBarWindowID, 1);
         setHiddenWindowStatus(canvasid, comboboxProps.ListAreaWindowID, 1);
+        invalidateRect(canvasid, null, comboboxProps.X, comboboxProps.Y, comboboxProps.Width + 1, comboboxProps.Height + 101);
+        /*
         var vswprops = getWindowProps(canvasid, comboboxProps.VScrollBarWindowID);
         if (vswprops) {
             invalidateRect(canvasid, null, vswprops.X, vswprops.Y, vswprops.Width, vswprops.Height);
@@ -2312,7 +2353,7 @@ function comboboxButtonLostFocus(canvasid, windowid) {
         var lawprops = getWindowProps(canvasid, comboboxProps.ListAreaWindowID);
         if (lawprops) {
             invalidateRect(canvasid, null, lawprops.X, lawprops.Y, lawprops.Width, lawprops.Height);
-        }
+        }*/
     }
 }
 
@@ -2325,14 +2366,15 @@ function comboboxScrollBarLostFocus(canvasid, windowid) {
         doingEventForWindowID != comboboxProps.VScrollBarWindowID) {
         setHiddenWindowStatus(canvasid, comboboxProps.VScrollBarWindowID, 1);
         setHiddenWindowStatus(canvasid, comboboxProps.ListAreaWindowID, 1);
-        var vswprops = getWindowProps(canvasid, comboboxProps.VScrollBarWindowID);
+        invalidateRect(canvasid, null, comboboxProps.X, comboboxProps.Y, comboboxProps.Width + 1, comboboxProps.Height + 101);
+        /* var vswprops = getWindowProps(canvasid, comboboxProps.VScrollBarWindowID);
         if (vswprops) {
             invalidateRect(canvasid, null, vswprops.X, vswprops.Y, vswprops.Width, vswprops.Height);
         }
         var lawprops = getWindowProps(canvasid, comboboxProps.ListAreaWindowID);
         if (lawprops) {
             invalidateRect(canvasid, null, lawprops.X, lawprops.Y, lawprops.Width, lawprops.Height);
-        }
+        }*/
     }
 }
 
@@ -2481,7 +2523,6 @@ function createRadioButtonGroup(canvasid, controlNameId, x, y, alignment, depth,
         radioButtonProps.ButtonExtents = buttonExtents;
     }, canvasid);
     registerClickFunction(windowid, function (canvasid2, windowid2, e) {
-        
         var radioButtonProps = getRadioButtonProps(canvasid2, windowid2);
         var clickx = e.calcX;
         var clicky = e.calcY;
@@ -2615,12 +2656,32 @@ function getTreeViewProps(canvasid, windowid) {
 }
 
 function createTreeView(canvasid, controlNameId, x, y, width, height, depth, data, idcolindex, parentidcolindex, expandedcolindex,
-    labelcolindex, textcolor, textfontstring, textheight, clickNodeFunction, tag) {
+    labelcolindex, textcolor, textfontstring, textheight, clickNodeFunction, tag, hasicons, iconwidth, iconheight) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'TreeView', controlNameId);
     var shownitemscount = 0;
     for (var i = 0; i < data.length; i++) {
         if (data[i][expandedcolindex] == 1) {
             shownitemscount++;
+        }
+    }
+    var iconimages = new Array();
+    if (hasicons == 1) {
+        for (var i = 0; i < data.length; i++) {
+            if (data[i][4] != null) {
+                var foundimage = 0;
+                for (var x = 0; x < iconimages.length; x++) {
+                    if (data[i][4] == iconimages[x][0]) {
+                        foundimage = 1;
+                        break;
+                    }
+                }
+                if (foundimage == 0) {
+                    var image = new Image();
+                    image.onload = function () { invalidateRect(canvasid, x, y, width, height); };
+                    image.src = data[i][4];
+                    iconimages.push([data[i][4], image]);
+                }
+            }
         }
     }
     var vscrollbarwindowid = createScrollBar(canvasid, controlNameId + 'VS', x + width, y, height, depth, shownitemscount, 1, windowid);
@@ -2632,7 +2693,8 @@ function createTreeView(canvasid, controlNameId, x, y, width, height, depth, dat
         Data: data, IDColumnIndex: idcolindex, ParentIDColIndex: parentidcolindex, ExpandedColIndex: expandedcolindex,
         LabelColIndex: labelcolindex, VScrollBarWindowID: vscrollbarwindowid, HScrollBarWindowID: hscrollbarwindowid, 
         TextColor: textcolor, TextFontString: textfontstring, TextHeight: textheight, ClickButtonExtents: clickButtonExtents,
-        ClickLabelExtents: clickLabelExtents, ClickNodeFunction: clickNodeFunction, SelectedNodeIndex: 0, Tag: tag
+        ClickLabelExtents: clickLabelExtents, ClickNodeFunction: clickNodeFunction, SelectedNodeIndex: 0, Tag: tag, HasIcons: hasicons,
+        IconWidth: iconwidth, IconHeight: iconheight, IconImages: iconimages
     });
     registerWindowDrawFunction(windowid, drawTreeView, canvasid);
     registerClickFunction(windowid, clickTreeView, canvasid);
@@ -2720,7 +2782,8 @@ function drawTreeView(canvasid, windowid) {
             drawTreeViewNode(ctx, 4 + treeViewProps.X + (level * 8), 4 + treeViewProps.Y + heightoffset, treeViewProps.Data[i][treeViewProps.ExpandedColIndex],
                 treeViewProps.Data[i][treeViewProps.LabelColIndex], treeViewProps.TextColor, treeViewProps.TextFontString, treeViewProps.TextHeight,
                 level, o, (o == 0 ? 0 : numberOfChildNodes(treeViewProps, i)), treeViewProps, i, vscrollbarProps.SelectedID);
-            heightoffset += (treeViewProps.TextHeight > 9 ? treeViewProps.TextHeight : 9) + 8;
+            heightoffset += (treeViewProps.TextHeight > treeViewProps.IconHeight ? (treeViewProps.TextHeight > 9 ? treeViewProps.TextHeight : 9) :
+                (treeViewProps.IconHeight > 9 ? treeViewProps.IconHeight : 9)) + 8;
         }
     }
     ctx.restore();
@@ -2811,7 +2874,7 @@ function checkHowManyChildNodesAreExpandedInAll(treeviewProps) {
 }
 
 function drawTreeViewNode(ctx, x, y, state, text, textcolor, textfontstring, textheight, level, hasChildNodes, numOfChildNodes, treeviewProps, i, selectednodeid) {
-    x += level * 8;
+    x += level * 8 + 10;
     if (hasChildNodes == 1) {
         ctx.strokeStyle = '#3c7fb1';
         ctx.beginPath();
@@ -2843,7 +2906,8 @@ function drawTreeViewNode(ctx, x, y, state, text, textcolor, textfontstring, tex
                 ctx.strokeStyle = '#C0C0C0';
                 ctx.beginPath();
                 ctx.moveTo(x + 5, y + 10);
-                ctx.lineTo(x + 5, y + 10 + (numOfChildNodes * ((textheight > 9 ? textheight : 9) + 8)) - 4);
+                ctx.lineTo(x + 5, y + 10 + (numOfChildNodes * ((treeviewProps.TextHeight > treeviewProps.IconHeight ?
+                    (treeviewProps.TextHeight > 9 ? treeviewProps.TextHeight : 9) : (treeviewProps.IconHeight > 9 ? treeviewProps.IconHeight : 9)) + 8)) - 4);
                 ctx.stroke();
             }
         }
@@ -2863,8 +2927,10 @@ function drawTreeViewNode(ctx, x, y, state, text, textcolor, textfontstring, tex
     } else if (level > 0) {
         ctx.strokeStyle = '#C0C0C0';
         ctx.beginPath();
-        ctx.moveTo(x - 11, y + 10 + (numOfChildNodes * ((textheight > 9 ? textheight : 9) + 8)) - 4);
-        ctx.lineTo(x + 8, y + 10 + (numOfChildNodes * ((textheight > 9 ? textheight : 9) + 8)) - 4);
+        ctx.moveTo(x - 11, y + 10 + (numOfChildNodes * ((treeviewProps.TextHeight > treeviewProps.IconHeight ? (treeviewProps.TextHeight > 9 ?
+            treeviewProps.TextHeight : 9) : (treeviewProps.IconHeight > 9 ? treeviewProps.IconHeight : 9)) + 8)) - 4);
+        ctx.lineTo(x + 8, y + 10 + (numOfChildNodes * ((treeviewProps.TextHeight > treeviewProps.IconHeight ? (treeviewProps.TextHeight > 9 ?
+            treeviewProps.TextHeight : 9) : (treeviewProps.IconHeight > 9 ? treeviewProps.IconHeight : 9)) + 8)) - 4);
         ctx.stroke();
         if (treeviewProps.Data[i][treeviewProps.ParentIDColIndex] - 1 < selectednodeid) {
             ctx.beginPath();
@@ -2873,9 +2939,19 @@ function drawTreeViewNode(ctx, x, y, state, text, textcolor, textfontstring, tex
             ctx.stroke();
         }
     }
+    var xoffset = 0;
+    if (treeviewProps.Data[i][4] != null) {
+        for (var w = 0; w < treeviewProps.IconImages.length; w++) {
+            if (treeviewProps.Data[i][4] == treeviewProps.IconImages[w][0]) {
+                ctx.drawImage(treeviewProps.IconImages[w][1], x + 13, y);
+                xoffset += treeviewProps.IconWidth + 5;
+                break;
+            }
+        }
+    }
     ctx.fillStyle = textcolor;
     ctx.font = textfontstring;
-    ctx.fillText(text, x + 13, y + textheight);
+    ctx.fillText(text, x + 13 + xoffset, y + textheight);
     treeviewProps.ClickLabelExtents.push({ X: x + 13, Y: y, Width: ctx.measureText(text).width, TextHeight: textheight, Index: i });
 }
 
