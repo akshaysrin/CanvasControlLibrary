@@ -31,6 +31,7 @@ public static class Sessions
 public class CanvasControlLibrary
 {
     public Session CurrentSessionObj;
+    public ArrayList InputParams;
 
     public class Session
     {
@@ -1157,6 +1158,7 @@ public class CanvasControlLibrary
 
     public CanvasControlLibrary(Stream InputStream)
     {
+        InputParams = new ArrayList(); 
         byte[] rdata = new byte[Convert.ToInt32(InputStream.Length)];
         InputStream.Read(rdata, 0, Convert.ToInt32(InputStream.Length));
         string strData = Encoding.ASCII.GetString(rdata);
@@ -1171,6 +1173,7 @@ public class CanvasControlLibrary
         CanvasID = vars.FirstChild.ChildNodes[1].InnerXml;
         WindowID = vars.FirstChild.ChildNodes[2].InnerXml;
         UnwrapVars(vars.FirstChild.ChildNodes[3]);
+        UnwrapParams(vars.FirstChild.ChildNodes[5]);
         if (vars.FirstChild.ChildNodes[4].InnerXml != null && vars.FirstChild.ChildNodes[4].InnerXml != "null")
         {
             Guid tmp = new Guid(vars.FirstChild.ChildNodes[4].InnerXml);
@@ -1184,6 +1187,21 @@ public class CanvasControlLibrary
             }
         }
         JavaScriptCodeToSendInThisCall = new List<JavaScriptFunctionsToSendAndAttachOnClientSide>();
+    }
+
+    public void UnwrapParams(XmlNode node)
+    {
+        foreach (XmlNode child in node.ChildNodes)
+        {
+            if (child.Name == "Array")
+            {
+                AddArrayData(child, InputParams);
+            }
+            else if (child.ChildNodes.Count == 1)
+            {
+                InputParams.Add(child.InnerXml);
+            }
+        }
     }
 
     public void InvokeServerSideFunction(Page Page)

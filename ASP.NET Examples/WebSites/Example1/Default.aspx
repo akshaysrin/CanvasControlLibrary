@@ -51,7 +51,7 @@
                 1, 'http://114.143.28.50/FormsBased.aspx');
             createButton(elemId, 'b8', 500, 74, 250, 56, 'Custom Click Function', '#0000FF', 12, '12pt Ariel', 7, highestDepth + 1, 2, 1,
                 function (canvasid, windowid) {
-                    invokeServerSideFunction('AjaxEx1.aspx', 'ClickMe', elemId, windowid, function () { alert('Did Postback'); });
+                    invokeServerSideFunction('AjaxEx1.aspx', 'ClickMe', elemId, windowid, function (params) { alert(params); }, ['test1', 'test2']);
                 }, null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1');
             createLabel(elemId, 'l1', 150, 10, 100, 20, 'Label 1', '#000000', 12, '12pt Ariel', null, highestDepth);
             createGrid(elemId, 'g1', 10, 150, 400, 90, highestDepth, [['123567891011121314', 'abcdefghijklmnopqrst', '000-89843-8983459'], ['2356789101112131415', 'bcdefghijklmnopqrstu', '000-89843-8983459'],

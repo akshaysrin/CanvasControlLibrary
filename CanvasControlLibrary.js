@@ -8489,9 +8489,9 @@ function createVirtualKeyboard(canvasid, controlNameId, x, y, width, height, dep
 
 //AJAX Postback code Starts here
 
-function invokeServerSideFunction(ajaxURL, functionName, canvasid, windowid, callBackFunc) {
+function invokeServerSideFunction(ajaxURL, functionName, canvasid, windowid, callBackFunc, params) {
     var data = "[FunctionName]" + functionName + "[/FunctionName][CanvasID]" + canvasid + "[/CanvasID][WindowID]" + windowid.toString() + "[/WindowID][Vars]" + getEncodedVariables() +
-        "[/Vars][SessionID]" + sessionID + "[/SessionID]";
+        "[/Vars][SessionID]" + sessionID + "[/SessionID][Params]" + encodeParams(params) + "[/Params]";
 	var xmlhttp;
     if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
         xmlhttp = new XMLHttpRequest();
@@ -8518,6 +8518,22 @@ function invokeServerSideFunction(ajaxURL, functionName, canvasid, windowid, cal
     xmlhttp.setRequestHeader("Content-Length", data.length);
     xmlhttp.setRequestHeader("Cache-Control", "max-age=0");
     xmlhttp.send(data);
+}
+
+function encodeParams(params) {
+    var str = '[Array]';
+    for (var i = 0; i < params.length; i++) {
+        if (typeof params[i] === 'string' || typeof params[i] === 'number') {
+            str += '[i]' + encodeAllBrackets(params[i].toString()) + '[/i]';
+        } else if (params[i] instanceof Array) {
+            str += '[Array]';
+            for (var x = 0; x < params[i].length; x++) {
+                str += encodeParams(params[i][x]);
+            }
+            str += '[/Array]';
+        }
+    }
+    return str + '[/Array]';
 }
 
 var imageControlBackupImageUrls = new Array();

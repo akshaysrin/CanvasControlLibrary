@@ -61,6 +61,7 @@ public partial class Default2 : System.Web.UI.Page
         lp.Text = ccl.CurrentSessionObj.Data["Counter"].ToString();
         CanvasControlLibrary.CCLImageProps i1 = ccl.getControlPropsByControlNameID("i1") as CanvasControlLibrary.CCLImageProps;
         i1.ImageURL = "Bombay.png";
+        parameters.Add(ccl.InputParams);
     }
 
     public void ClickMe2(string canvasid, int windowid)
