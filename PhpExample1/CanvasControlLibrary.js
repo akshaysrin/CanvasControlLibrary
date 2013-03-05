@@ -2952,7 +2952,20 @@ function drawTreeViewNode(ctx, x, y, state, text, textcolor, textfontstring, tex
     ctx.fillStyle = textcolor;
     ctx.font = textfontstring;
     ctx.fillText(text, x + 13 + xoffset, y + textheight);
-    treeviewProps.ClickLabelExtents.push({ X: x + 13, Y: y, Width: ctx.measureText(text).width, TextHeight: textheight, Index: i });
+    treeviewProps.ClickLabelExtents.push({ X: x + 13, Y: y, Width: ctx.measureText(text).width + xoffset, TextHeight: textheight, Index: i });
+}
+
+function insertTreeviewNode(canvasid, windowid, nodeidtoinsertbefore, nodearraydata) {
+    var treeviewProps = getTreeViewProps(canvasid, windowid);
+    for (var i = 0; i < treeviewProps.Data.length; i++) {
+        if (nodeidtoinsertbefore) {
+            if (treeviewProps.Data[i][0] == nodeidtoinsertbefore) {
+                treeviewProps.Data.splice(i, 0, nodearraydata);
+            }
+        } else {
+            treeviewProps.Data.push(nodearraydata);
+        }
+    }
 }
 
 //Calender Control Code Starts Here
