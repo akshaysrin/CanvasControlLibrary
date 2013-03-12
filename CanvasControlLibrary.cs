@@ -1130,6 +1130,50 @@ public class CanvasControlLibrary
         }
     }
 
+    public List<CCLVirtualKeyboardProps> VirtualKeyboardPropsArray = new List<CCLVirtualKeyboardProps>();
+
+    public class CCLVirtualKeyboardProps
+    {
+        public string CanvasID { get; set; }
+        public string WindowID { get; set; }
+        public string X { get; set; }
+        public string Y { get; set; }
+        public string Width { get; set; }
+        public string Height { get; set; }
+        public ArrayList Keys { get; set; }
+        public string KeyPressFunction { get; set; }
+        public string GapBetweenButtons { get; set; }
+        public string GapBetweenRows { get; set; }
+        public string CurrentKeyboardIndex { get; set; }
+        public ArrayList KeyExtents { get; set; }
+        public string TextHeight { get; set; }
+        public string TextFontString { get; set; }
+        public string CustomKeys { get; set; }
+        public string CustomDrawLetterFunction { get; set; }
+        public string HasGloss { get; set; }
+        public string ShiftKeyPressed { get; set; }
+
+        public CCLVirtualKeyboardProps()
+        {
+            Keys = new ArrayList();
+            KeyExtents = new ArrayList();
+        }
+    }
+
+    public List<CCLSplitterProps> SplitterPropsArray = new List<CCLSplitterProps>();
+
+    public class CCLSplitterProps
+    {
+        public string CanvasID { get; set; }
+        public string WindowID { get; set; }
+        public string X { get; set; }
+        public string Y { get; set; }
+        public string Width { get; set; }
+        public string Height { get; set; }
+        public string LineColor { get; set; }
+        public string MouseDown { get; set; }
+    }
+
     public class JavaScriptFunctionsToSendAndAttachOnClientSide
     {
         public string CanvasID;
@@ -1164,9 +1208,6 @@ public class CanvasControlLibrary
         string strData = Encoding.ASCII.GetString(rdata);
         strData = strData.Replace("[", "<");
         strData = strData.Replace("]", ">");
-        strData = strData.Replace("&lb;", "[");
-        strData = strData.Replace("&rb;", "]");
-        strData = strData.Replace("&amp;", "&");
         XmlDocument vars = new XmlDocument();
         vars.LoadXml("<root>" + strData + "</root>");
         FunctionName = vars.FirstChild.ChildNodes[0].InnerXml;
@@ -1493,6 +1534,22 @@ public class CanvasControlLibrary
                         FillClassObject(child2, sm);
                     }
                     break;
+                case "virtualKeyboardPropsArray":
+                    foreach (XmlNode child2 in child1.ChildNodes)
+                    {
+                        CCLVirtualKeyboardProps sm = new CCLVirtualKeyboardProps();
+                        VirtualKeyboardPropsArray.Add(sm);
+                        FillClassObject(child2, sm);
+                    }
+                    break;
+                case "splitterPropsArray":
+                    foreach (XmlNode child2 in child1.ChildNodes)
+                    {
+                        CCLSplitterProps sm = new CCLSplitterProps();
+                        SplitterPropsArray.Add(sm);
+                        FillClassObject(child2, sm);
+                    }
+                    break;
             }
         }
     }
@@ -1771,7 +1828,17 @@ public class CanvasControlLibrary
         {
             strVars += "[i]" + encodeObject(smb) + "[/i]";
         }
-        strVars += "[/wordProcessorPropsArray]";
+        strVars += "[/wordProcessorPropsArray][virtualKeyboardPropsArray]";
+        foreach (CCLVirtualKeyboardProps smb in VirtualKeyboardPropsArray)
+        {
+            strVars += "[i]" + encodeObject(smb) + "[/i]";
+        }
+        strVars += "[/virtualKeyboardPropsArray][splitterPropsArray]";
+        foreach (CCLSplitterProps smb in SplitterPropsArray)
+        {
+            strVars += "[i]" + encodeObject(smb) + "[/i]";
+        }
+        strVars += "[/splitterPropsArray]";
         strVars += "[/Vars][Params][Array]" + encodeParameters(parameters) + "[/Array][/Params][/root]";
         byte[] wdata = Encoding.ASCII.GetBytes(strVars);
         OutputStream.Write(wdata, 0, wdata.Length);
@@ -2116,6 +2183,24 @@ public class CanvasControlLibrary
                         break;
                     case "WordProcessor":
                         foreach (CCLWordProcessorProps o in WordProcessorPropsArray)
+                        {
+                            if (o.CanvasID == w.CanvasID && o.WindowID == w.WindowCount)
+                            {
+                                return (object)o;
+                            }
+                        }
+                        break;
+                    case "VirtualKeyboard":
+                        foreach (CCLVirtualKeyboardProps o in VirtualKeyboardPropsArray)
+                        {
+                            if (o.CanvasID == w.CanvasID && o.WindowID == w.WindowCount)
+                            {
+                                return (object)o;
+                            }
+                        }
+                        break;
+                    case "Splitter":
+                        foreach (CCLSplitterProps o in SplitterPropsArray)
                         {
                             if (o.CanvasID == w.CanvasID && o.WindowID == w.WindowCount)
                             {

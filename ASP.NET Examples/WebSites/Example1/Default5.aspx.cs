@@ -20,6 +20,11 @@ public partial class Default5 : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
+    }
 
+    protected override void Render(HtmlTextWriter writer)
+    {
+        base.Render(writer);
+        CanvasControlLibrary.StartSession(writer);
     }
 }

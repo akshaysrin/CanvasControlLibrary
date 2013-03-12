@@ -560,6 +560,70 @@ function getWindowControlPropsByWindowProps(windowProps) {
     switch (windowProps.ControlType) {
         case 'Panel':
             return getPanelProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "Label":
+            return getLabelProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "Button":
+            return getButtonProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "ScrollBar":
+            return getScrollBarProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "Grid":
+            return getGridProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "ComboBoxTextArea":
+            return getComboboxPropsByTextAreaWindowId(windowProps.CanvasID, windowProps.WindowCount);
+        case "CheckBox":
+            return getcheckboxProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "RadioButtonGroup":
+            return getRadioButtonProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "Image":
+            return getImageControlProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "TreeView":
+            return getTreeViewProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "Calender":
+            return getCalenderProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "ProgressBar":
+            return getProgressBarProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "Slider":
+            return getSliderProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "DatePickerTextArea":
+            return getDatePickerPropsByTextBoxAreaWindowID(windowProps.CanvasID, windowProps.WindowCount);
+        case "BarGraph":
+            return getBarGraphProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "PieChart":
+            return getPieChartProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "LineGraph":
+            return getLineGraphProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "Gauge":
+            return getGaugeChartProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "RadarGraph":
+            return getRadarGraphProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "LineAreaGraph":
+            return getLineAreaGraphProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "CandlesticksGraph":
+            return getCandlesticksGraphProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "DoughnutChart":
+            return getDoughnutChartProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "BarsMixedWithLabeledLineGraph":
+            return getBarsMixedWithLabledLineGraphProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "StackedBarGraph":
+            return getstackedBarGraphProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "Tab":
+            return getTabProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "ImageMap":
+            return getImageMapProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "SubMenu":
+            return getSubMenuBarProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "MenuBar":
+            return getMenuBarProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "TextBox":
+            return getTextBoxProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "ImageFader":
+            return getImageFaderProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "ImageSlider":
+            return getImageSliderProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "MultiLineLabel":
+            return getMultiLineLabelProps(windowProps.CanvasID, windowProps.WindowCount);
+        case "WordProcessor":
+            return getWordProcessorProps(windowProps.CanvasID, windowProps.WindowCount);
     }
 }
 
@@ -1159,6 +1223,20 @@ function destroyControlByWindowObj(w) {
             for (var i = wordProcessorPropsArray.length - 1; i >= 0 ; i--) {
                 if (wordProcessorPropsArray[i].CanvasID == w.CanvasID && wordProcessorPropsArray[i].WindowID == w.WindowCount) {
                     wordProcessorPropsArray.splice(i, 1);
+                }
+            }
+            break;
+        case "VirtualKeyboard":
+            for (var i = virtualKeyboardPropsArray.length - 1; i >= 0 ; i--) {
+                if (virtualKeyboardPropsArray[i].CanvasID == w.CanvasID && virtualKeyboardPropsArray[i].WindowID == w.WindowCount) {
+                    virtualKeyboardPropsArray.splice(i, 1);
+                }
+            }
+            break;
+        case "Splitter":
+            for (var i = splitterPropsArray.length - 1; i >= 0 ; i--) {
+                if (splitterPropsArray[i].CanvasID == w.CanvasID && splitterPropsArray[i].WindowID == w.WindowCount) {
+                    splitterPropsArray.splice(i, 1);
                 }
             }
             break;
@@ -8834,8 +8912,16 @@ function getEncodedVariables() {
     for (var i = 0; i < wordProcessorPropsArray.length; i++) {
         strVars += '[i]' + stringEncodeObject(wordProcessorPropsArray[i]) + '[/i]';
     }
-    strVars += '[/wordProcessorPropsArray]';
-    return strVars;
+    strVars += '[/wordProcessorPropsArray][virtualKeyboardPropsArray]';
+    for (var i = 0; i < virtualKeyboardPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(virtualKeyboardPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/virtualKeyboardPropsArray][splitterPropsArray]';
+    for (var i = 0; i < splitterPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(splitterPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/splitterPropsArray]';
+    return encodeAllBrackets(strVars);
 }
 
 var savedImagesOnPostback = new Array();
@@ -8889,7 +8975,7 @@ function stringEncodeObject(obj) {
                     continue;
                 }
                 if (typeof obj[name][i] === 'string' || typeof obj[name][i] === 'number') {
-                    str += '[i]' + encodeAllBrackets(obj[name][i].toString()) + '[/i]';
+                    str += '[i]' + obj[name][i].toString() + '[/i]';
                 } else if (obj[name][i] instanceof Array) {
                     str += encodeArray(obj[name][i], (strIndexes && strIndexes.length > 0 ? strIndexes + ',' + i.toString() : i.toString()));
                 } else {
@@ -8905,11 +8991,9 @@ function stringEncodeObject(obj) {
 }
 
 function encodeAllBrackets(str) {
-    str = str.replace(/</g, '&lt;');
-    str = str.replace(/>/g, '&gt;');
     str = str.replace(/&/g, '&amp;');
-    str = str.replace(/\[/g, '&lb;');
-    return str.replace(/\]/g, '&rb;');
+    str = str.replace(/</g, '&lt;');
+    return str.replace(/>/g, '&gt;');
 }
 
 function encodeArray(arr, strIndexes) {
@@ -8927,7 +9011,7 @@ function encodeArray(arr, strIndexes) {
             continue;
         }
         if (typeof arr[i] === 'string' || typeof arr[i] === 'number') {
-            str += '[i]' + encodeAllBrackets(arr[i].toString()) + '[/i]';
+            str += '[i]' + arr[i].toString() + '[/i]';
         } else if (arr[i] instanceof Array) {
             str += encodeArray(arr[i], (strIndexes && strIndexes.length > 0 ? strIndexes + ',' + i.toString() : i.toString()));
         } else {
@@ -9188,6 +9272,10 @@ function UnWrapVars(data) {
         var o = getSubMenuBarProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
         if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
         var o = getTextBoxProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getVirtualKeyboardProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getSplitterProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
         if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
     }
     savedImagesOnPostback = new Array();

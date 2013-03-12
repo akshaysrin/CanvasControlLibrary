@@ -37,7 +37,13 @@
             registerChildWindow(elemId, createProgressBar(elemId, 'pg2', 0, 300, 200, 20, highestDepth, '#33ec25', 100, 0, 60), panelwindowid2);
             registerChildWindow(elemId, createSlider(elemId, 's2', 10, 350, 350, 20, highestDepth, 10, 100, 0, 50), panelwindowid2);
             createSplitter(elemId, 'spl1', 0, 201, 200, 3, highestDepth, '#D0D0D0');
-            invalidateRect(elemId, null, 0, 0, 3000, 1500);
+            createLabel(elemId, 'l1', 150, 10, 100, 20, 'Label 1', '#000000', 12, '12pt Ariel', null, highestDepth);
+            createImage(elemId, 'i1', 10, 400, 64, 64, highestDepth, 'test.png', function (canvasid, windowid) { alert('You clicked the image'); });
+            createButton(elemId, 'b8', 500, 74, 250, 56, 'Custom Click Function', '#0000FF', 12, '12pt Ariel', 7, highestDepth + 1, 2, 1,
+                function (canvasid, windowid) {
+                    invokeServerSideFunction('AjaxEx1.aspx', 'ClickMe', elemId, windowid, function (params) { alert(params); }, ['test1', 'test2']);
+                }, null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1');
+            invalidateRect(elemId, null, 0, 0, 1000, 500);
         </script>
     </div>
     </form>
