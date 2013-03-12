@@ -2768,7 +2768,7 @@ function createTreeView(canvasid, controlNameId, x, y, width, height, depth, dat
                 }
                 if (foundimage == 0) {
                     var image = new Image();
-                    image.onload = function () { invalidateRect(canvasid, x, y, width, height); };
+                    image.onload = function () { invalidateRect(canvasid, null, x, y, width, height); };
                     image.src = data[i][4];
                     iconimages.push([data[i][4], image]);
                 }
@@ -8759,6 +8759,7 @@ var textBoxBackupImageUrls = new Array();
 var imageSliderBackupImageUrls = new Array();
 var imageFaderBackupImageUrls = new Array();
 var wordProcessorBackupImageUrls = new Array();
+var treeviewBackupImageUrls = new Array();
 
 function getEncodedVariables() {
     for (var i = 0; i < imageControlPropsArray.length; i++) {
@@ -8775,6 +8776,11 @@ function getEncodedVariables() {
     }
     for (var i = 0; i < wordProcessorPropsArray.length; i++) {
         wordProcessorBackupImageUrls.push({ CanvasID: wordProcessorPropsArray[i].CanvasID, WindowID: wordProcessorPropsArray[i].WindowID, ImageUrls: wordProcessorPropsArray[i].BgImageUrl });
+    }
+    for (var i = 0; i < treeViewPropsArray.length; i++) {
+        for (var z = 0; z < treeViewPropsArray[i].IconImages.length; z++) {
+            treeviewBackupImageUrls.push({ CanvasID: treeViewPropsArray[i].CanvasID, WindowID: treeViewPropsArray[i].WindowID, ImageUrl: treeViewPropsArray[i].IconImages[z][0] });
+        }
     }
     var strVars = '[Windows]';
     for (var i = 0; i < windows.length; i++) {
@@ -9000,7 +9006,7 @@ function encodeArray(arr, strIndexes) {
     var str = '[Array]';
     for (var i = 0; i < arr.length; i++) {
         if ((navigator.userAgent.toLowerCase().indexOf('opera') > -1 ? arr[i] instanceof Object && arr[i].hasOwnProperty && arr[i].src : arr[i] instanceof Image)) {
-            savedImageArrayOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, Image: arr[i] });
+            savedImageArrayOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, Image: arr[i], URL: arr[i].src });
             continue;
         }
         if (arr[i] && typeof arr[i] == 'function') {
@@ -9074,6 +9080,15 @@ function UnWrapVars(data) {
         for (var x = 0; x < wordProcessorPropsArray.length; x++) {
             if (wordProcessorPropsArray[x].CanvasID == savedImagesOnPostback[i].CanvasID && wordProcessorPropsArray[x].WindowID == savedImagesOnPostback[i].WindowID) {
                 wordProcessorPropsArray[x].Image = savedImagesOnPostback[i].Image;
+            }
+        }
+        for (var x = 0; x < treeViewPropsArray.length; x++) {
+            if (treeViewPropsArray[x].CanvasID == savedImagesOnPostback[i].CanvasID && treeViewPropsArray[x].WindowID == savedImagesOnPostback[i].WindowID) {
+                for (var z = 0; z < treeViewPropsArray[x].IconImages.length; z++) {
+                    if (treeViewPropsArray[x].IconImages[z][0] == savedImagesOnPostback[i].URL) {
+                        treeViewPropsArray[x].IconImages[z].push(savedImagesOnPostback[i].Image);
+                    }
+                }
             }
         }
     }
@@ -9312,6 +9327,20 @@ function UnWrapVars(data) {
                 wordProcessorPropsArray[i].Image = image;
                 image.onload = function () { invalidateRect(wordProcessorPropsArray[i].CanvasID, null, wordProcessorPropsArray[i].X, wordProcessorPropsArray[i].Y,
                     wordProcessorPropsArray[i].Width, wordProcessorPropsArray[i].Height); };
+            }
+        }
+    }
+    for (var i = 0; i < treeViewPropsArray.length; i++) {
+        for (var j = 0; j < treeviewBackupImageUrls.length; j++) {
+            if (treeViewPropsArray[i].CanvasID == treeviewBackupImageUrls[j].CanvasID && treeViewPropsArray[i].WindowID == treeviewBackupImageUrls[j].WindowID) {
+                for (var z = 0; z < treeViewPropsArray[i].IconImages.length; z++) {
+                    if (treeViewPropsArray[i].IconImages[z][0] == treeviewBackupImageUrls[j].ImageUrl) {
+                        var image = new Image();
+                        image.src = treeviewBackupImageUrls[j].ImageUrl;
+                        treeViewPropsArray[i].IconImages[z].push(image);
+                        image.onload = function () { };
+                    }
+                }
             }
         }
     }
