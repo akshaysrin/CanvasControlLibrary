@@ -170,11 +170,11 @@ function correctEvent(canvasid, e) {
     if (e.pageX || e.pageY) {
         e.calcX = e.pageX - canvasGetOffsetLeft(canvas);
         e.calcY = e.pageY - canvasGetOffsetTop(canvas);
-        return e;
     } else if (e.clientX || e.clientY) {
         e.calcX = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft - canvasGetOffsetLeft(canvas);
         e.calcY = e.clientY + document.body.scrollTop + document.documentElement.scrollTop - canvasGetOffsetTop(canvas);
     }
+    return e;
 }
 
 function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefault) {
@@ -262,7 +262,10 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
                                 e.preventDefault();
                             e.returnValue = false;
                         }
-                        return 1;
+                        /*
+                        if (windows[i].ControlType != 'Splitter') {
+                            return 1;
+                        }*/
                     }
                 }
                 return 1;
@@ -348,7 +351,10 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
                                 e.preventDefault();
                             e.returnValue = false;
                         }
-                        return 1;
+                        /*
+                        if (windows[i].ControlType != 'Splitter') {
+                            return 1;
+                        }*/
                     }
                 }
                 return 1;
@@ -473,13 +479,13 @@ function registerCanvasElementId(canvasId) {
     ctxs.push([canvasId, canvas.getContext('2d')]);
     canvas.onclick = function (e) { canvasOnClick(canvasId, e); };
     canvas.ondblclick = function (e) { canvasOnDblClick(canvasId, e); };
-    canvas.ondrag = function (e) { canvasOnDrag(canvasId, e); };
-    canvas.ondragend = function (e) { canvasOnDragEnd(canvasId, e); };
-    canvas.ondragenter = function (e) { canvasOnDragEnter(canvasId, e); };
-    canvas.ondragleave = function (e) { canvasOnDragLeave(canvasId, e); };
-    canvas.ondragover = function (e) { canvasOnDragOver(canvasId, e); };
-    canvas.ondragstart = function (e) { canvasOnDragStart(canvasId, e); };
-    canvas.ondrop = function (e) { canvasOnDrop(canvasId, e); };
+    canvas.addEventListener('ondrag', function (e) { canvasOnDrag(canvasId, e); });
+    canvas.addEventListener('ondragend', function (e) { canvasOnDragEnd(canvasId, e); });
+    canvas.addEventListener('ondragenter', function (e) { canvasOnDragEnter(canvasId, e); });
+    canvas.addEventListener('ondragleave', function (e) { canvasOnDragLeave(canvasId, e); });
+    canvas.addEventListener('ondragover', function (e) { canvasOnDragOver(canvasId, e); });
+    canvas.addEventListener('ondragstart', function (e) { e.dataTransfer.setData('text/plain', 'Dragging'); canvasOnDragStart(canvasId, e); });
+    canvas.addEventListener('ondrop', function (e) { canvasOnDrop(canvasId, e); });
     canvas.onkeypress = function (e) {
         for (var i = 0; i < keyPressFunctions.length; i++) {
             for (var j = 0; j < windowIdWithFocus.length; j++) {
@@ -548,6 +554,13 @@ function createWindow(canvasId, x, y, width, height, depth, parentwindowid, cont
         ControlType: controlTypeNameString, ControlNameID: controlNameId
     });
     return windowCount;
+}
+
+function getWindowControlPropsByWindowProps(windowProps) {
+    switch (windowProps.ControlType) {
+        case 'Panel':
+            return getPanelProps(windowProps.CanvasID, windowProps.WindowCount);
+    }
 }
 
 function registerChildWindow(canvasid, windowid, parentwindowid) {
@@ -779,9 +792,9 @@ function draw(canvasId, parentwindowid) {
 function invalidateRect(canvasId, parentwindowid, x, y, width, height) {
     if (suspendDraw == 0) {
         var canvas = getCanvas(canvasId);
-//        if (parentwindowid == null) {
+        if (parentwindowid == null) {
             getCtx(canvasId).clearRect(x, y, width, height);
-//        }
+        }
         for (var d = 0; d <= highestDepth; d++) {
             for (var i = 0; i < windowDrawFunctions.length; i++) {
                 var windowProps = getWindowProps(canvasId, windowDrawFunctions[i][0]);
@@ -8485,6 +8498,126 @@ function createVirtualKeyboard(canvasid, controlNameId, x, y, width, height, dep
         }, canvasid);
     }, canvasid);
     return windowid;
+}
+
+//Splitter control code starts here
+
+var splitterPropsArray = new Array();
+
+function getSplitterProps(canvasid, windowid) {
+    for (var i = 0; i < splitterPropsArray.length; i++) {
+        if (splitterPropsArray[i].CanvasID == canvasid && splitterPropsArray[i].WindowID == windowid) {
+            return splitterPropsArray[i];
+        }
+    }
+}
+
+function createSplitter(canvasid, controlNameId, x, y, width, height, depth, linecolor) {
+    var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Splitter', controlNameId);
+    splitterPropsArray.push({
+        CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, LineColor: linecolor, MouseDown: 0
+    });
+    registerWindowDrawFunction(windowid, function (canvasid, windowid) {
+        var splitterProps = getSplitterProps(canvasid, windowid);
+        var ctx = getCtx(canvasid);
+        ctx.fillStyle = splitterProps.LineColor;
+        ctx.rect(splitterProps.X, splitterProps.Y, splitterProps.Width, splitterProps.Height);
+        ctx.fill();
+    }, canvasid);
+    registerMouseDownFunction(windowid, function (canvasid2, windowid2) {
+        var splitterProps = getSplitterProps(canvasid, windowid);
+        splitterProps.MouseDown = 1;
+    }, canvasid);
+    for (var i = 0; i < windows.length; i++) {
+        if (windows[i].ParentWindowID == null && ((height > width && windows[i].X < x + width + 2 && windows[i].X + windows[i].Width > x - 2) ||
+            (width > height && windows[i].Y < y + height && windows[i].Y + windows[i].Height > y - 2))) {
+            registerMouseMoveFunction(windows[i].WindowCount, function (canvasid2, windowid2, e) {
+                var splitterProps = getSplitterProps(canvasid, windowid);
+                if (splitterProps.MouseDown == 1) {
+                    var windowProps = getWindowProps(canvasid, windowid);
+                    var e = correctEvent(canvasid, window.event);
+                    var x = e.calcX;
+                    var y = e.calcY;
+                    var irx = 1000000;
+                    var maxirw = 0;
+                    var maxirh = 0;
+                    var iry = 1000000;
+                    if (splitterProps.Height > splitterProps.Width) {
+                        var diffX = x - splitterProps.X;
+                        if (diffX != 0) {
+                            for (var i = 0; i < windows.length; i++) {
+                                if (windows[i].WindowCount != windowid && windows[i].ParentWindowID == null &&
+                                    splitterProps.X - 2 < windows[i].X + windows[i].Width && splitterProps.X + splitterProps.Width + 2 > windows[i].X) {
+                                    if (windows[i].X < irx) {
+                                        irx = windows[i].X;
+                                    }
+                                    if (windows[i].X + windows[i].Width > maxirw) {
+                                        maxirw = windows[i].X + windows[i].Width;
+                                    }
+                                    if (windows[i].Y < iry) {
+                                        iry = windows[i].Y;
+                                    }
+                                    if (windows[i].Y + windows[i].Height > maxirh) {
+                                        maxirh = windows[i].Y + windows[i].Height;
+                                    }
+                                    if (windows[i].X + windows[i].Width < windowProps.X) {
+                                        windows[i].Width += diffX;
+                                        getWindowControlPropsByWindowProps(windows[i]).Width = windows[i].Width;
+                                    } else if (windows[i].X > windowProps.X) {
+                                        windows[i].X += diffX;
+                                        windows[i].Width -= diffX;
+                                        var tmp = getWindowControlPropsByWindowProps(windows[i]);
+                                        tmp.X = windows[i].X;
+                                        tmp.Width = windows[i].Width;
+                                    }
+                                    if (windows[i].Width < 0) {
+                                        windows[i].Width = 0;
+                                    }
+                                }
+                            }
+                            windowProps.X = x;
+                            splitterProps.X = x;
+                            invalidateRect(canvasid, null, irx, iry, maxirw - irx, maxirh - iry);
+                        }
+                    } else if (splitterProps.Width > splitterProps.Height) {
+                        var diffY = y - windowProps.Y;
+                        if (diffY != 0) {
+                            for (var i = 0; i < windows.length; i++) {
+                                if (windows[i].WindowCount != windowid && splitterProps.Y - 2 < windows[i].Y + windows[i].Height && splitterProps.Y + splitterProps.Height + 2 > windows[i].Y) {
+                                    if (windows[i].Y < iry) {
+                                        iry = windows[i].Y;
+                                    }
+                                    if (windows[i].Y + windows[i].Height > maxirh) {
+                                        maxirh = windows[i].Y + windows[i].Height;
+                                    }
+                                    if (windows[i].X < irx) {
+                                        irx = windows[i].X;
+                                    }
+                                    if (windows[i].X + windows[i].Width > maxirw) {
+                                        maxirw = windows[i].X + windows[i].Width;
+                                    }
+                                    if (windows[i].Y + windows[i].Height < y) {
+                                        windows[i].Height += diffY;
+                                    } else if (windows[i].Y > y) {
+                                        windows[i].Y += diffY;
+                                    }
+                                    if (windows[i].Height < 0) {
+                                        windows[i].Height = 0;
+                                    }
+                                }
+                            }
+                            windowProps.Y = y;
+                            invalidateRect(canvasid, irx, iry, maxirw - irx, maxirh - iry);
+                        }
+                    }
+                }
+            }, canvasid);
+        }
+    }
+    registerMouseUpFunction(windowid, function () {
+        var splitterProps = getSplitterProps(canvasid, windowid);
+        splitterProps.MouseDown = 0;
+    }, canvasid);
 }
 
 //AJAX Postback code Starts here
