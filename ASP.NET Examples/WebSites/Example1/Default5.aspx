@@ -32,11 +32,11 @@
             var panelwindowid = createPanel(elemId, 'p1', 0, 0, 200, 200, highestDepth, 1, '#c8c8c8', 1, '#d1ddff', '#a7afc6');
             registerChildWindow(elemId, createProgressBar(elemId, 'pg1', 10, 100, 200, 20, highestDepth, '#33ec25', 100, 0, 60), panelwindowid);
             registerChildWindow(elemId, createSlider(elemId, 's1', 10, 150, 200, 20, highestDepth, 10, 100, 0, 50), panelwindowid);
-            var panelwindowid2 = createPanel(elemId, 'p2', 204, 0, 200, 200, highestDepth, 1, '#c8c8c8', 1, '#d1ddff', '#a7afc6',
+            var panelwindowid2 = createPanel(elemId, 'p2', 0, 205, 200, 200, highestDepth, 1, '#c8c8c8', 1, '#d1ddff', '#a7afc6',
                 1, 150, 0, 'Test Panel', '#000000', 12, '12pt Ariel', '#cfcfcf', '#ababab', 20, '#495be5', 1, 7);
-            registerChildWindow(elemId, createProgressBar(elemId, 'pg2', 210, 10, 200, 20, highestDepth, '#33ec25', 100, 0, 60), panelwindowid2);
-            registerChildWindow(elemId, createSlider(elemId, 's2', 210, 100, 200, 20, highestDepth, 10, 100, 0, 50), panelwindowid2);
-            createSplitter(elemId, 'spl1', 201, 0, 3, 200, highestDepth, '#D0D0D0');
+            registerChildWindow(elemId, createProgressBar(elemId, 'pg2', 0, 300, 200, 20, highestDepth, '#33ec25', 100, 0, 60), panelwindowid2);
+            registerChildWindow(elemId, createSlider(elemId, 's2', 10, 350, 350, 20, highestDepth, 10, 100, 0, 50), panelwindowid2);
+            createSplitter(elemId, 'spl1', 0, 201, 200, 3, highestDepth, '#D0D0D0');
             invalidateRect(elemId, null, 0, 0, 3000, 1500);
         </script>
     </div>

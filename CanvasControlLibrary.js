@@ -8580,26 +8580,32 @@ function createSplitter(canvasid, controlNameId, x, y, width, height, depth, lin
                             invalidateRect(canvasid, null, irx, iry, maxirw - irx, maxirh - iry);
                         }
                     } else if (splitterProps.Width > splitterProps.Height) {
-                        var diffY = y - windowProps.Y;
+                        var diffY = y - splitterProps.Y;
                         if (diffY != 0) {
                             for (var i = 0; i < windows.length; i++) {
-                                if (windows[i].WindowCount != windowid && splitterProps.Y - 2 < windows[i].Y + windows[i].Height && splitterProps.Y + splitterProps.Height + 2 > windows[i].Y) {
-                                    if (windows[i].Y < iry) {
-                                        iry = windows[i].Y;
-                                    }
-                                    if (windows[i].Y + windows[i].Height > maxirh) {
-                                        maxirh = windows[i].Y + windows[i].Height;
-                                    }
+                                if (windows[i].WindowCount != windowid && windows[i].ParentWindowID == null &&
+                                    splitterProps.Y - 2 < windows[i].Y + windows[i].Height && splitterProps.Y + splitterProps.Height + 2 > windows[i].Y) {
                                     if (windows[i].X < irx) {
                                         irx = windows[i].X;
                                     }
                                     if (windows[i].X + windows[i].Width > maxirw) {
                                         maxirw = windows[i].X + windows[i].Width;
                                     }
-                                    if (windows[i].Y + windows[i].Height < y) {
+                                    if (windows[i].Y < iry) {
+                                        iry = windows[i].Y;
+                                    }
+                                    if (windows[i].Y + windows[i].Height > maxirh) {
+                                        maxirh = windows[i].Y + windows[i].Height;
+                                    }
+                                    if (windows[i].Y + windows[i].Height < windowProps.Y) {
                                         windows[i].Height += diffY;
-                                    } else if (windows[i].Y > y) {
+                                        getWindowControlPropsByWindowProps(windows[i]).Height = windows[i].Height;
+                                    } else if (windows[i].Y > windowProps.Y) {
                                         windows[i].Y += diffY;
+                                        windows[i].Height -= diffY;
+                                        var tmp = getWindowControlPropsByWindowProps(windows[i]);
+                                        tmp.Y = windows[i].Y;
+                                        tmp.Height = windows[i].Height;
                                     }
                                     if (windows[i].Height < 0) {
                                         windows[i].Height = 0;
@@ -8607,7 +8613,8 @@ function createSplitter(canvasid, controlNameId, x, y, width, height, depth, lin
                                 }
                             }
                             windowProps.Y = y;
-                            invalidateRect(canvasid, irx, iry, maxirw - irx, maxirh - iry);
+                            splitterProps.Y = y;
+                            invalidateRect(canvasid, null, irx, iry, maxirw - irx, maxirh - iry);
                         }
                     }
                 }
