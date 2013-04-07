@@ -23,10 +23,10 @@
             invokeServerSideFunction('AjaxEx1.aspx', 'onSelectCityChanged', canvasid, windowid, function () { 
                 var wprops = getWindowProps(elemId, selecteCinemaWindowID);
                 invalidateRect(elemId, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
-            });
+            }, new Array());
         }
         function onSelectCinema(canvasid, windowid, index) {
-            invokeServerSideFunction('AjaxEx1.aspx', 'onSelectCinemaChanged', canvasid, windowid, showMoviesForCinema);
+            invokeServerSideFunction('AjaxEx1.aspx', 'onSelectCinemaChanged', canvasid, windowid, showMoviesForCinema, new Array());
         }
         function selectMovieTime(canvasid, windowid) {
             var labelProps = getLabelProps(canvasid, windowid);
@@ -38,7 +38,7 @@
                 1, 0, '#000000', 3, 3, 20, 1, 10, 1, '#9bacc6', '#d6e4f9', 0, null, 0, null, 0, 0, '#D0D000', 12, '12pt Ariel', '', '#0d2952', 'rgba(0, 0, 240, 0.2)', 1));
             labelWindowIDS.push(createButton(elemId, 'PaymentButton', 875, 220, 100, 30, 'Book Tickets', '#0000FF', 12, '12pt Ariel', 2, highestDepth + 1, 1, 1,
                 function (canvasid, windowid) {
-                    invokeServerSideFunction('AjaxEx1.aspx', 'DoPaymentForTickets', elemId, windowid, afterPayment);
+                    invokeServerSideFunction('AjaxEx1.aspx', 'DoPaymentForTickets', elemId, windowid, afterPayment, new Array());
                 }, null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1', labelWindowProps.ControlNameID));
             for (var i = 0; i < controlNameIDs.length; i++) {
                 var window = getWindowByControlNameID(controlNameIDs[i]);
@@ -109,7 +109,7 @@
             return selecteCinemaWindowID;
         }
         var windowid = form1();
-        invokeServerSideFunction('AjaxEx1.aspx', 'InitializeForm1', elemId, windowid, null);
+        invokeServerSideFunction('AjaxEx1.aspx', 'InitializeForm1', elemId, windowid, null, new Array());
         invalidateRect(elemId, null, 0, 0, 1024, 768);
     </script>
     </div>

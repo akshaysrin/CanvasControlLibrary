@@ -13,34 +13,28 @@
 //Helper functions
 function getlowcomp(value) {
     if (value > 0) {
-        var x = Math.floor(value / 2);
-        var y = x.toString(16);
-        if (y.length < 2)
-            return '0' + y;
-        else
-            return y;
-    } else {
-        return '00';
+        var x = Math.floor(value / 2), y = x.toString(16);
+        if (y.length < 2) { return '0' + y; }
+        return y;
     }
+    return '00';
 }
 
 function gethighcomp(value) {
     if (value < 255) {
         var x = value + Math.floor(((255 - value) / 2));
-        if (x <= 16)
-            return '0' + x.toString(16);
-        else
-            return x.toString(16);
-    } else {
-        return 'FF';
+        if (x <= 16) { return '0' + x.toString(16); }
+        return x.toString(16);
     }
+    return 'FF';
 }
 
 function canvasGetOffsetLeft(obj) {
     var curleft = 0;
     if (obj.offsetParent) {
         do {
-            curleft += ((parseInt(obj.offsetLeft) >= 0 || parseInt(obj.offsetLeft) < 0) && parseInt(obj.offsetLeft).toString() == obj.offsetLeft.toString() ? obj.offsetLeft : 0);
+            curleft += ((parseInt(obj.offsetLeft) >= 0 || parseInt(obj.offsetLeft) < 0) && parseInt(obj.offsetLeft).toString() ==
+                obj.offsetLeft.toString() ? obj.offsetLeft : 0);
         } while (obj = obj.offsetParent);
         return curleft;
     }
@@ -57,8 +51,8 @@ function canvasGetOffsetTop(obj) {
 }
 
 function drawEllipse(ctx, x, y, w, h) {
-    var kappa = .5522848;
-    ox = (w / 2) * kappa, // control point offset horizontal
+    var kappa = 0.5522848;
+    var ox = (w / 2) * kappa, // control point offset horizontal
     oy = (h / 2) * kappa, // control point offset vertical
     xe = x + w,           // x-end
     ye = y + h,           // y-end
@@ -1962,7 +1956,8 @@ function scrollBarLostFocus(canvasid, windowid) {
     scrollBarProps.MouseDownState = 0;
 }
 
-function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, alignment, ownedbywindowid, drawFunction, clickFunction, tag) {
+function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, alignment, ownedbywindowid, drawFunction, clickFunction, tag,
+    customIncrementFunction, selectedTag) {
     var windowid;
     if (alignment == 1) {
         windowid = createWindow(canvasid, x, y, 15, len, depth, null, 'ScrollBar', controlNameId);
@@ -1971,7 +1966,8 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
     }
     scrollBarPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Len: len, SelectedID: 0,
-        MaxItems: maxitems, Alignment: alignment, MouseDownState: 0, Tag: tag, OwnedByWindowID: ownedbywindowid, DrawFunction: drawFunction
+        MaxItems: maxitems, Alignment: alignment, MouseDownState: 0, Tag: tag, OwnedByWindowID: ownedbywindowid, DrawFunction: drawFunction,
+        CustomIncrementFunction: customIncrementFunction, SelectedTag: selectedTag
     });
     if (clickFunction == null) {
         registerClickFunction(windowid, scrollBarClick, canvasid);
@@ -2746,61 +2742,97 @@ function getTreeViewProps(canvasid, windowid) {
     }
 }
 
-function createTreeView(canvasid, controlNameId, x, y, width, height, depth, data, idcolindex, parentidcolindex, expandedcolindex,
-    labelcolindex, textcolor, textfontstring, textheight, clickNodeFunction, tag, hasicons, iconwidth, iconheight) {
-    var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'TreeView', controlNameId);
-    var shownitemscount = 0;
-    for (var i = 0; i < data.length; i++) {
-        if (data[i][expandedcolindex] == 1) {
-            shownitemscount++;
+function findNumberOfExpandedNodesInAll(nodes) {
+    var count = 0;
+    for (var i = 0; i < nodes.length; i++) {
+        if (nodes[i].Expanded == 1)
+            count++;
+        if(nodes[i].ChildNodes.length > 0) {
+            count += findNumberOfExpandedNodesInAll(nodes[i].ChildNodes);
         }
     }
-    var iconimages = new Array();
-    if (hasicons == 1) {
-        for (var i = 0; i < data.length; i++) {
-            if (data[i][4] != null) {
-                var foundimage = 0;
-                for (var x = 0; x < iconimages.length; x++) {
-                    if (data[i][4] == iconimages[x][0]) {
-                        foundimage = 1;
-                        break;
-                    }
+    return count;
+}
+
+var iconimages = new Array();
+
+function findIfImageAlreadyInIconImages(imageurl) {
+    for (var i = 0; i < iconimages.length; i++) {
+        if (iconimages[i].ImageURL == imageurl) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+function fillIconImages(nodes) {
+    var images = new Array();
+    for (var i = 0; i < nodes.length; i++) {
+        if (nodes[i].ImageURL != null && nodes[i].ImageURL.length > 0 && findIfImageAlreadyInIconImages(nodes[i].ImageURL) == 0) {
+            var image = new Image();
+            image.onload = function () {  };
+            image.src = nodes[i].ImageURL;
+            images.push({ ImageURL: nodes[i].ImageURL, Image: image });
+        }
+        if (nodes[i].ChildNodes.length > 0) {
+            fillIconImages(nodes[i].ChildNodes);
+        }
+    }
+    return images;
+}
+
+function treeviewVSCustomIncrementFunction(currNode) {
+    if (currNode.ChildNodes.length > 0)
+        return currNode.ChildNodes[0];
+    if (currNode.TreeviewNodeInstancesParentNode == null) {
+        for (var i = 0; i < currNode.TreeviewNodeInstancesRootNodes.length; i++) {
+            if (currNode == currNode.TreeviewNodeInstancesRootNodes[i]) {
+                if (i + 1 < currNode.TreeviewNodeInstancesRootNodes.length) {
+                    return currNode.TreeviewNodeInstancesRootNodes[i + 1];
                 }
-                if (foundimage == 0) {
-                    var image = new Image();
-                    image.onload = function () { invalidateRect(canvasid, null, x, y, width, height); };
-                    image.src = data[i][4];
-                    iconimages.push([data[i][4], image]);
+            }
+        }
+        return null;
+    }
+    if (currNode.TreeviewNodeInstancesParentNode.ChildNodes.length > 0) {
+        for (var i = 0; i < currNode.TreeviewNodeInstancesParentNode.ChildNodes.length; i++) {
+            if (currNode.TreeviewNodeInstancesParentNode.ChildNodes[i] == currNode) {
+                if (i + 1 < currNode.TreeviewNodeInstancesParentNode.ChildNodes.length) {
+                    return currNode.TreeviewNodeInstancesParentNode.ChildNodes[i + 1];
                 }
             }
         }
     }
-    var vscrollbarwindowid = createScrollBar(canvasid, controlNameId + 'VS', x + width, y, height, depth, shownitemscount, 1, windowid);
+    return treeviewVSCustomIncrementFunction(currNode.TreeviewNodeInstancesParentNode);
+}
+
+function createTreeView(canvasid, controlNameId, x, y, width, height, depth, nodes,
+    textcolor, textfontstring, textheight, clickNodeFunction, tag, hasicons, iconwidth, iconheight) {
+    var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'TreeView', controlNameId);
+    var shownitemscount = findNumberOfExpandedNodesInAll(nodes);
+    var iconimages = (hasicons == 1 ? fillIconImages(nodes) : new Array());
+    var vscrollbarwindowid = createScrollBar(canvasid, controlNameId + 'VS', x + width, y, height, depth, shownitemscount, 1, windowid, null, null, null,
+        treeviewVSCustomIncrementFunction, nodes != null && nodes.length > 0 ? nodes[0] : null);
     var hscrollbarwindowid = createScrollBar(canvasid, controlNameId + 'HS', x, y + height, width, depth, 10, 0, windowid);
     var clickButtonExtents = new Array();
     var clickLabelExtents = new Array();
     treeViewPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height,
-        Data: data, IDColumnIndex: idcolindex, ParentIDColIndex: parentidcolindex, ExpandedColIndex: expandedcolindex,
-        LabelColIndex: labelcolindex, VScrollBarWindowID: vscrollbarwindowid, HScrollBarWindowID: hscrollbarwindowid, 
-        TextColor: textcolor, TextFontString: textfontstring, TextHeight: textheight, ClickButtonExtents: clickButtonExtents,
-        ClickLabelExtents: clickLabelExtents, ClickNodeFunction: clickNodeFunction, SelectedNodeIndex: 0, Tag: tag, HasIcons: hasicons,
-        IconWidth: iconwidth, IconHeight: iconheight, IconImages: iconimages
+        Nodes: nodes, VScrollBarWindowID: vscrollbarwindowid, HScrollBarWindowID: hscrollbarwindowid, 
+        ClickButtonExtents: clickButtonExtents, ClickLabelExtents: clickLabelExtents, ClickNodeFunction: clickNodeFunction,
+        SelectedNode: nodes != null && nodes.length > 0 ? nodes[0] : null, Tag: tag, HasIcons: hasicons, IconWidth: iconwidth,
+        IconHeight: iconheight, IconImages: iconimages, TextColor: textcolor, TextFontString: textfontstring, TextHeight: textheight
     });
     registerWindowDrawFunction(windowid, drawTreeView, canvasid);
     registerClickFunction(windowid, clickTreeView, canvasid);
     return windowid;
 }
 
-function toggleAllChildNodesExpandedState(treeViewProps, p) {
-    for (var i = 0; i < treeViewProps.Data.length; i++) {
-        if (treeViewProps.Data[i][treeViewProps.ParentIDColIndex] == p) {
-            if (treeViewProps.Data[i][treeViewProps.ExpandedColIndex] == 0) {
-                treeViewProps.Data[i][treeViewProps.ExpandedColIndex] = 1;
-            } else {
-                treeViewProps.Data[i][treeViewProps.ExpandedColIndex] = 0;
-            }
-        }
+function toggleNodeExpandedState(treeViewProps, p) {
+    if (p.Expanded == 0) {
+        p.Expanded = 1;
+    } else {
+        p.Expanded = 0;
     }
 }
 
@@ -2810,34 +2842,38 @@ function clickTreeView(canvasid, windowid, e) {
     var x = e.calcX;
     var y = e.calcY;
     for (var i = 0; i < treeViewProps.ClickButtonExtents.length; i++) {
-        if (x > treeViewProps.ClickButtonExtents[i].X && x < treeViewProps.ClickButtonExtents[i].X + 9 &&
-            y > treeViewProps.ClickButtonExtents[i].Y && y < treeViewProps.ClickButtonExtents[i].Y + 9) {
-            toggleAllChildNodesExpandedState(treeViewProps, treeViewProps.Data[treeViewProps.ClickButtonExtents[i].Index][treeViewProps.IDColumnIndex]);
+        if (treeViewProps.ClickButtonExtents[i].Node && x > treeViewProps.ClickButtonExtents[i].X &&
+            x < treeViewProps.ClickButtonExtents[i].X + 9 && y > treeViewProps.ClickButtonExtents[i].Y &&
+            y < treeViewProps.ClickButtonExtents[i].Y + 9) {
+            toggleNodeExpandedState(treeViewProps, treeViewProps.ClickButtonExtents[i].Node);
             scrollBarProps.MaxItems = checkHowManyChildNodesAreExpandedInAll(treeViewProps);
             invalidateRect(canvasid, null, treeViewProps.X, treeViewProps.Y, treeViewProps.Width, treeViewProps.Height);
             return;
         }
     }
-    for (var i = 0; i < treeViewProps.ClickLabelExtents.length; i++) {
-        if (x > treeViewProps.ClickLabelExtents[i].X && x < treeViewProps.ClickLabelExtents[i].X + treeViewProps.ClickLabelExtents[i].Width &&
-            y > treeViewProps.ClickLabelExtents[i].Y && y < treeViewProps.ClickLabelExtents[i].Y + treeViewProps.ClickLabelExtents[i].TextHeight) {
-            treeViewProps.ClickNodeFunction(canvasid, windowid, treeViewProps.Data[treeViewProps.ClickLabelExtents[i].Index][treeViewProps.IDColumnIndex]);
-            treeViewProps.SelectedNodeIndex = i;
-            invalidateRect(canvasid, null, treeViewProps.X, treeViewProps.Y, treeViewProps.Width, treeViewProps.Height);
-            return;
+    if (treeViewProps.ClickNodeFunction != null) {
+        for (var i = 0; i < treeViewProps.ClickLabelExtents.length; i++) {
+            if (treeViewProps.ClickLabelExtents[i].Node && x > treeViewProps.ClickLabelExtents[i].X &&
+                x < treeViewProps.ClickLabelExtents[i].X + treeViewProps.ClickLabelExtents[i].Width &&
+                y > treeViewProps.ClickLabelExtents[i].Y && y < treeViewProps.ClickLabelExtents[i].Y + treeViewProps.ClickLabelExtents[i].TextHeight) {
+                treeViewProps.ClickNodeFunction(canvasid, windowid, treeViewProps.ClickLabelExtents[i].Node);
+                treeViewProps.SelectedNode = treeViewProps.ClickLabelExtents[i].Node;
+                invalidateRect(canvasid, null, treeViewProps.X, treeViewProps.Y, treeViewProps.Width, treeViewProps.Height);
+                return;
+            }
         }
     }
 }
 
-function checkIfParentsAreExpanded(treeViewProps, i) {
-    if (treeViewProps.Data[i][treeViewProps.ParentIDColIndex] == 0) {
+function checkIfParentsAreExpanded(treeViewProps, node) {
+    if (node.TreeviewNodeInstancesParentNode == null) {
         return 1;
     }
-    var currIndex = i;
-    while (treeViewProps.Data[checkIfStringAndConvertToInt(currIndex)][checkIfStringAndConvertToInt(treeViewProps.ParentIDColIndex)] != 0) {
-        if (treeViewProps.Data[checkIfStringAndConvertToInt(currIndex)][checkIfStringAndConvertToInt(treeViewProps.ExpandedColIndex)] == 0)
+    var currNode = node;
+    while (currNode.TreeviewNodeInstancesParentNode != null) {
+        if (currNode.Expanded == 0)
             return 0;
-        currIndex = treeViewProps.Data[checkIfStringAndConvertToInt(currIndex)][checkIfStringAndConvertToInt(treeViewProps.ParentIDColIndex)] - 1;
+        currNode = currNode.TreeviewNodeInstancesParentNode;
     }
     return 1;
 }
@@ -2866,111 +2902,110 @@ function drawTreeView(canvasid, windowid) {
     var heightoffset = 0;
     treeViewProps.ClickButtonExtents = new Array();
     treeViewProps.ClickLabelExtents = new Array();
-    for (var i = vscrollbarProps.SelectedID; i < treeViewProps.Data.length && heightoffset < treeViewProps.Height; i++) {
-        if (checkIfParentsAreExpanded(treeViewProps, i) == 1) {
-            var o = hasChildNodes(treeViewProps, i);
-            var level = findNodeLevel(treeViewProps, i);
-            drawTreeViewNode(ctx, 4 + treeViewProps.X + (level * 8), 4 + treeViewProps.Y + heightoffset, treeViewProps.Data[i][treeViewProps.ExpandedColIndex],
-                treeViewProps.Data[i][treeViewProps.LabelColIndex], treeViewProps.TextColor, treeViewProps.TextFontString, treeViewProps.TextHeight,
-                level, o, (o == 0 ? 0 : numberOfChildNodes(treeViewProps, i)), treeViewProps, i, vscrollbarProps.SelectedID);
-            heightoffset += (treeViewProps.TextHeight > treeViewProps.IconHeight ? (treeViewProps.TextHeight > 9 ? treeViewProps.TextHeight : 9) :
-                (treeViewProps.IconHeight > 9 ? treeViewProps.IconHeight : 9)) + 8;
+    if (vscrollbarProps.SelectedTag && vscrollbarProps.SelectedTag.TreeviewNodeInstancesParentNode == null) {
+        var foundSelectedNode = 0;
+        for (var i = 0; i < treeViewProps.Nodes.length && heightoffset < treeViewProps.Height; i++) {
+            if (foundSelectedNode == 1 || (foundSelectedNode == 0 && treeViewProps.Nodes[i] == vscrollbarProps.SelectedTag)) {
+                foundSelectedNode = 1;
+                var y = 4 + treeViewProps.Y + heightoffset;
+                drawTreeViewNode(ctx, treeViewProps.Nodes[i], 4 + treeViewProps.X, 4 + treeViewProps.Y + heightoffset,
+                    treeViewProps.TextColor, treeViewProps.TextFontString, treeViewProps.TextHeight, 0, 
+                    treeViewProps.IconWidth, treeViewProps.IconHeight, treeViewProps.IconImages, treeViewProps);
+                heightoffset += (treeViewProps.TextHeight > treeViewProps.IconHeight ? (treeViewProps.TextHeight > 9 ? treeViewProps.TextHeight : 9) :
+                    (treeViewProps.IconHeight > 9 ? treeViewProps.IconHeight : 9)) + 8;
+                if (treeViewProps.Nodes[i].ChildNodes.length > 0 && treeViewProps.Nodes[i].Expanded == 1) {
+                    heightoffset += drawTreeViewNodesChildren(treeViewProps.Nodes[i].ChildNodes, ctx, treeViewProps, heightoffset, y);
+                }
+            }
         }
     }
     ctx.restore();
 }
 
-function findNodeLevel(treeviewProps, i) {
-    var currIndex = i;
-    var level = 0;
-    while (treeviewProps.Data[currIndex][treeviewProps.ParentIDColIndex] != 0) {
-        currIndex = treeviewProps.Data[currIndex][treeviewProps.ParentIDColIndex] - 1;
-        level++;
-    }
-    return level;
-}
-
-function hasChildNodes(treeViewProps, j) {
-    for (var i = 0; i < treeViewProps.Data.length; i++) {
-        if (treeViewProps.Data[i][treeViewProps.ParentIDColIndex] == treeViewProps.Data[j][treeViewProps.IDColumnIndex])
-            return 1;
-    }
-    return 0;
-}
-
-function numberOfChildNodes(treeViewProps, j) {
-    var o = 0;
-    var lastchildcount = 0;
-    for (var i = 0; i < treeViewProps.Data.length; i++) {
-        if (treeViewProps.Data[i][treeViewProps.ParentIDColIndex] == treeViewProps.Data[j][treeViewProps.IDColumnIndex]) {
-            o++;
-            lastchildcount = 0;
-            if (hasChildNodes(treeViewProps, i)) {
-                o += lastchildcount = numberOfChildNodes(treeViewProps, i);
-            }
+function drawTreeViewNodesChildren(nodes, ctx, treeviewProps, heightoffsetOrig, y) {
+    var level = findNodeLevel(nodes[0]);
+    var heightoffsetCurrent = 0;
+    for (var i = 0; i < nodes.length && heightoffsetOrig + heightoffsetCurrent < treeviewProps.Height; i++) {
+        var y2 = 4 + treeviewProps.Y + heightoffsetOrig + heightoffsetCurrent;
+        drawTreeViewNode(ctx, nodes[i], 4 + treeviewProps.X, 4 + treeviewProps.Y + heightoffsetOrig + heightoffsetCurrent,
+            treeviewProps.TextColor, treeviewProps.TextFontString, treeviewProps.TextHeight, level, 
+            treeviewProps.IconWidth, treeviewProps.IconHeight, treeviewProps.IconImages, treeviewProps);
+        heightoffsetCurrent += (treeviewProps.TextHeight > treeviewProps.IconHeight ? (treeviewProps.TextHeight > 9 ? treeviewProps.TextHeight : 9) :
+            (treeviewProps.IconHeight > 9 ? treeviewProps.IconHeight : 9)) + 8;
+        if (nodes[i].ChildNodes.length > 0 && nodes[i].Expanded == 1) {
+            heightoffsetCurrent += drawTreeViewNodesChildren(nodes[i].ChildNodes, ctx, treeviewProps, heightoffsetOrig + heightoffsetCurrent, y2);
+        }
+        if (i + 1 == nodes.length) {
+            ctx.strokeStyle = '#C0C0C0';
+            ctx.beginPath();
+            ctx.moveTo(level * 8 + 3, y2 + 5);
+            ctx.lineTo(level * 8 + 3, y + 5);
+            ctx.stroke();
+        } else if (heightoffsetCurrent + heightoffsetOrig + (treeviewProps.TextHeight > treeviewProps.IconHeight ?
+            (treeviewProps.TextHeight > 9 ? treeviewProps.TextHeight : 9) :
+            (treeviewProps.IconHeight > 9 ? treeviewProps.IconHeight : 9)) + 8 > treeviewProps.Height) {
+            ctx.strokeStyle = '#C0C0C0';
+            ctx.beginPath();
+            ctx.moveTo(level * 8 + 3, treeviewProps.Y + treeviewProps.Height - 1);
+            ctx.lineTo(level * 8 + 3, y + 5);
+            ctx.stroke();
         }
     }
-    return o - lastchildcount;
+    return heightoffsetCurrent;
 }
 
-function howManyChildNodesOnly(treeViewProps, j) {
-    var o = 0;
-    for (var i = 0; i < treeViewProps.Data.length; i++) {
-        if (treeViewProps.Data[i][treeViewProps.ParentIDColIndex] == treeViewProps.Data[j][treeViewProps.IDColumnIndex]) {
-            o++;
+function findNodeLevel(node) {
+    if (node.TreeviewNodeInstancesParentNode == null)
+        return 0;
+    else
+        return 1 + findNodeLevel(node.TreeviewNodeInstancesParentNode);
+}
+
+function numberOfChildNodes(node) {
+    var count = node.ChildNodes.length;
+    if (count > 0) {
+        for (var i = 0; i < node.ChildNodes.length; i++) {
+            count += numberOfChildNodes(node.ChildNodes[i]);
         }
     }
-    return o;
+    return count;
 }
 
-function checkHowManyChildNodesAreExpanded(treeviewProps, p) {
-    var f = treeviewProps.Data[p][treeviewProps.IDColumnIndex];
-    var count = 0;
-    var lastchildcount = 0;
-    var cnodes = howManyChildNodesOnly(treeviewProps, p);
-    for (var i = 0; i < treeviewProps.Data.length; i++) {
-        lastchildcount = 0;
-        if (treeviewProps.Data[i][treeviewProps.ParentIDColIndex] == f && treeviewProps.Data[i][treeviewProps.ExpandedColIndex] == 1) {
-            count++;
-            if (count < cnodes && hasChildNodes(treeviewProps, i)) {
-                count += lastchildcount = checkHowManyChildNodesAreExpandedX(treeviewProps, i);
-            }
-        }
-    }
-    return count - lastchildcount;
-}
-
-function checkHowManyChildNodesAreExpandedX(treeviewProps, p) {
-    var f = treeviewProps.Data[p][treeviewProps.IDColumnIndex];
-    var count = 0;
-    for (var i = 0; i < treeviewProps.Data.length; i++) {
-        if (treeviewProps.Data[i][treeviewProps.ParentIDColIndex] == f && treeviewProps.Data[i][treeviewProps.ExpandedColIndex] == 1) {
-            count++;
-            if (hasChildNodes(treeviewProps, i)) {
-                count += checkHowManyChildNodesAreExpandedX(treeviewProps, i);
+function checkHowManyChildNodesAreExpanded(node) {
+    var count = node.ChildNodes.length;
+    if (count > 0) {
+        for (var i = 0; i < node.ChildNodes.length; i++) {
+            if (node.ChildNodes[i].Expanded == 1) {
+                count++;
+                if (node.ChildNodes[i].ChildNodes.length > 0) {
+                    count += checkHowManyChildNodesAreExpanded(node.ChildNodes[i]);
+                }
             }
         }
     }
     return count;
 }
 
-function checkHowManyChildNodesAreExpandedInAll(treeviewProps) {
+function checkHowManyChildNodesAreExpandedInAll(nodes) {
     var count = 0;
-    for (var i = 0; i < treeviewProps.Data.length; i++) {
-        if (treeviewProps.Data[i][treeviewProps.ExpandedColIndex] == 1) {
+    for (var i = 0; i < nodes.length; i++) {
+        if (nodes[i].Expanded == 1) {
             count++;
+            if (nodes[i].ChildNodes.length > 0) {
+                count += checkHowManyChildNodesAreExpandedInAll(nodes[i].ChildNodes);
+            }
         }
     }
     return count;
 }
 
-function drawTreeViewNode(ctx, x, y, state, text, textcolor, textfontstring, textheight, level, hasChildNodes, numOfChildNodes, treeviewProps, i, selectednodeid) {
-    x += level * 8 + 10;
-    if (hasChildNodes == 1) {
+function drawTreeViewNode(ctx, node, x, y, textcolor, textfontstring, textHeight, level, iconWidth, iconHeight, iconImages, treeviewProps) {
+    x += level * 8 + (level == 0 ? 2 : 10);
+    if (node.ChildNodes.length > 0) {
         ctx.strokeStyle = '#3c7fb1';
         ctx.beginPath();
         ctx.rect(x, y, 10, 10);
-        treeviewProps.ClickButtonExtents.push({X: x, Y: y, Index: i});
+        treeviewProps.ClickButtonExtents.push({ X: x, Y: y, Node: node });
         ctx.stroke();
         ctx.fillStyle = '#dcf0fb';
         ctx.beginPath();
@@ -2985,65 +3020,50 @@ function drawTreeViewNode(ctx, x, y, state, text, textcolor, textfontstring, tex
         ctx.moveTo(x + 2, y + 5);
         ctx.lineTo(x + 8, y + 5);
         ctx.stroke();
-        numOfChildNodes = checkHowManyChildNodesAreExpanded(treeviewProps, i);
-        if (numOfChildNodes == 0) {
-            ctx.strokeStyle = '#000000';
+        if (node.Expanded == 0) {
             ctx.beginPath();
             ctx.moveTo(x + 5, y + 2);
             ctx.lineTo(x + 5, y + 8);
             ctx.stroke();
-        } else {
-            if (numOfChildNodes > 0) {
+        }
+        numOfChildNodes = checkHowManyChildNodesAreExpanded(node);
+        if (node.ChildNodes.length > 0) {
+            if (numOfChildNodes == 0) {
+                ctx.strokeStyle = '#000000';
+                ctx.beginPath();
+                ctx.moveTo(x + 5, y + 2);
+                ctx.lineTo(x + 5, y + 8);
+                ctx.stroke();
+            }
+            if (level > 0) {
                 ctx.strokeStyle = '#C0C0C0';
                 ctx.beginPath();
-                ctx.moveTo(x + 5, y + 10);
-                ctx.lineTo(x + 5, y + 10 + (numOfChildNodes * ((treeviewProps.TextHeight > treeviewProps.IconHeight ?
-                    (treeviewProps.TextHeight > 9 ? treeviewProps.TextHeight : 9) : (treeviewProps.IconHeight > 9 ? treeviewProps.IconHeight : 9)) + 8)) - 4);
-                ctx.stroke();
-            }
-        }
-        if (level > 0) {
-            ctx.strokeStyle = '#C0C0C0';
-            ctx.beginPath();
-            ctx.moveTo(x - 11, y + 5);
-            ctx.lineTo(x, y + 5);
-            ctx.stroke();
-            if (treeviewProps.Data[i][treeviewProps.ParentIDColIndex] - 1 < selectednodeid) {
-                ctx.beginPath();
                 ctx.moveTo(x - 11, y + 5);
-                ctx.lineTo(x - 11, treeviewProps.Y);
+                ctx.lineTo(x, y + 5);
                 ctx.stroke();
             }
         }
-    } else if (level > 0) {
+    } else {
         ctx.strokeStyle = '#C0C0C0';
         ctx.beginPath();
-        ctx.moveTo(x - 11, y + 10 + (numOfChildNodes * ((treeviewProps.TextHeight > treeviewProps.IconHeight ? (treeviewProps.TextHeight > 9 ?
-            treeviewProps.TextHeight : 9) : (treeviewProps.IconHeight > 9 ? treeviewProps.IconHeight : 9)) + 8)) - 4);
-        ctx.lineTo(x + 8, y + 10 + (numOfChildNodes * ((treeviewProps.TextHeight > treeviewProps.IconHeight ? (treeviewProps.TextHeight > 9 ?
-            treeviewProps.TextHeight : 9) : (treeviewProps.IconHeight > 9 ? treeviewProps.IconHeight : 9)) + 8)) - 4);
+        ctx.moveTo(x - 11, y + 5);
+        ctx.lineTo(x + 9, y + 5);
         ctx.stroke();
-        if (treeviewProps.Data[i][treeviewProps.ParentIDColIndex] - 1 < selectednodeid) {
-            ctx.beginPath();
-            ctx.moveTo(x - 11, y + 5);
-            ctx.lineTo(x - 11, treeviewProps.Y);
-            ctx.stroke();
-        }
     }
     var xoffset = 0;
-    if (treeviewProps.Data[i][4] != null) {
-        for (var w = 0; w < treeviewProps.IconImages.length; w++) {
-            if (treeviewProps.Data[i][4] == treeviewProps.IconImages[w][0]) {
-                ctx.drawImage(treeviewProps.IconImages[w][1], x + 13, y);
-                xoffset += treeviewProps.IconWidth + 5;
+    if (node.ImageURL != null) {
+        for (var w = 0; w < iconImages.length; w++) {
+            if (node.ImageURL == iconImages[w].ImageURL) {
+                ctx.drawImage(iconImages[w].Image, x + 13, y);
+                xoffset += iconWidth + 5;
                 break;
             }
         }
     }
     ctx.fillStyle = textcolor;
     ctx.font = textfontstring;
-    ctx.fillText(text, x + 13 + xoffset, y + textheight);
-    treeviewProps.ClickLabelExtents.push({ X: x + 13, Y: y, Width: ctx.measureText(text).width + xoffset, TextHeight: textheight, Index: i });
+    ctx.fillText(node.Label, x + 13 + xoffset, y + textHeight);
+    treeviewProps.ClickLabelExtents.push({ X: x + 13, Y: y, Width: ctx.measureText(node.Label).width + xoffset, TextHeight: textHeight, TreeviewClickLabelExtentsNode: node });
 }
 
 function insertTreeviewNode(canvasid, windowid, nodeidtoinsertbefore, nodearraydata) {
@@ -3057,6 +3077,19 @@ function insertTreeviewNode(canvasid, windowid, nodeidtoinsertbefore, nodearrayd
             treeviewProps.Data.push(nodearraydata);
         }
     }
+}
+
+function addChildNodes(nodes, parentnode, imageurl, expanded, label, customextrainfo) {
+    var node = {
+        TreeviewNodeInstancesParentNode: parentnode, TreeviewNodeInstancesRootNodes: nodes, ImageURL: imageurl, Expanded: expanded, ChildNodes: new Array(), Label: label,
+        CustomExtraInfo: customextrainfo
+    };
+    if (parentnode == null) {
+        nodes.push(node);
+    } else {
+        parentnode.ChildNodes.push(node);
+    }
+    return node;
 }
 
 //Calender Control Code Starts Here
@@ -8731,24 +8764,26 @@ function invokeServerSideFunction(ajaxURL, functionName, canvasid, windowid, cal
     if (navigator.userAgent.toLowerCase().indexOf('msie') == -1) {
         xmlhttp.overrideMimeType("application/octet-stream");
     }
-    xmlhttp.setRequestHeader('Connection', 'close');
+//    xmlhttp.setRequestHeader('Connection', 'close');
     xmlhttp.setRequestHeader("Content-Type", "text/xml");
-    xmlhttp.setRequestHeader("Content-Length", data.length);
+//    xmlhttp.setRequestHeader("Content-Length", data.length);
     xmlhttp.setRequestHeader("Cache-Control", "max-age=0");
     xmlhttp.send(data);
 }
 
 function encodeParams(params) {
     var str = '[Array]';
-    for (var i = 0; i < params.length; i++) {
-        if (typeof params[i] === 'string' || typeof params[i] === 'number') {
-            str += '[i]' + encodeAllBrackets(params[i].toString()) + '[/i]';
-        } else if (params[i] instanceof Array) {
-            str += '[Array]';
-            for (var x = 0; x < params[i].length; x++) {
-                str += encodeParams(params[i][x]);
+    if (params) {
+        for (var i = 0; i < params.length; i++) {
+            if (typeof params[i] === 'string' || typeof params[i] === 'number') {
+                str += '[i]' + encodeAllBrackets(params[i].toString()) + '[/i]';
+            } else if (params[i] instanceof Array) {
+                str += '[Array]';
+                for (var x = 0; x < params[i].length; x++) {
+                    str += encodeParams(params[i][x]);
+                }
+                str += '[/Array]';
             }
-            str += '[/Array]';
         }
     }
     return str + '[/Array]';
@@ -8927,7 +8962,7 @@ function getEncodedVariables() {
         strVars += '[i]' + stringEncodeObject(splitterPropsArray[i]) + '[/i]';
     }
     strVars += '[/splitterPropsArray]';
-    return encodeAllBrackets(strVars);
+    return strVars;
 }
 
 var savedImagesOnPostback = new Array();
@@ -8943,54 +8978,59 @@ function stringEncodeObject(obj) {
     var strIndexes = '';
     var str = '';
     for (var name in obj) {
-        if ((navigator.userAgent.toLowerCase().indexOf('opera') > -1 ? obj[name] instanceof Object && obj[name].hasOwnProperty && obj[name].src : obj[name] instanceof Image) || name == 'Image') {
-            savedImagesOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, Image: obj[name] });
-            continue;
-        }
-        if (name == 'DrawingCanvas') {
-            savedDrawingCanvas.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, DrawingCanvas: obj[name] });
-            continue;
-        }
-        if (name == 'DrawingCanvasCtx') {
-            savedDrawingCanvasCtx.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, DrawingCanvasCtx: obj[name] });
-            continue;
-        }
-        if (obj[name] && typeof obj[name] == 'function') {
-            savedFunctionsOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, FunctionValue: obj[name], PropertyName: name });
-            continue;
-        }
-        if (typeof obj[name] === 'string' || typeof obj[name] === 'number') {
-            if (name == "WindowID") {
-                currentSavedImagesOnPostbackWindowID = obj[name].toString();
+        if (obj[name] != null) {
+            if ((navigator.userAgent.toLowerCase().indexOf('opera') > -1 ? obj[name] instanceof Object && obj[name].hasOwnProperty && obj[name].src : obj[name] instanceof Image) || name == 'Image') {
+                savedImagesOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, Image: obj[name] });
+                continue;
             }
-            if (name == "CanvasID") {
-                currentSavedImagesOnPostbackCanvasID = obj[name].toString();
+            if (name == 'DrawingCanvas') {
+                savedDrawingCanvas.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, DrawingCanvas: obj[name] });
+                continue;
             }
-            str += '[' + name + ']' + encodeAllBrackets(obj[name].toString()) + '[/' + name + ']';
-        } else if (obj[name] instanceof Array) {
-            str += '[' + name + ']';
-            for (var i = 0; i < obj[name].length; i++) {
-                if ((navigator.userAgent.toLowerCase().indexOf('opera') > -1 ? obj[name][i] instanceof Object && obj[name][i].hasOwnProperty && obj[name][i].src : obj[name][i] instanceof Image)) {
-                    savedImageArrayOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, Image: obj[name][i] });
-                    continue;
-                }
-                if (obj[name][i] && typeof obj[name][i] == 'function') {
-                    savedArrayFunctionsOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID,
-                        Index: i.toString(), Function: obj[name][i]
-                    });
-                    continue;
-                }
-                if (typeof obj[name][i] === 'string' || typeof obj[name][i] === 'number') {
-                    str += '[i]' + obj[name][i].toString() + '[/i]';
-                } else if (obj[name][i] instanceof Array) {
-                    str += encodeArray(obj[name][i], (strIndexes && strIndexes.length > 0 ? strIndexes + ',' + i.toString() : i.toString()));
-                } else {
-                    str += '[Array]' + stringEncodeObject(obj[name][i], strIndexes ) + '[/Array]';
-                }
+            if (name == 'DrawingCanvasCtx') {
+                savedDrawingCanvasCtx.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, DrawingCanvasCtx: obj[name] });
+                continue;
             }
-            str += '[/' + name + ']';
-        } else {
-            str += stringEncodeObject(obj[name]);
+            if (obj[name] && typeof obj[name] == 'function') {
+                savedFunctionsOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, FunctionValue: obj[name], PropertyName: name });
+                continue;
+            }
+            if (typeof obj[name] === 'string' || typeof obj[name] === 'number') {
+                if (name == "WindowID") {
+                    currentSavedImagesOnPostbackWindowID = obj[name].toString();
+                }
+                if (name == "CanvasID") {
+                    currentSavedImagesOnPostbackCanvasID = obj[name].toString();
+                }
+                str += '[' + name + ']' + encodeAllBrackets(obj[name].toString()) + '[/' + name + ']';
+            } else if (obj[name] instanceof Array) {
+                str += '[' + name + ']';
+                for (var i = 0; i < obj[name].length; i++) {
+                    if (obj[name] != null) {
+                        if ((navigator.userAgent.toLowerCase().indexOf('opera') > -1 ? obj[name][i] instanceof Object && obj[name][i].hasOwnProperty && obj[name][i].src : obj[name][i] instanceof Image)) {
+                            savedImageArrayOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, Image: obj[name][i] });
+                            continue;
+                        }
+                        if (obj[name][i] && typeof obj[name][i] == 'function') {
+                            savedArrayFunctionsOnPostback.push({
+                                CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID,
+                                Index: i.toString(), Function: obj[name][i]
+                            });
+                            continue;
+                        }
+                        if (typeof obj[name][i] === 'string' || typeof obj[name][i] === 'number') {
+                            str += '[i]' + encodeAllBrackets(obj[name][i].toString()) + '[/i]';
+                        } else if (obj[name][i] instanceof Array) {
+                            str += encodeArray(obj[name][i], (strIndexes && strIndexes.length > 0 ? strIndexes + ',' + i.toString() : i.toString()));
+                        } else if(typeof obj[name] === 'object') {
+                            str += '[i]' + stringEncodeValueObject(obj[name][i]) + '[/i]';
+                        }
+                    }
+                }
+                str += '[/' + name + ']';
+            } else if(typeof obj[name] === 'object') {
+                str += '[' + name + ']' + stringEncodeValueObject(obj[name]) + '[/' + name + ']';
+            }
         }
     }
     return str;
@@ -8999,32 +9039,53 @@ function stringEncodeObject(obj) {
 function encodeAllBrackets(str) {
     str = str.replace(/&/g, '&amp;');
     str = str.replace(/</g, '&lt;');
+    str = str.replace(/\[/g, '&lb;');
+    str = str.replace(/\]/g, '&rb;');
     return str.replace(/>/g, '&gt;');
 }
 
 function encodeArray(arr, strIndexes) {
     var str = '[Array]';
     for (var i = 0; i < arr.length; i++) {
-        if ((navigator.userAgent.toLowerCase().indexOf('opera') > -1 ? arr[i] instanceof Object && arr[i].hasOwnProperty && arr[i].src : arr[i] instanceof Image)) {
-            savedImageArrayOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, Image: arr[i], URL: arr[i].src });
-            continue;
-        }
-        if (arr[i] && typeof arr[i] == 'function') {
-            savedArrayFunctionsOnPostback.push({
-                CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, 
-                Index: (strIndexes && strIndexes.length > 0 ? strIndexes + ',' + i.toString() : i.toString()), Function: arr[i]
-            });
-            continue;
-        }
-        if (typeof arr[i] === 'string' || typeof arr[i] === 'number') {
-            str += '[i]' + arr[i].toString() + '[/i]';
-        } else if (arr[i] instanceof Array) {
-            str += encodeArray(arr[i], (strIndexes && strIndexes.length > 0 ? strIndexes + ',' + i.toString() : i.toString()));
-        } else {
-            str += '[Array]' + stringEncodeObject(arr[i]) + '[/Array]';
+        if (arr[i] != null) {
+            if ((navigator.userAgent.toLowerCase().indexOf('opera') > -1 ? arr[i] instanceof Object && arr[i].hasOwnProperty && arr[i].src : arr[i] instanceof Image)) {
+                savedImageArrayOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, Image: arr[i], URL: arr[i].src });
+                continue;
+            }
+            if (arr[i] && typeof arr[i] == 'function') {
+                savedArrayFunctionsOnPostback.push({
+                    CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID,
+                    Index: (strIndexes && strIndexes.length > 0 ? strIndexes + ',' + i.toString() : i.toString()), Function: arr[i]
+                });
+                continue;
+            }
+            if (typeof arr[i] === 'string' || typeof arr[i] === 'number') {
+                str += '[i]' + encodeAllBrackets(arr[i].toString()) + '[/i]';
+            } else if (arr[i] instanceof Array) {
+                str += encodeArray(arr[i], (strIndexes && strIndexes.length > 0 ? strIndexes + ',' + i.toString() : i.toString()));
+            } else if(typeof arr[i] === 'object') {
+                str += '[i]' + stringEncodeValueObject(arr[i]) + '[/i]';
+            }
         }
     }
     return str + '[/Array]';
+}
+
+function stringEncodeValueObject(obj) {
+    var str = '[ObjectArray]';
+    for (var name in obj) {
+        //ParentNode is a recursive exception
+        if (obj[name] != null && name != 'TreeviewNodeInstancesParentNode' && name != 'TreeviewNodeInstancesRootNodes' && name != 'TreeviewClickLabelExtentsNode') {
+            if (obj[name] instanceof Array && obj[name].length > 0) {
+                str += '[' + name + ']' + encodeArray(obj[name]) + '[/' + name + ']';
+            } else if (typeof obj[name] === 'string' || typeof obj[name] === 'number') {
+                str += '[' + name + ']' + encodeAllBrackets(obj[name].toString()) + '[/' + name + ']';
+            } else if(typeof obj[name] === 'object' && !obj[name] instanceof Array){
+                str += '[' + name + ']' + stringEncodeValueObject(obj[name]) + '[/' + name + ']';
+            }
+        }
+    }
+    return str + '[/ObjectArray]';
 }
 
 function rectifyNullFunctions(arr) {
@@ -9056,7 +9117,7 @@ function UnWrapVars(data) {
             eval(xmlDoc.firstChild.childNodes[0].childNodes[i].nodeName + " = new Array();");
             for (var x = 0; x < xmlDoc.firstChild.childNodes[0].childNodes[i].childNodes.length; x++) {
                 var obj = new Object();
-                recurseFillVars(xmlDoc.firstChild.childNodes[0].childNodes[i].nodeName, xmlDoc.firstChild.childNodes[0].childNodes[i].childNodes[x], obj);
+                recurseFillVars(xmlDoc.firstChild.childNodes[0].childNodes[i].childNodes[x], obj);
                 eval(xmlDoc.firstChild.childNodes[0].childNodes[i].nodeName + ".push(obj);");
             }
         }
@@ -9344,7 +9405,24 @@ function UnWrapVars(data) {
             }
         }
     }
+    for (var i = 0; i < treeViewPropsArray.length; i++) {
+        FixChildNodesForRecursionProblem(null, treeViewPropsArray[i].Nodes, treeViewPropsArray[i].Nodes);
+        invalidateRect(treeViewPropsArray[i].CanvasID, treeViewPropsArray[i].ParentWindowID, treeViewPropsArray[i].X, treeViewPropsArray[i].Y,
+            treeViewPropsArray[i].Width, treeViewPropsArray[i].Height);
+    }
     return getParameters(xmlDoc.firstChild.childNodes[1].childNodes[0].childNodes);
+}
+
+function FixChildNodesForRecursionProblem(parentnode, childnodes, nodes) {
+    for (var i = 0; i < childnodes.length; i++) {
+        childnodes[i].TreeviewNodeInstancesParentNode = parentnode;
+        childnodes[i].TreeviewNodeInstancesRootNodes = nodes;
+        if (childnodes[i].ChildNodes && childnodes[i].ChildNodes.length > 0) {
+            FixChildNodesForRecursionProblem(childnodes[i], childnodes[i].ChildNodes, nodes);
+        } else {
+            childnodes[i].ChildNodes = new Array();
+        }
+    }
 }
 
 function getParameters(nodes) {
@@ -9367,25 +9445,49 @@ function setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) {
     return 0;
 }
 
-function recurseFillVars(varname, node, obj) {
+function recurseFillVars(node, obj) {
     for (var i = 0; i < node.childNodes.length; i++) {
         if (node.childNodes[i].childNodes.length > 0 && node.childNodes[i].childNodes[0].nodeName == "Array") {
             var arr = new Array();
             obj[node.childNodes[i].nodeName] = arr;
             for (var x = 0; x < node.childNodes[i].childNodes[0].childNodes.length; x++) {
-                if (node.childNodes[i].childNodes[0].childNodes[x].nodeName == "Array") {
+                if (node.childNodes[i].childNodes[0].childNodes[x].childNodes.length > 0 &&
+                    node.childNodes[i].childNodes[0].childNodes[x].childNodes[0].nodeName == "Array") {
                     var arr2 = new Array();
                     recurseFillArray(arr2, node.childNodes[i].childNodes[0].childNodes[x]);
                     arr.push(arr2);
+                } else if (node.childNodes[i].childNodes[0].childNodes[x].childNodes.length > 0 &&
+                    node.childNodes[i].childNodes[0].childNodes[x].childNodes[0].nodeName == "ObjectArray") {
+                    arr.push(FillObjectArrayValues(node.childNodes[i].childNodes[0].childNodes[x].childNodes[0]));
                 } else {
-                    arr.push(correctValueTypes(node.childNodes[i].childNodes[0].childNodes[x].childNodes.length > 0 ? node.childNodes[i].childNodes[0].childNodes[x].childNodes[0].nodeValue :
+                    arr.push(correctValueTypes(node.childNodes[i].childNodes[0].childNodes[x].childNodes.length > 0 ?
+                        node.childNodes[i].childNodes[0].childNodes[x].childNodes[0].nodeValue :
                         node.childNodes[i].childNodes[0].childNodes[x].nodeValue));
                 }
             }
+        } else if (node.childNodes[i].childNodes.length > 0 && node.childNodes[i].childNodes[0].nodeName == "ObjectArray") {
+            obj[node.childNodes[i].nodeName] = FillObjectArrayValues(node.childNodes[i].childNodes[0]);
         } else {
             obj[node.childNodes[i].nodeName] = correctValueTypes(node.childNodes[i].childNodes.length > 0 ? node.childNodes[i].childNodes[0].nodeValue : node.childNodes[i].nodeValue);
         }
     }
+}
+
+function FillObjectArrayValues(node) {
+    var newobj = {};
+    for (var p = 0; p < node.childNodes.length; p++) {
+        if (node.childNodes[p].childNodes.length > 0 && node.childNodes[p].childNodes[0].nodeValue == 'Array') {
+            var arr3 = new Array();
+            recurseFillArray(arr3, node.childNodes[p].childNodes[0]);
+            newobj[node.childNodes[p].nodeName] = arr3;
+        } else if (node.childNodes[p].childNodes.length > 0 && node.childNodes[p].childNodes[0].nodeValue == 'ObjectArray') {
+            newobj[node.childNodes[p].nodeName] = FillObjectArrayValues(node.childNodes[p].childNodes[0]);
+        } else {
+            newobj[node.childNodes[p].nodeName] = correctValueTypes(node.childNodes[p].childNodes.length > 0 ? node.childNodes[p].childNodes[0].nodeValue :
+                node.childNodes[p].nodeValue);
+        }
+    }
+    return newobj;
 }
 
 function correctValueTypes(o) {
@@ -9401,10 +9503,12 @@ function correctValueTypes(o) {
 
 function recurseFillArray(arr, node) {
     for (var i = 0; i < node.childNodes.length; i++) {
-        if (node.childNodes[i].nodeName == "Array") {
+        if (node.childNodes[i].childNodes.length > 0 && node.childNodes[i].childNodes[0].nodeName == "Array") {
             var arr2 = new Array();
-            recurseFillArray(arr2, node.childNodes[i]);
+            recurseFillArray(arr2, node.childNodes[i].childNodes[0]);
             arr.push(arr2);
+        } else if (node.childNodes[i].childNodes.length > 0 && node.childNodes[i].childNodes[0].nodeName == "ObjectArray") {
+            arr.push(FillObjectArrayValues(node.childNodes[i].childNodes[0]));
         } else {
             arr.push(correctValueTypes(node.childNodes[i].childNodes.length > 0 ? node.childNodes[i].childNodes[0].nodeValue : node.childNodes[i].nodeValue));
         }

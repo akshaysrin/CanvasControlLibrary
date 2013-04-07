@@ -41,7 +41,7 @@ public class CanvasControlLibrary
         public Session()
         {
             ID = Guid.NewGuid();
-            Data = new Dictionary<string,object>();
+            Data = new Dictionary<string, object>();
         }
     }
 
@@ -311,7 +311,7 @@ public class CanvasControlLibrary
         public string Y { get; set; }
         public string Width { get; set; }
         public string Height { get; set; }
-        public ArrayList Data { get; set; }
+        public ArrayList Nodes { get; set; }
         public string IDColumnIndex { get; set; }
         public string ParentIDColIndex { get; set; }
         public string ExpandedColIndex { get; set; }
@@ -326,12 +326,17 @@ public class CanvasControlLibrary
         public string ClickNodeFunction { get; set; }
         public string SelectedNodeIndex { get; set; }
         public object Tag { get; set; }
+        public string HasIcons { get; set; }
+        public string IconWidth { get; set; }
+        public string IconHeight { get; set; }
+        public ArrayList IconImages { get; set; }
 
         public CCLTreeViewProps()
         {
-            Data = new ArrayList();
+            Nodes = new ArrayList();
             ClickButtonExtents = new ArrayList();
             ClickLabelExtents = new ArrayList();
+            IconImages = new ArrayList();
         }
     }
 
@@ -954,8 +959,8 @@ public class CanvasControlLibrary
         public string WindowID { get; set; }
         public string X { get; set; }
         public string Y { get; set; }
-        public string Width { get; set; } 
-        public string Height { get; set; } 
+        public string Width { get; set; }
+        public string Height { get; set; }
         public string WaterMarkText { get; set; }
         public string WaterMarkTextColor { get; set; }
         public string WaterMarkTextFontString { get; set; }
@@ -1202,12 +1207,14 @@ public class CanvasControlLibrary
 
     public CanvasControlLibrary(Stream InputStream)
     {
-        InputParams = new ArrayList(); 
+        InputParams = new ArrayList();
         byte[] rdata = new byte[Convert.ToInt32(InputStream.Length)];
         InputStream.Read(rdata, 0, Convert.ToInt32(InputStream.Length));
         string strData = Encoding.ASCII.GetString(rdata);
         strData = strData.Replace("[", "<");
         strData = strData.Replace("]", ">");
+        strData = strData.Replace("&lb;", "[");
+        strData = strData.Replace("&rb;", "]");
         XmlDocument vars = new XmlDocument();
         vars.LoadXml("<root>" + strData + "</root>");
         FunctionName = vars.FirstChild.ChildNodes[0].InnerXml;
@@ -1255,6 +1262,8 @@ public class CanvasControlLibrary
     {
         return str.Replace("&lb;", "[").Replace("&rb;", "]").Replace("&amp;", "&");
     }
+
+    public bool recursiveExceptionForTreeViews;
 
     public void UnwrapVars(XmlNode node)
     {
@@ -1554,6 +1563,42 @@ public class CanvasControlLibrary
         }
     }
 
+    public Dictionary<string, object> FillObjectArray(XmlNode child)
+    {
+        Dictionary<string, object> dict = new Dictionary<string, object>();
+        foreach (XmlNode childofOA in child.ChildNodes)
+        {
+            if (childofOA.ChildNodes.Count > 0 && childofOA.ChildNodes[0].Name == "Array")
+            {
+                ArrayList al = new ArrayList();
+                foreach (XmlNode childofOA2 in childofOA.ChildNodes[0].ChildNodes)
+                {
+                    if (childofOA2.Name == "Array")
+                    {
+                        AddArrayData(childofOA2, al);
+                    }
+                    else if (childofOA2.ChildNodes.Count == 1)
+                    {
+                        if (childofOA2.ChildNodes[0].Name == "ObjectArray")
+                        {
+                            al.Add(FillObjectArray(childofOA2.ChildNodes[0]));
+                        }
+                        else
+                        {
+                            al.Add(childofOA2.InnerXml);
+                        }
+                    }
+                }
+                dict.Add(childofOA.Name, al);
+            }
+            else
+            {
+                dict.Add(childofOA.Name, childofOA.InnerXml);
+            }
+        }
+        return dict;
+    }
+
     public void FillClassObject(XmlNode child2, object g)
     {
         foreach (XmlNode child3 in child2.ChildNodes)
@@ -1564,6 +1609,10 @@ public class CanvasControlLibrary
                 if (child3.ChildNodes.Count == 1 && child3.ChildNodes[0].Name != "i")
                 {
                     prop.SetValue(g, DecodeXML(child3.InnerXml), null);
+                }
+                else if (child3.ChildNodes.Count > 0 && child3.ChildNodes[0].Name == "ObjectArray")
+                {
+                    prop.SetValue(g, FillObjectArray(child3.ChildNodes[0]), null);
                 }
                 else if (child3.ChildNodes.Count > 1 || (child3.ChildNodes.Count != 0 && child3.ChildNodes[0].Name == "i"))
                 {
@@ -1576,7 +1625,14 @@ public class CanvasControlLibrary
                         }
                         else if (child4.ChildNodes.Count == 1)
                         {
-                            al.Add(child4.InnerXml);
+                            if (child4.ChildNodes[0].Name == "ObjectArray")
+                            {
+                                al.Add(FillObjectArray(child4.ChildNodes[0]));
+                            }
+                            else
+                            {
+                                al.Add(child4.InnerXml);
+                            }
                         }
                     }
                     prop.SetValue(g, al, null);
@@ -1590,6 +1646,10 @@ public class CanvasControlLibrary
         ArrayList al = new ArrayList();
         foreach (XmlNode child in node.ChildNodes)
         {
+            if (child.ChildNodes.Count > 0 && child.ChildNodes[0].Name == "ObjectArray")
+            {
+                al.Add(FillObjectArray(child.ChildNodes[0]));
+            }
             if (child.ChildNodes.Count == 1)
             {
                 al.Add(child.InnerXml);
@@ -1607,9 +1667,13 @@ public class CanvasControlLibrary
         string str = "[Array]";
         foreach (object obj in al)
         {
-            if (obj is ArrayList)
+            if (obj is Dictionary<string, object>)
             {
-                str += recurseArrayList(obj as ArrayList);
+                str += "[i]" + recurseDictionary(obj as Dictionary<string, object>) + "[/i]";
+            }
+            else if (obj is ArrayList)
+            {
+                str += "[i]" + recurseArrayList(obj as ArrayList) + "[/i]";
             }
             else
             {
@@ -1638,7 +1702,11 @@ public class CanvasControlLibrary
                 {
                     if (obj is ArrayList)
                     {
-                        str += recurseArrayList(obj as ArrayList);
+                        str += "[i]" + recurseArrayList(obj as ArrayList) + "[/i]";
+                    }
+                    else if (obj is Dictionary<string, object>)
+                    {
+                        str += "[i]" + recurseDictionary(obj as Dictionary<string, object>) + "[/i]";
                     }
                     else
                     {
@@ -1647,12 +1715,41 @@ public class CanvasControlLibrary
                 }
                 str += "[/Array][/" + pi.Name + "]";
             }
+            else if (pi.PropertyType.Name == "Dictionary")
+            {
+                str += recurseDictionary(pi.GetValue(o) as Dictionary<string, object>);
+            }
             else
             {
                 object x = pi.GetValue(o);
                 str += "[" + pi.Name + "]" + (x != null && x.ToString().Length > 0 ? encodeString(x.ToString()) : "") + "[/" + pi.Name + "]";
             }
         }
+        return str;
+    }
+
+    public string recurseDictionary(Dictionary<string, object> dict)
+    {
+        string str = "[ObjectArray]";
+        foreach (string key in dict.Keys)
+        {
+            str += "[" + key + "]";
+            object dictvalue = dict[key];
+            if (dictvalue is ArrayList)
+            {
+                str += recurseArrayList(dictvalue as ArrayList);
+            }
+            else if (dictvalue is Dictionary<string, object>)
+            {
+                str += recurseDictionary(dictvalue as Dictionary<string, object>);
+            }
+            else
+            {
+                str += dictvalue;
+            }
+            str += "[/" + key + "]";
+        }
+        str += "[/ObjectArray]";
         return str;
     }
 
