@@ -1179,6 +1179,27 @@ public class CanvasControlLibrary
         public string MouseDown { get; set; }
     }
 
+    public List<CCLBoundaryFillableMapProps> BoundaryFillableMapProps = new List<CCLBoundaryFillableMapProps>();
+
+    public class CCLBoundaryFillableMapProps
+    {
+        public string CanvasID { get; set; }
+        public string WindowID { get; set; }
+        public string X { get; set; }
+        public string Y { get; set; }
+        public string Width { get; set; }
+        public string Height { get; set; }
+        public ArrayList FillPoints { get; set; }
+        public string ImgURL { get; set; }
+        public string ImageWidth { get; set; }
+        public string ImageHeight { get; set; }
+
+        public CCLBoundaryFillableMapProps()
+        {
+            FillPoints = new ArrayList();
+        }
+    }
+
     public class JavaScriptFunctionsToSendAndAttachOnClientSide
     {
         public string CanvasID;
@@ -1559,6 +1580,14 @@ public class CanvasControlLibrary
                         FillClassObject(child2, sm);
                     }
                     break;
+                case "boundaryFillableMapPropsArray":
+                    foreach (XmlNode child2 in child1.ChildNodes)
+                    {
+                        CCLBoundaryFillableMapProps sm = new CCLBoundaryFillableMapProps();
+                        BoundaryFillableMapProps.Add(sm);
+                        FillClassObject(child2, sm);
+                    }
+                    break;
             }
         }
     }
@@ -1935,7 +1964,12 @@ public class CanvasControlLibrary
         {
             strVars += "[i]" + encodeObject(smb) + "[/i]";
         }
-        strVars += "[/splitterPropsArray]";
+        strVars += "[/splitterPropsArray][boundaryFillableMapPropsArray]";
+        foreach (CCLBoundaryFillableMapProps smb in BoundaryFillableMapProps)
+        {
+            strVars += "[i]" + encodeObject(smb) + "[/i]";
+        }
+        strVars += "[/boundaryFillableMapPropsArray]";
         strVars += "[/Vars][Params][Array]" + encodeParameters(parameters) + "[/Array][/Params][/root]";
         byte[] wdata = Encoding.ASCII.GetBytes(strVars);
         OutputStream.Write(wdata, 0, wdata.Length);
@@ -2298,6 +2332,15 @@ public class CanvasControlLibrary
                         break;
                     case "Splitter":
                         foreach (CCLSplitterProps o in SplitterPropsArray)
+                        {
+                            if (o.CanvasID == w.CanvasID && o.WindowID == w.WindowCount)
+                            {
+                                return (object)o;
+                            }
+                        }
+                        break;
+                    case "BoundaryFillableMap":
+                        foreach (CCLBoundaryFillableMapProps o in BoundaryFillableMapProps)
                         {
                             if (o.CanvasID == w.CanvasID && o.WindowID == w.WindowCount)
                             {
