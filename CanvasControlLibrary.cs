@@ -312,10 +312,6 @@ public class CanvasControlLibrary
         public string Width { get; set; }
         public string Height { get; set; }
         public ArrayList Nodes { get; set; }
-        public string IDColumnIndex { get; set; }
-        public string ParentIDColIndex { get; set; }
-        public string ExpandedColIndex { get; set; }
-        public string LabelColIndex { get; set; }
         public string VScrollBarWindowID { get; set; }
         public string HScrollBarWindowID { get; set; }
         public string TextColor { get; set; }
@@ -324,7 +320,7 @@ public class CanvasControlLibrary
         public ArrayList ClickButtonExtents { get; set; }
         public ArrayList ClickLabelExtents { get; set; }
         public string ClickNodeFunction { get; set; }
-        public string SelectedNodeIndex { get; set; }
+        public Dictionary<string, object> SelectedNode { get; set; }
         public object Tag { get; set; }
         public string HasIcons { get; set; }
         public string IconWidth { get; set; }
@@ -1635,13 +1631,13 @@ public class CanvasControlLibrary
             PropertyInfo prop = g.GetType().GetProperty(child3.Name, BindingFlags.Public | BindingFlags.Instance);
             if (null != prop && prop.CanWrite)
             {
-                if (child3.ChildNodes.Count == 1 && child3.ChildNodes[0].Name != "i")
-                {
-                    prop.SetValue(g, DecodeXML(child3.InnerXml), null);
-                }
-                else if (child3.ChildNodes.Count > 0 && child3.ChildNodes[0].Name == "ObjectArray")
+                if (child3.ChildNodes.Count > 0 && child3.ChildNodes[0].Name == "ObjectArray")
                 {
                     prop.SetValue(g, FillObjectArray(child3.ChildNodes[0]), null);
+                }
+                else if (child3.ChildNodes.Count == 1 && child3.ChildNodes[0].Name != "i")
+                {
+                    prop.SetValue(g, DecodeXML(child3.InnerXml), null);
                 }
                 else if (child3.ChildNodes.Count > 1 || (child3.ChildNodes.Count != 0 && child3.ChildNodes[0].Name == "i"))
                 {
