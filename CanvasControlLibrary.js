@@ -1875,25 +1875,29 @@ function scrollBarClick(canvasid, windowid, e) {
     var ym = e.calcY;
     if (scrollBarProps.Alignment == 1) {
         if (xm > scrollBarProps.X && xm < scrollBarProps.X + 15 && ym > scrollBarProps.Y && ym < scrollBarProps.Y + 15 && scrollBarProps.SelectedID - 1 >= 0) {
+            if (scrollBarProps.CustomIncrementFunction) {
+                scrollBarProps.CustomIncrementFunction(scrollBarProps.SelectedTag, scrollBarProps, 0);
+            }
             --scrollBarProps.SelectedID;
         } else if (xm > scrollBarProps.X && xm < scrollBarProps.X + 15 && ym > scrollBarProps.Y + scrollBarProps.Len - 15 &&
             ym < scrollBarProps.Y + scrollBarProps.Len && scrollBarProps.SelectedID + 1 < scrollBarProps.MaxItems) {
             if (scrollBarProps.CustomIncrementFunction) {
-                scrollBarProps.SelectedTag = scrollBarProps.CustomIncrementFunction(scrollBarProps.SelectedTag, scrollBarProps);
-            } else {
-                ++scrollBarProps.SelectedID;
+                scrollBarProps.CustomIncrementFunction(scrollBarProps.SelectedTag, scrollBarProps, 1);
             }
+            ++scrollBarProps.SelectedID;
         }
     } else {
         if (xm > scrollBarProps.X && xm < scrollBarProps.X + 15 && ym > scrollBarProps.Y && ym < scrollBarProps.Y + 15 && scrollBarProps.SelectedID - 1 >= 0) {
+            if (scrollBarProps.CustomIncrementFunction) {
+                scrollBarProps.CustomIncrementFunction(scrollBarProps.SelectedTag, scrollBarProps, 0);
+            }
             --scrollBarProps.SelectedID;
         } else if (xm > scrollBarProps.X + scrollBarProps.Len - 15 && xm < scrollBarProps.X + scrollBarProps.Len &&
             ym > scrollBarProps.Y && ym < scrollBarProps.Y + 15 && scrollBarProps.SelectedID + 1 < scrollBarProps.MaxItems) {
             if (scrollBarProps.CustomIncrementFunction) {
-                scrollBarProps.SelectedTag = scrollBarProps.CustomIncrementFunction(scrollBarProps.SelectedTag, scrollBarProps);
-            } else {
-                ++scrollBarProps.SelectedID;
+                scrollBarProps.CustomIncrementFunction(scrollBarProps.SelectedTag, scrollBarProps, 1);
             }
+            ++scrollBarProps.SelectedID;
         }
     }
     var wprops = getWindowProps(canvasid, scrollBarProps.OwnedByWindowID);
@@ -1944,6 +1948,9 @@ function scrollBarMouseMove(canvasid, windowid, e) {
                 scrollBarProps.SelectedID = Math.floor(((x - scrollBarProps.X) * scrollBarProps.MaxItems) / scrollBarProps.Len);
             }
         }
+        if (scrollBarProps.CustomMouseMoveFunction != null) {
+            scrollBarProps.CustomMouseMoveFunction(scrollBarProps, scrollBarProps.SelectedID);
+        }
     }
     /*
     if (scrollBarProps.SelectedID != tmp) {
@@ -1965,7 +1972,7 @@ function scrollBarLostFocus(canvasid, windowid) {
 }
 
 function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, alignment, ownedbywindowid, drawFunction, clickFunction, tag,
-    customIncrementFunction, selectedTag) {
+    customIncrementFunction, selectedTag, customMouseMoveFunction) {
     var windowid;
     if (alignment == 1) {
         windowid = createWindow(canvasid, x, y, 15, len, depth, null, 'ScrollBar', controlNameId);
@@ -1975,7 +1982,7 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
     scrollBarPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Len: len, SelectedID: 0,
         MaxItems: maxitems, Alignment: alignment, MouseDownState: 0, Tag: tag, OwnedByWindowID: ownedbywindowid, DrawFunction: drawFunction,
-        CustomIncrementFunction: customIncrementFunction, SelectedTag: selectedTag
+        CustomIncrementFunction: customIncrementFunction, SelectedTag: selectedTag, CustomMouseMoveFunction: customMouseMoveFunction
     });
     if (clickFunction == null) {
         registerClickFunction(windowid, scrollBarClick, canvasid);
@@ -2762,9 +2769,7 @@ function findNumberOfExpandedNodesInAll(nodes) {
     return count;
 }
 
-var iconimages = new Array();
-
-function findIfImageAlreadyInIconImages(imageurl) {
+function findIfImageAlreadyInIconImages(imageurl, iconimages) {
     for (var i = 0; i < iconimages.length; i++) {
         if (iconimages[i].ImageURL == imageurl) {
             return 1;
@@ -2773,80 +2778,94 @@ function findIfImageAlreadyInIconImages(imageurl) {
     return 0;
 }
 
-function fillIconImages(nodes) {
-    var images = new Array();
+function fillIconImages(nodes, images) {
     for (var i = 0; i < nodes.length; i++) {
-        if (nodes[i].ImageURL != null && nodes[i].ImageURL.length > 0 && findIfImageAlreadyInIconImages(nodes[i].ImageURL) == 0) {
+        if (nodes[i].ImageURL != null && nodes[i].ImageURL.length > 0 && findIfImageAlreadyInIconImages(nodes[i].ImageURL, images) == 0) {
             var image = new Image();
             image.onload = function () {  };
             image.src = nodes[i].ImageURL;
             images.push({ ImageURL: nodes[i].ImageURL, Image: image });
         }
         if (nodes[i].ChildNodes.length > 0) {
-            fillIconImages(nodes[i].ChildNodes);
+            fillIconImages(nodes[i].ChildNodes, images);
         }
     }
     return images;
 }
 
-function treeviewVSCustomIncrementFunction(currNode, scrollbarProps) {
-    if (currNode.ChildNodes.length > 0) {
-        scrollbarProps.SelectedTag = currNode.ChildNodes[0];
-        return currNode.ChildNodes[0];
-    }
-    if (currNode.TreeviewNodeInstancesParentNode == null) {
-        for (var i = 0; i < currNode.TreeviewNodeInstancesRootNodes.length; i++) {
-            if (currNode == currNode.TreeviewNodeInstancesRootNodes[i]) {
-                if (i + 1 < currNode.TreeviewNodeInstancesRootNodes.length) {
-                    scrollbarProps.SelectedTag = currNode.TreeviewNodeInstancesRootNodes[i + 1];
-                    for (var i = 0; i < treeViewPropsArray.length; i++) {
-                        if (treeViewPropsArray[i].Nodes == currNode.Nodes) {
-                            invalidateRect(treeViewPropsArray[i].CanvasID, null, treeViewPropsArray[i].X, treeViewPropsArray[i].Y, treeViewPropsArray[i].Width, treeViewPropsArray[i].Height);
-                            treeViewPropsArray[i].SlectedNode = scrollbarProps.SelectedTag;
-                            break;
-                        }
-                    }
-                    return currNode.TreeviewNodeInstancesRootNodes[i + 1];
-                }
-            }
-        }
-        return null;
-    }
-    if (currNode.TreeviewNodeInstancesParentNode.ChildNodes.length > 0) {
-        for (var i = 0; i < currNode.TreeviewNodeInstancesParentNode.ChildNodes.length; i++) {
-            if (currNode.TreeviewNodeInstancesParentNode.ChildNodes[i] == currNode) {
-                if (i + 1 < currNode.TreeviewNodeInstancesParentNode.ChildNodes.length) {
-                    scrollbarProps.SelectedTag = currNode.TreeviewNodeInstancesParentNode.ChildNodes[i + 1];
-                    for (var i = 0; i < treeViewPropsArray.length; i++) {
-                        if (treeViewPropsArray[i].Nodes == currNode.Nodes) {
-                            invalidateRect(treeViewPropsArray[i].CanvasID, null, treeViewPropsArray[i].X, treeViewPropsArray[i].Y, treeViewPropsArray[i].Width, treeViewPropsArray[i].Height);
-                            treeViewPropsArray[i].SlectedNode = scrollbarProps.SelectedTag;
-                            break;
-                        }
-                    }
-                    return currNode.TreeviewNodeInstancesParentNode.ChildNodes[i + 1];
-                }
-            }
+function findNodeIndex(node, childnodes) {
+    for (var i = 0; i < childnodes.length; i++) {
+        if (node == childnodes[i]) {
+            return i;
+        } else if (childnodes[i].ChildNodes && childnodes[i].ChildNodes.length > 0) {
+            return i + findNodeIndex(node, childnodes[i].ChildNodes);
         }
     }
-    scrollbarProps.SelectedTag = treeviewVSCustomIncrementFunction(currNode.TreeviewNodeInstancesParentNode, scrollbarProps);
-    for (var i = 0; i < treeViewPropsArray.length; i++) {
-        if (treeViewPropsArray[i].Nodes == currNode.Nodes) {
-            invalidateRect(treeViewPropsArray[i].CanvasID, null, treeViewPropsArray[i].X, treeViewPropsArray[i].Y, treeViewPropsArray[i].Width, treeViewPropsArray[i].Height);
+    return 0;
+}
+
+function treeviewVSCustomIncrementFunction(currNode, scrollbarProps, incordec) {
+    var nodearray = new Array();
+    for (var i = 0; i < currNode.TreeviewNodeInstancesRootNodes.length; i++) {
+        nodearray.push(currNode.TreeviewNodeInstancesRootNodes[i]);
+        if (currNode.TreeviewNodeInstancesRootNodes[i].ChildNodes.length > 0 && currNode.TreeviewNodeInstancesRootNodes[i].Expanded == 1) {
+            fillChildNodes(currNode.TreeviewNodeInstancesRootNodes[i].ChildNodes, nodearray);
+        }
+    }
+    for (var i = 0; i < nodearray.length; i++) {
+        if (scrollbarProps.SelectedTag == nodearray[i]) {
+            if (incordec == 1) {
+                if (i + 1 < nodearray.length) {
+                    scrollbarProps.SelectedTag = nodearray[i + 1];
+                }
+            } else {
+                if (i - 1 >= 0) {
+                    scrollbarProps.SelectedTag = nodearray[i - 1];
+                }
+            }
             break;
         }
     }
-    return scrollbarProps.SelectedTag;
+    for (var i = 0; i < treeViewPropsArray.length; i++) {
+        if (treeViewPropsArray[i].Nodes == currNode.TreeviewNodeInstancesRootNodes) {
+            invalidateRect(treeViewPropsArray[i].CanvasID, null, treeViewPropsArray[i].X, treeViewPropsArray[i].Y, treeViewPropsArray[i].Width, treeViewPropsArray[i].Height);
+            treeViewPropsArray[i].SelectedNode = scrollbarProps.SelectedTag;
+            break;
+        }
+    }
+}
+
+function treeviewVSCustomMouseMoveFunction(scrollBarProps, selectedID) {
+    var treeviewprops = null;
+    for (var i = 0; i < treeViewPropsArray.length; i++) {
+        if (scrollBarProps.WindowID == treeViewPropsArray[i].VScrollBarWindowID) {
+            treeviewprops = treeViewPropsArray[i];
+        }
+    }
+    if (treeviewprops != null) {
+        var nodearray = new Array();
+        for (var i = 0; i < treeviewprops.Nodes.length; i++) {
+            nodearray.push(treeviewprops.Nodes[i]);
+            if (treeviewprops.Nodes[i].ChildNodes.length > 0 && treeviewprops.Nodes[i].Expanded == 1) {
+                fillChildNodes(treeviewprops.Nodes[i].ChildNodes, nodearray);
+            }
+        }
+        if (selectedID >= 0 && selectedID < nodearray.length) {
+            scrollBarProps.SelectedTag = nodearray[selectedID];
+            treeviewprops.SelectedNode = nodearray[selectedID];
+        }
+    }
 }
 
 function createTreeView(canvasid, controlNameId, x, y, width, height, depth, nodes,
     textcolor, textfontstring, textheight, clickNodeFunction, tag, hasicons, iconwidth, iconheight, selectednode) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'TreeView', controlNameId);
     var shownitemscount = findNumberOfExpandedNodesInAll(nodes);
-    var iconimages = (hasicons == 1 ? fillIconImages(nodes) : new Array());
+    var iconimages = (hasicons == 1 ? fillIconImages(nodes, new Array()) : new Array());
     var vscrollbarwindowid = createScrollBar(canvasid, controlNameId + 'VS', x + width, y, height, depth, shownitemscount, 1, windowid, null, null, null,
-        treeviewVSCustomIncrementFunction, selectednode != null ? selectednode : nodes != null && nodes.length > 0 ? nodes[0] : null);
-    var hscrollbarwindowid = createScrollBar(canvasid, controlNameId + 'HS', x, y + height, width, depth, 10, 0, windowid);
+        treeviewVSCustomIncrementFunction, selectednode != null ? selectednode : nodes != null && nodes.length > 0 ? nodes[0] : null,
+        treeviewVSCustomMouseMoveFunction);
+    var hscrollbarwindowid = createScrollBar(canvasid, controlNameId + 'HS', x, y + height, width, depth, shownitemscount, 0, windowid);
     var clickButtonExtents = new Array();
     var clickLabelExtents = new Array();
     treeViewPropsArray.push({
@@ -2879,7 +2898,7 @@ function clickTreeView(canvasid, windowid, e) {
             x < treeViewProps.ClickButtonExtents[i].X + 9 && y > treeViewProps.ClickButtonExtents[i].Y &&
             y < treeViewProps.ClickButtonExtents[i].Y + 9) {
             toggleNodeExpandedState(treeViewProps, treeViewProps.ClickButtonExtents[i].Node);
-            scrollBarProps.MaxItems = checkHowManyChildNodesAreExpandedInAll(treeViewProps);
+            scrollBarProps.MaxItems = checkHowManyChildNodesAreExpandedInAll(treeViewProps.Nodes);
             invalidateRect(canvasid, null, treeViewProps.X, treeViewProps.Y, treeViewProps.Width, treeViewProps.Height);
             return;
         }
@@ -2918,6 +2937,15 @@ function checkIfStringAndConvertToInt(o) {
     return o;
 }
 
+function fillChildNodes(childnodes, nodearray) {
+    for (var i = 0; i < childnodes.length; i++) {
+        nodearray.push(childnodes[i]);
+        if (childnodes[i].ChildNodes.length > 0 && childnodes[i].Expanded == 1) {
+            fillChildNodes(childnodes[i].ChildNodes, nodearray);
+        }
+    }
+}
+
 function drawTreeView(canvasid, windowid) {
     var treeViewProps = getTreeViewProps(canvasid, windowid);
     var ctx = getCtx(canvasid);
@@ -2934,108 +2962,29 @@ function drawTreeView(canvasid, windowid) {
     var heightoffset = 0;
     treeViewProps.ClickButtonExtents = new Array();
     treeViewProps.ClickLabelExtents = new Array();
-    if (treeViewProps.SelectedNode && treeViewProps.SelectedNode.TreeviewNodeInstancesParentNode == null) {
-        var foundSelectedNode = 0;
-        for (var i = 0; i < treeViewProps.Nodes.length && heightoffset < treeViewProps.Height; i++) {
-            if (foundSelectedNode == 1 || (foundSelectedNode == 0 && treeViewProps.Nodes[i] == treeViewProps.SelectedNode)) {
-                foundSelectedNode = 1;
-                var y = 4 + treeViewProps.Y + heightoffset;
-                drawTreeViewNode(ctx, treeViewProps.Nodes[i], 4 + treeViewProps.X, 4 + treeViewProps.Y + heightoffset,
-                    treeViewProps.TextColor, treeViewProps.TextFontString, treeViewProps.TextHeight, 0, 
-                    treeViewProps.IconWidth, treeViewProps.IconHeight, treeViewProps.IconImages, treeViewProps);
-                heightoffset += (treeViewProps.TextHeight > treeViewProps.IconHeight ? (treeViewProps.TextHeight > 9 ? treeViewProps.TextHeight : 9) :
-                    (treeViewProps.IconHeight > 9 ? treeViewProps.IconHeight : 9)) + 8;
-                if (treeViewProps.Nodes[i].ChildNodes.length > 0 && treeViewProps.Nodes[i].Expanded == 1) {
-                    heightoffset += drawTreeViewNodesChildren(treeViewProps.Nodes[i].ChildNodes, ctx, treeViewProps, heightoffset, y);
-                }
-            }
+    var nodearray = new Array();
+    for (var i = 0; i < treeViewProps.Nodes.length; i++) {
+        nodearray.push(treeViewProps.Nodes[i]);
+        if (treeViewProps.Nodes[i].ChildNodes.length > 0 && treeViewProps.Nodes[i].Expanded == 1) {
+            fillChildNodes(treeViewProps.Nodes[i].ChildNodes, nodearray);
         }
-    } else if (treeViewProps.SelectedNode && treeViewProps.SelectedNode.TreeviewNodeInstancesParentNode) {
-        var foundSelectedNode = 0;
-        for (var i = 0; i < treeViewProps.Nodes.length && heightoffset < treeViewProps.Height; i++) {
-            if (foundSelectedNode == 1 || (foundSelectedNode == 0 && treeViewProps.Nodes[i] == treeViewProps.SelectedNode)) {
-                foundSelectedNode = 1;
-                var y = 4 + treeViewProps.Y + heightoffset;
-                drawTreeViewNode(ctx, treeViewProps.Nodes[i], 4 + treeViewProps.X, 4 + treeViewProps.Y + heightoffset,
-                    treeViewProps.TextColor, treeViewProps.TextFontString, treeViewProps.TextHeight, 0,
-                    treeViewProps.IconWidth, treeViewProps.IconHeight, treeViewProps.IconImages, treeViewProps);
-                heightoffset += (treeViewProps.TextHeight > treeViewProps.IconHeight ? (treeViewProps.TextHeight > 9 ? treeViewProps.TextHeight : 9) :
-                    (treeViewProps.IconHeight > 9 ? treeViewProps.IconHeight : 9)) + 8;
-                if (treeViewProps.Nodes[i].ChildNodes.length > 0 && treeViewProps.Nodes[i].Expanded == 1) {
-                    heightoffset += drawTreeViewNodesChildren(treeViewProps.Nodes[i].ChildNodes, ctx, treeViewProps, heightoffset, y);
-                }
-            } else if (treeViewProps.Nodes[i].ChildNodes.length > 0) {
-                var selnode = findSelectedNodeInChildNodes(treeViewProps.SelectedNode, treeViewProps.Nodes[i].ChildNodes, treeViewProps, ctx, heightoffset);
-                if (selnode.FoundNode != null) {
-                    foundSelectedNode = 1;
-                    heightoffset += selnode.HeightOffset;
-                }
-            }
+    }
+    var foundnode = 0;
+    for (var i = 0; i < nodearray.length && heightoffset < treeViewProps.Height; i++) {
+        if (nodearray[i] == treeViewProps.SelectedNode) {
+            foundnode = 1;
+        }
+        if (foundnode == 1) {
+            var y = 4 + treeViewProps.Y + heightoffset;
+            var level = findNodeLevel(nodearray[i]);
+            drawTreeViewNode(ctx, nodearray[i], 4 + treeViewProps.X, 4 + treeViewProps.Y + heightoffset,
+                treeViewProps.TextColor, treeViewProps.TextFontString, treeViewProps.TextHeight, level,
+                treeViewProps.IconWidth, treeViewProps.IconHeight, treeViewProps.IconImages, treeViewProps);
+            heightoffset += (treeViewProps.TextHeight > treeViewProps.IconHeight ? (treeViewProps.TextHeight > 9 ? treeViewProps.TextHeight : 9) :
+                (treeViewProps.IconHeight > 9 ? treeViewProps.IconHeight : 9)) + 8;
         }
     }
     ctx.restore();
-}
-
-function findSelectedNodeInChildNodes(selnode, nodes, treeViewProps, ctx, heightoffsetOld) {
-    var foundnode = null;
-    var heightoffset = 0;
-    if (selnode) {
-        var foundSelectedNode = 0;
-        for (var i = 0; i < nodes.length && heightoffset + heightoffsetOld < treeViewProps.Height; i++) {
-            if (foundSelectedNode == 1 || (foundSelectedNode == 0 && nodes[i] == selnode)) {
-                foundSelectedNode = 1;
-                var y = 4 + treeViewProps.Y + heightoffset;
-                drawTreeViewNode(ctx, treeViewProps.Nodes[i], 4 + treeViewProps.X, 4 + treeViewProps.Y + heightoffset,
-                    treeViewProps.TextColor, treeViewProps.TextFontString, treeViewProps.TextHeight, 0,
-                    treeViewProps.IconWidth, treeViewProps.IconHeight, treeViewProps.IconImages, treeViewProps);
-                heightoffset += (treeViewProps.TextHeight > treeViewProps.IconHeight ? (treeViewProps.TextHeight > 9 ? treeViewProps.TextHeight : 9) :
-                    (treeViewProps.IconHeight > 9 ? treeViewProps.IconHeight : 9)) + 8;
-                if (treeViewProps.Nodes[i].ChildNodes.length > 0 && treeViewProps.Nodes[i].Expanded == 1) {
-                    heightoffset += drawTreeViewNodesChildren(treeViewProps.Nodes[i].ChildNodes, ctx, treeViewProps, heightoffset, y);
-                }
-            } else if (nodes[i].ChildNodes.length > 0) {
-                foundnode = findSelectedNodeInChildNodes(selnode, nodes[i].ChildNodes, treeViewProps, ctx, heightoffset + heightoffsetOld);
-                if (foundnode.FoundNode != null) {
-                    foundSelectedNode = 1;
-                    heightoffset += foundSelectedNode.HeightOffset;
-                }
-            }
-        }
-    }
-    return { FoundNode: foundnode, HeightOffset: heightoffset };
-}
-
-
-function drawTreeViewNodesChildren(nodes, ctx, treeviewProps, heightoffsetOrig, y) {
-    var level = findNodeLevel(nodes[0]);
-    var heightoffsetCurrent = 0;
-    for (var i = 0; i < nodes.length && heightoffsetOrig + heightoffsetCurrent < treeviewProps.Height; i++) {
-        var y2 = 4 + treeviewProps.Y + heightoffsetOrig + heightoffsetCurrent;
-        drawTreeViewNode(ctx, nodes[i], 4 + treeviewProps.X, 4 + treeviewProps.Y + heightoffsetOrig + heightoffsetCurrent,
-            treeviewProps.TextColor, treeviewProps.TextFontString, treeviewProps.TextHeight, level, 
-            treeviewProps.IconWidth, treeviewProps.IconHeight, treeviewProps.IconImages, treeviewProps);
-        heightoffsetCurrent += (treeviewProps.TextHeight > treeviewProps.IconHeight ? (treeviewProps.TextHeight > 9 ? treeviewProps.TextHeight : 9) :
-            (treeviewProps.IconHeight > 9 ? treeviewProps.IconHeight : 9)) + 8;
-        if (nodes[i].ChildNodes.length > 0 && nodes[i].Expanded == 1) {
-            heightoffsetCurrent += drawTreeViewNodesChildren(nodes[i].ChildNodes, ctx, treeviewProps, heightoffsetOrig + heightoffsetCurrent, y2);
-        }
-        if (i + 1 == nodes.length) {
-            ctx.strokeStyle = '#C0C0C0';
-            ctx.beginPath();
-            ctx.moveTo(level * 8 + 3, y2 + 5);
-            ctx.lineTo(level * 8 + 3, y + 5);
-            ctx.stroke();
-        } else if (heightoffsetCurrent + heightoffsetOrig + (treeviewProps.TextHeight > treeviewProps.IconHeight ?
-            (treeviewProps.TextHeight > 9 ? treeviewProps.TextHeight : 9) :
-            (treeviewProps.IconHeight > 9 ? treeviewProps.IconHeight : 9)) + 8 > treeviewProps.Height) {
-            ctx.strokeStyle = '#C0C0C0';
-            ctx.beginPath();
-            ctx.moveTo(level * 8 + 3, treeviewProps.Y + treeviewProps.Height - 1);
-            ctx.lineTo(level * 8 + 3, y + 5);
-            ctx.stroke();
-        }
-    }
-    return heightoffsetCurrent;
 }
 
 function findNodeLevel(node) {
@@ -3076,6 +3025,7 @@ function checkHowManyChildNodesAreExpandedInAll(nodes) {
         if (nodes[i].Expanded == 1) {
             count++;
             if (nodes[i].ChildNodes.length > 0) {
+                count += nodes[i].ChildNodes.length;
                 count += checkHowManyChildNodesAreExpandedInAll(nodes[i].ChildNodes);
             }
         }
@@ -3119,6 +3069,7 @@ function drawTreeViewNode(ctx, node, x, y, textcolor, textfontstring, textHeight
                 ctx.lineTo(x + 5, y + 8);
                 ctx.stroke();
             }
+            /*
             if (level > 0) {
                 ctx.strokeStyle = '#C0C0C0';
                 ctx.beginPath();
@@ -3126,13 +3077,15 @@ function drawTreeViewNode(ctx, node, x, y, textcolor, textfontstring, textHeight
                 ctx.lineTo(x, y + 5);
                 ctx.stroke();
             }
+            */
         }
     } else {
+        /*
         ctx.strokeStyle = '#C0C0C0';
         ctx.beginPath();
         ctx.moveTo(x - 11, y + 5);
         ctx.lineTo(x + 9, y + 5);
-        ctx.stroke();
+        ctx.stroke();*/
     }
     var xoffset = 0;
     if (node.ImageURL != null) {
@@ -8858,6 +8811,7 @@ function createBoundaryFillableMap(canvasid, controlNameId, x, y, width, height,
             imgdata = fillImageData(boundaryFillableMapProps.FillPoints[i], imgdata);
         }
         ctxdest.putImageData(imgdata, boundaryFillableMapProps.X, boundaryFillableMapProps.Y);
+        gaussianBlur(null, ctxdest, boundaryFillableMapProps.X, boundaryFillableMapProps.Y, 500, 389, 95, 155, 155);
     }, canvasid);
 }
 
