@@ -87,6 +87,7 @@
             function listAreaCustomClickFunction(canvasid, windowid, e) {
                 var comboboxProps = getComboboxPropsByListAreaWindowId(canvasid, windowid);
                 var vscrollBarProps = getScrollBarProps(canvasid, comboboxProps.VScrollBarWindowID);
+                var vscrollBarWindowProps = getWindowProps(canvasid, comboboxProps.VScrollBarWindowID);
                 var canvas = getCanvas(canvasid);
                 var x = e.calcX;
                 var y = e.calcY;
@@ -97,7 +98,7 @@
                         comboboxProps.SelectedID = i;
                         setHiddenWindowStatus(canvasid, comboboxProps.VScrollBarWindowID, 1);
                         setHiddenWindowStatus(canvasid, comboboxProps.ListAreaWindowID, 1);
-                        invalidateRect(canvasid, null, comboboxProps.X, comboboxProps.Y, comboboxProps.Width, comboboxProps.Height);
+                        invalidateRect(canvasid, null, comboboxProps.X, comboboxProps.Y, comboboxProps.Width + vscrollBarWindowProps.Width, comboboxProps.Height + vscrollBarWindowProps.Height);
                         return;
                     }
                 }

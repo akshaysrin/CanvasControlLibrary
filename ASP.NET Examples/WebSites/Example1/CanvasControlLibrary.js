@@ -3649,6 +3649,8 @@ function createDatePicker(canvasid, controlNameId, x, y, width, height, depth, v
         } else {
             setHiddenWindowStatus(canvasid, datePickerProps.CalenderWindowID, 1);
         }
+        var dropdowncalprops = getCalenderProps(canvasid2, datePickerProps.CalenderWindowID);
+        invalidateRect(canvasid2, null, dropdowncalprops.X, dropdowncalprops.Y, dropdowncalprops.Width, dropdowncalprops.Height);
     }, canvasid);
     registerWindowDrawFunction(textboxAreaWindowID, function (canvasid3, windowid3) {
         var datePickerProps = getDatePickerPropsByTextBoxAreaWindowID(canvasid3, windowid3);
@@ -3907,6 +3909,7 @@ function createPanel(canvasid, controlNameId, x, y, width, height, depth, hasBor
                         windowProps.Height = panelProps.OriginalHeight;
                     }
                 }
+                invalidateRect(canvasid3, null, panelProps.X, panelProps.Y, panelProps.OriginalWidth, panelProps.OriginalHeight);
             }
         }, canvasid);
     } else {
