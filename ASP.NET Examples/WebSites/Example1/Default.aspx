@@ -70,7 +70,15 @@
                 '#000000', '12pt Ariel', 12, null, null, 1, 16, 16, 'Node.png', 'Value.png', 'Attribute.png');
             createTextBox(elemId, 'textbox1', 400, 10, 300, 60, highestDepth, 'Type your name here', '#F0F0F0', 18, '18pt Ariel', '#051329', 18, '18pt Ariel', 50, '[a-zA-Z ]', 0, null, 1, '#2e3642',
                 1, 0, '#000000', 3, 3, 20, 1, 10, 1, '#9bacc6', '#d6e4f9', 0, 'Title.png', 1, ['India', 'America', 'China', 'Russia', 'Brazil'], 0, 0, '#D0D000', 12, '12pt Ariel', '', '#0d2952', 'rgba(0, 0, 240, 0.2)', 1);
-            createVirtualKeyboard(elemId, 'vkb1', 500, 600, 360, 180, highestDepth, null, function (c, w, l) { alert(l); }, 5, 5, 1, 12, '12pt Ariel');
+            createVirtualKeyboard(elemId, 'vkb1', 300, 600, 360, 180, highestDepth, null, function (c, w, l) { alert(l); }, 5, 5, 1, 12, '12pt Ariel');
+            createBoundaryFillableMap(elemId, 'bfm1', 800, 10, 500, 389, highestDepth, [[95, 155, 40, 130, 160, 185, 255, 255, 255, 255, 0, 0, 255, 255],
+                [338, 180, 320, 160, 360, 205, 255, 255, 255, 255, 0, 255, 0, 255]], 'WorldMap.png', 500, 389);
+            createBoundaryFillableMap(elemId, 'bfm1', 800, 10, 500, 389, highestDepth, [[95, 155, 40, 130, 160, 185, 255, 255, 255, 255, 0, 0, 255, 255],
+                [338, 180, 320, 160, 360, 205, 255, 255, 255, 255, 0, 255, 0, 255]], 'WorldMap.png', 500, 389);
+            createBoundaryFillableMap(elemId, 'bfm1', 800, 400, 500, 389, highestDepth, [[95, 155, 40, 130, 160, 185, 255, 255, 255, 255, 0, 0, 255, 255, 0, 40, 100],
+                [338, 180, 320, 160, 360, 205, 255, 255, 255, 255, 0, 255, 0, 255]], 'WorldMap.png', 500, 389);
+            createBoundaryFillableMap(elemId, 'bfm1', 800, 800, 500, 389, highestDepth, [[95, 155, 40, 130, 160, 185, 255, 255, 255, 255, 0, 0, 255, 255, 0, 100, 160],
+                [338, 180, 320, 160, 360, 205, 255, 255, 255, 255, 0, 255, 0, 255]], 'WorldMap.png', 500, 389);
             invalidateRect(elemId, null, 0, 0, 1500, 1500);
             alert(navigator.userAgent);
         </script>

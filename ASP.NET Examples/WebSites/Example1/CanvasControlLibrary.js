@@ -746,7 +746,7 @@ function setWindowDepth(canvasid, windowid, depth) {
 
 function checkIfModalWindow(canvasid, windowid) {
     for (var i = 0; i < modalWindows.length; i++) {
-        if(modalWindows[i].CanvasID == canvasid && modalWindows[i].WindowID == windowid){
+        if (modalWindows[i].CanvasID == canvasid && modalWindows[i].WindowID == windowid) {
             return 1;
         }
     }
@@ -928,7 +928,7 @@ function destroyControlByNameID(controlNameID) {
     }
 }
 
-function destroyWindow(canvasid, windowid){
+function destroyWindow(canvasid, windowid) {
     for (var i = 0; i < windows.length; i++) {
         if (windows[i].CanvasID == canvasid && windows[i].WindowCount == windowid) {
             removeEventHooks(windows[i]);
@@ -1549,21 +1549,21 @@ function createButton(canvasid, controlNameId, x, y, width, height, text, textCo
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Button', controlNameId);
     buttonPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Text: text,
-        EdgeRadius: edgeRadius, BottomColorStart: bottomColorStart, BottomColorEnd: bottomColorEnd, 
+        EdgeRadius: edgeRadius, BottomColorStart: bottomColorStart, BottomColorEnd: bottomColorEnd,
         TopColorStart: topColorStart, TopColorEnd: topColorEnd, TextHeight: textHeight, TextFontString: textFontString,
-        TextColor: textColor, IsPressed: 0, BorderColor: borderColor, IsHyperlink: isHyperlink, URL: url, 
+        TextColor: textColor, IsPressed: 0, BorderColor: borderColor, IsHyperlink: isHyperlink, URL: url,
         NoBrowserHistory: nobrowserhistory, IsNewBrowserWindow: isnewbrowserwindow,
-        NameOfNewBrowserWindow: nameofnewbrowserwindow, WidthOfNewBrowserWindow: widthofnewbrowserwindow, 
-        HeightOfNewBrowserWindow: heightofnewbrowserwindow, NewBrowserWindowIsResizable: newbrowserwindowisresizable, 
-        NewBrowserWindowHasScrollBars: newbrowserwindowhasscrollbars, NewBrowserWindowHasToolbar: newbrowserwindowhastoolbar, 
-        NewBrowserWindowHasLocationOrURLOrAddressBox: newbrowserwindowhaslocationorurloraddressbox, 
+        NameOfNewBrowserWindow: nameofnewbrowserwindow, WidthOfNewBrowserWindow: widthofnewbrowserwindow,
+        HeightOfNewBrowserWindow: heightofnewbrowserwindow, NewBrowserWindowIsResizable: newbrowserwindowisresizable,
+        NewBrowserWindowHasScrollBars: newbrowserwindowhasscrollbars, NewBrowserWindowHasToolbar: newbrowserwindowhastoolbar,
+        NewBrowserWindowHasLocationOrURLOrAddressBox: newbrowserwindowhaslocationorurloraddressbox,
         NewBrowserWindowHasDirectoriesOrExtraButtons: newbroserwindowhasdirectoriesorextrabuttons,
-        NewBrowserWindowHasStatusBar: newbrowserwindowhasstatusbar, NewBrowserWindowHasMenuBar: newbrowserwindowhasmenubar, 
+        NewBrowserWindowHasStatusBar: newbrowserwindowhasstatusbar, NewBrowserWindowHasMenuBar: newbrowserwindowhasmenubar,
         NewBrowserWindowCopyHistory: newbrowserwindowcopyhistory, Tag: tag, Theme: theme, HasGloss: hasgloss
     });
     registerClickFunction(windowid, function () {
         if (isHyperlink == 1) {
-            if(isnewbrowserwindow == 1){
+            if (isnewbrowserwindow == 1) {
                 var str = '';
                 var wroteone = 0;
                 if (widthofnewbrowserwindow != null) {
@@ -1597,8 +1597,8 @@ function createButton(canvasid, controlNameId, x, y, width, height, text, textCo
                 if (newbrowserwindowcopyhistory != null) {
                     str += (wroteone == 1 ? ',' : '') + 'copyhistory=' + newbrowserwindowcopyhistory;
                 }
-                window.open(url, (navigator.userAgent.toLowerCase().indexOf('msie') == -1 ? nameofnewbrowserwindow : nameofnewbrowserwindow.replace(/ /g,'')), str);
-            } else{
+                window.open(url, (navigator.userAgent.toLowerCase().indexOf('msie') == -1 ? nameofnewbrowserwindow : nameofnewbrowserwindow.replace(/ /g, '')), str);
+            } else {
                 if (nobrowserhistory == 1) {
                     window.location.replace(url);
                 } else {
@@ -2031,19 +2031,20 @@ function createGrid(canvasid, controlNameId, x, y, width, height, depth, rowData
     if (effectiveWidth > width) {
         hscrollBarWindowId = createScrollBar(canvasid, controlNameId + 'HS', x, y + height, width, depth, columnWidthArray.length, 0, windowid);
     }
-    gridPropsArray.push({CanvasID: canvasid, WindowID: windowid,
-        X: x, Y: y, 
+    gridPropsArray.push({
+        CanvasID: canvasid, WindowID: windowid,
+        X: x, Y: y,
         Width: width, Height: height,
-        RowData: rowData, HeaderData: headerData, 
+        RowData: rowData, HeaderData: headerData,
         RowDataTextColor: rowDataTextColor,
-        RowDataTextFontString: rowDataTextFontString, HeaderDataTextColor: headerDataTextColor, 
+        RowDataTextFontString: rowDataTextFontString, HeaderDataTextColor: headerDataTextColor,
         HeaderDataTextHeight: headerDataTextHeight, HeaderDataTextFontString: headerDataTextFontString,
         CellClickFunction: cellClickFunction, DataRowHeight: dataRowHeight,
-        ColumnWidthArray: columnWidthArray, HeaderRowHeight: headerRowHeight, 
-        HasBorder: hasBorder, BorderColor: borderColor, 
+        ColumnWidthArray: columnWidthArray, HeaderRowHeight: headerRowHeight,
+        HasBorder: hasBorder, BorderColor: borderColor,
         BorderLineWidth: borderLineWidth, VScrollBarWindowId: vscrollBarWindowId,
-        HScrollBarWindowId: hscrollBarWindowId, HeaderBackgroundStartColor: headerbackgroundstartcolor, 
-        HeaderBackgroundEndColor: headerbackgroundendcolor, AltRowBgColorStart1: altrowbgcolorstart1, 
+        HScrollBarWindowId: hscrollBarWindowId, HeaderBackgroundStartColor: headerbackgroundstartcolor,
+        HeaderBackgroundEndColor: headerbackgroundendcolor, AltRowBgColorStart1: altrowbgcolorstart1,
         AltRowBgColorEnd1: altrowbgcolorend1, AltRowBgColorStart2: altrowbgcolorstart2,
         AltRowBgColorEnd2: altrowbgcolorend2, Tag: tag
     });
@@ -2155,7 +2156,7 @@ function drawGrid(canvasid, windowid) {
 }
 
 function clickGrid(canvasid, windowid, e) {
-    
+
     var gridProps = getGridProps(canvasid, windowid);
     var vscrollBarProps = getScrollBarProps(canvasid, gridProps.VScrollBarWindowId);
     var hscrollBarProps = getScrollBarProps(canvasid, gridProps.HScrollBarWindowId);
@@ -2377,7 +2378,7 @@ function comboboxListAreaClick(canvasid, windowid, e) {
         if (x > comboboxProps.X && y > comboboxProps.Y + comboboxProps.Height + ((comboboxProps.ListAreaTextHeight + 6) * (i - vscrollBarProps.SelectedID)) &&
             x < comboboxProps.X + comboboxProps.Width - 15 && y < comboboxProps.Y + comboboxProps.Height + ((comboboxProps.ListAreaTextHeight + 6) *
             (i - vscrollBarProps.SelectedID + 1))) {
-            if(comboboxProps.SelectedID != i) {
+            if (comboboxProps.SelectedID != i) {
                 comboboxProps.SelectedID = i;
                 setHiddenWindowStatus(canvasid, comboboxProps.VScrollBarWindowID, 1);
                 setHiddenWindowStatus(canvasid, comboboxProps.ListAreaWindowID, 1);
@@ -2763,7 +2764,7 @@ function findNumberOfExpandedNodesInAll(nodes) {
     for (var i = 0; i < nodes.length; i++) {
         if (nodes[i].Expanded == 1)
             count++;
-        if(nodes[i].ChildNodes.length > 0) {
+        if (nodes[i].ChildNodes.length > 0) {
             count += findNumberOfExpandedNodesInAll(nodes[i].ChildNodes);
         }
     }
@@ -2783,7 +2784,7 @@ function fillIconImages(nodes, images) {
     for (var i = 0; i < nodes.length; i++) {
         if (nodes[i].ImageURL != null && nodes[i].ImageURL.length > 0 && findIfImageAlreadyInIconImages(nodes[i].ImageURL, images) == 0) {
             var image = new Image();
-            image.onload = function () {  };
+            image.onload = function () { };
             image.src = nodes[i].ImageURL;
             images.push({ ImageURL: nodes[i].ImageURL, Image: image });
         }
@@ -2871,7 +2872,7 @@ function createTreeView(canvasid, controlNameId, x, y, width, height, depth, nod
     var clickLabelExtents = new Array();
     treeViewPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height,
-        Nodes: nodes, VScrollBarWindowID: vscrollbarwindowid, HScrollBarWindowID: hscrollbarwindowid, 
+        Nodes: nodes, VScrollBarWindowID: vscrollbarwindowid, HScrollBarWindowID: hscrollbarwindowid,
         ClickButtonExtents: clickButtonExtents, ClickLabelExtents: clickLabelExtents, ClickNodeFunction: clickNodeFunction,
         SelectedNode: selectednode != null ? selectednode : nodes != null && nodes.length > 0 ? nodes[0] : null, Tag: tag, HasIcons: hasicons, IconWidth: iconwidth,
         IconHeight: iconheight, TextColor: textcolor, TextFontString: textfontstring, TextHeight: textheight
@@ -3475,7 +3476,7 @@ function drawProgressBar(canvasid, windowid) {
     ctx.moveTo(progressBarProps.X + 5, progressBarProps.Y + progressBarProps.Height);
     ctx.lineTo(progressBarProps.X + progressBarProps.Width - 5, progressBarProps.Y + progressBarProps.Height);
     ctx.stroke();
-    var pgwidth = ((progressBarProps.CurrentValue - progressBarProps.MinValue) * progressBarProps.Width)/(progressBarProps.MaxValue - progressBarProps.MinValue);
+    var pgwidth = ((progressBarProps.CurrentValue - progressBarProps.MinValue) * progressBarProps.Width) / (progressBarProps.MaxValue - progressBarProps.MinValue);
     var g2 = ctx.createLinearGradient(progressBarProps.X, progressBarProps.Y, progressBarProps.X, progressBarProps.Y + progressBarProps.Height);
     var redcomp = parseInt(progressBarProps.Color.substr(1, 2), 16);
     var greencomp = parseInt(progressBarProps.Color.substr(3, 2), 16);
@@ -3758,10 +3759,10 @@ function createPanel(canvasid, controlNameId, x, y, width, height, depth, hasBor
     panelPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, ExpandedWidth: width, ExpandedHeight: height,
         CollapsedWidth: collapsedWidth, CollapsedHeight: collapsedHeight, IsCollapsable: iscollapsable, HasBorder: hasBorder, BorderColor: borderColor,
-        HasBackgroundGradient: hasBackgroundGradient, BackgroundStartColor: backgroundStartColor, BackgroundEndColor: backgroundEndColor, 
+        HasBackgroundGradient: hasBackgroundGradient, BackgroundStartColor: backgroundStartColor, BackgroundEndColor: backgroundEndColor,
         HeaderHeight: headerheight, HeaderBackgroundStartColor: headerBackgroundStartColor, HeaderBackgroundEndColor: headerBackgroundEndColor,
         ExpandCollapseButtonColor: expandCollapseButtonColor, IsExpanded: isexpanded, ExpandCollapseButtonRadius: expandCollapseButtonRadius,
-        PanelLabel: panellabel, PanelLabelTextColor: panelLabelTextColor, PanelLabelTextHeight: panelLabelTextHeight, 
+        PanelLabel: panellabel, PanelLabelTextColor: panelLabelTextColor, PanelLabelTextHeight: panelLabelTextHeight,
         PanelLabelTextFontString: panelLabelTextFontString, OriginalWidth: width, OriginalHeight: height, Tag: tag
     });
     registerWindowDrawFunction(windowid, function (canvasid2, windowid2) {
@@ -3934,7 +3935,7 @@ function getBarGraphProps(canvasid, windowid) {
     }
 }
 
-function createBarGraph(canvasid, controlNameId, x, y, width, height, depth, data, maxvalue, nummarksy, title, titletextcolor, 
+function createBarGraph(canvasid, controlNameId, x, y, width, height, depth, data, maxvalue, nummarksy, title, titletextcolor,
     titletextheigth, titletextfontstring, barwidth, axisLabelsTextColor, axisLabelsTextHeight, axisLabelsTextFontString,
     marginleft, gapbetweenbars, barClickFunction, haslegend, marginright, tag) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'BarGraph', controlNameId);
@@ -3948,7 +3949,7 @@ function createBarGraph(canvasid, controlNameId, x, y, width, height, depth, dat
         HasLegend: haslegend, MarginRight: marginright, Tag: tag
     });
     registerClickFunction(windowid, function (canvasid1, windowid1, e) {
-        
+
         var barGraphProps = getBarGraphProps(canvasid1, windowid1);
         var clickx = e.calcX;
         var clicky = e.calcY;
@@ -4102,7 +4103,7 @@ function drawrect(canvasid, windowid, ctx, barGraphProps, i, yaxisheight) {
     var vw = ctx.measureText(barGraphProps.Data[i][1].toString()).width;
     if (vw < barGraphProps.BarWidth) {
         ctx.fillText(barGraphProps.Data[i][1].toString(), barGraphProps.X + barGraphProps.MarginLeft + barGraphProps.GapBetweenBars +
-            (i * (barGraphProps.BarWidth + barGraphProps.GapBetweenBars)) + ((barGraphProps.BarWidth + - vw) / 2),
+            (i * (barGraphProps.BarWidth + barGraphProps.GapBetweenBars)) + ((barGraphProps.BarWidth + -vw) / 2),
             barGraphProps.Y + barGraphProps.TitleTextHeight + 8 + barGraphProps.AxisLabelsTextHeight + hthis + ((yaxisheight - hthis) / 2));
     } else {
         ctx.fillText(barGraphProps.Data[i][1].toString(), barGraphProps.X + barGraphProps.MarginLeft + barGraphProps.GapBetweenBars +
@@ -4133,12 +4134,12 @@ function createPieChart(canvasid, controlNameId, x, y, width, height, depth, dat
     pieChartsPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Data: data,
         Title: title, TitleTextColor: titletextcolor, TitleTextHeight: titletextheight, TitleTextFontString: titletextfontstring,
-        CurrentRadius: 20, TotalValue: totalvalue, LabelTextColor: labeltextcolor, LabelTextHeight: labeltextheight, 
+        CurrentRadius: 20, TotalValue: totalvalue, LabelTextColor: labeltextcolor, LabelTextHeight: labeltextheight,
         LabelTextFontString: labeltextfontstring, AlreadyUnregisteredAnimation: 0, DeltaI: -1,
         DeltaX: 0, DeltaY: 0, SliceClickFunction: sliceClickFunction, Tag: tag
     });
     registerClickFunction(windowid, function (canvasid1, windowid1, e) {
-        
+
         var pieChartProps = getPieChartProps(canvasid1, windowid1);
         var data = pieChartProps.Data;
         var currRadius = (pieChartProps.Height - pieChartProps.TitleTextHeight - 24 - (pieChartProps.LabelTextHeight * 2)) / 2;
@@ -4390,7 +4391,7 @@ function createLineGraph(canvasid, controlNameId, x, y, width, height, depth, da
         IsLabeledXValues: islabeledxvalues, Tag: tag
     });
     registerClickFunction(windowid, function (canvasid1, windowid1, e) {
-        
+
         var lineGraphProps = getLineGraphProps(canvasid1, windowid1);
         if (lineGraphProps.ClickFunction != null) {
             var linexys = lineGraphProps.LineXYs;
@@ -4493,7 +4494,7 @@ function createLineGraph(canvasid, controlNameId, x, y, width, height, depth, da
             var val;
             var increment;
             if (lineGraphProps.IsLabeledXValues == 1) {
-                increment =  xlabels.length / lineGraphProps.NumMarksX;
+                increment = xlabels.length / lineGraphProps.NumMarksX;
                 if (xlabels.length % lineGraphProps.NumMarksX >= lineGraphProps.NumMarksX / 2) {
                     val = xlabels[d * Math.ceil(increment)];
                 } else {
@@ -4555,7 +4556,7 @@ function drawline(canvasid, ctx, lineGraphProps, x, xlabels) {
         lineGraphProps.Y + lineGraphProps.Height - lineGraphProps.AxisLabelsTextHeight - 8 -
         ((lineGraphProps.Data[x][0][0][1] * (lineGraphProps.Height - lineGraphProps.TitleTextHeight - lineGraphProps.AxisLabelsTextHeight - 16)) /
         lineGraphProps.YMaxValue)]]);
-    ctx.moveTo(lineGraphProps.X + lineGraphProps.MarginLeft + (lineGraphProps.IsLabeledXValues == 1 ? 
+    ctx.moveTo(lineGraphProps.X + lineGraphProps.MarginLeft + (lineGraphProps.IsLabeledXValues == 1 ?
         (findXLabelIndexForValue(xlabels, lineGraphProps.Data[x][0][0][0]) *
         (lineGraphProps.Width - lineGraphProps.MarginLeft)) / xlabels.length : ((lineGraphProps.Data[x][0][0][0] * (lineGraphProps.Width -
         lineGraphProps.MarginLeft)) / lineGraphProps.XMaxValue)),
@@ -5071,7 +5072,7 @@ function createLineAreaGraph(canvasid, controlNameId, x, y, width, height, depth
         for (var c = 0; c < lineAreaGraphProps.Data[0][0][1].length; c++) {
             var colorstr = lineAreaGraphProps.Data[1][c];
             var gradient = ctx.createLinearGradient(lineAreaGraphProps.X + lineAreaGraphProps.MarginLeft, lineAreaGraphProps.Y + lineAreaGraphProps.Height -
-                lineAreaGraphProps.AxisLabelsHeight - 8, lineAreaGraphProps.X + lineAreaGraphProps.Width - lineAreaGraphProps.MarginLeft, 
+                lineAreaGraphProps.AxisLabelsHeight - 8, lineAreaGraphProps.X + lineAreaGraphProps.Width - lineAreaGraphProps.MarginLeft,
                 lineAreaGraphProps.Y + lineAreaGraphProps.Height - lineAreaGraphProps.AxisLabelsHeight - 8);
             var redcomp = parseInt(colorstr.substr(1, 2), 16);
             var greencomp = parseInt(colorstr.substr(3, 2), 16);
@@ -5093,7 +5094,7 @@ function createLineAreaGraph(canvasid, controlNameId, x, y, width, height, depth
             if (c == 0) {
                 ctx.lineTo(lineAreaGraphProps.X + lineAreaGraphProps.MarginLeft + (lineAreaGraphProps.IsLabledOnXAxis == 1 ?
                     (findXLabelIndexForValue(xlabels, lineAreaGraphProps.Data[0][lineAreaGraphProps.H][0]) *
-                    (lineAreaGraphProps.Width - lineAreaGraphProps.MarginLeft)) / xlabels.length : ((lineAreaGraphProps.Data[0][lineAreaGraphProps.H][0] * 
+                    (lineAreaGraphProps.Width - lineAreaGraphProps.MarginLeft)) / xlabels.length : ((lineAreaGraphProps.Data[0][lineAreaGraphProps.H][0] *
                     (lineAreaGraphProps.Width -
                     lineAreaGraphProps.MarginLeft)) / lineAreaGraphProps.XMaxValue)), lineAreaGraphProps.Y + lineAreaGraphProps.Height -
                     lineAreaGraphProps.AxisLabelsHeight - 8);
@@ -5103,7 +5104,7 @@ function createLineAreaGraph(canvasid, controlNameId, x, y, width, height, depth
                         (findXLabelIndexForValue(xlabels, lineAreaGraphProps.Data[0][i][0]) * (lineAreaGraphProps.Width - lineAreaGraphProps.MarginLeft)) / xlabels.length :
                         ((lineAreaGraphProps.Data[0][i][0] * (lineAreaGraphProps.Width -
                         lineAreaGraphProps.MarginLeft)) / lineAreaGraphProps.XMaxValue)), lineAreaGraphProps.Y + lineAreaGraphProps.Height -
-                        lineAreaGraphProps.AxisLabelsHeight - 8 - ((lineAreaGraphProps.Data[0][i][1][c - 1] + sumyvalues(lineAreaGraphProps.Data, c - 1, i)) * 
+                        lineAreaGraphProps.AxisLabelsHeight - 8 - ((lineAreaGraphProps.Data[0][i][1][c - 1] + sumyvalues(lineAreaGraphProps.Data, c - 1, i)) *
                         (lineAreaGraphProps.Height - lineAreaGraphProps.TitleTextHeight - lineAreaGraphProps.AxisLabelsHeight - 16)) / lineAreaGraphProps.YMaxValue);
                 }
             }
@@ -5189,22 +5190,22 @@ function createCandlesticksGraph(canvasid, controlNameId, x, y, width, height, d
             var val = (candlesticksGraphProps.YMaxValue / candlesticksGraphProps.NumMarksY) * c;
             var tw = ctx.measureText(val.toString()).width;
             ctx.fillText(val.toString(), candlesticksGraphProps.X + candlesticksGraphProps.MarginLeft - 10 - tw, candlesticksGraphProps.Y +
-                candlesticksGraphProps.Height - candlesticksGraphProps.AxisLabelsHeight - 8 -(c * ((candlesticksGraphProps.Height -
+                candlesticksGraphProps.Height - candlesticksGraphProps.AxisLabelsHeight - 8 - (c * ((candlesticksGraphProps.Height -
                 candlesticksGraphProps.TitleHeight - candlesticksGraphProps.AxisLabelsHeight - 16) / candlesticksGraphProps.NumMarksY)));
             ctx.beginPath();
             ctx.moveTo(candlesticksGraphProps.X + candlesticksGraphProps.MarginLeft - 5, candlesticksGraphProps.Y + candlesticksGraphProps.Height -
-                candlesticksGraphProps.AxisLabelsHeight - 8 -(c * ((candlesticksGraphProps.Height - candlesticksGraphProps.TitleHeight -
+                candlesticksGraphProps.AxisLabelsHeight - 8 - (c * ((candlesticksGraphProps.Height - candlesticksGraphProps.TitleHeight -
                 candlesticksGraphProps.AxisLabelsHeight - 16) / candlesticksGraphProps.NumMarksY)));
             ctx.lineTo(candlesticksGraphProps.X + candlesticksGraphProps.Width, candlesticksGraphProps.Y + candlesticksGraphProps.Height -
-                candlesticksGraphProps.AxisLabelsHeight - 8 -(c * ((candlesticksGraphProps.Height - candlesticksGraphProps.TitleHeight -
+                candlesticksGraphProps.AxisLabelsHeight - 8 - (c * ((candlesticksGraphProps.Height - candlesticksGraphProps.TitleHeight -
                 candlesticksGraphProps.AxisLabelsHeight - 16) / candlesticksGraphProps.NumMarksY)));
             ctx.stroke();
         }
         for (var d = 0; d < candlesticksGraphProps.Data.length; d++) {
             ctx.beginPath();
-            ctx.moveTo(candlesticksGraphProps.X + candlesticksGraphProps.MarginLeft + ((d + 1) * candlesticksGraphProps.XMarksWidth), 
+            ctx.moveTo(candlesticksGraphProps.X + candlesticksGraphProps.MarginLeft + ((d + 1) * candlesticksGraphProps.XMarksWidth),
                 candlesticksGraphProps.Y + candlesticksGraphProps.Height - candlesticksGraphProps.AxisLabelsHeight - 8 + 5);
-            ctx.lineTo(candlesticksGraphProps.X + candlesticksGraphProps.MarginLeft + ((d + 1) * candlesticksGraphProps.XMarksWidth), 
+            ctx.lineTo(candlesticksGraphProps.X + candlesticksGraphProps.MarginLeft + ((d + 1) * candlesticksGraphProps.XMarksWidth),
                 candlesticksGraphProps.Y + candlesticksGraphProps.TitleHeight + 8);
             ctx.stroke();
         }
@@ -5345,7 +5346,7 @@ function createDoughnutChart(canvasid, controlNameId, x, y, width, height, depth
         AnimationCompleted: 0, DeltaI: -1, DeltaX: 0, DeltaY: 0, SliceClickFunction: sliceClickFunction, Tag: tag
     });
     registerClickFunction(windowid, function (canvasid1, windowid1, e) {
-        
+
         var doughnutChartProps = getDoughnutChartProps(canvasid1, windowid1);
         var data = doughnutChartProps.Data;
         var totalvalue = doughnutChartProps.TotalValue;
@@ -5353,7 +5354,7 @@ function createDoughnutChart(canvasid, controlNameId, x, y, width, height, depth
         var clicky = e.calcY;
         var pieoutangle = -1;
         var centerx = doughnutChartProps.X + (doughnutChartProps.Width / 2) + doughnutChartProps.MarginSides;
-        var centery = doughnutChartProps.Y + ((doughnutChartProps.Height - doughnutChartProps.TitleTextHeight - 8 - (doughnutChartProps.LabelHeight * 2))/2);
+        var centery = doughnutChartProps.Y + ((doughnutChartProps.Height - doughnutChartProps.TitleTextHeight - 8 - (doughnutChartProps.LabelHeight * 2)) / 2);
         if (150 * 150 > (clickx - centerx) * (clickx - centerx) + (clicky - centery) * (clicky - centery)) {
             if (clickx > centerx && clicky == centery) {
                 pieoutangle = 0;
@@ -5523,7 +5524,7 @@ function createBarsMixedWithLabledLineGraph(canvasid, controlNameId, x, y, width
         YMaxValue: maxvalue, Tag: tag
     });
     registerClickFunction(windowid, function (canvasid1, windowid1, e) {
-        
+
         var barsMixedWithLabledLineGraphProps = getBarsMixedWithLabledLineGraphProps(canvasid1, windowid1);
         var clickx = e.calcX;
         var clicky = e.calcY;
@@ -5682,14 +5683,14 @@ function drawlineforbarsmixedwithlinesgraph(ctx, barsMixedWithLabledLineGraphPro
     ctx.shadowColor = '#' + getlowcomp(redcomp).toString(16) + getlowcomp(greencomp).toString(16) + getlowcomp(bluecomp).toString(16);
     ctx.beginPath();
     var linexys = new Array();
-    linexys = linexys.concat([[barsMixedWithLabledLineGraphProps.X + barsMixedWithLabledLineGraphProps.MarginLeft + 
+    linexys = linexys.concat([[barsMixedWithLabledLineGraphProps.X + barsMixedWithLabledLineGraphProps.MarginLeft +
         (findXLabelIndexForValue(xlabels, barsMixedWithLabledLineGraphProps.LinesData[x][0][0][0]) *
         (barsMixedWithLabledLineGraphProps.Width - barsMixedWithLabledLineGraphProps.MarginLeft)) / xlabels.length,
         barsMixedWithLabledLineGraphProps.Y + barsMixedWithLabledLineGraphProps.Height - barsMixedWithLabledLineGraphProps.AxisLabelsTextHeight - 8 -
         ((barsMixedWithLabledLineGraphProps.LinesData[x][0][0][1] * (barsMixedWithLabledLineGraphProps.Height -
         barsMixedWithLabledLineGraphProps.TitleTextHeight - barsMixedWithLabledLineGraphProps.AxisLabelsTextHeight - 16)) /
         barsMixedWithLabledLineGraphProps.YMaxValue)]]);
-    ctx.moveTo(barsMixedWithLabledLineGraphProps.X + barsMixedWithLabledLineGraphProps.MarginLeft + 
+    ctx.moveTo(barsMixedWithLabledLineGraphProps.X + barsMixedWithLabledLineGraphProps.MarginLeft +
         barsMixedWithLabledLineGraphProps.GapBetweenBars + (barsMixedWithLabledLineGraphProps.BarWidth / 2) +
         (findXLabelIndexForValue(xlabels, barsMixedWithLabledLineGraphProps.LinesData[x][0][0][0]) *
         (barsMixedWithLabledLineGraphProps.Width - barsMixedWithLabledLineGraphProps.MarginLeft -
@@ -5700,7 +5701,7 @@ function drawlineforbarsmixedwithlinesgraph(ctx, barsMixedWithLabledLineGraphPro
         barsMixedWithLabledLineGraphProps.YMaxValue));
     for (var i = 1; i < barsMixedWithLabledLineGraphProps.H && i < barsMixedWithLabledLineGraphProps.LinesData[x][0].length; i++) {
         linexys = linexys.concat([[barsMixedWithLabledLineGraphProps.X + barsMixedWithLabledLineGraphProps.MarginLeft +
-            (findXLabelIndexForValue(xlabels, barsMixedWithLabledLineGraphProps.LinesData[x][0][i][0]) * (barsMixedWithLabledLineGraphProps.Width - 
+            (findXLabelIndexForValue(xlabels, barsMixedWithLabledLineGraphProps.LinesData[x][0][i][0]) * (barsMixedWithLabledLineGraphProps.Width -
             barsMixedWithLabledLineGraphProps.MarginLeft)) / xlabels.length,
             barsMixedWithLabledLineGraphProps.Y + barsMixedWithLabledLineGraphProps.Height - barsMixedWithLabledLineGraphProps.AxisLabelsTextHeight -
             8 - ((barsMixedWithLabledLineGraphProps.LinesData[x][0][i][1] *
@@ -5769,7 +5770,7 @@ function createStackedBarGraph(canvasid, controlNameId, x, y, width, height, dep
         ctx.save();
         ctx.fillStyle = stackedBarGraphProps.TitleColor;
         ctx.font = stackedBarGraphProps.TitleFontString;
-        ctx.fillText(stackedBarGraphProps.Title, stackedBarGraphProps.X + (stackedBarGraphProps.Width - ctx.measureText(stackedBarGraphProps.Title).width) / 2, 
+        ctx.fillText(stackedBarGraphProps.Title, stackedBarGraphProps.X + (stackedBarGraphProps.Width - ctx.measureText(stackedBarGraphProps.Title).width) / 2,
             stackedBarGraphProps.Y + stackedBarGraphProps.TitleHeight + 4);
         ctx.font = stackedBarGraphProps.AxisLabelsFontString;
         ctx.beginPath();
@@ -5856,7 +5857,7 @@ function drawmultiplerect(ctx, stackedBarGraphProps, i) {
             ctx.beginPath();
             ctx.moveTo(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + ((stackedBarGraphProps.BarWidth - stackedBarGraphProps.GapBetweenBarSets) / 2) +
                 (i * stackedBarGraphProps.BarWidth), stackedBarGraphProps.Y + bottomy - (shift + hthis));
-            ctx.lineTo(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + stackedBarGraphProps.GapBetweenBarSets + ((stackedBarGraphProps.BarWidth - 
+            ctx.lineTo(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + stackedBarGraphProps.GapBetweenBarSets + ((stackedBarGraphProps.BarWidth -
                 stackedBarGraphProps.GapBetweenBarSets) / 2) + (i * stackedBarGraphProps.BarWidth), stackedBarGraphProps.Y + bottomy - (shift + hthis));
             ctx.lineTo(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + stackedBarGraphProps.GapBetweenBarSets + ((stackedBarGraphProps.BarWidth -
                 stackedBarGraphProps.GapBetweenBarSets) / 2) + (i * stackedBarGraphProps.BarWidth), stackedBarGraphProps.Y + bottomy - shift);
@@ -5897,10 +5898,10 @@ function drawmultiplerect(ctx, stackedBarGraphProps, i) {
                 (i * stackedBarGraphProps.BarWidth), stackedBarGraphProps.Y + bottomy - (shift + hthis) + 5, 5, Math.PI, (Math.PI / 180) * 270, false);
             ctx.lineTo(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + stackedBarGraphProps.BarWidth - stackedBarGraphProps.GapBetweenBarSets - 5 +
                 ((stackedBarGraphProps.BarWidth - stackedBarGraphProps.GapBetweenBarSets) / 2) + (i * stackedBarGraphProps.BarWidth), stackedBarGraphProps.Y +
-                bottomy - (shift + hthis)); 
-            ctx.arc(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + stackedBarGraphProps.GapBetweenBarSets - 5 + ((stackedBarGraphProps.BarWidth - 
+                bottomy - (shift + hthis));
+            ctx.arc(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + stackedBarGraphProps.GapBetweenBarSets - 5 + ((stackedBarGraphProps.BarWidth -
                 stackedBarGraphProps.GapBetweenBarSets) / 2) + (i * stackedBarGraphProps.BarWidth), stackedBarGraphProps.Y + bottomy - (shift + hthis) + 5, 5, (Math.PI / 180) * 270, 0, false);
-            ctx.lineTo(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + stackedBarGraphProps.GapBetweenBarSets + ((stackedBarGraphProps.BarWidth - 
+            ctx.lineTo(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + stackedBarGraphProps.GapBetweenBarSets + ((stackedBarGraphProps.BarWidth -
                 stackedBarGraphProps.GapBetweenBarSets) / 2) + (i * stackedBarGraphProps.BarWidth), stackedBarGraphProps.Y + bottomy - shift);
             ctx.lineTo(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + ((stackedBarGraphProps.BarWidth - stackedBarGraphProps.GapBetweenBarSets) / 2) +
                 (i * stackedBarGraphProps.BarWidth), stackedBarGraphProps.Y + bottomy - shift);
@@ -5926,7 +5927,7 @@ function drawmultiplerect(ctx, stackedBarGraphProps, i) {
                 stackedBarGraphProps.GapBetweenBarSets) / 2) + (i * stackedBarGraphProps.BarWidth), stackedBarGraphProps.Y + bottomy - (shift + hthis) + 5);
             ctx.arc(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + stackedBarGraphProps.GapBetweenBarSets - 10 + ((stackedBarGraphProps.BarWidth -
                 stackedBarGraphProps.GapBetweenBarSets) / 2) + (i * stackedBarGraphProps.BarWidth), stackedBarGraphProps.Y + bottomy - (shift + hthis) + 10, 5, (Math.PI / 180) * 270, 0, false);
-            ctx.lineTo(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + stackedBarGraphProps.GapBetweenBarSets - 5 + ((stackedBarGraphProps.BarWidth - 
+            ctx.lineTo(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + stackedBarGraphProps.GapBetweenBarSets - 5 + ((stackedBarGraphProps.BarWidth -
                 stackedBarGraphProps.GapBetweenBarSets) / 2) + (i * stackedBarGraphProps.BarWidth), stackedBarGraphProps.Y + bottomy - 5 - shift);
             ctx.lineTo(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + 5 + ((stackedBarGraphProps.BarWidth - stackedBarGraphProps.GapBetweenBarSets) / 2) +
                 (i * stackedBarGraphProps.BarWidth), stackedBarGraphProps.Y + bottomy - 5 - shift);
@@ -5971,7 +5972,7 @@ function createTabControl(canvasid, controlNameId, x, y, width, height, depth, t
     tabPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height,
         TabLabels: tablabels, TabLabelColor: tablabelcolor, TabLabelHeight: tablabelheight, TabLabelFontString: tablabelfontstring,
-        PanelWindowIDs: panels, SelectedTabID: selectedTabID, TabLabelGradientStartColor: tablabelgradientstartcolor, 
+        PanelWindowIDs: panels, SelectedTabID: selectedTabID, TabLabelGradientStartColor: tablabelgradientstartcolor,
         TabLabelGradientEndColor: tablabelgradientendcolor, TabLabelHitAreas: new Array(),
         GapBetweenTabs: gapbetweentabs, SelectedTabBorderColor: selectedtabbordercolor, SelectedTabBorderLineWidth: selectedtabborderlinewidth, Tag: tag
     });
@@ -6013,7 +6014,7 @@ function createTabControl(canvasid, controlNameId, x, y, width, height, depth, t
                     tabProps.TabLabelHitAreas.push({
                         XStart: tabProps.X + currWidthOffset, XEnd: tabProps.X + currWidthOffset + ((tabProps.TabLabelHeight + 8) * 2) +
                             currentTabWidth + 8, YStart: tabProps.Y, YEnd: tabProps.Y + tabProps.TabLabelHeight + 8, PanelWindowID: tabProps.PanelWindowIDs[i],
-                            TabID: i
+                        TabID: i
                     });
                 }
                 currWidthOffset += currentTabWidth;
@@ -6053,7 +6054,7 @@ function createTabControl(canvasid, controlNameId, x, y, width, height, depth, t
         tabProps.TabLabelHitAreas.push({
             XStart: tabProps.X + currWidthOffset, XEnd: tabProps.X + currWidthOffset + ((tabProps.TabLabelHeight + 8) * 2) +
                 currentTabWidth + 8, YStart: tabProps.Y, YEnd: tabProps.Y + tabProps.TabLabelHeight + 8, PanelWindowID: tabProps.PanelWindowIDs[tabProps.SelectedTabID],
-                TabID: tabProps.SelectedTabID
+            TabID: tabProps.SelectedTabID
         });
     }, canvasid);
     registerClickFunction(windowid, function (canvasid2, windowid2, e) {
@@ -6156,7 +6157,7 @@ function createImageMapControl(canvasid, controlNameId, x, y, width, height, dep
         for (var i = 0; i < imageMapProps.PinXYs.length; i++) {
             if (clickx > imageMapProps.X + (imageMapProps.PinXYs[i][0] * imageMapProps.Scale) - (imageMapProps.ImageTopLeftXOffset * imageMapProps.Scale) - imageMapProps.PinXYs[i][2] &&
                 clickx < imageMapProps.X + (imageMapProps.PinXYs[i][0] * imageMapProps.Scale) - (imageMapProps.ImageTopLeftXOffset * imageMapProps.Scale) + imageMapProps.PinXYs[i][2] &&
-                clicky > imageMapProps.Y + (imageMapProps.PinXYs[i][1]* imageMapProps.Scale) - (imageMapProps.ImageTopLeftYOffset * imageMapProps.Scale) - imageMapProps.PinXYs[i][2] &&
+                clicky > imageMapProps.Y + (imageMapProps.PinXYs[i][1] * imageMapProps.Scale) - (imageMapProps.ImageTopLeftYOffset * imageMapProps.Scale) - imageMapProps.PinXYs[i][2] &&
                 clicky < imageMapProps.Y + (imageMapProps.PinXYs[i][1] * imageMapProps.Scale) - (imageMapProps.ImageTopLeftYOffset * imageMapProps.Scale) + imageMapProps.PinXYs[i][2]) {
                 if (imageMapProps.PinClickFunction != null) {
                     imageMapProps.PinClickFunction(canvasid5, windowid5, i);
@@ -6629,7 +6630,7 @@ function textBoxTouchKeyPress(canvasid, windowid, keyboardChar) {
 
 function createTextBox(canvasid, controlNameId, x, y, width, height, depth, waterMarkText, waterMarkTextColor, waterMarkTextHeight, waterMarkTextFontString,
     textColor, textHeight, textFontString, maxChars, allowedCharsRegEx, isPassword, passwordChar, hasBorder, borderColor, borderLineWidth, hasShadow, shadowColor, shadowOffsetX, shadowOffsetY,
-    shadowBlurValue, hasRoundedEdges, edgeRadius, hasBgGradient, bgGradientStartColor, bgGradientEndColor, hasBgImage, bgImageUrl, hasAutoComplete, listPossibles, 
+    shadowBlurValue, hasRoundedEdges, edgeRadius, hasBgGradient, bgGradientStartColor, bgGradientEndColor, hasBgImage, bgImageUrl, hasAutoComplete, listPossibles,
     dropDownPossiblesListIfThereIsInputText, limitToListPossibles, listPossiblesTextColor, listPossiblesTextHeight, listPossiblesTextFontString, initialText, caretColor,
     textSelectionBgColor, hasFocusInitially, tag, customKeyboardWindowID) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'TextBox', controlNameId);
@@ -6876,7 +6877,7 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
     }, canvasid);
     registerMouseMoveFunction(windowid, function (canvasid5, windowid5, e) {
         var textBoxProps = getTextBoxProps(canvasid5, windowid5);
-        if (textBoxProps.MouseDown == 1 && (new Date()).getTime() - textBoxProps.MouseDownTime > 500 &&  textBoxProps.UserInputText && textBoxProps.UserInputText.length > 0) {
+        if (textBoxProps.MouseDown == 1 && (new Date()).getTime() - textBoxProps.MouseDownTime > 500 && textBoxProps.UserInputText && textBoxProps.UserInputText.length > 0) {
             var x = e.calcX;
             var ctx = getCtx(canvasid5);
             ctx.font = textBoxProps.TextFontString;
@@ -6961,7 +6962,7 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
         var x = e.calcX;
         var ctx = getCtx(canvasid2);
         ctx.font = textBoxProps.TextFontString;
-        if(x > textBoxProps.X && x < textBoxProps.X + 4){
+        if (x > textBoxProps.X && x < textBoxProps.X + 4) {
             textBoxProps.CaretPosIndex = -1;
         } else if (textBoxProps.UserInputText && x > textBoxProps.X + ctx.measureText(textBoxProps.UserInputText).width + 4) {
             textBoxProps.CaretPosIndex = textBoxProps.UserInputText.length - 1;
@@ -7474,7 +7475,7 @@ function createMultiLineLabel(canvasid, controlNameId, x, y, width, depth, hasMa
                     case 'NT':
                         var tmp = markupText.length > 0 ? markupText.length - 1 : 0;
                         markupText += xmlDoc.firstChild.childNodes[i].childNodes.length > 0 ? xmlDoc.firstChild.childNodes[i].childNodes[0].nodeValue : xmlDoc.firstChild.childNodes[i].nodeValue;
-                        markupTextExtents.push([tmp, markupText.length - 1, textColor, textFontString ]);
+                        markupTextExtents.push([tmp, markupText.length - 1, textColor, textFontString]);
                         break;
                     case 'N':
                         var colorstr, fontstr, textstr;
@@ -7867,7 +7868,7 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
             ctx.clip();
             if (wordProcessorProps.HasBgImage == 1 && wordProcessorProps.Image.complete == true) {
                 ctx.drawImage(wordProcessorProps.Image, wordProcessorProps.X, wordProcessorProps.Y);
-            } else if(wordProcessorProps.HasBgGradient == 1) {
+            } else if (wordProcessorProps.HasBgGradient == 1) {
                 ctx.fill();
             }
             if (wordProcessorProps.HasBorder == 1) {
@@ -7901,7 +7902,7 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                 } else {
                     var i;
                     for (i = vscrollbarProps.SelectedID; i < wordProcessorProps.LineBreakIndexes.length && (i - vscrollbarProps.SelectedID) * (wordProcessorProps.TextHeight +
-                        wordProcessorProps.LineSpacingInPixels) < wordProcessorProps.Height - (wordProcessorProps.Margin * 2); i++) {
+                        wordProcessorProps.LineSpacingInPixels) < wordProcessorProps.Height - (wordProcessorProps.Margin * 2) ; i++) {
                         ctx.fillText(removeTrailingSpacesAndLineBreaks(wordProcessorProps.UserInputText.substr((i > 0 ? wordProcessorProps.LineBreakIndexes[i - 1] : 0), wordProcessorProps.LineBreakIndexes[i] -
                             (i > 0 ? wordProcessorProps.LineBreakIndexes[i - 1] : 0))), wordProcessorProps.X + wordProcessorProps.Margin,
                             wordProcessorProps.Y + wordProcessorProps.Margin + wordProcessorProps.TextHeight +
@@ -8205,7 +8206,7 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
             if (caretLineNo == 0) {
                 caretLineNo = vscrollbarProps.SelectedID;
             }
-            for (var i = (caretLineNo == 0 ? 0 : wordProcessorProps.LineBreakIndexes[caretLineNo - 1]); i < (caretLineNo < wordProcessorProps.LineBreakIndexes.length ?
+            for (var i = (caretLineNo == 0 ? 0 : wordProcessorProps.LineBreakIndexes[caretLineNo - 1]) ; i < (caretLineNo < wordProcessorProps.LineBreakIndexes.length ?
                 wordProcessorProps.LineBreakIndexes[caretLineNo] : wordProcessorProps.UserInputText.length) ; i++) {
                 if (x > wordProcessorProps.X + wordProcessorProps.Margin + ctx.measureText(wordProcessorProps.UserInputText.substr((caretLineNo == 0 ? 0 :
                     wordProcessorProps.LineBreakIndexes[caretLineNo - 1]), i - (caretLineNo == 0 ? 0 : wordProcessorProps.LineBreakIndexes[caretLineNo - 1]))).width) {
@@ -8235,7 +8236,7 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
 }
 
 function removeTrailingSpacesAndLineBreaks(str) {
-    while(str.length > 0) {
+    while (str.length > 0) {
         if (str.substr(0, 1) == '\n' || str.substr(0, 1) == ' ') {
             str = (1 < str.length ? str.substr(1, str.length - 1) : '');
         } else {
@@ -8406,7 +8407,7 @@ function createVirtualKeyboard(canvasid, controlNameId, x, y, width, height, dep
         ctx.rect(virtualKeyboardProps.X, virtualKeyboardProps.Y, virtualKeyboardProps.Width, virtualKeyboardProps.Height);
         ctx.fill();
         ctx.strokeStyle = '#353a3b';
-        var extraWidth = (virtualKeyboardProps.Height / Math.tan(Math.PI/4));
+        var extraWidth = (virtualKeyboardProps.Height / Math.tan(Math.PI / 4));
         for (var i = 0; i < (virtualKeyboardProps.Width + extraWidth) / 10; i++) {
             ctx.beginPath();
             ctx.moveTo(virtualKeyboardProps.X - extraWidth + (i * 10), virtualKeyboardProps.Y);
@@ -8832,16 +8833,16 @@ function fillImageData(fillpoints, imgdata) {
             imgdata.data[(y * imgdata.width * 4) + (x * 4) + 1] = fillpoints[11];
             imgdata.data[(y * imgdata.width * 4) + (x * 4) + 2] = fillpoints[12];
             imgdata.data[(y * imgdata.width * 4) + (x * 4) + 3] = fillpoints[13];
-            if (x - 1 > fillpoints[2]) {
+            if (fillpoints.length == 17 && fillpoints[14] == 0 ? x - 1 > fillpoints[15] : x - 1 > fillpoints[2]) {
                 buff.push([x - 1, y]);
             }
-            if (x + 1 < fillpoints[4]) {
+            if (fillpoints.length == 17 && fillpoints[14] == 0 ? x + 1 < fillpoints[16] : x + 1 < fillpoints[4]) {
                 buff.push([x + 1, y]);
             }
-            if (y - 1 > fillpoints[3]) {
+            if (fillpoints.length == 17 && fillpoints[14] == 1 ? y - 1 > fillpoints[15] : y - 1 > fillpoints[3]) {
                 buff.push([x, y - 1]);
             }
-            if (y + 1 < fillpoints[5]) {
+            if (fillpoints.length == 17 && fillpoints[14] == 1 ? x - 1 > fillpoints[16] : y + 1 < fillpoints[5]) {
                 buff.push([x, y + 1]);
             }
         }
@@ -8865,7 +8866,7 @@ function fillSimpleXMLViewerChildNodes(node, childNodes, xmlDoc, hasicons, imgUR
             }
         }
         if (childNodes[i].childNodes.length > 0) {
-                fillSimpleXMLViewerChildNodes(nodenew, childNodes[i].childNodes, xmlDoc, hasicons, imgURLNode, imgURLValue, imgURLAttribute);
+            fillSimpleXMLViewerChildNodes(nodenew, childNodes[i].childNodes, xmlDoc, hasicons, imgURLNode, imgURLValue, imgURLAttribute);
         } else if (childNodes[i].nodeValue && childNodes[i].nodeValue.length > 0) {
             addChildNodes(nodenew.ChildNodes, nodenew, hasicons == 0 ? null : imgURLValue, 1, childNodes[i].nodeValue,
                 ['Value', childNodes[i]]);
@@ -8906,12 +8907,17 @@ function createSimpleXMLViewer(canvasid, controlNameId, x, y, width, height, dep
     return windowid;
 }
 
+function createVoteAndRatingControl(canvasid, controlNameId, x, y, width, height, depth, numstars, maxvalueofallstars, spacinginpixelsbetweenstars,
+    haspartialstars, editable, hasvaluelabel, labelxpos, labelypos, starsxposwhenlabel, starsyposwhenlabel, initialvalue, outlinethicknessofemptystar,
+    starcolor, starsorientation, fillorientation, iscustompattern, imgurl, fillpoint, imgwidth, imgheight) {
+}
+
 //AJAX Postback code Starts here
 
 function invokeServerSideFunction(ajaxURL, functionName, canvasid, windowid, callBackFunc, params) {
     var data = "[FunctionName]" + functionName + "[/FunctionName][CanvasID]" + canvasid + "[/CanvasID][WindowID]" + windowid.toString() + "[/WindowID][Vars]" + getEncodedVariables() +
         "[/Vars][SessionID]" + sessionID + "[/SessionID][Params]" + encodeParams(params) + "[/Params]";
-	var xmlhttp;
+    var xmlhttp;
     if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
         xmlhttp = new XMLHttpRequest();
     } else {// code for IE6, IE5
@@ -8932,9 +8938,9 @@ function invokeServerSideFunction(ajaxURL, functionName, canvasid, windowid, cal
     if (navigator.userAgent.toLowerCase().indexOf('msie') == -1) {
         xmlhttp.overrideMimeType("application/octet-stream");
     }
-//    xmlhttp.setRequestHeader('Connection', 'close');
+    //    xmlhttp.setRequestHeader('Connection', 'close');
     xmlhttp.setRequestHeader("Content-Type", "text/xml");
-//    xmlhttp.setRequestHeader("Content-Length", data.length);
+    //    xmlhttp.setRequestHeader("Content-Length", data.length);
     xmlhttp.setRequestHeader("Cache-Control", "max-age=0");
     xmlhttp.send(data);
 }
@@ -9134,7 +9140,7 @@ function getEncodedVariables() {
     }
     strVars += '[/simpleXMLViewerPropsArray]';
     return strVars;
-} 
+}
 
 var savedImagesOnPostback = new Array();
 var currentSavedImagesOnPostbackWindowID;
@@ -9193,13 +9199,13 @@ function stringEncodeObject(obj) {
                             str += '[i]' + encodeAllBrackets(obj[name][i].toString()) + '[/i]';
                         } else if (obj[name][i] instanceof Array) {
                             str += encodeArray(obj[name][i], (strIndexes && strIndexes.length > 0 ? strIndexes + ',' + i.toString() : i.toString()));
-                        } else if(typeof obj[name] === 'object') {
+                        } else if (typeof obj[name] === 'object') {
                             str += '[i]' + stringEncodeValueObject(obj[name][i]) + '[/i]';
                         }
                     }
                 }
                 str += '[/' + name + ']';
-            } else if(typeof obj[name] === 'object') {
+            } else if (typeof obj[name] === 'object') {
                 str += '[' + name + ']' + stringEncodeValueObject(obj[name]) + '[/' + name + ']';
             }
         }
@@ -9234,7 +9240,7 @@ function encodeArray(arr, strIndexes) {
                 str += '[i]' + encodeAllBrackets(arr[i].toString()) + '[/i]';
             } else if (arr[i] instanceof Array) {
                 str += encodeArray(arr[i], (strIndexes && strIndexes.length > 0 ? strIndexes + ',' + i.toString() : i.toString()));
-            } else if(typeof arr[i] === 'object') {
+            } else if (typeof arr[i] === 'object') {
                 str += '[i]' + stringEncodeValueObject(arr[i]) + '[/i]';
             }
         }
@@ -9251,7 +9257,7 @@ function stringEncodeValueObject(obj) {
                 str += '[' + name + ']' + encodeArray(obj[name]) + '[/' + name + ']';
             } else if (typeof obj[name] === 'string' || typeof obj[name] === 'number') {
                 str += '[' + name + ']' + encodeAllBrackets(obj[name].toString()) + '[/' + name + ']';
-            } else if(typeof obj[name] === 'object' && !obj[name] instanceof Array){
+            } else if (typeof obj[name] === 'object' && !obj[name] instanceof Array) {
                 str += '[' + name + ']' + stringEncodeValueObject(obj[name]) + '[/' + name + ']';
             }
         }
@@ -9364,8 +9370,10 @@ function UnWrapVars(data) {
                         var image = new Image();
                         image.src = imageSliderPropsArray[i].imageURLs[j];
                         imageSliderPropsArray[i].Images[j] = image;
-                        image.onload = function () { invalidateRect(imageSliderPropsArray[i].CanvasID, null, imageSliderPropsArray[i].X, imageSliderPropsArray[i].Y,
-                            imageSliderPropsArray[i].Width, imageSliderPropsArray[i].Height); };
+                        image.onload = function () {
+                            invalidateRect(imageSliderPropsArray[i].CanvasID, null, imageSliderPropsArray[i].X, imageSliderPropsArray[i].Y,
+                                imageSliderPropsArray[i].Width, imageSliderPropsArray[i].Height);
+                        };
                     }
                 }
             }
@@ -9386,8 +9394,10 @@ function UnWrapVars(data) {
                         var image = new Image();
                         image.src = imageFaderPropsArray[i].imageURLs[j];
                         imageFaderPropsArray[i].Images[j] = image;
-                        image.onload = function () { invalidateRect(imageFaderPropsArray[i].CanvasID, null, imageFaderPropsArray[i].X, imageFaderPropsArray[i].Y, 
-                            imageFaderPropsArray[i].Width, imageFaderPropsArray[i].Height); };
+                        image.onload = function () {
+                            invalidateRect(imageFaderPropsArray[i].CanvasID, null, imageFaderPropsArray[i].X, imageFaderPropsArray[i].Y,
+                                imageFaderPropsArray[i].Width, imageFaderPropsArray[i].Height);
+                        };
                     }
                 }
             }
