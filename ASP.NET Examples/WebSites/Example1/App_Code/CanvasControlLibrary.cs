@@ -325,14 +325,12 @@ public class CanvasControlLibrary
         public string HasIcons { get; set; }
         public string IconWidth { get; set; }
         public string IconHeight { get; set; }
-        public ArrayList IconImages { get; set; }
 
         public CCLTreeViewProps()
         {
             Nodes = new ArrayList();
             ClickButtonExtents = new ArrayList();
             ClickLabelExtents = new ArrayList();
-            IconImages = new ArrayList();
         }
     }
 
@@ -1196,6 +1194,29 @@ public class CanvasControlLibrary
         }
     }
 
+    public List<CCLSimpleXMLViewerProps> SimpleXMLViewerProps = new List<CCLSimpleXMLViewerProps>();
+
+    public class CCLSimpleXMLViewerProps
+    {
+        public string CanvasID { get; set; }
+        public string WindowID { get; set; }
+        public string X { get; set; }
+        public string Y { get; set; }
+        public string Width { get; set; }
+        public string Height { get; set; }
+        public string XML { get; set; }
+        public string TextColor { get; set; }
+        public string TextFontString { get; set; }
+        public string TextHeight { get; set; }
+        public object Tag { get; set; }
+        public string HasIcons { get; set; }
+        public string IconWidth { get; set; }
+        public string IconHeight { get; set; }
+        public string ImgURLNode { get; set; }
+        public string ImgURLValue { get; set; }
+        public string ImgURLAttribute { get; set; }
+    }
+
     public class JavaScriptFunctionsToSendAndAttachOnClientSide
     {
         public string CanvasID;
@@ -1584,6 +1605,14 @@ public class CanvasControlLibrary
                         FillClassObject(child2, sm);
                     }
                     break;
+                case "simpleXMLViewerPropsArray":
+                    foreach (XmlNode child2 in child1.ChildNodes)
+                    {
+                        CCLSimpleXMLViewerProps sm = new CCLSimpleXMLViewerProps();
+                        SimpleXMLViewerProps.Add(sm);
+                        FillClassObject(child2, sm);
+                    }
+                    break;
             }
         }
     }
@@ -1965,7 +1994,12 @@ public class CanvasControlLibrary
         {
             strVars += "[i]" + encodeObject(smb) + "[/i]";
         }
-        strVars += "[/boundaryFillableMapPropsArray]";
+        strVars += "[/boundaryFillableMapPropsArray][simpleXMLViewerPropsArray]";
+        foreach (CCLSimpleXMLViewerProps smb in SimpleXMLViewerProps)
+        {
+            strVars += "[i]" + encodeObject(smb) + "[/i]";
+        }
+        strVars += "[/simpleXMLViewerPropsArray]";
         strVars += "[/Vars][Params][Array]" + encodeParameters(parameters) + "[/Array][/Params][/root]";
         byte[] wdata = Encoding.ASCII.GetBytes(strVars);
         OutputStream.Write(wdata, 0, wdata.Length);

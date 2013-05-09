@@ -2748,6 +2748,7 @@ function createImage(canvasid, controlNameId, x, y, width, height, depth, imgurl
 //TreeView code starts here
 
 var treeViewPropsArray = new Array();
+var iconImages = new Array();
 
 function getTreeViewProps(canvasid, windowid) {
     for (var i = 0; i < treeViewPropsArray.length; i++) {
@@ -2861,7 +2862,7 @@ function createTreeView(canvasid, controlNameId, x, y, width, height, depth, nod
     textcolor, textfontstring, textheight, clickNodeFunction, tag, hasicons, iconwidth, iconheight, selectednode) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'TreeView', controlNameId);
     var shownitemscount = findNumberOfExpandedNodesInAll(nodes);
-    var iconimages = (hasicons == 1 ? fillIconImages(nodes, new Array()) : new Array());
+    iconImages = (hasicons == 1 ? fillIconImages(nodes, new Array()) : new Array());
     var vscrollbarwindowid = createScrollBar(canvasid, controlNameId + 'VS', x + width, y, height, depth, shownitemscount, 1, windowid, null, null, null,
         treeviewVSCustomIncrementFunction, selectednode != null ? selectednode : nodes != null && nodes.length > 0 ? nodes[0] : null,
         treeviewVSCustomMouseMoveFunction);
@@ -2873,7 +2874,7 @@ function createTreeView(canvasid, controlNameId, x, y, width, height, depth, nod
         Nodes: nodes, VScrollBarWindowID: vscrollbarwindowid, HScrollBarWindowID: hscrollbarwindowid, 
         ClickButtonExtents: clickButtonExtents, ClickLabelExtents: clickLabelExtents, ClickNodeFunction: clickNodeFunction,
         SelectedNode: selectednode != null ? selectednode : nodes != null && nodes.length > 0 ? nodes[0] : null, Tag: tag, HasIcons: hasicons, IconWidth: iconwidth,
-        IconHeight: iconheight, IconImages: iconimages, TextColor: textcolor, TextFontString: textfontstring, TextHeight: textheight
+        IconHeight: iconheight, TextColor: textcolor, TextFontString: textfontstring, TextHeight: textheight
     });
     registerWindowDrawFunction(windowid, drawTreeView, canvasid);
     registerClickFunction(windowid, clickTreeView, canvasid);
@@ -2979,7 +2980,7 @@ function drawTreeView(canvasid, windowid) {
             var level = findNodeLevel(nodearray[i]);
             drawTreeViewNode(ctx, nodearray[i], 4 + treeViewProps.X, 4 + treeViewProps.Y + heightoffset,
                 treeViewProps.TextColor, treeViewProps.TextFontString, treeViewProps.TextHeight, level,
-                treeViewProps.IconWidth, treeViewProps.IconHeight, treeViewProps.IconImages, treeViewProps);
+                treeViewProps.IconWidth, treeViewProps.IconHeight, treeViewProps);
             heightoffset += (treeViewProps.TextHeight > treeViewProps.IconHeight ? (treeViewProps.TextHeight > 9 ? treeViewProps.TextHeight : 9) :
                 (treeViewProps.IconHeight > 9 ? treeViewProps.IconHeight : 9)) + 8;
         }
@@ -3033,7 +3034,7 @@ function checkHowManyChildNodesAreExpandedInAll(nodes) {
     return count;
 }
 
-function drawTreeViewNode(ctx, node, x, y, textcolor, textfontstring, textHeight, level, iconWidth, iconHeight, iconImages, treeviewProps) {
+function drawTreeViewNode(ctx, node, x, y, textcolor, textfontstring, textHeight, level, iconWidth, iconHeight, treeviewProps) {
     x += level * 8 + (level == 0 ? 2 : 10);
     if (node.ChildNodes.length > 0) {
         ctx.strokeStyle = '#3c7fb1';
@@ -8848,6 +8849,63 @@ function fillImageData(fillpoints, imgdata) {
     return imgdata;
 }
 
+//XML Viewer Control
+var simpleXMLViewerPropsArray = new Array();
+
+function fillSimpleXMLViewerChildNodes(node, childNodes, xmlDoc, hasicons, imgURLNode, imgURLValue, imgURLAttribute) {
+    for (var i = 0; i < childNodes.length; i++) {
+        var nodenew = addChildNodes(node.ChildNodes, node, hasicons == 0 ? null : imgURLNode, 1, childNodes[i].nodeName,
+            ['Node', childNodes[i]]);
+        if (childNodes[i].attributes && childNodes[i].attributes.length > 0) {
+            for (var x = 0; x < childNodes[i].attributes.length; x++) {
+                var attrnode = addChildNodes(nodenew.ChildNodes, nodenew, imgURLAttribute, 1, childNodes[i].attributes[x].name,
+                    ['Attribute', childNodes[i].attributes[x]]);
+                addChildNodes(attrnode.ChildNodes, attrnode, imgURLValue, 1, childNodes[i].attributes[x].value,
+                    ['AttributeValue', childNodes[i].attributes[x]]);
+            }
+        }
+        if (childNodes[i].childNodes.length > 0) {
+                fillSimpleXMLViewerChildNodes(nodenew, childNodes[i].childNodes, xmlDoc, hasicons, imgURLNode, imgURLValue, imgURLAttribute);
+        } else if (childNodes[i].nodeValue && childNodes[i].nodeValue.length > 0) {
+            addChildNodes(nodenew.ChildNodes, nodenew, hasicons == 0 ? null : imgURLValue, 1, childNodes[i].nodeValue,
+                ['Value', childNodes[i]]);
+        }
+    }
+}
+
+function createSimpleXMLViewer(canvasid, controlNameId, x, y, width, height, depth, xml, textcolor, textfontstring, textheight,
+    clickNodeFunction, tag, hasicons, iconwidth, iconheight, imgURLNode, imgURLValue, imgURLAttribute) {
+    var parser = new DOMParser();
+    xmlDoc = parser.parseFromString(xml, "text/xml");
+    var nodes = new Array();
+    for (var i = 0; i < xmlDoc.firstChild.childNodes[0].childNodes.length; i++) {
+        var node = addChildNodes(nodes, null, hasicons == 0 ? null : imgURLNode, 1, xmlDoc.firstChild.childNodes[0].childNodes[i].nodeName,
+            ['Node', xmlDoc.firstChild.childNodes[0].childNodes[i]]);
+        if (xmlDoc.firstChild.childNodes[0].childNodes[i].attributes.length > 0) {
+            for (var x = 0; x < xmlDoc.firstChild.childNodes[0].childNodes[i].attributes.length; x++) {
+                var attrnode = addChildNodes(node.ChildNodes, node, imgURLAttribute, 1, xmlDoc.firstChild.childNodes[0].childNodes[i].attributes[x].name,
+                    ['Attribute', xmlDoc.firstChild.childNodes[0].childNodes[i].attributes[x]]);
+                addChildNodes(attrnode.ChildNodes, attrnode, imgURLValue, 1, xmlDoc.firstChild.childNodes[0].childNodes[i].attributes[x].value,
+                    ['AttributeValue', xmlDoc.firstChild.childNodes[0].childNodes[i].attributes[x]]);
+            }
+        }
+        if (xmlDoc.firstChild.childNodes[0].childNodes[i].childNodes.length > 0) {
+            fillSimpleXMLViewerChildNodes(node, xmlDoc.firstChild.childNodes[0].childNodes[i].childNodes, xmlDoc, hasicons, imgURLNode, imgURLValue, imgURLAttribute);
+        } else if (xmlDoc.firstChild.childNodes[0].childNodes[i].nodeValue && xmlDoc.firstChild.childNodes[0].childNodes[i].nodeValue.length > 0) {
+            addChildNodes(node.ChildNodes, null, hasicons == 0 ? null : imgURLValue, 1, xmlDoc.firstChild.childNodes[0].childNodes[i].nodeValue,
+                ['Value', xmlDoc.firstChild.childNodes[0].childNodes[i]]);
+        }
+    }
+    var windowid = createTreeView(canvasid, controlNameId, x, y, width, height, depth, nodes, textcolor, textfontstring, textheight, clickNodeFunction, tag,
+        hasicons, iconwidth, iconheight, null);
+    simpleXMLViewerPropsArray.push({
+        CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, XML: xml, TextColor: textcolor, TextFontString: textfontstring,
+        TextHeight: textheight, ClickNodeFunction: clickNodeFunction, Tag: tag, HasIcons: hasicons, IconWidth: iconwidth, IconHeight: iconheight,
+        ImgURLNode: imgURLNode, ImgURLValue: imgURLValue, ImgURLAttribute: imgURLAttribute
+    });
+    return windowid;
+}
+
 //AJAX Postback code Starts here
 
 function invokeServerSideFunction(ajaxURL, functionName, canvasid, windowid, callBackFunc, params) {
@@ -8921,11 +8979,6 @@ function getEncodedVariables() {
     }
     for (var i = 0; i < wordProcessorPropsArray.length; i++) {
         wordProcessorBackupImageUrls.push({ CanvasID: wordProcessorPropsArray[i].CanvasID, WindowID: wordProcessorPropsArray[i].WindowID, ImageUrls: wordProcessorPropsArray[i].BgImageUrl });
-    }
-    for (var i = 0; i < treeViewPropsArray.length; i++) {
-        for (var z = 0; z < treeViewPropsArray[i].IconImages.length; z++) {
-            treeviewBackupImageUrls.push({ CanvasID: treeViewPropsArray[i].CanvasID, WindowID: treeViewPropsArray[i].WindowID, ImageUrl: treeViewPropsArray[i].IconImages[z][0] });
-        }
     }
     var strVars = '[Windows]';
     for (var i = 0; i < windows.length; i++) {
@@ -9075,9 +9128,13 @@ function getEncodedVariables() {
     for (var i = 0; i < boundaryFillableMapPropsArray.length; i++) {
         strVars += '[i]' + stringEncodeObject(boundaryFillableMapPropsArray[i]) + '[/i]';
     }
-    strVars += '[/boundaryFillableMapPropsArray]';
+    strVars += '[/boundaryFillableMapPropsArray][simpleXMLViewerPropsArray]';
+    for (var i = 0; i < simpleXMLViewerPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(simpleXMLViewerPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/simpleXMLViewerPropsArray]';
     return strVars;
-}
+} 
 
 var savedImagesOnPostback = new Array();
 var currentSavedImagesOnPostbackWindowID;
@@ -9255,15 +9312,6 @@ function UnWrapVars(data) {
         for (var x = 0; x < wordProcessorPropsArray.length; x++) {
             if (wordProcessorPropsArray[x].CanvasID == savedImagesOnPostback[i].CanvasID && wordProcessorPropsArray[x].WindowID == savedImagesOnPostback[i].WindowID) {
                 wordProcessorPropsArray[x].Image = savedImagesOnPostback[i].Image;
-            }
-        }
-        for (var x = 0; x < treeViewPropsArray.length; x++) {
-            if (treeViewPropsArray[x].CanvasID == savedImagesOnPostback[i].CanvasID && treeViewPropsArray[x].WindowID == savedImagesOnPostback[i].WindowID) {
-                for (var z = 0; z < treeViewPropsArray[x].IconImages.length; z++) {
-                    if (treeViewPropsArray[x].IconImages[z][0] == savedImagesOnPostback[i].URL) {
-                        treeViewPropsArray[x].IconImages[z].push(savedImagesOnPostback[i].Image);
-                    }
-                }
             }
         }
     }
@@ -9467,6 +9515,8 @@ function UnWrapVars(data) {
         if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
         var o = getSplitterProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
         if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getSimpleXMLViewerProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
     }
     savedImagesOnPostback = new Array();
     for (var i = 0; i < imageControlPropsArray.length; i++) {
@@ -9476,8 +9526,10 @@ function UnWrapVars(data) {
                 var image = new Image();
                 image.src = imageControlPropsArray[i].ImageURL;
                 imageControlPropsArray[i].Image = image;
-                image.onload = function () { invalidateRect(imageControlPropsArray[i].CanvasID, null, imageControlPropsArray[i].X, imageControlPropsArray[i].Y,
-                    imageControlPropsArray[i].Width, imageControlPropsArray[i].Height); };
+                var icpa = imageControlPropsArray[i];
+                image.onload = function () {
+                    invalidateRect(icpa.CanvasID, null, icpa.X, icpa.Y, icpa.Width, icpa.Height);
+                };
             }
         }
     }
@@ -9488,8 +9540,8 @@ function UnWrapVars(data) {
                 var image = new Image();
                 image.src = textBoxPropsArray[i].BgImageUrl;
                 textBoxPropsArray[i].Image = image;
-                image.onload = function () { invalidateRect(textBoxPropsArray[i].CanvasID, null, textBoxPropsArray[i].X, textBoxPropsArray[i].Y, textBoxPropsArray[i].Width,
-                    textBoxPropsArray[i].Height); };
+                var xyz = textBoxPropsArray[i];
+                image.onload = function () { invalidateRect(xyz.CanvasID, null, xyz.X, xyz.Y, xyz.Width, xyz.Height); };
             }
         }
     }
@@ -9500,22 +9552,10 @@ function UnWrapVars(data) {
                 var image = new Image();
                 image.src = wordProcessorPropsArray[i].BgImageUrl;
                 wordProcessorPropsArray[i].Image = image;
-                image.onload = function () { invalidateRect(wordProcessorPropsArray[i].CanvasID, null, wordProcessorPropsArray[i].X, wordProcessorPropsArray[i].Y,
-                    wordProcessorPropsArray[i].Width, wordProcessorPropsArray[i].Height); };
-            }
-        }
-    }
-    for (var i = 0; i < treeViewPropsArray.length; i++) {
-        for (var j = 0; j < treeviewBackupImageUrls.length; j++) {
-            if (treeViewPropsArray[i].CanvasID == treeviewBackupImageUrls[j].CanvasID && treeViewPropsArray[i].WindowID == treeviewBackupImageUrls[j].WindowID) {
-                for (var z = 0; z < treeViewPropsArray[i].IconImages.length; z++) {
-                    if (treeViewPropsArray[i].IconImages[z][0] == treeviewBackupImageUrls[j].ImageUrl) {
-                        var image = new Image();
-                        image.src = treeviewBackupImageUrls[j].ImageUrl;
-                        treeViewPropsArray[i].IconImages[z].push(image);
-                        image.onload = function () { };
-                    }
-                }
+                var wppa = wordProcessorPropsArray[i];
+                image.onload = function () {
+                    invalidateRect(wppa.CanvasID, null, wppa.X, wppa.Y, wppa.Width, wppa.Height);
+                };
             }
         }
     }

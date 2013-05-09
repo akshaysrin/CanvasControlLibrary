@@ -65,9 +65,9 @@
             createCheckbox(elemId, 'chk1', 150, 320, highestDepth, 0);
             createRadioButtonGroup(elemId, 'rg1', 10, 350, 0, highestDepth, 'test1', ['Dog', 'Cat', 'Horse', 'Cow', 'Giraffe'], 0, '#000000', '10pt Ariel', 10, 10);
             createImage(elemId, 'i1', 10, 400, 64, 64, highestDepth, 'test.png', function (canvasid, windowid) { alert('You clicked the image'); });
-            //createTreeView(elemId, 'tv1', 10, 500, 200, 200, highestDepth, [[1, 0, 'One', 1, 'Madras.png'], [2, 1, 'Two', 1, 'Madras.png'], [3, 2, 'Three', 1, 'Madras.png'], [4, 1, 'Four', 1, 'Madras.png'], [5, 0, 'Five', 1, 'Madras.png']
-            //    , [6, 5, 'Six', 1, 'Madras.png'], [7, 6, 'Seven', 1, 'Madras.png'], [8, 6, 'Eight', 1, 'Madras.png'], [9, 8, 'Nine', 1, 'Madras.png']], 0, 1, 3, 2, '#00FF00', '10pt Ariel', 10,
-            //    function (canvasid, windowid, selectedNodeIndex) { alert(selectedNodeIndex); }, null, 1, 16, 16);
+            createSimpleXMLViewer(elemId, 'sxmlvr1', 10, 500, 200, 250, highestDepth,
+                '<root><Databases><Employees><Tables><Employee><Column ColumnName="id">1</Column><Column ColumnName="FirstName">Akshay</Column><Column ColumnName="MiddleName"></Column><Column ColumnName="LastName">Srinivasan</Column><Column ColumnName="EmpId">42312345672892</Column></Employee></Tables></Employees></Databases></root>',
+                '#000000', '12pt Ariel', 12, null, null, 1, 16, 16, 'Node.png', 'Value.png', 'Attribute.png');
             createTextBox(elemId, 'textbox1', 400, 10, 300, 60, highestDepth, 'Type your name here', '#F0F0F0', 18, '18pt Ariel', '#051329', 18, '18pt Ariel', 50, '[a-zA-Z ]', 0, null, 1, '#2e3642',
                 1, 0, '#000000', 3, 3, 20, 1, 10, 1, '#9bacc6', '#d6e4f9', 0, 'Title.png', 1, ['India', 'America', 'China', 'Russia', 'Brazil'], 0, 0, '#D0D000', 12, '12pt Ariel', '', '#0d2952', 'rgba(0, 0, 240, 0.2)', 1);
             createVirtualKeyboard(elemId, 'vkb1', 500, 600, 360, 180, highestDepth, null, function (c, w, l) { alert(l); }, 5, 5, 1, 12, '12pt Ariel');
