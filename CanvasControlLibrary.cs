@@ -1217,6 +1217,56 @@ public class CanvasControlLibrary
         public string ImgURLAttribute { get; set; }
     }
 
+    public List<CCLVotingProps> VotingProps = new List<CCLVotingProps>();
+
+    public class CCLVotingProps
+    {
+        public string CanvasID { get; set; }
+        public string WindowID { get; set; }
+        public string X { get; set; }
+        public string Y { get; set; }
+        public string Width { get; set; }
+        public string Height { get; set; }
+        public string NumStars { get; set; }
+        public string MaxValueOfAllStars { get; set; }
+        public string StarColorRed { get; set; }
+        public string StarColorGreen { get; set; }
+        public string StarColorBlue { get; set; }
+        public string StarColorAlpha { get; set; }
+        public string SpacingInPixelsBetweenStars { get; set; }
+        public string HasPartialStars { get; set; }
+        public string Editable { get; set; }
+        public string HasValueLabel { get; set; }
+        public string LabelXPos { get; set; }
+        public string LabelYPos { get; set; }
+        public string StarsStartingPosOffsetWhenLabel { get; set; }
+        public string StarsYPosWhenLabel { get; set; }
+        public string InitialValue { get; set; }
+        public string OutlineThicknessOfEmptyStar { get; set; }
+        public string StarsOrientation { get; set; }
+        public string FillOrientation { get; set; }
+        public string IsCustomPattern { get; set; }
+        public string OutLineImgURL { get; set; }
+        public ArrayList CustomFillPoint { get; set; }
+        public string ImgWidth { get; set; }
+        public string ImgHeight { get; set; }
+        public string StarSizeInPixels { get; set; }
+        public string HasMouseOverLabel { get; set; }
+        public string StarOutlineBgColorRed { get; set; }
+        public string StarOutlineBgColorGreen { get; set; }
+        public string StarOutlineBgColorBlue { get; set; }
+        public string StarOutlineBgColorAlpha { get; set; }
+        public string LabelTextColor { get; set; }
+        public string LabelTextFontString { get; set; }
+        public string LabelTextHeight { get; set; }
+        public string RoundDisplayedValueToNumOfDecimals { get; set; }
+
+        public CCLVotingProps()
+        {
+            CustomFillPoint = new ArrayList();
+        }
+    }
+
     public class JavaScriptFunctionsToSendAndAttachOnClientSide
     {
         public string CanvasID;
@@ -1613,6 +1663,14 @@ public class CanvasControlLibrary
                         FillClassObject(child2, sm);
                     }
                     break;
+                case "votingPropsArray":
+                    foreach (XmlNode child2 in child1.ChildNodes)
+                    {
+                        CCLVotingProps sm = new CCLVotingProps();
+                        VotingProps.Add(sm);
+                        FillClassObject(child2, sm);
+                    }
+                    break;
             }
         }
     }
@@ -1999,7 +2057,12 @@ public class CanvasControlLibrary
         {
             strVars += "[i]" + encodeObject(smb) + "[/i]";
         }
-        strVars += "[/simpleXMLViewerPropsArray]";
+        strVars += "[/simpleXMLViewerPropsArray][votingPropsArray]";
+        foreach (CCLVotingProps smb in VotingProps)
+        {
+            strVars += "[i]" + encodeObject(smb) + "[/i]";
+        }
+        strVars += "[/votingPropsArray]";
         strVars += "[/Vars][Params][Array]" + encodeParameters(parameters) + "[/Array][/Params][/root]";
         byte[] wdata = Encoding.ASCII.GetBytes(strVars);
         OutputStream.Write(wdata, 0, wdata.Length);
@@ -2371,6 +2434,15 @@ public class CanvasControlLibrary
                         break;
                     case "BoundaryFillableMap":
                         foreach (CCLBoundaryFillableMapProps o in BoundaryFillableMapProps)
+                        {
+                            if (o.CanvasID == w.CanvasID && o.WindowID == w.WindowCount)
+                            {
+                                return (object)o;
+                            }
+                        }
+                        break;
+                    case "Voting":
+                        foreach (CCLVotingProps o in VotingProps)
                         {
                             if (o.CanvasID == w.CanvasID && o.WindowID == w.WindowCount)
                             {

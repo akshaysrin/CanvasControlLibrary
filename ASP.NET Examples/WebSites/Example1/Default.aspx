@@ -82,6 +82,11 @@
             //59,172,53
             createVotingControl(elemId, 'vc1', 450, 150, 300, 30, highestDepth, 5, 10, 59, 172, 53, 255, 0, 5, 1, 0, 1, 180, 21, '#000000', '12pt Ariel', 12, 0,
                 0, 6.7, 1, 0, 0, 1, 'duckoutline.png', [15, 13, 0, 0, 30, 26, 255, 255, 255, 255, 59, 172, 53, 255], 30, 26, 0, 255, 255, 255, 255);
+            createVotingControl(elemId, 'vc2', 450, 200, 300, 30, highestDepth, 5, 5, 213, 210, 0, 255, 30, 5, 1, 1, 1, 180, 21, '#000000', '12pt Ariel', 12, 0, 0,
+                3.5, 1, 0, 0, 0, null, null, 30, 30, 0, 0, 0, 0, 0, function (canvasid, windowid, votingProps, clickx, clicky, value) {
+                    votingProps.InitialValue = value;
+                    invalidateRect(canvasid, null, votingProps.X, votingProps.Y, votingProps.Width, votingProps.Height);
+                });
             invalidateRect(elemId, null, 0, 0, 1500, 1500);
             alert(navigator.userAgent);
         </script>

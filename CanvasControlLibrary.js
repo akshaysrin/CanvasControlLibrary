@@ -8931,7 +8931,8 @@ function createVotingControl(canvasid, controlNameId, x, y, width, height, depth
     starcoloralpha, starsizeinpixels, spacinginpixelsbetweenstars, haspartialstars, editable, hasvaluelabel, labelxpos, labelypos,
     labeltextcolor, labeltextfontstring, labeltextheight, starsstartingposoffsetwhenlabel, starsyposwhenlabel, initialvalue, 
     outlinethicknessofemptystar, starsorientation, fillorientation, iscustompattern, outlineimgurl, customfillpoint,
-    imgwidth, imgheight, hasmouseoverlabel, staroutlinebgcolorred, staroutlinebgcolorgreen, staroutlinebgcolorblue, staroutlinebgcoloralpha) {
+    imgwidth, imgheight, hasmouseoverlabel, staroutlinebgcolorred, staroutlinebgcolorgreen, staroutlinebgcolorblue, staroutlinebgcoloralpha,
+    customclickfunction, rounddisplayedvaluetonumofdecimals) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'VotingControl', controlNameId);
     if (iscustompattern == 1) {
         votingOutlineImage = new Image();
@@ -8950,7 +8951,7 @@ function createVotingControl(canvasid, controlNameId, x, y, width, height, depth
         CustomFillPoint: customfillpoint, ImgWidth: imgwidth, ImgHeight: imgheight, StarSizeInPixels: starsizeinpixels, HasMouseOverLabel: hasmouseoverlabel,
         StarOutlineBgColorRed: staroutlinebgcolorred, StarOutlineBgColorGreen: staroutlinebgcolorgreen, StarOutlineBgColorBlue: staroutlinebgcolorblue, 
         StarOutlineBgColorAlpha: staroutlinebgcoloralpha, LabelTextColor: labeltextcolor, LabelTextFontString: labeltextfontstring, 
-        LabelTextHeight: labeltextheight
+        LabelTextHeight: labeltextheight, CustomClickFunction: customclickfunction, RoundDisplayedValueToNumOfDecimals: rounddisplayedvaluetonumofdecimals
     });
     registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
         var votingProps = getVotingProps(canvasid1, windowid1);
@@ -8966,12 +8967,12 @@ function createVotingControl(canvasid, controlNameId, x, y, width, height, depth
                 Math.round(votingProps.InitialValue / (votingProps.MaxValueOfAllStars / votingProps.NumStars));
             if (numfullstars > 0) {
                 imgdata = fillImageData(votingProps.CustomFillPoint, imgdata);
-            }
-            for (var i = 0; i < numfullstars; i++) {
-                ctxdest.putImageData(imgdata, votingProps.X + (votingProps.StarsOrientation == 0 ? (votingProps.HasValueLabel == 1 ?
-                    votingProps.StarsStartingPosOffsetWhenLabel : 0) + (i * (votingProps.ImgWidth + votingProps.SpacingInPixelsBetweenStars)) : 0),
-                    votingProps.Y + (votingProps.StarsOrientation == 1 ? (votingProps.HasValueLabel == 1 ? votingProps.StarsStartingPosOffsetWhenLabel : 0) +
-                    (i * (votingProps.ImgHeight + votingProps.SpacingInPixelsBetweenStars)) : 0));
+                for (var i = 0; i < numfullstars; i++) {
+                    ctxdest.putImageData(imgdata, votingProps.X + (votingProps.StarsOrientation == 0 ? (votingProps.HasValueLabel == 1 ?
+                        votingProps.StarsStartingPosOffsetWhenLabel : 0) + (i * (votingProps.ImgWidth + votingProps.SpacingInPixelsBetweenStars)) : 0),
+                        votingProps.Y + (votingProps.StarsOrientation == 1 ? (votingProps.HasValueLabel == 1 ? votingProps.StarsStartingPosOffsetWhenLabel : 0) +
+                        (i * (votingProps.ImgHeight + votingProps.SpacingInPixelsBetweenStars)) : 0));
+                }
             }
             var didapartialstar = 0;
             if (votingProps.HasPartialStars == 1) {
@@ -9012,13 +9013,120 @@ function createVotingControl(canvasid, controlNameId, x, y, width, height, depth
             }
             if (votingProps.HasValueLabel == 1) {
                 ctxdest.fillStyle = votingProps.LabelTextColor;
-                ctxdest.fillText(votingProps.InitialValue.toString() + ' out of ' + votingProps.MaxValueOfAllStars.toString(), votingProps.X + votingProps.LabelXPos,
+                ctxdest.fillText(votingProps.InitialValue.toFixed(votingProps.RoundDisplayedValueToNumOfDecimals ? votingProps.RoundDisplayedValueToNumOfDecimals :
+                    2).toString() + ' out of ' + votingProps.MaxValueOfAllStars.toString(), votingProps.X + votingProps.LabelXPos,
                     votingProps.Y + votingProps.LabelYPos);
             }
         } else {
-
+            var ctxdest = getCtx(canvasid1);
+            var canvas = document.createElement('canvas');
+            canvas.width = votingProps.StarSizeInPixels;
+            canvas.height = votingProps.StarSizeInPixels;
+            var ctx = canvas.getContext('2d');
+            drawOutlineEmptyStarOnCtx(ctx, votingProps);
+            var imgdata = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            var numfullstars = votingProps.HasPartialStars == 1 ? Math.floor(votingProps.InitialValue / (votingProps.MaxValueOfAllStars / votingProps.NumStars)) :
+                Math.round(votingProps.InitialValue / (votingProps.MaxValueOfAllStars / votingProps.NumStars));
+            if (numfullstars > 0) {
+                var fillpoints = [votingProps.StarSizeInPixels / 2, votingProps.StarSizeInPixels / 2, 0, 0, votingProps.StarSizeInPixels, votingProps.StarSizeInPixels,
+                    255, 255, 255, 255, votingProps.StarColorRed, votingProps.StarColorGreen, votingProps.StarColorBlue, votingProps.StarColorAlpha];
+                imgdata = fillImageData(fillpoints, imgdata);
+                for (var i = 0; i < numfullstars; i++) {
+                    ctxdest.putImageData(imgdata, votingProps.X + (votingProps.StarsOrientation == 0 ? (votingProps.HasValueLabel == 1 ?
+                        votingProps.StarsStartingPosOffsetWhenLabel : 0) + (i * (votingProps.ImgWidth + votingProps.SpacingInPixelsBetweenStars)) : 0),
+                        votingProps.Y + (votingProps.StarsOrientation == 1 ? (votingProps.HasValueLabel == 1 ? votingProps.StarsStartingPosOffsetWhenLabel : 0) +
+                        (i * (votingProps.ImgHeight + votingProps.SpacingInPixelsBetweenStars)) : 0));
+                }
+            }
+            var didapartialstar = 0;
+            if (votingProps.HasPartialStars == 1) {
+                didapartialstar = 1;
+                var partialfillamountinpixels = Math.round(((votingProps.InitialValue / (votingProps.MaxValueOfAllStars / votingProps.NumStars)) % 1) * votingProps.StarSizeInPixels);
+                if (partialfillamountinpixels > 0) {
+                    var canvas2 = document.createElement('canvas');
+                    canvas2.width = votingProps.StarSizeInPixels;
+                    canvas2.height = votingProps.StarSizeInPixels;
+                    var ctx2 = canvas2.getContext('2d');
+                    drawOutlineEmptyStarOnCtx(ctx2, votingProps);
+                    var imgdata2 = ctx2.getImageData(0, 0, canvas.width, canvas.height);
+                    var fillpoints = [votingProps.FillOrientation == 0 ? Math.round(partialfillamountinpixels / 2) : Math.round(votingProps.StarSizeInPixels / 2),
+                        votingProps.FillOrientation == 1 ? Math.round(partialfillamountinpixels / 2) : Math.round(votingProps.StarSizeInPixels / 2),
+                        0, 0, votingProps.StarSizeInPixels, votingProps.StarSizeInPixels, 255, 255, 255, 255, votingProps.StarColorRed, votingProps.StarColorGreen,
+                        votingProps.StarColorBlue, votingProps.StarColorAlpha, votingProps.FillOrientation, 0, partialfillamountinpixels];
+                    imgdata2 = fillImageData(fillpoints, imgdata2);
+                    ctxdest.putImageData(imgdata2, votingProps.X + (votingProps.StarsOrientation == 0 ? (votingProps.HasValueLabel == 1 ?
+                        votingProps.StarsStartingPosOffsetWhenLabel : 0) + (numfullstars * (votingProps.StarSizeInPixels + votingProps.SpacingInPixelsBetweenStars)) : 0),
+                        votingProps.Y + (votingProps.StarsOrientation == 1 ? (votingProps.HasValueLabel == 1 ?
+                        votingProps.StarsStartingPosOffsetWhenLabel : 0) + (numfullstars * (votingProps.StarSizeInPixels + votingProps.SpacingInPixelsBetweenStars)) : 0));
+                }
+            }
+            if (numfullstars + didapartialstar < votingProps.NumStars) {
+                var canvas3 = document.createElement('canvas');
+                canvas3.width = votingProps.ImgWidth;
+                canvas3.height = votingProps.ImgHeight;
+                var ctx3 = canvas3.getContext('2d');
+                drawOutlineEmptyStarOnCtx(ctx3, votingProps);
+                var imgdata2 = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                for (var i = numfullstars + didapartialstar; i < votingProps.NumStars; i++) {
+                    ctxdest.putImageData(imgdata2, votingProps.X + (votingProps.StarsOrientation == 0 ? (votingProps.HasValueLabel == 1 ?
+                        votingProps.StarsStartingPosOffsetWhenLabel : 0) + (i * (votingProps.StarSizeInPixels + votingProps.SpacingInPixelsBetweenStars)) : 0),
+                        votingProps.Y + (votingProps.StarsOrientation == 1 ? (votingProps.HasValueLabel == 1 ?
+                        votingProps.StarsStartingPosOffsetWhenLabel : 0) + (i * (votingProps.StarSizeInPixels + votingProps.SpacingInPixelsBetweenStars)) : 0));
+                }
+            }
+            if (votingProps.HasValueLabel == 1) {
+                ctxdest.fillStyle = votingProps.LabelTextColor;
+                ctxdest.fillText(votingProps.InitialValue.toFixed(votingProps.RoundDisplayedValueToNumOfDecimals ? votingProps.RoundDisplayedValueToNumOfDecimals :
+                    2).toString() + ' out of ' + votingProps.MaxValueOfAllStars.toString(), votingProps.X + votingProps.LabelXPos,
+                    votingProps.Y + votingProps.LabelYPos);
+            }
         }
     }, canvasid);
+    if (editable == 1) {
+        registerClickFunction(windowid, function (canvasid, windowid, e) {
+            var votingProps = getVotingProps(canvasid, windowid);
+            var clickx = e.calcX;
+            var clicky = e.calcY;
+            for (var i = 0; i < votingProps.NumStars; i++) {
+                var starminx = votingProps.X + (votingProps.StarsOrientation == 0 ? (votingProps.HasValueLabel == 1 ?
+                    votingProps.StarsStartingPosOffsetWhenLabel : 0) + (i * (votingProps.StarSizeInPixels + votingProps.SpacingInPixelsBetweenStars)) : 0);
+                var starmaxx = starminx + (votingProps.IsCustomPattern == 1 ? votingProps.ImgWidth : votingProps.StarSizeInPixels);
+                var starminy = votingProps.Y + (votingProps.StarsOrientation == 1 ? (votingProps.HasValueLabel == 1 ?
+                    votingProps.StarsStartingPosOffsetWhenLabel : 0) + (i * (votingProps.StarSizeInPixels + votingProps.SpacingInPixelsBetweenStars)) : 0)
+                var starmaxy = starminy + (votingProps.IsCustomPattern == 1 ? votingProps.ImgHeight : votingProps.StarSizeInPixels);
+                if (starminx < clickx && starmaxx > clickx && starminy < clicky && starmaxy > clicky) {
+                    var value = (i * (votingProps.MaxValueOfAllStars / votingProps.NumStars)) + ((votingProps.FillOrientation == 0 ? ((clickx - starminx) /
+                        (votingProps.IsCustomPattern == 1 ? votingProps.ImgWidth : votingProps.StarSizeInPixels)) : ((clicky - starminy) /
+                        (votingProps.IsCustomPattern == 1 ? votingProps.ImgHeight : votingProps.StarSizeInPixels))) * 
+                        (votingProps.MaxValueOfAllStars / votingProps.NumStars));
+                    if (votingProps.CustomClickFunction) {
+                        votingProps.CustomClickFunction(canvasid, windowid, votingProps, clickx, clicky, value);
+                    } else {
+                        votingProps.InitialValue = value;
+                    }
+                }
+            }
+        }, canvasid);
+    }
+}
+
+function drawOutlineEmptyStarOnCtx(ctx, votingProps) {
+    ctx.fillStyle = '#FFFFFF';
+    ctx.rect(0, 0, votingProps.StarSizeInPixels, votingProps.StarSizeInPixels);
+    ctx.fill();
+    ctx.strokeStyle = 'rgb(' + votingProps.StarColorRed.toString() + ',' + votingProps.StarColorGreen.toString() + ',' + votingProps.StarColorBlue.toString() + ')';
+    ctx.lineWidth = votingProps.OutlineThicknessOfEmptyStar;
+    ctx.beginPath();
+    ctx.moveTo(0, votingProps.StarSizeInPixels / 2);
+    ctx.lineTo(votingProps.StarSizeInPixels / 3, votingProps.StarSizeInPixels / 3);
+    ctx.lineTo(votingProps.StarSizeInPixels / 2, 0);
+    ctx.lineTo(2 * votingProps.StarSizeInPixels / 3, votingProps.StarSizeInPixels / 3);
+    ctx.lineTo(votingProps.StarSizeInPixels, votingProps.StarSizeInPixels / 2);
+    ctx.lineTo(2 * votingProps.StarSizeInPixels / 3, 2 * votingProps.StarSizeInPixels / 3);
+    ctx.lineTo(votingProps.StarSizeInPixels / 2, votingProps.StarSizeInPixels);
+    ctx.lineTo(votingProps.StarSizeInPixels / 3, 2 * votingProps.StarSizeInPixels / 3);
+    ctx.closePath();
+    ctx.stroke();
 }
 
 //AJAX Postback code Starts here
@@ -9247,7 +9355,11 @@ function getEncodedVariables() {
     for (var i = 0; i < simpleXMLViewerPropsArray.length; i++) {
         strVars += '[i]' + stringEncodeObject(simpleXMLViewerPropsArray[i]) + '[/i]';
     }
-    strVars += '[/simpleXMLViewerPropsArray]';
+    strVars += '[/simpleXMLViewerPropsArray][votingPropsArray]';
+    for (var i = 0; i < votingPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(votingPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/votingPropsArray]';
     return strVars;
 }
 
