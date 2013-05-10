@@ -746,7 +746,7 @@ function setWindowDepth(canvasid, windowid, depth) {
 
 function checkIfModalWindow(canvasid, windowid) {
     for (var i = 0; i < modalWindows.length; i++) {
-        if(modalWindows[i].CanvasID == canvasid && modalWindows[i].WindowID == windowid){
+        if (modalWindows[i].CanvasID == canvasid && modalWindows[i].WindowID == windowid) {
             return 1;
         }
     }
@@ -928,7 +928,7 @@ function destroyControlByNameID(controlNameID) {
     }
 }
 
-function destroyWindow(canvasid, windowid){
+function destroyWindow(canvasid, windowid) {
     for (var i = 0; i < windows.length; i++) {
         if (windows[i].CanvasID == canvasid && windows[i].WindowCount == windowid) {
             removeEventHooks(windows[i]);
@@ -1549,21 +1549,21 @@ function createButton(canvasid, controlNameId, x, y, width, height, text, textCo
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Button', controlNameId);
     buttonPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Text: text,
-        EdgeRadius: edgeRadius, BottomColorStart: bottomColorStart, BottomColorEnd: bottomColorEnd, 
+        EdgeRadius: edgeRadius, BottomColorStart: bottomColorStart, BottomColorEnd: bottomColorEnd,
         TopColorStart: topColorStart, TopColorEnd: topColorEnd, TextHeight: textHeight, TextFontString: textFontString,
-        TextColor: textColor, IsPressed: 0, BorderColor: borderColor, IsHyperlink: isHyperlink, URL: url, 
+        TextColor: textColor, IsPressed: 0, BorderColor: borderColor, IsHyperlink: isHyperlink, URL: url,
         NoBrowserHistory: nobrowserhistory, IsNewBrowserWindow: isnewbrowserwindow,
-        NameOfNewBrowserWindow: nameofnewbrowserwindow, WidthOfNewBrowserWindow: widthofnewbrowserwindow, 
-        HeightOfNewBrowserWindow: heightofnewbrowserwindow, NewBrowserWindowIsResizable: newbrowserwindowisresizable, 
-        NewBrowserWindowHasScrollBars: newbrowserwindowhasscrollbars, NewBrowserWindowHasToolbar: newbrowserwindowhastoolbar, 
-        NewBrowserWindowHasLocationOrURLOrAddressBox: newbrowserwindowhaslocationorurloraddressbox, 
+        NameOfNewBrowserWindow: nameofnewbrowserwindow, WidthOfNewBrowserWindow: widthofnewbrowserwindow,
+        HeightOfNewBrowserWindow: heightofnewbrowserwindow, NewBrowserWindowIsResizable: newbrowserwindowisresizable,
+        NewBrowserWindowHasScrollBars: newbrowserwindowhasscrollbars, NewBrowserWindowHasToolbar: newbrowserwindowhastoolbar,
+        NewBrowserWindowHasLocationOrURLOrAddressBox: newbrowserwindowhaslocationorurloraddressbox,
         NewBrowserWindowHasDirectoriesOrExtraButtons: newbroserwindowhasdirectoriesorextrabuttons,
-        NewBrowserWindowHasStatusBar: newbrowserwindowhasstatusbar, NewBrowserWindowHasMenuBar: newbrowserwindowhasmenubar, 
+        NewBrowserWindowHasStatusBar: newbrowserwindowhasstatusbar, NewBrowserWindowHasMenuBar: newbrowserwindowhasmenubar,
         NewBrowserWindowCopyHistory: newbrowserwindowcopyhistory, Tag: tag, Theme: theme, HasGloss: hasgloss
     });
     registerClickFunction(windowid, function () {
         if (isHyperlink == 1) {
-            if(isnewbrowserwindow == 1){
+            if (isnewbrowserwindow == 1) {
                 var str = '';
                 var wroteone = 0;
                 if (widthofnewbrowserwindow != null) {
@@ -1597,8 +1597,8 @@ function createButton(canvasid, controlNameId, x, y, width, height, text, textCo
                 if (newbrowserwindowcopyhistory != null) {
                     str += (wroteone == 1 ? ',' : '') + 'copyhistory=' + newbrowserwindowcopyhistory;
                 }
-                window.open(url, (navigator.userAgent.toLowerCase().indexOf('msie') == -1 ? nameofnewbrowserwindow : nameofnewbrowserwindow.replace(/ /g,'')), str);
-            } else{
+                window.open(url, (navigator.userAgent.toLowerCase().indexOf('msie') == -1 ? nameofnewbrowserwindow : nameofnewbrowserwindow.replace(/ /g, '')), str);
+            } else {
                 if (nobrowserhistory == 1) {
                     window.location.replace(url);
                 } else {
@@ -2031,19 +2031,20 @@ function createGrid(canvasid, controlNameId, x, y, width, height, depth, rowData
     if (effectiveWidth > width) {
         hscrollBarWindowId = createScrollBar(canvasid, controlNameId + 'HS', x, y + height, width, depth, columnWidthArray.length, 0, windowid);
     }
-    gridPropsArray.push({CanvasID: canvasid, WindowID: windowid,
-        X: x, Y: y, 
+    gridPropsArray.push({
+        CanvasID: canvasid, WindowID: windowid,
+        X: x, Y: y,
         Width: width, Height: height,
-        RowData: rowData, HeaderData: headerData, 
+        RowData: rowData, HeaderData: headerData,
         RowDataTextColor: rowDataTextColor,
-        RowDataTextFontString: rowDataTextFontString, HeaderDataTextColor: headerDataTextColor, 
+        RowDataTextFontString: rowDataTextFontString, HeaderDataTextColor: headerDataTextColor,
         HeaderDataTextHeight: headerDataTextHeight, HeaderDataTextFontString: headerDataTextFontString,
         CellClickFunction: cellClickFunction, DataRowHeight: dataRowHeight,
-        ColumnWidthArray: columnWidthArray, HeaderRowHeight: headerRowHeight, 
-        HasBorder: hasBorder, BorderColor: borderColor, 
+        ColumnWidthArray: columnWidthArray, HeaderRowHeight: headerRowHeight,
+        HasBorder: hasBorder, BorderColor: borderColor,
         BorderLineWidth: borderLineWidth, VScrollBarWindowId: vscrollBarWindowId,
-        HScrollBarWindowId: hscrollBarWindowId, HeaderBackgroundStartColor: headerbackgroundstartcolor, 
-        HeaderBackgroundEndColor: headerbackgroundendcolor, AltRowBgColorStart1: altrowbgcolorstart1, 
+        HScrollBarWindowId: hscrollBarWindowId, HeaderBackgroundStartColor: headerbackgroundstartcolor,
+        HeaderBackgroundEndColor: headerbackgroundendcolor, AltRowBgColorStart1: altrowbgcolorstart1,
         AltRowBgColorEnd1: altrowbgcolorend1, AltRowBgColorStart2: altrowbgcolorstart2,
         AltRowBgColorEnd2: altrowbgcolorend2, Tag: tag
     });
@@ -2155,7 +2156,7 @@ function drawGrid(canvasid, windowid) {
 }
 
 function clickGrid(canvasid, windowid, e) {
-    
+
     var gridProps = getGridProps(canvasid, windowid);
     var vscrollBarProps = getScrollBarProps(canvasid, gridProps.VScrollBarWindowId);
     var hscrollBarProps = getScrollBarProps(canvasid, gridProps.HScrollBarWindowId);
@@ -2377,7 +2378,7 @@ function comboboxListAreaClick(canvasid, windowid, e) {
         if (x > comboboxProps.X && y > comboboxProps.Y + comboboxProps.Height + ((comboboxProps.ListAreaTextHeight + 6) * (i - vscrollBarProps.SelectedID)) &&
             x < comboboxProps.X + comboboxProps.Width - 15 && y < comboboxProps.Y + comboboxProps.Height + ((comboboxProps.ListAreaTextHeight + 6) *
             (i - vscrollBarProps.SelectedID + 1))) {
-            if(comboboxProps.SelectedID != i) {
+            if (comboboxProps.SelectedID != i) {
                 comboboxProps.SelectedID = i;
                 setHiddenWindowStatus(canvasid, comboboxProps.VScrollBarWindowID, 1);
                 setHiddenWindowStatus(canvasid, comboboxProps.ListAreaWindowID, 1);
@@ -2763,7 +2764,7 @@ function findNumberOfExpandedNodesInAll(nodes) {
     for (var i = 0; i < nodes.length; i++) {
         if (nodes[i].Expanded == 1)
             count++;
-        if(nodes[i].ChildNodes.length > 0) {
+        if (nodes[i].ChildNodes.length > 0) {
             count += findNumberOfExpandedNodesInAll(nodes[i].ChildNodes);
         }
     }
@@ -2783,7 +2784,7 @@ function fillIconImages(nodes, images) {
     for (var i = 0; i < nodes.length; i++) {
         if (nodes[i].ImageURL != null && nodes[i].ImageURL.length > 0 && findIfImageAlreadyInIconImages(nodes[i].ImageURL, images) == 0) {
             var image = new Image();
-            image.onload = function () {  };
+            image.onload = function () { };
             image.src = nodes[i].ImageURL;
             images.push({ ImageURL: nodes[i].ImageURL, Image: image });
         }
@@ -2871,7 +2872,7 @@ function createTreeView(canvasid, controlNameId, x, y, width, height, depth, nod
     var clickLabelExtents = new Array();
     treeViewPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height,
-        Nodes: nodes, VScrollBarWindowID: vscrollbarwindowid, HScrollBarWindowID: hscrollbarwindowid, 
+        Nodes: nodes, VScrollBarWindowID: vscrollbarwindowid, HScrollBarWindowID: hscrollbarwindowid,
         ClickButtonExtents: clickButtonExtents, ClickLabelExtents: clickLabelExtents, ClickNodeFunction: clickNodeFunction,
         SelectedNode: selectednode != null ? selectednode : nodes != null && nodes.length > 0 ? nodes[0] : null, Tag: tag, HasIcons: hasicons, IconWidth: iconwidth,
         IconHeight: iconheight, TextColor: textcolor, TextFontString: textfontstring, TextHeight: textheight
@@ -3475,7 +3476,7 @@ function drawProgressBar(canvasid, windowid) {
     ctx.moveTo(progressBarProps.X + 5, progressBarProps.Y + progressBarProps.Height);
     ctx.lineTo(progressBarProps.X + progressBarProps.Width - 5, progressBarProps.Y + progressBarProps.Height);
     ctx.stroke();
-    var pgwidth = ((progressBarProps.CurrentValue - progressBarProps.MinValue) * progressBarProps.Width)/(progressBarProps.MaxValue - progressBarProps.MinValue);
+    var pgwidth = ((progressBarProps.CurrentValue - progressBarProps.MinValue) * progressBarProps.Width) / (progressBarProps.MaxValue - progressBarProps.MinValue);
     var g2 = ctx.createLinearGradient(progressBarProps.X, progressBarProps.Y, progressBarProps.X, progressBarProps.Y + progressBarProps.Height);
     var redcomp = parseInt(progressBarProps.Color.substr(1, 2), 16);
     var greencomp = parseInt(progressBarProps.Color.substr(3, 2), 16);
@@ -3758,10 +3759,10 @@ function createPanel(canvasid, controlNameId, x, y, width, height, depth, hasBor
     panelPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, ExpandedWidth: width, ExpandedHeight: height,
         CollapsedWidth: collapsedWidth, CollapsedHeight: collapsedHeight, IsCollapsable: iscollapsable, HasBorder: hasBorder, BorderColor: borderColor,
-        HasBackgroundGradient: hasBackgroundGradient, BackgroundStartColor: backgroundStartColor, BackgroundEndColor: backgroundEndColor, 
+        HasBackgroundGradient: hasBackgroundGradient, BackgroundStartColor: backgroundStartColor, BackgroundEndColor: backgroundEndColor,
         HeaderHeight: headerheight, HeaderBackgroundStartColor: headerBackgroundStartColor, HeaderBackgroundEndColor: headerBackgroundEndColor,
         ExpandCollapseButtonColor: expandCollapseButtonColor, IsExpanded: isexpanded, ExpandCollapseButtonRadius: expandCollapseButtonRadius,
-        PanelLabel: panellabel, PanelLabelTextColor: panelLabelTextColor, PanelLabelTextHeight: panelLabelTextHeight, 
+        PanelLabel: panellabel, PanelLabelTextColor: panelLabelTextColor, PanelLabelTextHeight: panelLabelTextHeight,
         PanelLabelTextFontString: panelLabelTextFontString, OriginalWidth: width, OriginalHeight: height, Tag: tag
     });
     registerWindowDrawFunction(windowid, function (canvasid2, windowid2) {
@@ -3934,7 +3935,7 @@ function getBarGraphProps(canvasid, windowid) {
     }
 }
 
-function createBarGraph(canvasid, controlNameId, x, y, width, height, depth, data, maxvalue, nummarksy, title, titletextcolor, 
+function createBarGraph(canvasid, controlNameId, x, y, width, height, depth, data, maxvalue, nummarksy, title, titletextcolor,
     titletextheigth, titletextfontstring, barwidth, axisLabelsTextColor, axisLabelsTextHeight, axisLabelsTextFontString,
     marginleft, gapbetweenbars, barClickFunction, haslegend, marginright, tag) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'BarGraph', controlNameId);
@@ -3948,7 +3949,7 @@ function createBarGraph(canvasid, controlNameId, x, y, width, height, depth, dat
         HasLegend: haslegend, MarginRight: marginright, Tag: tag
     });
     registerClickFunction(windowid, function (canvasid1, windowid1, e) {
-        
+
         var barGraphProps = getBarGraphProps(canvasid1, windowid1);
         var clickx = e.calcX;
         var clicky = e.calcY;
@@ -4102,7 +4103,7 @@ function drawrect(canvasid, windowid, ctx, barGraphProps, i, yaxisheight) {
     var vw = ctx.measureText(barGraphProps.Data[i][1].toString()).width;
     if (vw < barGraphProps.BarWidth) {
         ctx.fillText(barGraphProps.Data[i][1].toString(), barGraphProps.X + barGraphProps.MarginLeft + barGraphProps.GapBetweenBars +
-            (i * (barGraphProps.BarWidth + barGraphProps.GapBetweenBars)) + ((barGraphProps.BarWidth + - vw) / 2),
+            (i * (barGraphProps.BarWidth + barGraphProps.GapBetweenBars)) + ((barGraphProps.BarWidth + -vw) / 2),
             barGraphProps.Y + barGraphProps.TitleTextHeight + 8 + barGraphProps.AxisLabelsTextHeight + hthis + ((yaxisheight - hthis) / 2));
     } else {
         ctx.fillText(barGraphProps.Data[i][1].toString(), barGraphProps.X + barGraphProps.MarginLeft + barGraphProps.GapBetweenBars +
@@ -4133,12 +4134,12 @@ function createPieChart(canvasid, controlNameId, x, y, width, height, depth, dat
     pieChartsPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Data: data,
         Title: title, TitleTextColor: titletextcolor, TitleTextHeight: titletextheight, TitleTextFontString: titletextfontstring,
-        CurrentRadius: 20, TotalValue: totalvalue, LabelTextColor: labeltextcolor, LabelTextHeight: labeltextheight, 
+        CurrentRadius: 20, TotalValue: totalvalue, LabelTextColor: labeltextcolor, LabelTextHeight: labeltextheight,
         LabelTextFontString: labeltextfontstring, AlreadyUnregisteredAnimation: 0, DeltaI: -1,
         DeltaX: 0, DeltaY: 0, SliceClickFunction: sliceClickFunction, Tag: tag
     });
     registerClickFunction(windowid, function (canvasid1, windowid1, e) {
-        
+
         var pieChartProps = getPieChartProps(canvasid1, windowid1);
         var data = pieChartProps.Data;
         var currRadius = (pieChartProps.Height - pieChartProps.TitleTextHeight - 24 - (pieChartProps.LabelTextHeight * 2)) / 2;
@@ -4390,7 +4391,7 @@ function createLineGraph(canvasid, controlNameId, x, y, width, height, depth, da
         IsLabeledXValues: islabeledxvalues, Tag: tag
     });
     registerClickFunction(windowid, function (canvasid1, windowid1, e) {
-        
+
         var lineGraphProps = getLineGraphProps(canvasid1, windowid1);
         if (lineGraphProps.ClickFunction != null) {
             var linexys = lineGraphProps.LineXYs;
@@ -4493,7 +4494,7 @@ function createLineGraph(canvasid, controlNameId, x, y, width, height, depth, da
             var val;
             var increment;
             if (lineGraphProps.IsLabeledXValues == 1) {
-                increment =  xlabels.length / lineGraphProps.NumMarksX;
+                increment = xlabels.length / lineGraphProps.NumMarksX;
                 if (xlabels.length % lineGraphProps.NumMarksX >= lineGraphProps.NumMarksX / 2) {
                     val = xlabels[d * Math.ceil(increment)];
                 } else {
@@ -4555,7 +4556,7 @@ function drawline(canvasid, ctx, lineGraphProps, x, xlabels) {
         lineGraphProps.Y + lineGraphProps.Height - lineGraphProps.AxisLabelsTextHeight - 8 -
         ((lineGraphProps.Data[x][0][0][1] * (lineGraphProps.Height - lineGraphProps.TitleTextHeight - lineGraphProps.AxisLabelsTextHeight - 16)) /
         lineGraphProps.YMaxValue)]]);
-    ctx.moveTo(lineGraphProps.X + lineGraphProps.MarginLeft + (lineGraphProps.IsLabeledXValues == 1 ? 
+    ctx.moveTo(lineGraphProps.X + lineGraphProps.MarginLeft + (lineGraphProps.IsLabeledXValues == 1 ?
         (findXLabelIndexForValue(xlabels, lineGraphProps.Data[x][0][0][0]) *
         (lineGraphProps.Width - lineGraphProps.MarginLeft)) / xlabels.length : ((lineGraphProps.Data[x][0][0][0] * (lineGraphProps.Width -
         lineGraphProps.MarginLeft)) / lineGraphProps.XMaxValue)),
@@ -5071,7 +5072,7 @@ function createLineAreaGraph(canvasid, controlNameId, x, y, width, height, depth
         for (var c = 0; c < lineAreaGraphProps.Data[0][0][1].length; c++) {
             var colorstr = lineAreaGraphProps.Data[1][c];
             var gradient = ctx.createLinearGradient(lineAreaGraphProps.X + lineAreaGraphProps.MarginLeft, lineAreaGraphProps.Y + lineAreaGraphProps.Height -
-                lineAreaGraphProps.AxisLabelsHeight - 8, lineAreaGraphProps.X + lineAreaGraphProps.Width - lineAreaGraphProps.MarginLeft, 
+                lineAreaGraphProps.AxisLabelsHeight - 8, lineAreaGraphProps.X + lineAreaGraphProps.Width - lineAreaGraphProps.MarginLeft,
                 lineAreaGraphProps.Y + lineAreaGraphProps.Height - lineAreaGraphProps.AxisLabelsHeight - 8);
             var redcomp = parseInt(colorstr.substr(1, 2), 16);
             var greencomp = parseInt(colorstr.substr(3, 2), 16);
@@ -5093,7 +5094,7 @@ function createLineAreaGraph(canvasid, controlNameId, x, y, width, height, depth
             if (c == 0) {
                 ctx.lineTo(lineAreaGraphProps.X + lineAreaGraphProps.MarginLeft + (lineAreaGraphProps.IsLabledOnXAxis == 1 ?
                     (findXLabelIndexForValue(xlabels, lineAreaGraphProps.Data[0][lineAreaGraphProps.H][0]) *
-                    (lineAreaGraphProps.Width - lineAreaGraphProps.MarginLeft)) / xlabels.length : ((lineAreaGraphProps.Data[0][lineAreaGraphProps.H][0] * 
+                    (lineAreaGraphProps.Width - lineAreaGraphProps.MarginLeft)) / xlabels.length : ((lineAreaGraphProps.Data[0][lineAreaGraphProps.H][0] *
                     (lineAreaGraphProps.Width -
                     lineAreaGraphProps.MarginLeft)) / lineAreaGraphProps.XMaxValue)), lineAreaGraphProps.Y + lineAreaGraphProps.Height -
                     lineAreaGraphProps.AxisLabelsHeight - 8);
@@ -5103,7 +5104,7 @@ function createLineAreaGraph(canvasid, controlNameId, x, y, width, height, depth
                         (findXLabelIndexForValue(xlabels, lineAreaGraphProps.Data[0][i][0]) * (lineAreaGraphProps.Width - lineAreaGraphProps.MarginLeft)) / xlabels.length :
                         ((lineAreaGraphProps.Data[0][i][0] * (lineAreaGraphProps.Width -
                         lineAreaGraphProps.MarginLeft)) / lineAreaGraphProps.XMaxValue)), lineAreaGraphProps.Y + lineAreaGraphProps.Height -
-                        lineAreaGraphProps.AxisLabelsHeight - 8 - ((lineAreaGraphProps.Data[0][i][1][c - 1] + sumyvalues(lineAreaGraphProps.Data, c - 1, i)) * 
+                        lineAreaGraphProps.AxisLabelsHeight - 8 - ((lineAreaGraphProps.Data[0][i][1][c - 1] + sumyvalues(lineAreaGraphProps.Data, c - 1, i)) *
                         (lineAreaGraphProps.Height - lineAreaGraphProps.TitleTextHeight - lineAreaGraphProps.AxisLabelsHeight - 16)) / lineAreaGraphProps.YMaxValue);
                 }
             }
@@ -5189,22 +5190,22 @@ function createCandlesticksGraph(canvasid, controlNameId, x, y, width, height, d
             var val = (candlesticksGraphProps.YMaxValue / candlesticksGraphProps.NumMarksY) * c;
             var tw = ctx.measureText(val.toString()).width;
             ctx.fillText(val.toString(), candlesticksGraphProps.X + candlesticksGraphProps.MarginLeft - 10 - tw, candlesticksGraphProps.Y +
-                candlesticksGraphProps.Height - candlesticksGraphProps.AxisLabelsHeight - 8 -(c * ((candlesticksGraphProps.Height -
+                candlesticksGraphProps.Height - candlesticksGraphProps.AxisLabelsHeight - 8 - (c * ((candlesticksGraphProps.Height -
                 candlesticksGraphProps.TitleHeight - candlesticksGraphProps.AxisLabelsHeight - 16) / candlesticksGraphProps.NumMarksY)));
             ctx.beginPath();
             ctx.moveTo(candlesticksGraphProps.X + candlesticksGraphProps.MarginLeft - 5, candlesticksGraphProps.Y + candlesticksGraphProps.Height -
-                candlesticksGraphProps.AxisLabelsHeight - 8 -(c * ((candlesticksGraphProps.Height - candlesticksGraphProps.TitleHeight -
+                candlesticksGraphProps.AxisLabelsHeight - 8 - (c * ((candlesticksGraphProps.Height - candlesticksGraphProps.TitleHeight -
                 candlesticksGraphProps.AxisLabelsHeight - 16) / candlesticksGraphProps.NumMarksY)));
             ctx.lineTo(candlesticksGraphProps.X + candlesticksGraphProps.Width, candlesticksGraphProps.Y + candlesticksGraphProps.Height -
-                candlesticksGraphProps.AxisLabelsHeight - 8 -(c * ((candlesticksGraphProps.Height - candlesticksGraphProps.TitleHeight -
+                candlesticksGraphProps.AxisLabelsHeight - 8 - (c * ((candlesticksGraphProps.Height - candlesticksGraphProps.TitleHeight -
                 candlesticksGraphProps.AxisLabelsHeight - 16) / candlesticksGraphProps.NumMarksY)));
             ctx.stroke();
         }
         for (var d = 0; d < candlesticksGraphProps.Data.length; d++) {
             ctx.beginPath();
-            ctx.moveTo(candlesticksGraphProps.X + candlesticksGraphProps.MarginLeft + ((d + 1) * candlesticksGraphProps.XMarksWidth), 
+            ctx.moveTo(candlesticksGraphProps.X + candlesticksGraphProps.MarginLeft + ((d + 1) * candlesticksGraphProps.XMarksWidth),
                 candlesticksGraphProps.Y + candlesticksGraphProps.Height - candlesticksGraphProps.AxisLabelsHeight - 8 + 5);
-            ctx.lineTo(candlesticksGraphProps.X + candlesticksGraphProps.MarginLeft + ((d + 1) * candlesticksGraphProps.XMarksWidth), 
+            ctx.lineTo(candlesticksGraphProps.X + candlesticksGraphProps.MarginLeft + ((d + 1) * candlesticksGraphProps.XMarksWidth),
                 candlesticksGraphProps.Y + candlesticksGraphProps.TitleHeight + 8);
             ctx.stroke();
         }
@@ -5345,7 +5346,7 @@ function createDoughnutChart(canvasid, controlNameId, x, y, width, height, depth
         AnimationCompleted: 0, DeltaI: -1, DeltaX: 0, DeltaY: 0, SliceClickFunction: sliceClickFunction, Tag: tag
     });
     registerClickFunction(windowid, function (canvasid1, windowid1, e) {
-        
+
         var doughnutChartProps = getDoughnutChartProps(canvasid1, windowid1);
         var data = doughnutChartProps.Data;
         var totalvalue = doughnutChartProps.TotalValue;
@@ -5353,7 +5354,7 @@ function createDoughnutChart(canvasid, controlNameId, x, y, width, height, depth
         var clicky = e.calcY;
         var pieoutangle = -1;
         var centerx = doughnutChartProps.X + (doughnutChartProps.Width / 2) + doughnutChartProps.MarginSides;
-        var centery = doughnutChartProps.Y + ((doughnutChartProps.Height - doughnutChartProps.TitleTextHeight - 8 - (doughnutChartProps.LabelHeight * 2))/2);
+        var centery = doughnutChartProps.Y + ((doughnutChartProps.Height - doughnutChartProps.TitleTextHeight - 8 - (doughnutChartProps.LabelHeight * 2)) / 2);
         if (150 * 150 > (clickx - centerx) * (clickx - centerx) + (clicky - centery) * (clicky - centery)) {
             if (clickx > centerx && clicky == centery) {
                 pieoutangle = 0;
@@ -5523,7 +5524,7 @@ function createBarsMixedWithLabledLineGraph(canvasid, controlNameId, x, y, width
         YMaxValue: maxvalue, Tag: tag
     });
     registerClickFunction(windowid, function (canvasid1, windowid1, e) {
-        
+
         var barsMixedWithLabledLineGraphProps = getBarsMixedWithLabledLineGraphProps(canvasid1, windowid1);
         var clickx = e.calcX;
         var clicky = e.calcY;
@@ -5682,14 +5683,14 @@ function drawlineforbarsmixedwithlinesgraph(ctx, barsMixedWithLabledLineGraphPro
     ctx.shadowColor = '#' + getlowcomp(redcomp).toString(16) + getlowcomp(greencomp).toString(16) + getlowcomp(bluecomp).toString(16);
     ctx.beginPath();
     var linexys = new Array();
-    linexys = linexys.concat([[barsMixedWithLabledLineGraphProps.X + barsMixedWithLabledLineGraphProps.MarginLeft + 
+    linexys = linexys.concat([[barsMixedWithLabledLineGraphProps.X + barsMixedWithLabledLineGraphProps.MarginLeft +
         (findXLabelIndexForValue(xlabels, barsMixedWithLabledLineGraphProps.LinesData[x][0][0][0]) *
         (barsMixedWithLabledLineGraphProps.Width - barsMixedWithLabledLineGraphProps.MarginLeft)) / xlabels.length,
         barsMixedWithLabledLineGraphProps.Y + barsMixedWithLabledLineGraphProps.Height - barsMixedWithLabledLineGraphProps.AxisLabelsTextHeight - 8 -
         ((barsMixedWithLabledLineGraphProps.LinesData[x][0][0][1] * (barsMixedWithLabledLineGraphProps.Height -
         barsMixedWithLabledLineGraphProps.TitleTextHeight - barsMixedWithLabledLineGraphProps.AxisLabelsTextHeight - 16)) /
         barsMixedWithLabledLineGraphProps.YMaxValue)]]);
-    ctx.moveTo(barsMixedWithLabledLineGraphProps.X + barsMixedWithLabledLineGraphProps.MarginLeft + 
+    ctx.moveTo(barsMixedWithLabledLineGraphProps.X + barsMixedWithLabledLineGraphProps.MarginLeft +
         barsMixedWithLabledLineGraphProps.GapBetweenBars + (barsMixedWithLabledLineGraphProps.BarWidth / 2) +
         (findXLabelIndexForValue(xlabels, barsMixedWithLabledLineGraphProps.LinesData[x][0][0][0]) *
         (barsMixedWithLabledLineGraphProps.Width - barsMixedWithLabledLineGraphProps.MarginLeft -
@@ -5700,7 +5701,7 @@ function drawlineforbarsmixedwithlinesgraph(ctx, barsMixedWithLabledLineGraphPro
         barsMixedWithLabledLineGraphProps.YMaxValue));
     for (var i = 1; i < barsMixedWithLabledLineGraphProps.H && i < barsMixedWithLabledLineGraphProps.LinesData[x][0].length; i++) {
         linexys = linexys.concat([[barsMixedWithLabledLineGraphProps.X + barsMixedWithLabledLineGraphProps.MarginLeft +
-            (findXLabelIndexForValue(xlabels, barsMixedWithLabledLineGraphProps.LinesData[x][0][i][0]) * (barsMixedWithLabledLineGraphProps.Width - 
+            (findXLabelIndexForValue(xlabels, barsMixedWithLabledLineGraphProps.LinesData[x][0][i][0]) * (barsMixedWithLabledLineGraphProps.Width -
             barsMixedWithLabledLineGraphProps.MarginLeft)) / xlabels.length,
             barsMixedWithLabledLineGraphProps.Y + barsMixedWithLabledLineGraphProps.Height - barsMixedWithLabledLineGraphProps.AxisLabelsTextHeight -
             8 - ((barsMixedWithLabledLineGraphProps.LinesData[x][0][i][1] *
@@ -5769,7 +5770,7 @@ function createStackedBarGraph(canvasid, controlNameId, x, y, width, height, dep
         ctx.save();
         ctx.fillStyle = stackedBarGraphProps.TitleColor;
         ctx.font = stackedBarGraphProps.TitleFontString;
-        ctx.fillText(stackedBarGraphProps.Title, stackedBarGraphProps.X + (stackedBarGraphProps.Width - ctx.measureText(stackedBarGraphProps.Title).width) / 2, 
+        ctx.fillText(stackedBarGraphProps.Title, stackedBarGraphProps.X + (stackedBarGraphProps.Width - ctx.measureText(stackedBarGraphProps.Title).width) / 2,
             stackedBarGraphProps.Y + stackedBarGraphProps.TitleHeight + 4);
         ctx.font = stackedBarGraphProps.AxisLabelsFontString;
         ctx.beginPath();
@@ -5856,7 +5857,7 @@ function drawmultiplerect(ctx, stackedBarGraphProps, i) {
             ctx.beginPath();
             ctx.moveTo(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + ((stackedBarGraphProps.BarWidth - stackedBarGraphProps.GapBetweenBarSets) / 2) +
                 (i * stackedBarGraphProps.BarWidth), stackedBarGraphProps.Y + bottomy - (shift + hthis));
-            ctx.lineTo(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + stackedBarGraphProps.GapBetweenBarSets + ((stackedBarGraphProps.BarWidth - 
+            ctx.lineTo(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + stackedBarGraphProps.GapBetweenBarSets + ((stackedBarGraphProps.BarWidth -
                 stackedBarGraphProps.GapBetweenBarSets) / 2) + (i * stackedBarGraphProps.BarWidth), stackedBarGraphProps.Y + bottomy - (shift + hthis));
             ctx.lineTo(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + stackedBarGraphProps.GapBetweenBarSets + ((stackedBarGraphProps.BarWidth -
                 stackedBarGraphProps.GapBetweenBarSets) / 2) + (i * stackedBarGraphProps.BarWidth), stackedBarGraphProps.Y + bottomy - shift);
@@ -5897,10 +5898,10 @@ function drawmultiplerect(ctx, stackedBarGraphProps, i) {
                 (i * stackedBarGraphProps.BarWidth), stackedBarGraphProps.Y + bottomy - (shift + hthis) + 5, 5, Math.PI, (Math.PI / 180) * 270, false);
             ctx.lineTo(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + stackedBarGraphProps.BarWidth - stackedBarGraphProps.GapBetweenBarSets - 5 +
                 ((stackedBarGraphProps.BarWidth - stackedBarGraphProps.GapBetweenBarSets) / 2) + (i * stackedBarGraphProps.BarWidth), stackedBarGraphProps.Y +
-                bottomy - (shift + hthis)); 
-            ctx.arc(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + stackedBarGraphProps.GapBetweenBarSets - 5 + ((stackedBarGraphProps.BarWidth - 
+                bottomy - (shift + hthis));
+            ctx.arc(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + stackedBarGraphProps.GapBetweenBarSets - 5 + ((stackedBarGraphProps.BarWidth -
                 stackedBarGraphProps.GapBetweenBarSets) / 2) + (i * stackedBarGraphProps.BarWidth), stackedBarGraphProps.Y + bottomy - (shift + hthis) + 5, 5, (Math.PI / 180) * 270, 0, false);
-            ctx.lineTo(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + stackedBarGraphProps.GapBetweenBarSets + ((stackedBarGraphProps.BarWidth - 
+            ctx.lineTo(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + stackedBarGraphProps.GapBetweenBarSets + ((stackedBarGraphProps.BarWidth -
                 stackedBarGraphProps.GapBetweenBarSets) / 2) + (i * stackedBarGraphProps.BarWidth), stackedBarGraphProps.Y + bottomy - shift);
             ctx.lineTo(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + ((stackedBarGraphProps.BarWidth - stackedBarGraphProps.GapBetweenBarSets) / 2) +
                 (i * stackedBarGraphProps.BarWidth), stackedBarGraphProps.Y + bottomy - shift);
@@ -5926,7 +5927,7 @@ function drawmultiplerect(ctx, stackedBarGraphProps, i) {
                 stackedBarGraphProps.GapBetweenBarSets) / 2) + (i * stackedBarGraphProps.BarWidth), stackedBarGraphProps.Y + bottomy - (shift + hthis) + 5);
             ctx.arc(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + stackedBarGraphProps.GapBetweenBarSets - 10 + ((stackedBarGraphProps.BarWidth -
                 stackedBarGraphProps.GapBetweenBarSets) / 2) + (i * stackedBarGraphProps.BarWidth), stackedBarGraphProps.Y + bottomy - (shift + hthis) + 10, 5, (Math.PI / 180) * 270, 0, false);
-            ctx.lineTo(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + stackedBarGraphProps.GapBetweenBarSets - 5 + ((stackedBarGraphProps.BarWidth - 
+            ctx.lineTo(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + stackedBarGraphProps.GapBetweenBarSets - 5 + ((stackedBarGraphProps.BarWidth -
                 stackedBarGraphProps.GapBetweenBarSets) / 2) + (i * stackedBarGraphProps.BarWidth), stackedBarGraphProps.Y + bottomy - 5 - shift);
             ctx.lineTo(stackedBarGraphProps.X + stackedBarGraphProps.MarginLeft + 5 + ((stackedBarGraphProps.BarWidth - stackedBarGraphProps.GapBetweenBarSets) / 2) +
                 (i * stackedBarGraphProps.BarWidth), stackedBarGraphProps.Y + bottomy - 5 - shift);
@@ -5971,7 +5972,7 @@ function createTabControl(canvasid, controlNameId, x, y, width, height, depth, t
     tabPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height,
         TabLabels: tablabels, TabLabelColor: tablabelcolor, TabLabelHeight: tablabelheight, TabLabelFontString: tablabelfontstring,
-        PanelWindowIDs: panels, SelectedTabID: selectedTabID, TabLabelGradientStartColor: tablabelgradientstartcolor, 
+        PanelWindowIDs: panels, SelectedTabID: selectedTabID, TabLabelGradientStartColor: tablabelgradientstartcolor,
         TabLabelGradientEndColor: tablabelgradientendcolor, TabLabelHitAreas: new Array(),
         GapBetweenTabs: gapbetweentabs, SelectedTabBorderColor: selectedtabbordercolor, SelectedTabBorderLineWidth: selectedtabborderlinewidth, Tag: tag
     });
@@ -6013,7 +6014,7 @@ function createTabControl(canvasid, controlNameId, x, y, width, height, depth, t
                     tabProps.TabLabelHitAreas.push({
                         XStart: tabProps.X + currWidthOffset, XEnd: tabProps.X + currWidthOffset + ((tabProps.TabLabelHeight + 8) * 2) +
                             currentTabWidth + 8, YStart: tabProps.Y, YEnd: tabProps.Y + tabProps.TabLabelHeight + 8, PanelWindowID: tabProps.PanelWindowIDs[i],
-                            TabID: i
+                        TabID: i
                     });
                 }
                 currWidthOffset += currentTabWidth;
@@ -6053,7 +6054,7 @@ function createTabControl(canvasid, controlNameId, x, y, width, height, depth, t
         tabProps.TabLabelHitAreas.push({
             XStart: tabProps.X + currWidthOffset, XEnd: tabProps.X + currWidthOffset + ((tabProps.TabLabelHeight + 8) * 2) +
                 currentTabWidth + 8, YStart: tabProps.Y, YEnd: tabProps.Y + tabProps.TabLabelHeight + 8, PanelWindowID: tabProps.PanelWindowIDs[tabProps.SelectedTabID],
-                TabID: tabProps.SelectedTabID
+            TabID: tabProps.SelectedTabID
         });
     }, canvasid);
     registerClickFunction(windowid, function (canvasid2, windowid2, e) {
@@ -6156,7 +6157,7 @@ function createImageMapControl(canvasid, controlNameId, x, y, width, height, dep
         for (var i = 0; i < imageMapProps.PinXYs.length; i++) {
             if (clickx > imageMapProps.X + (imageMapProps.PinXYs[i][0] * imageMapProps.Scale) - (imageMapProps.ImageTopLeftXOffset * imageMapProps.Scale) - imageMapProps.PinXYs[i][2] &&
                 clickx < imageMapProps.X + (imageMapProps.PinXYs[i][0] * imageMapProps.Scale) - (imageMapProps.ImageTopLeftXOffset * imageMapProps.Scale) + imageMapProps.PinXYs[i][2] &&
-                clicky > imageMapProps.Y + (imageMapProps.PinXYs[i][1]* imageMapProps.Scale) - (imageMapProps.ImageTopLeftYOffset * imageMapProps.Scale) - imageMapProps.PinXYs[i][2] &&
+                clicky > imageMapProps.Y + (imageMapProps.PinXYs[i][1] * imageMapProps.Scale) - (imageMapProps.ImageTopLeftYOffset * imageMapProps.Scale) - imageMapProps.PinXYs[i][2] &&
                 clicky < imageMapProps.Y + (imageMapProps.PinXYs[i][1] * imageMapProps.Scale) - (imageMapProps.ImageTopLeftYOffset * imageMapProps.Scale) + imageMapProps.PinXYs[i][2]) {
                 if (imageMapProps.PinClickFunction != null) {
                     imageMapProps.PinClickFunction(canvasid5, windowid5, i);
@@ -6629,7 +6630,7 @@ function textBoxTouchKeyPress(canvasid, windowid, keyboardChar) {
 
 function createTextBox(canvasid, controlNameId, x, y, width, height, depth, waterMarkText, waterMarkTextColor, waterMarkTextHeight, waterMarkTextFontString,
     textColor, textHeight, textFontString, maxChars, allowedCharsRegEx, isPassword, passwordChar, hasBorder, borderColor, borderLineWidth, hasShadow, shadowColor, shadowOffsetX, shadowOffsetY,
-    shadowBlurValue, hasRoundedEdges, edgeRadius, hasBgGradient, bgGradientStartColor, bgGradientEndColor, hasBgImage, bgImageUrl, hasAutoComplete, listPossibles, 
+    shadowBlurValue, hasRoundedEdges, edgeRadius, hasBgGradient, bgGradientStartColor, bgGradientEndColor, hasBgImage, bgImageUrl, hasAutoComplete, listPossibles,
     dropDownPossiblesListIfThereIsInputText, limitToListPossibles, listPossiblesTextColor, listPossiblesTextHeight, listPossiblesTextFontString, initialText, caretColor,
     textSelectionBgColor, hasFocusInitially, tag, customKeyboardWindowID) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'TextBox', controlNameId);
@@ -6876,7 +6877,7 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
     }, canvasid);
     registerMouseMoveFunction(windowid, function (canvasid5, windowid5, e) {
         var textBoxProps = getTextBoxProps(canvasid5, windowid5);
-        if (textBoxProps.MouseDown == 1 && (new Date()).getTime() - textBoxProps.MouseDownTime > 500 &&  textBoxProps.UserInputText && textBoxProps.UserInputText.length > 0) {
+        if (textBoxProps.MouseDown == 1 && (new Date()).getTime() - textBoxProps.MouseDownTime > 500 && textBoxProps.UserInputText && textBoxProps.UserInputText.length > 0) {
             var x = e.calcX;
             var ctx = getCtx(canvasid5);
             ctx.font = textBoxProps.TextFontString;
@@ -6961,7 +6962,7 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
         var x = e.calcX;
         var ctx = getCtx(canvasid2);
         ctx.font = textBoxProps.TextFontString;
-        if(x > textBoxProps.X && x < textBoxProps.X + 4){
+        if (x > textBoxProps.X && x < textBoxProps.X + 4) {
             textBoxProps.CaretPosIndex = -1;
         } else if (textBoxProps.UserInputText && x > textBoxProps.X + ctx.measureText(textBoxProps.UserInputText).width + 4) {
             textBoxProps.CaretPosIndex = textBoxProps.UserInputText.length - 1;
@@ -7474,7 +7475,7 @@ function createMultiLineLabel(canvasid, controlNameId, x, y, width, depth, hasMa
                     case 'NT':
                         var tmp = markupText.length > 0 ? markupText.length - 1 : 0;
                         markupText += xmlDoc.firstChild.childNodes[i].childNodes.length > 0 ? xmlDoc.firstChild.childNodes[i].childNodes[0].nodeValue : xmlDoc.firstChild.childNodes[i].nodeValue;
-                        markupTextExtents.push([tmp, markupText.length - 1, textColor, textFontString ]);
+                        markupTextExtents.push([tmp, markupText.length - 1, textColor, textFontString]);
                         break;
                     case 'N':
                         var colorstr, fontstr, textstr;
@@ -7867,7 +7868,7 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
             ctx.clip();
             if (wordProcessorProps.HasBgImage == 1 && wordProcessorProps.Image.complete == true) {
                 ctx.drawImage(wordProcessorProps.Image, wordProcessorProps.X, wordProcessorProps.Y);
-            } else if(wordProcessorProps.HasBgGradient == 1) {
+            } else if (wordProcessorProps.HasBgGradient == 1) {
                 ctx.fill();
             }
             if (wordProcessorProps.HasBorder == 1) {
@@ -7901,7 +7902,7 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
                 } else {
                     var i;
                     for (i = vscrollbarProps.SelectedID; i < wordProcessorProps.LineBreakIndexes.length && (i - vscrollbarProps.SelectedID) * (wordProcessorProps.TextHeight +
-                        wordProcessorProps.LineSpacingInPixels) < wordProcessorProps.Height - (wordProcessorProps.Margin * 2); i++) {
+                        wordProcessorProps.LineSpacingInPixels) < wordProcessorProps.Height - (wordProcessorProps.Margin * 2) ; i++) {
                         ctx.fillText(removeTrailingSpacesAndLineBreaks(wordProcessorProps.UserInputText.substr((i > 0 ? wordProcessorProps.LineBreakIndexes[i - 1] : 0), wordProcessorProps.LineBreakIndexes[i] -
                             (i > 0 ? wordProcessorProps.LineBreakIndexes[i - 1] : 0))), wordProcessorProps.X + wordProcessorProps.Margin,
                             wordProcessorProps.Y + wordProcessorProps.Margin + wordProcessorProps.TextHeight +
@@ -8205,7 +8206,7 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
             if (caretLineNo == 0) {
                 caretLineNo = vscrollbarProps.SelectedID;
             }
-            for (var i = (caretLineNo == 0 ? 0 : wordProcessorProps.LineBreakIndexes[caretLineNo - 1]); i < (caretLineNo < wordProcessorProps.LineBreakIndexes.length ?
+            for (var i = (caretLineNo == 0 ? 0 : wordProcessorProps.LineBreakIndexes[caretLineNo - 1]) ; i < (caretLineNo < wordProcessorProps.LineBreakIndexes.length ?
                 wordProcessorProps.LineBreakIndexes[caretLineNo] : wordProcessorProps.UserInputText.length) ; i++) {
                 if (x > wordProcessorProps.X + wordProcessorProps.Margin + ctx.measureText(wordProcessorProps.UserInputText.substr((caretLineNo == 0 ? 0 :
                     wordProcessorProps.LineBreakIndexes[caretLineNo - 1]), i - (caretLineNo == 0 ? 0 : wordProcessorProps.LineBreakIndexes[caretLineNo - 1]))).width) {
@@ -8235,7 +8236,7 @@ function createWordProcessor(canvasid, controlNameId, x, y, width, height, depth
 }
 
 function removeTrailingSpacesAndLineBreaks(str) {
-    while(str.length > 0) {
+    while (str.length > 0) {
         if (str.substr(0, 1) == '\n' || str.substr(0, 1) == ' ') {
             str = (1 < str.length ? str.substr(1, str.length - 1) : '');
         } else {
@@ -8406,7 +8407,7 @@ function createVirtualKeyboard(canvasid, controlNameId, x, y, width, height, dep
         ctx.rect(virtualKeyboardProps.X, virtualKeyboardProps.Y, virtualKeyboardProps.Width, virtualKeyboardProps.Height);
         ctx.fill();
         ctx.strokeStyle = '#353a3b';
-        var extraWidth = (virtualKeyboardProps.Height / Math.tan(Math.PI/4));
+        var extraWidth = (virtualKeyboardProps.Height / Math.tan(Math.PI / 4));
         for (var i = 0; i < (virtualKeyboardProps.Width + extraWidth) / 10; i++) {
             ctx.beginPath();
             ctx.moveTo(virtualKeyboardProps.X - extraWidth + (i * 10), virtualKeyboardProps.Y);
@@ -8780,6 +8781,7 @@ function createSplitter(canvasid, controlNameId, x, y, width, height, depth, lin
 }
 
 //BoundaryFillableMap control code starts here
+
 var boundaryFillableMapPropsArray = new Array();
 
 function getBoundaryFillableMapProps(canvasid, windowid) {
@@ -8811,7 +8813,7 @@ function createBoundaryFillableMap(canvasid, controlNameId, x, y, width, height,
         ctx.drawImage(boundaryFillableMapProps.Image, 0, 0);
         var imgdata = ctx.getImageData(0, 0, canvas.width, canvas.height);
         for (var i = 0; i < boundaryFillableMapProps.FillPoints.length; i++) {
-            imgdata = fillImageData(boundaryFillableMapProps.FillPoints[i], imgdata, boundaryFillableMapProps.Orientation, boundaryFillableMapProps.Bounds);
+            imgdata = fillImageData(boundaryFillableMapProps.FillPoints[i], imgdata);
         }
         ctxdest.putImageData(imgdata, boundaryFillableMapProps.X, boundaryFillableMapProps.Y);
     }, canvasid);
@@ -8839,7 +8841,7 @@ function fillImageData(fillpoints, imgdata) {
             if (fillpoints.length == 17 && fillpoints[14] == 1 ? y - 1 > fillpoints[15] : y - 1 > fillpoints[3]) {
                 buff.push([x, y - 1]);
             }
-            if (fillpoints.length == 17 && fillpoints[14] == 1  ? x - 1 > fillpoints[16] : y + 1 < fillpoints[5]) {
+            if (fillpoints.length == 17 && fillpoints[14] == 1 ? x - 1 > fillpoints[16] : y + 1 < fillpoints[5]) {
                 buff.push([x, y + 1]);
             }
         }
@@ -8849,6 +8851,14 @@ function fillImageData(fillpoints, imgdata) {
 
 //XML Viewer Control
 var simpleXMLViewerPropsArray = new Array();
+
+function getSimpleXMLViewerProps(canvasid, windowid) {
+    for (var i = 0; i < simpleXMLViewerPropsArray.length; i++) {
+        if (simpleXMLViewerPropsArray[i].CanvasID == canvasid && simpleXMLViewerPropsArray[i].WindowID == windowid) {
+            return simpleXMLViewerPropsArray[i];
+        }
+    }
+}
 
 function fillSimpleXMLViewerChildNodes(node, childNodes, xmlDoc, hasicons, imgURLNode, imgURLValue, imgURLAttribute) {
     for (var i = 0; i < childNodes.length; i++) {
@@ -8863,7 +8873,7 @@ function fillSimpleXMLViewerChildNodes(node, childNodes, xmlDoc, hasicons, imgUR
             }
         }
         if (childNodes[i].childNodes.length > 0) {
-                fillSimpleXMLViewerChildNodes(nodenew, childNodes[i].childNodes, xmlDoc, hasicons, imgURLNode, imgURLValue, imgURLAttribute);
+            fillSimpleXMLViewerChildNodes(nodenew, childNodes[i].childNodes, xmlDoc, hasicons, imgURLNode, imgURLValue, imgURLAttribute);
         } else if (childNodes[i].nodeValue && childNodes[i].nodeValue.length > 0) {
             addChildNodes(nodenew.ChildNodes, nodenew, hasicons == 0 ? null : imgURLValue, 1, childNodes[i].nodeValue,
                 ['Value', childNodes[i]]);
@@ -8904,11 +8914,111 @@ function createSimpleXMLViewer(canvasid, controlNameId, x, y, width, height, dep
     return windowid;
 }
 
-//Vote Rating Control
+//Voting Control
 
-function createVoteAndRatingControl(canvasid, controlNameId, x, y, width, height, depth, numstars, maxvalueofallstars, spacinginpixelsbetweenstars,
-    haspartialstars, editable, hasvaluelabel, labelxpos, labelypos, starsxposwhenlabel, starsyposwhenlabel, initialvalue, outlinethicknessofemptystar,
-    starcolor, starsorientation, fillorientation, iscustompattern, imgurl, fillpoint, imgwidth, imgheight) {
+var votingPropsArray = new Array();
+var votingOutlineImage;
+
+function getVotingProps(canvasid, windowid) {
+    for (var i = 0; i < votingPropsArray.length; i++) {
+        if (votingPropsArray[i].CanvasID == canvasid && votingPropsArray[i].WindowID == windowid) {
+            return votingPropsArray[i];
+        }
+    }
+}
+
+function createVotingControl(canvasid, controlNameId, x, y, width, height, depth, numstars, maxvalueofallstars, starcolorred, starcolorgreen, starcolorblue,
+    starcoloralpha, starsizeinpixels, spacinginpixelsbetweenstars, haspartialstars, editable, hasvaluelabel, labelxpos, labelypos,
+    labeltextcolor, labeltextfontstring, labeltextheight, starsstartingposoffsetwhenlabel, starsyposwhenlabel, initialvalue, 
+    outlinethicknessofemptystar, starsorientation, fillorientation, iscustompattern, outlineimgurl, customfillpoint,
+    imgwidth, imgheight, hasmouseoverlabel, staroutlinebgcolorred, staroutlinebgcolorgreen, staroutlinebgcolorblue, staroutlinebgcoloralpha) {
+    var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'VotingControl', controlNameId);
+    if (iscustompattern == 1) {
+        votingOutlineImage = new Image();
+        votingOutlineImage.onload = function () {
+            invalidateRect(canvasid, null, x, y, width, height);
+        }
+        votingOutlineImage.src = outlineimgurl;
+    }
+    votingPropsArray.push({
+        CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, NumStars: numstars, MaxValueOfAllStars: maxvalueofallstars, 
+        StarColorRed: starcolorred, StarColorGreen: starcolorgreen, StarColorBlue: starcolorblue, StarColorAlpha: starcoloralpha,
+        SpacingInPixelsBetweenStars: spacinginpixelsbetweenstars, HasPartialStars: haspartialstars, Editable: editable,
+        HasValueLabel: hasvaluelabel, LabelXPos: labelxpos, LabelYPos: labelypos, StarsStartingPosOffsetWhenLabel: starsstartingposoffsetwhenlabel, 
+        StarsYPosWhenLabel: starsyposwhenlabel, InitialValue: initialvalue, OutlineThicknessOfEmptyStar: outlinethicknessofemptystar,
+        StarsOrientation: starsorientation, FillOrientation: fillorientation, IsCustomPattern: iscustompattern, OutLineImgURL: outlineimgurl, 
+        CustomFillPoint: customfillpoint, ImgWidth: imgwidth, ImgHeight: imgheight, StarSizeInPixels: starsizeinpixels, HasMouseOverLabel: hasmouseoverlabel,
+        StarOutlineBgColorRed: staroutlinebgcolorred, StarOutlineBgColorGreen: staroutlinebgcolorgreen, StarOutlineBgColorBlue: staroutlinebgcolorblue, 
+        StarOutlineBgColorAlpha: staroutlinebgcoloralpha, LabelTextColor: labeltextcolor, LabelTextFontString: labeltextfontstring, 
+        LabelTextHeight: labeltextheight
+    });
+    registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
+        var votingProps = getVotingProps(canvasid1, windowid1);
+        if (votingProps.IsCustomPattern == 1) {
+            var ctxdest = getCtx(canvasid1);
+            var canvas = document.createElement('canvas');
+            canvas.width = votingProps.ImgWidth;
+            canvas.height = votingProps.ImgHeight;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(votingOutlineImage, 0, 0);
+            var imgdata = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            var numfullstars = votingProps.HasPartialStars == 1 ? Math.floor(votingProps.InitialValue / (votingProps.MaxValueOfAllStars / votingProps.NumStars)) :
+                Math.round(votingProps.InitialValue / (votingProps.MaxValueOfAllStars / votingProps.NumStars));
+            if (numfullstars > 0) {
+                imgdata = fillImageData(votingProps.CustomFillPoint, imgdata);
+            }
+            for (var i = 0; i < numfullstars; i++) {
+                ctxdest.putImageData(imgdata, votingProps.X + (votingProps.StarsOrientation == 0 ? (votingProps.HasValueLabel == 1 ?
+                    votingProps.StarsStartingPosOffsetWhenLabel : 0) + (i * (votingProps.ImgWidth + votingProps.SpacingInPixelsBetweenStars)) : 0),
+                    votingProps.Y + (votingProps.StarsOrientation == 1 ? (votingProps.HasValueLabel == 1 ? votingProps.StarsStartingPosOffsetWhenLabel : 0) +
+                    (i * (votingProps.ImgHeight + votingProps.SpacingInPixelsBetweenStars)) : 0));
+            }
+            var didapartialstar = 0;
+            if (votingProps.HasPartialStars == 1) {
+                didapartialstar = 1;
+                var partialfillamountinpixels = Math.round(((votingProps.InitialValue / (votingProps.MaxValueOfAllStars / votingProps.NumStars)) % 1) * votingProps.ImgWidth);
+                if (partialfillamountinpixels > 0) {
+                    var canvas2 = document.createElement('canvas');
+                    canvas2.width = votingProps.ImgWidth;
+                    canvas2.height = votingProps.ImgHeight;
+                    var ctx2 = canvas2.getContext('2d');
+                    ctx2.drawImage(votingOutlineImage, 0, 0);
+                    var imgdata = ctx2.getImageData(0, 0, canvas.width, canvas.height);
+                    var fillpoints = [votingProps.FillOrientation == 0 ? Math.round(partialfillamountinpixels / 2) : Math.round(votingProps.ImgWidth / 2),
+                        votingProps.FillOrientation == 1 ? Math.round(partialfillamountinpixels / 2) : Math.round(votingProps.ImgHeight / 2),
+                        0, 0, votingProps.ImgWidth, votingProps.ImgHeight, votingProps.StarOutlineBgColorRed, votingProps.StarOutlineBgColorGreen,
+                        votingProps.StarOutlineBgColorBlue, votingProps.StarOutlineBgColorAlpha, votingProps.StarColorRed, votingProps.StarColorGreen,
+                        votingProps.StarColorBlue, votingProps.StarColorAlpha, votingProps.FillOrientation, 0, partialfillamountinpixels];
+                    imgdata = fillImageData(fillpoints, imgdata);
+                    ctxdest.putImageData(imgdata, votingProps.X + (votingProps.StarsOrientation == 0 ? (votingProps.HasValueLabel == 1 ?
+                        votingProps.StarsStartingPosOffsetWhenLabel : 0) + (numfullstars * (votingProps.ImgWidth + votingProps.SpacingInPixelsBetweenStars)) : 0),
+                        votingProps.Y + (votingProps.StarsOrientation == 1 ? (votingProps.HasValueLabel == 1 ?
+                        votingProps.StarsStartingPosOffsetWhenLabel : 0) + (numfullstars * (votingProps.ImgHeight + votingProps.SpacingInPixelsBetweenStars)) : 0));
+                }
+            }
+            if (numfullstars + didapartialstar < votingProps.NumStars) {
+                var canvas3 = document.createElement('canvas');
+                canvas3.width = votingProps.ImgWidth;
+                canvas3.height = votingProps.ImgHeight;
+                var ctx3 = canvas3.getContext('2d');
+                ctx3.drawImage(votingOutlineImage, 0, 0);
+                var imgdata2 = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                for (var i = numfullstars + didapartialstar; i < votingProps.NumStars; i++) {
+                    ctxdest.putImageData(imgdata2, votingProps.X + (votingProps.StarsOrientation == 0 ? (votingProps.HasValueLabel == 1 ?
+                        votingProps.StarsStartingPosOffsetWhenLabel : 0) + (i * (votingProps.ImgWidth + votingProps.SpacingInPixelsBetweenStars)) : 0),
+                        votingProps.Y + (votingProps.StarsOrientation == 1 ? (votingProps.HasValueLabel == 1 ?
+                        votingProps.StarsStartingPosOffsetWhenLabel : 0) + (i * (votingProps.ImgHeight + votingProps.SpacingInPixelsBetweenStars)) : 0));
+                }
+            }
+            if (votingProps.HasValueLabel == 1) {
+                ctxdest.fillStyle = votingProps.LabelTextColor;
+                ctxdest.fillText(votingProps.InitialValue.toString() + ' out of ' + votingProps.MaxValueOfAllStars.toString(), votingProps.X + votingProps.LabelXPos,
+                    votingProps.Y + votingProps.LabelYPos);
+            }
+        } else {
+
+        }
+    }, canvasid);
 }
 
 //AJAX Postback code Starts here
@@ -8944,513 +9054,516 @@ function invokeServerSideFunction(ajaxURL, functionName, canvasid, windowid, cal
     xmlhttp.send(data);
 }
 
-    function encodeParams(params) {
-        var str = '[Array]';
-        if (params) {
-            for (var i = 0; i < params.length; i++) {
-                if (typeof params[i] === 'string' || typeof params[i] === 'number') {
-                    str += '[i]' + encodeAllBrackets(params[i].toString()) + '[/i]';
-                } else if (params[i] instanceof Array) {
-                    str += '[Array]';
-                    for (var x = 0; x < params[i].length; x++) {
-                        str += encodeParams(params[i][x]);
-                    }
-                    str += '[/Array]';
+function encodeParams(params) {
+    var str = '[Array]';
+    if (params) {
+        for (var i = 0; i < params.length; i++) {
+            if (typeof params[i] === 'string' || typeof params[i] === 'number') {
+                str += '[i]' + encodeAllBrackets(params[i].toString()) + '[/i]';
+            } else if (params[i] instanceof Array) {
+                str += '[Array]';
+                for (var x = 0; x < params[i].length; x++) {
+                    str += encodeParams(params[i][x]);
                 }
+                str += '[/Array]';
             }
         }
-        return str + '[/Array]';
     }
+    return str + '[/Array]';
+}
 
-    var imageControlBackupImageUrls = new Array();
-    var textBoxBackupImageUrls = new Array();
-    var imageSliderBackupImageUrls = new Array();
-    var imageFaderBackupImageUrls = new Array();
-    var wordProcessorBackupImageUrls = new Array();
-    var treeviewBackupImageUrls = new Array();
+var imageControlBackupImageUrls = new Array();
+var textBoxBackupImageUrls = new Array();
+var imageSliderBackupImageUrls = new Array();
+var imageFaderBackupImageUrls = new Array();
+var wordProcessorBackupImageUrls = new Array();
+var treeviewBackupImageUrls = new Array();
 
-    function getEncodedVariables() {
-        for (var i = 0; i < imageControlPropsArray.length; i++) {
-            imageControlBackupImageUrls.push({ CanvasID: imageControlPropsArray[i].CanvasID, WindowID: imageControlPropsArray[i].WindowID, ImageUrl: imageControlPropsArray[i].ImageURL });
-        }
-        for (var i = 0; i < textBoxPropsArray.length; i++) {
-            textBoxBackupImageUrls.push({ CanvasID: textBoxPropsArray[i].CanvasID, WindowID: textBoxPropsArray[i].WindowID, ImageUrl: textBoxPropsArray[i].BgImageUrl });
-        }
-        for (var i = 0; i < imageSliderPropsArray.length; i++) {
-            imageSliderBackupImageUrls.push({ CanvasID: imageSliderPropsArray[i].CanvasID, WindowID: imageSliderPropsArray[i].WindowID, ImageUrls: imageSliderPropsArray[i].ImageURLs });
-        }
-        for (var i = 0; i < imageFaderPropsArray.length; i++) {
-            imageFaderBackupImageUrls.push({ CanvasID: imageFaderPropsArray[i].CanvasID, WindowID: imageFaderPropsArray[i].WindowID, ImageUrls: imageFaderPropsArray[i].ImageURLs });
-        }
-        for (var i = 0; i < wordProcessorPropsArray.length; i++) {
-            wordProcessorBackupImageUrls.push({ CanvasID: wordProcessorPropsArray[i].CanvasID, WindowID: wordProcessorPropsArray[i].WindowID, ImageUrls: wordProcessorPropsArray[i].BgImageUrl });
-        }
-        var strVars = '[Windows]';
-        for (var i = 0; i < windows.length; i++) {
-            strVars += '[i]' + stringEncodeObject(windows[i]) + '[/i]';
-        }
-        strVars += '[/Windows][labelPropsArray]';
-        for (var i = 0; i < labelPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(labelPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/labelPropsArray][buttonPropsArray]';
-        for (var i = 0; i < buttonPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(buttonPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/buttonPropsArray][scrollBarPropsArray]';
-        for (var i = 0; i < scrollBarPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(scrollBarPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/scrollBarPropsArray][gridPropsArray]';
-        for (var i = 0; i < gridPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(gridPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/gridPropsArray][comboboxPropsArray]';
-        for (var i = 0; i < comboboxPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(comboboxPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/comboboxPropsArray][checkboxPropsArray]';
-        for (var i = 0; i < checkboxPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(checkboxPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/checkboxPropsArray][radiobuttonPropsArray]';
-        for (var i = 0; i < radiobuttonPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(radiobuttonPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/radiobuttonPropsArray][imageControlPropsArray]';
-        for (var i = 0; i < imageControlPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(imageControlPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/imageControlPropsArray][treeViewPropsArray]';
-        for (var i = 0; i < treeViewPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(treeViewPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/treeViewPropsArray][calenderPropsArray]';
-        for (var i = 0; i < calenderPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(calenderPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/calenderPropsArray][progressBarPropsArray]';
-        for (var i = 0; i < progressBarPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(progressBarPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/progressBarPropsArray][sliderPropsArray]';
-        for (var i = 0; i < sliderPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(sliderPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/sliderPropsArray][datePickerPropsArray]';
-        for (var i = 0; i < datePickerPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(datePickerPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/datePickerPropsArray][panelPropsArray]';
-        for (var i = 0; i < panelPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(panelPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/panelPropsArray][barGraphsPropsArray]';
-        for (var i = 0; i < barGraphsPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(barGraphsPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/barGraphsPropsArray][pieChartsPropsArray]';
-        for (var i = 0; i < pieChartsPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(pieChartsPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/pieChartsPropsArray][lineGraphsPropsArray]';
-        for (var i = 0; i < lineGraphsPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(lineGraphsPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/lineGraphsPropsArray][gaugeChartPropsArray]';
-        for (var i = 0; i < gaugeChartPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(gaugeChartPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/gaugeChartPropsArray][radarGraphPropsArray]';
-        for (var i = 0; i < radarGraphPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(radarGraphPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/radarGraphPropsArray][lineAreaGraphPropsArray]';
-        for (var i = 0; i < lineAreaGraphPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(lineAreaGraphPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/lineAreaGraphPropsArray][candlesticksGraphPropsArray]';
-        for (var i = 0; i < candlesticksGraphPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(candlesticksGraphPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/candlesticksGraphPropsArray][doughnutChartPropsArray]';
-        for (var i = 0; i < doughnutChartPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(doughnutChartPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/doughnutChartPropsArray][barsMixedWithLabledLineGraphsPropsArray]';
-        for (var i = 0; i < barsMixedWithLabledLineGraphsPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(barsMixedWithLabledLineGraphsPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/barsMixedWithLabledLineGraphsPropsArray][stackedBarGraphPropsArray]';
-        for (var i = 0; i < stackedBarGraphPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(stackedBarGraphPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/stackedBarGraphPropsArray][tabPropsArray]';
-        for (var i = 0; i < tabPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(tabPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/tabPropsArray][imageMapPropsArray]';
-        for (var i = 0; i < imageMapPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(imageMapPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/imageMapPropsArray][menuBarPropsArray]';
-        for (var i = 0; i < menuBarPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(menuBarPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/menuBarPropsArray][subMenuBarPropsArray]';
-        for (var i = 0; i < subMenuBarPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(subMenuBarPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/subMenuBarPropsArray][textBoxPropsArray]';
-        for (var i = 0; i < textBoxPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(textBoxPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/textBoxPropsArray][imageFaderPropsArray]';
-        for (var i = 0; i < imageFaderPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(imageFaderPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/imageFaderPropsArray][imageSliderPropsArray]';
-        for (var i = 0; i < imageSliderPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(imageSliderPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/imageSliderPropsArray][multiLineLabelPropsArray]';
-        for (var i = 0; i < multiLineLabelPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(multiLineLabelPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/multiLineLabelPropsArray][wordProcessorPropsArray]';
-        for (var i = 0; i < wordProcessorPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(wordProcessorPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/wordProcessorPropsArray][virtualKeyboardPropsArray]';
-        for (var i = 0; i < virtualKeyboardPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(virtualKeyboardPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/virtualKeyboardPropsArray][splitterPropsArray]';
-        for (var i = 0; i < splitterPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(splitterPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/splitterPropsArray][boundaryFillableMapPropsArray]';
-        for (var i = 0; i < boundaryFillableMapPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(boundaryFillableMapPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/boundaryFillableMapPropsArray][simpleXMLViewerPropsArray]';
-        for (var i = 0; i < simpleXMLViewerPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(simpleXMLViewerPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/simpleXMLViewerPropsArray]';
-        return strVars;
-    } 
+function getEncodedVariables() {
+    for (var i = 0; i < imageControlPropsArray.length; i++) {
+        imageControlBackupImageUrls.push({ CanvasID: imageControlPropsArray[i].CanvasID, WindowID: imageControlPropsArray[i].WindowID, ImageUrl: imageControlPropsArray[i].ImageURL });
+    }
+    for (var i = 0; i < textBoxPropsArray.length; i++) {
+        textBoxBackupImageUrls.push({ CanvasID: textBoxPropsArray[i].CanvasID, WindowID: textBoxPropsArray[i].WindowID, ImageUrl: textBoxPropsArray[i].BgImageUrl });
+    }
+    for (var i = 0; i < imageSliderPropsArray.length; i++) {
+        imageSliderBackupImageUrls.push({ CanvasID: imageSliderPropsArray[i].CanvasID, WindowID: imageSliderPropsArray[i].WindowID, ImageUrls: imageSliderPropsArray[i].ImageURLs });
+    }
+    for (var i = 0; i < imageFaderPropsArray.length; i++) {
+        imageFaderBackupImageUrls.push({ CanvasID: imageFaderPropsArray[i].CanvasID, WindowID: imageFaderPropsArray[i].WindowID, ImageUrls: imageFaderPropsArray[i].ImageURLs });
+    }
+    for (var i = 0; i < wordProcessorPropsArray.length; i++) {
+        wordProcessorBackupImageUrls.push({ CanvasID: wordProcessorPropsArray[i].CanvasID, WindowID: wordProcessorPropsArray[i].WindowID, ImageUrls: wordProcessorPropsArray[i].BgImageUrl });
+    }
+    var strVars = '[Windows]';
+    for (var i = 0; i < windows.length; i++) {
+        strVars += '[i]' + stringEncodeObject(windows[i]) + '[/i]';
+    }
+    strVars += '[/Windows][labelPropsArray]';
+    for (var i = 0; i < labelPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(labelPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/labelPropsArray][buttonPropsArray]';
+    for (var i = 0; i < buttonPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(buttonPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/buttonPropsArray][scrollBarPropsArray]';
+    for (var i = 0; i < scrollBarPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(scrollBarPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/scrollBarPropsArray][gridPropsArray]';
+    for (var i = 0; i < gridPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(gridPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/gridPropsArray][comboboxPropsArray]';
+    for (var i = 0; i < comboboxPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(comboboxPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/comboboxPropsArray][checkboxPropsArray]';
+    for (var i = 0; i < checkboxPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(checkboxPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/checkboxPropsArray][radiobuttonPropsArray]';
+    for (var i = 0; i < radiobuttonPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(radiobuttonPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/radiobuttonPropsArray][imageControlPropsArray]';
+    for (var i = 0; i < imageControlPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(imageControlPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/imageControlPropsArray][treeViewPropsArray]';
+    for (var i = 0; i < treeViewPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(treeViewPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/treeViewPropsArray][calenderPropsArray]';
+    for (var i = 0; i < calenderPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(calenderPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/calenderPropsArray][progressBarPropsArray]';
+    for (var i = 0; i < progressBarPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(progressBarPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/progressBarPropsArray][sliderPropsArray]';
+    for (var i = 0; i < sliderPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(sliderPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/sliderPropsArray][datePickerPropsArray]';
+    for (var i = 0; i < datePickerPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(datePickerPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/datePickerPropsArray][panelPropsArray]';
+    for (var i = 0; i < panelPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(panelPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/panelPropsArray][barGraphsPropsArray]';
+    for (var i = 0; i < barGraphsPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(barGraphsPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/barGraphsPropsArray][pieChartsPropsArray]';
+    for (var i = 0; i < pieChartsPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(pieChartsPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/pieChartsPropsArray][lineGraphsPropsArray]';
+    for (var i = 0; i < lineGraphsPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(lineGraphsPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/lineGraphsPropsArray][gaugeChartPropsArray]';
+    for (var i = 0; i < gaugeChartPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(gaugeChartPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/gaugeChartPropsArray][radarGraphPropsArray]';
+    for (var i = 0; i < radarGraphPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(radarGraphPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/radarGraphPropsArray][lineAreaGraphPropsArray]';
+    for (var i = 0; i < lineAreaGraphPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(lineAreaGraphPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/lineAreaGraphPropsArray][candlesticksGraphPropsArray]';
+    for (var i = 0; i < candlesticksGraphPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(candlesticksGraphPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/candlesticksGraphPropsArray][doughnutChartPropsArray]';
+    for (var i = 0; i < doughnutChartPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(doughnutChartPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/doughnutChartPropsArray][barsMixedWithLabledLineGraphsPropsArray]';
+    for (var i = 0; i < barsMixedWithLabledLineGraphsPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(barsMixedWithLabledLineGraphsPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/barsMixedWithLabledLineGraphsPropsArray][stackedBarGraphPropsArray]';
+    for (var i = 0; i < stackedBarGraphPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(stackedBarGraphPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/stackedBarGraphPropsArray][tabPropsArray]';
+    for (var i = 0; i < tabPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(tabPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/tabPropsArray][imageMapPropsArray]';
+    for (var i = 0; i < imageMapPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(imageMapPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/imageMapPropsArray][menuBarPropsArray]';
+    for (var i = 0; i < menuBarPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(menuBarPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/menuBarPropsArray][subMenuBarPropsArray]';
+    for (var i = 0; i < subMenuBarPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(subMenuBarPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/subMenuBarPropsArray][textBoxPropsArray]';
+    for (var i = 0; i < textBoxPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(textBoxPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/textBoxPropsArray][imageFaderPropsArray]';
+    for (var i = 0; i < imageFaderPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(imageFaderPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/imageFaderPropsArray][imageSliderPropsArray]';
+    for (var i = 0; i < imageSliderPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(imageSliderPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/imageSliderPropsArray][multiLineLabelPropsArray]';
+    for (var i = 0; i < multiLineLabelPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(multiLineLabelPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/multiLineLabelPropsArray][wordProcessorPropsArray]';
+    for (var i = 0; i < wordProcessorPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(wordProcessorPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/wordProcessorPropsArray][virtualKeyboardPropsArray]';
+    for (var i = 0; i < virtualKeyboardPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(virtualKeyboardPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/virtualKeyboardPropsArray][splitterPropsArray]';
+    for (var i = 0; i < splitterPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(splitterPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/splitterPropsArray][boundaryFillableMapPropsArray]';
+    for (var i = 0; i < boundaryFillableMapPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(boundaryFillableMapPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/boundaryFillableMapPropsArray][simpleXMLViewerPropsArray]';
+    for (var i = 0; i < simpleXMLViewerPropsArray.length; i++) {
+        strVars += '[i]' + stringEncodeObject(simpleXMLViewerPropsArray[i]) + '[/i]';
+    }
+    strVars += '[/simpleXMLViewerPropsArray]';
+    return strVars;
+}
 
-    var savedImagesOnPostback = new Array();
-    var currentSavedImagesOnPostbackWindowID;
-    var currentSavedImagesOnPostbackCanvasID;
-    var savedFunctionsOnPostback = new Array();
-    var savedDrawingCanvas = new Array();
-    var savedDrawingCanvasCtx = new Array();
-    var savedImageArrayOnPostback = new Array();
-    var savedArrayFunctionsOnPostback = new Array();
+var savedImagesOnPostback = new Array();
+var currentSavedImagesOnPostbackWindowID;
+var currentSavedImagesOnPostbackCanvasID;
+var savedFunctionsOnPostback = new Array();
+var savedDrawingCanvas = new Array();
+var savedDrawingCanvasCtx = new Array();
+var savedImageArrayOnPostback = new Array();
+var savedArrayFunctionsOnPostback = new Array();
 
-    function stringEncodeObject(obj) {
-        var strIndexes = '';
-        var str = '';
-        for (var name in obj) {
-            if (obj[name] != null) {
-                if ((navigator.userAgent.toLowerCase().indexOf('opera') > -1 ? obj[name] instanceof Object && obj[name].hasOwnProperty && obj[name].src : obj[name] instanceof Image) || name == 'Image') {
-                    savedImagesOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, Image: obj[name] });
-                    continue;
+function stringEncodeObject(obj) {
+    var strIndexes = '';
+    var str = '';
+    for (var name in obj) {
+        if (obj[name] != null) {
+            if ((navigator.userAgent.toLowerCase().indexOf('opera') > -1 ? obj[name] instanceof Object && obj[name].hasOwnProperty && obj[name].src : obj[name] instanceof Image) || name == 'Image') {
+                savedImagesOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, Image: obj[name] });
+                continue;
+            }
+            if (name == 'DrawingCanvas') {
+                savedDrawingCanvas.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, DrawingCanvas: obj[name] });
+                continue;
+            }
+            if (name == 'DrawingCanvasCtx') {
+                savedDrawingCanvasCtx.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, DrawingCanvasCtx: obj[name] });
+                continue;
+            }
+            if (obj[name] && typeof obj[name] == 'function') {
+                savedFunctionsOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, FunctionValue: obj[name], PropertyName: name });
+                continue;
+            }
+            if (typeof obj[name] === 'string' || typeof obj[name] === 'number') {
+                if (name == "WindowID") {
+                    currentSavedImagesOnPostbackWindowID = obj[name].toString();
                 }
-                if (name == 'DrawingCanvas') {
-                    savedDrawingCanvas.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, DrawingCanvas: obj[name] });
-                    continue;
+                if (name == "CanvasID") {
+                    currentSavedImagesOnPostbackCanvasID = obj[name].toString();
                 }
-                if (name == 'DrawingCanvasCtx') {
-                    savedDrawingCanvasCtx.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, DrawingCanvasCtx: obj[name] });
-                    continue;
-                }
-                if (obj[name] && typeof obj[name] == 'function') {
-                    savedFunctionsOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, FunctionValue: obj[name], PropertyName: name });
-                    continue;
-                }
-                if (typeof obj[name] === 'string' || typeof obj[name] === 'number') {
-                    if (name == "WindowID") {
-                        currentSavedImagesOnPostbackWindowID = obj[name].toString();
-                    }
-                    if (name == "CanvasID") {
-                        currentSavedImagesOnPostbackCanvasID = obj[name].toString();
-                    }
-                    str += '[' + name + ']' + encodeAllBrackets(obj[name].toString()) + '[/' + name + ']';
-                } else if (obj[name] instanceof Array) {
-                    str += '[' + name + ']';
-                    for (var i = 0; i < obj[name].length; i++) {
-                        if (obj[name] != null) {
-                            if ((navigator.userAgent.toLowerCase().indexOf('opera') > -1 ? obj[name][i] instanceof Object && obj[name][i].hasOwnProperty && obj[name][i].src : obj[name][i] instanceof Image)) {
-                                savedImageArrayOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, Image: obj[name][i] });
-                                continue;
-                            }
-                            if (obj[name][i] && typeof obj[name][i] == 'function') {
-                                savedArrayFunctionsOnPostback.push({
-                                    CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID,
-                                    Index: i.toString(), Function: obj[name][i]
-                                });
-                                continue;
-                            }
-                            if (typeof obj[name][i] === 'string' || typeof obj[name][i] === 'number') {
-                                str += '[i]' + encodeAllBrackets(obj[name][i].toString()) + '[/i]';
-                            } else if (obj[name][i] instanceof Array) {
-                                str += encodeArray(obj[name][i], (strIndexes && strIndexes.length > 0 ? strIndexes + ',' + i.toString() : i.toString()));
-                            } else if(typeof obj[name] === 'object') {
-                                str += '[i]' + stringEncodeValueObject(obj[name][i]) + '[/i]';
-                            }
+                str += '[' + name + ']' + encodeAllBrackets(obj[name].toString()) + '[/' + name + ']';
+            } else if (obj[name] instanceof Array) {
+                str += '[' + name + ']';
+                for (var i = 0; i < obj[name].length; i++) {
+                    if (obj[name] != null) {
+                        if ((navigator.userAgent.toLowerCase().indexOf('opera') > -1 ? obj[name][i] instanceof Object && obj[name][i].hasOwnProperty && obj[name][i].src : obj[name][i] instanceof Image)) {
+                            savedImageArrayOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, Image: obj[name][i] });
+                            continue;
                         }
-                    }
-                    str += '[/' + name + ']';
-                } else if(typeof obj[name] === 'object') {
-                    str += '[' + name + ']' + stringEncodeValueObject(obj[name]) + '[/' + name + ']';
-                }
-            }
-        }
-        return str;
-    }
-
-    function encodeAllBrackets(str) {
-        str = str.replace(/&/g, '&amp;');
-        str = str.replace(/</g, '&lt;');
-        str = str.replace(/\[/g, '&lb;');
-        str = str.replace(/\]/g, '&rb;');
-        return str.replace(/>/g, '&gt;');
-    }
-
-    function encodeArray(arr, strIndexes) {
-        var str = '[Array]';
-        for (var i = 0; i < arr.length; i++) {
-            if (arr[i] != null) {
-                if ((navigator.userAgent.toLowerCase().indexOf('opera') > -1 ? arr[i] instanceof Object && arr[i].hasOwnProperty && arr[i].src : arr[i] instanceof Image)) {
-                    savedImageArrayOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, Image: arr[i], URL: arr[i].src });
-                    continue;
-                }
-                if (arr[i] && typeof arr[i] == 'function') {
-                    savedArrayFunctionsOnPostback.push({
-                        CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID,
-                        Index: (strIndexes && strIndexes.length > 0 ? strIndexes + ',' + i.toString() : i.toString()), Function: arr[i]
-                    });
-                    continue;
-                }
-                if (typeof arr[i] === 'string' || typeof arr[i] === 'number') {
-                    str += '[i]' + encodeAllBrackets(arr[i].toString()) + '[/i]';
-                } else if (arr[i] instanceof Array) {
-                    str += encodeArray(arr[i], (strIndexes && strIndexes.length > 0 ? strIndexes + ',' + i.toString() : i.toString()));
-                } else if(typeof arr[i] === 'object') {
-                    str += '[i]' + stringEncodeValueObject(arr[i]) + '[/i]';
-                }
-            }
-        }
-        return str + '[/Array]';
-    }
-
-    function stringEncodeValueObject(obj) {
-        var str = '[ObjectArray]';
-        for (var name in obj) {
-            //ParentNode is a recursive exception
-            if (obj[name] != null && name != 'TreeviewNodeInstancesParentNode' && name != 'TreeviewNodeInstancesRootNodes' && name != 'TreeviewClickLabelExtentsNode') {
-                if (obj[name] instanceof Array && obj[name].length > 0) {
-                    str += '[' + name + ']' + encodeArray(obj[name]) + '[/' + name + ']';
-                } else if (typeof obj[name] === 'string' || typeof obj[name] === 'number') {
-                    str += '[' + name + ']' + encodeAllBrackets(obj[name].toString()) + '[/' + name + ']';
-                } else if(typeof obj[name] === 'object' && !obj[name] instanceof Array){
-                    str += '[' + name + ']' + stringEncodeValueObject(obj[name]) + '[/' + name + ']';
-                }
-            }
-        }
-        return str + '[/ObjectArray]';
-    }
-
-    function rectifyNullFunctions(arr) {
-        if (arr.length == 6) {
-            arr.splice(5, 0, null);
-        }
-        if (arr.length >= 7 && arr[6] != null) {
-            for (var i = 0; i < arr[6].length; i++) {
-                if (typeof arr[6][i][5] != 'function' && typeof arr[6][i][5] == 'object') {
-                    arr[6][i].splice(5, 0, null);
-                    rectifyNullFunctions(arr[6][i][6]);
-                }
-            }
-        } else if (arr.length == 6) {
-            arr.push(null);
-        }
-    }
-
-    function UnWrapVars(data) {
-        var xmlDoc = null;
-        data = data.replace(/\[/g, '<');
-        data = data.replace(/\]/g, '>');
-        data = data.replace(/[&]lb[;]/g, '[');
-        data = data.replace(/[&]rb[;]/g, ']');
-        if (window.DOMParser) {
-            var parser = new DOMParser();
-            xmlDoc = parser.parseFromString(data, "text/xml");
-            for (var i = 0; i < xmlDoc.firstChild.childNodes[0].childNodes.length; i++) {
-                eval(xmlDoc.firstChild.childNodes[0].childNodes[i].nodeName + " = new Array();");
-                for (var x = 0; x < xmlDoc.firstChild.childNodes[0].childNodes[i].childNodes.length; x++) {
-                    var obj = new Object();
-                    recurseFillVars(xmlDoc.firstChild.childNodes[0].childNodes[i].childNodes[x], obj);
-                    eval(xmlDoc.firstChild.childNodes[0].childNodes[i].nodeName + ".push(obj);");
-                }
-            }
-        }
-        for (var i = 0; i < savedImagesOnPostback.length; i++) {
-            for (var x = 0; x < imageMapPropsArray.length; x++) {
-                if (imageMapPropsArray[x].CanvasID == savedImagesOnPostback[i].CanvasID && imageMapPropsArray[x].WindowID == savedImagesOnPostback[i].WindowID) {
-                    imageMapPropsArray[x].Image = savedImagesOnPostback[i].Image;
-                }
-            }
-            for (var x = 0; x < imageControlPropsArray.length; x++) {
-                if (imageControlPropsArray[x].CanvasID == savedImagesOnPostback[i].CanvasID && imageControlPropsArray[x].WindowID == savedImagesOnPostback[i].WindowID) {
-                    imageControlPropsArray[x].Image = savedImagesOnPostback[i].Image;
-                }
-            }
-            for (var x = 0; x < textBoxPropsArray.length; x++) {
-                if (textBoxPropsArray[x].CanvasID == savedImagesOnPostback[i].CanvasID && textBoxPropsArray[x].WindowID == savedImagesOnPostback[i].WindowID) {
-                    textBoxPropsArray[x].Image = savedImagesOnPostback[i].Image;
-                }
-            }
-            for (var x = 0; x < wordProcessorPropsArray.length; x++) {
-                if (wordProcessorPropsArray[x].CanvasID == savedImagesOnPostback[i].CanvasID && wordProcessorPropsArray[x].WindowID == savedImagesOnPostback[i].WindowID) {
-                    wordProcessorPropsArray[x].Image = savedImagesOnPostback[i].Image;
-                }
-            }
-        }
-        for (var i = 0; i < savedDrawingCanvas.length; i++) {
-            for (var x = 0; x < imageFaderPropsArray.length; x++) {
-                if (imageFaderPropsArray[x].CanvasID == savedDrawingCanvas[i].CanvasID && imageFaderPropsArray[x].WindowID == savedDrawingCanvas[i].WindowID) {
-                    imageFaderPropsArray[x].DrawingCanvas = savedDrawingCanvas[i].DrawingCanvas;
-                }
-            }
-        }
-        for (var i = 0; i < savedDrawingCanvasCtx.length; i++) {
-            for (var x = 0; x < imageFaderPropsArray.length; x++) {
-                if (imageFaderPropsArray[x].CanvasID == savedDrawingCanvasCtx[i].CanvasID && imageFaderPropsArray[x].WindowID == savedDrawingCanvasCtx[i].WindowID) {
-                    imageFaderPropsArray[x].DrawingCanvasCtx = savedDrawingCanvasCtx[i].DrawingCanvasCtx;
-                }
-            }
-        }
-        for (var i = 0; i < imageFaderPropsArray.length; i++) {
-            imageFaderPropsArray[i].Images = new Array();
-        }
-        for (var i = 0; i < savedImageArrayOnPostback.length; i++) {
-            for (var x = 0; x < imageFaderPropsArray.length; x++) {
-                if (imageFaderPropsArray[x].CanvasID == savedImageArrayOnPostback[i].CanvasID && imageFaderPropsArray[x].WindowID == savedImageArrayOnPostback[i].WindowID) {
-                    imageFaderPropsArray[x].Images.push(savedImageArrayOnPostback[i].Image);
-                }
-            }
-        }
-        for (var i = 0; i < imageSliderPropsArray.length; i++) {
-            imageSliderPropsArray[i].Images = new Array();
-        }
-        for (var i = 0; i < savedImageArrayOnPostback.length; i++) {
-            for (var x = 0; x < imageSliderPropsArray.length; x++) {
-                if (imageSliderPropsArray[x].CanvasID == savedImageArrayOnPostback[i].CanvasID && imageSliderPropsArray[x].WindowID == savedImageArrayOnPostback[i].WindowID) {
-                    imageSliderPropsArray[x].Images.push(savedImageArrayOnPostback[i].Image);
-                }
-            }
-        }
-        for (var i = 0; i < imageSliderPropsArray.length; i++) {
-            for (var j = 0; j < imageSliderPropsArray[i].ImageURLs.length; j++) {
-                for (var u = 0; u < imageSliderBackupImageUrls.length; u++) {
-                    if (imageSliderPropsArray[i].CanvasID == imageSliderBackupImageUrls[u].CanvasID && imageSliderPropsArray[i].WindowID == imageSliderBackupImageUrls[u].WindowID) {
-                        var found = 0;
-                        for (var y = 0; y < imageSliderBackupImageUrls[u].ImageUrls.length; y++) {
-                            if (imageSliderBackupImageUrls[u].ImageUrls[y] == imageSliderPropsArray[i].ImageURLs[j]) {
-                                found = 1;
-                                break;
-                            }
+                        if (obj[name][i] && typeof obj[name][i] == 'function') {
+                            savedArrayFunctionsOnPostback.push({
+                                CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID,
+                                Index: i.toString(), Function: obj[name][i]
+                            });
+                            continue;
                         }
-                        if (found == 0) {
-                            var image = new Image();
-                            image.src = imageSliderPropsArray[i].imageURLs[j];
-                            imageSliderPropsArray[i].Images[j] = image;
-                            image.onload = function () { invalidateRect(imageSliderPropsArray[i].CanvasID, null, imageSliderPropsArray[i].X, imageSliderPropsArray[i].Y,
-                                imageSliderPropsArray[i].Width, imageSliderPropsArray[i].Height); };
+                        if (typeof obj[name][i] === 'string' || typeof obj[name][i] === 'number') {
+                            str += '[i]' + encodeAllBrackets(obj[name][i].toString()) + '[/i]';
+                        } else if (obj[name][i] instanceof Array) {
+                            str += encodeArray(obj[name][i], (strIndexes && strIndexes.length > 0 ? strIndexes + ',' + i.toString() : i.toString()));
+                        } else if (typeof obj[name] === 'object') {
+                            str += '[i]' + stringEncodeValueObject(obj[name][i]) + '[/i]';
                         }
                     }
                 }
+                str += '[/' + name + ']';
+            } else if (typeof obj[name] === 'object') {
+                str += '[' + name + ']' + stringEncodeValueObject(obj[name]) + '[/' + name + ']';
             }
         }
-        for (var i = 0; i < imageFaderPropsArray.length; i++) {
-            for (var j = 0; j < imageFaderPropsArray[i].ImageURLs.length; j++) {
-                for (var u = 0; u < imageFaderBackupImageUrls.length; u++) {
-                    if (imageFaderPropsArray[i].CanvasID == imageFaderBackupImageUrls[u].CanvasID && imageFaderPropsArray[i].WindowID == imageFaderBackupImageUrls[u].WindowID) {
-                        var found = 0;
-                        for (var y = 0; y < imageFaderBackupImageUrls[u].ImageUrls.length; y++) {
-                            if (imageFaderBackupImageUrls[u].ImageUrls[y] == imageFaderPropsArray[i].ImageURLs[j]) {
-                                found = 1;
-                                break;
-                            }
+    }
+    return str;
+}
+
+function encodeAllBrackets(str) {
+    str = str.replace(/&/g, '&amp;');
+    str = str.replace(/</g, '&lt;');
+    str = str.replace(/\[/g, '&lb;');
+    str = str.replace(/\]/g, '&rb;');
+    return str.replace(/>/g, '&gt;');
+}
+
+function encodeArray(arr, strIndexes) {
+    var str = '[Array]';
+    for (var i = 0; i < arr.length; i++) {
+        if (arr[i] != null) {
+            if ((navigator.userAgent.toLowerCase().indexOf('opera') > -1 ? arr[i] instanceof Object && arr[i].hasOwnProperty && arr[i].src : arr[i] instanceof Image)) {
+                savedImageArrayOnPostback.push({ CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID, Image: arr[i], URL: arr[i].src });
+                continue;
+            }
+            if (arr[i] && typeof arr[i] == 'function') {
+                savedArrayFunctionsOnPostback.push({
+                    CanvasID: currentSavedImagesOnPostbackCanvasID, WindowID: currentSavedImagesOnPostbackWindowID,
+                    Index: (strIndexes && strIndexes.length > 0 ? strIndexes + ',' + i.toString() : i.toString()), Function: arr[i]
+                });
+                continue;
+            }
+            if (typeof arr[i] === 'string' || typeof arr[i] === 'number') {
+                str += '[i]' + encodeAllBrackets(arr[i].toString()) + '[/i]';
+            } else if (arr[i] instanceof Array) {
+                str += encodeArray(arr[i], (strIndexes && strIndexes.length > 0 ? strIndexes + ',' + i.toString() : i.toString()));
+            } else if (typeof arr[i] === 'object') {
+                str += '[i]' + stringEncodeValueObject(arr[i]) + '[/i]';
+            }
+        }
+    }
+    return str + '[/Array]';
+}
+
+function stringEncodeValueObject(obj) {
+    var str = '[ObjectArray]';
+    for (var name in obj) {
+        //ParentNode is a recursive exception
+        if (obj[name] != null && name != 'TreeviewNodeInstancesParentNode' && name != 'TreeviewNodeInstancesRootNodes' && name != 'TreeviewClickLabelExtentsNode') {
+            if (obj[name] instanceof Array && obj[name].length > 0) {
+                str += '[' + name + ']' + encodeArray(obj[name]) + '[/' + name + ']';
+            } else if (typeof obj[name] === 'string' || typeof obj[name] === 'number') {
+                str += '[' + name + ']' + encodeAllBrackets(obj[name].toString()) + '[/' + name + ']';
+            } else if (typeof obj[name] === 'object' && !obj[name] instanceof Array) {
+                str += '[' + name + ']' + stringEncodeValueObject(obj[name]) + '[/' + name + ']';
+            }
+        }
+    }
+    return str + '[/ObjectArray]';
+}
+
+function rectifyNullFunctions(arr) {
+    if (arr.length == 6) {
+        arr.splice(5, 0, null);
+    }
+    if (arr.length >= 7 && arr[6] != null) {
+        for (var i = 0; i < arr[6].length; i++) {
+            if (typeof arr[6][i][5] != 'function' && typeof arr[6][i][5] == 'object') {
+                arr[6][i].splice(5, 0, null);
+                rectifyNullFunctions(arr[6][i][6]);
+            }
+        }
+    } else if (arr.length == 6) {
+        arr.push(null);
+    }
+}
+
+function UnWrapVars(data) {
+    var xmlDoc = null;
+    data = data.replace(/\[/g, '<');
+    data = data.replace(/\]/g, '>');
+    data = data.replace(/[&]lb[;]/g, '[');
+    data = data.replace(/[&]rb[;]/g, ']');
+    if (window.DOMParser) {
+        var parser = new DOMParser();
+        xmlDoc = parser.parseFromString(data, "text/xml");
+        for (var i = 0; i < xmlDoc.firstChild.childNodes[0].childNodes.length; i++) {
+            eval(xmlDoc.firstChild.childNodes[0].childNodes[i].nodeName + " = new Array();");
+            for (var x = 0; x < xmlDoc.firstChild.childNodes[0].childNodes[i].childNodes.length; x++) {
+                var obj = new Object();
+                recurseFillVars(xmlDoc.firstChild.childNodes[0].childNodes[i].childNodes[x], obj);
+                eval(xmlDoc.firstChild.childNodes[0].childNodes[i].nodeName + ".push(obj);");
+            }
+        }
+    }
+    for (var i = 0; i < savedImagesOnPostback.length; i++) {
+        for (var x = 0; x < imageMapPropsArray.length; x++) {
+            if (imageMapPropsArray[x].CanvasID == savedImagesOnPostback[i].CanvasID && imageMapPropsArray[x].WindowID == savedImagesOnPostback[i].WindowID) {
+                imageMapPropsArray[x].Image = savedImagesOnPostback[i].Image;
+            }
+        }
+        for (var x = 0; x < imageControlPropsArray.length; x++) {
+            if (imageControlPropsArray[x].CanvasID == savedImagesOnPostback[i].CanvasID && imageControlPropsArray[x].WindowID == savedImagesOnPostback[i].WindowID) {
+                imageControlPropsArray[x].Image = savedImagesOnPostback[i].Image;
+            }
+        }
+        for (var x = 0; x < textBoxPropsArray.length; x++) {
+            if (textBoxPropsArray[x].CanvasID == savedImagesOnPostback[i].CanvasID && textBoxPropsArray[x].WindowID == savedImagesOnPostback[i].WindowID) {
+                textBoxPropsArray[x].Image = savedImagesOnPostback[i].Image;
+            }
+        }
+        for (var x = 0; x < wordProcessorPropsArray.length; x++) {
+            if (wordProcessorPropsArray[x].CanvasID == savedImagesOnPostback[i].CanvasID && wordProcessorPropsArray[x].WindowID == savedImagesOnPostback[i].WindowID) {
+                wordProcessorPropsArray[x].Image = savedImagesOnPostback[i].Image;
+            }
+        }
+    }
+    for (var i = 0; i < savedDrawingCanvas.length; i++) {
+        for (var x = 0; x < imageFaderPropsArray.length; x++) {
+            if (imageFaderPropsArray[x].CanvasID == savedDrawingCanvas[i].CanvasID && imageFaderPropsArray[x].WindowID == savedDrawingCanvas[i].WindowID) {
+                imageFaderPropsArray[x].DrawingCanvas = savedDrawingCanvas[i].DrawingCanvas;
+            }
+        }
+    }
+    for (var i = 0; i < savedDrawingCanvasCtx.length; i++) {
+        for (var x = 0; x < imageFaderPropsArray.length; x++) {
+            if (imageFaderPropsArray[x].CanvasID == savedDrawingCanvasCtx[i].CanvasID && imageFaderPropsArray[x].WindowID == savedDrawingCanvasCtx[i].WindowID) {
+                imageFaderPropsArray[x].DrawingCanvasCtx = savedDrawingCanvasCtx[i].DrawingCanvasCtx;
+            }
+        }
+    }
+    for (var i = 0; i < imageFaderPropsArray.length; i++) {
+        imageFaderPropsArray[i].Images = new Array();
+    }
+    for (var i = 0; i < savedImageArrayOnPostback.length; i++) {
+        for (var x = 0; x < imageFaderPropsArray.length; x++) {
+            if (imageFaderPropsArray[x].CanvasID == savedImageArrayOnPostback[i].CanvasID && imageFaderPropsArray[x].WindowID == savedImageArrayOnPostback[i].WindowID) {
+                imageFaderPropsArray[x].Images.push(savedImageArrayOnPostback[i].Image);
+            }
+        }
+    }
+    for (var i = 0; i < imageSliderPropsArray.length; i++) {
+        imageSliderPropsArray[i].Images = new Array();
+    }
+    for (var i = 0; i < savedImageArrayOnPostback.length; i++) {
+        for (var x = 0; x < imageSliderPropsArray.length; x++) {
+            if (imageSliderPropsArray[x].CanvasID == savedImageArrayOnPostback[i].CanvasID && imageSliderPropsArray[x].WindowID == savedImageArrayOnPostback[i].WindowID) {
+                imageSliderPropsArray[x].Images.push(savedImageArrayOnPostback[i].Image);
+            }
+        }
+    }
+    for (var i = 0; i < imageSliderPropsArray.length; i++) {
+        for (var j = 0; j < imageSliderPropsArray[i].ImageURLs.length; j++) {
+            for (var u = 0; u < imageSliderBackupImageUrls.length; u++) {
+                if (imageSliderPropsArray[i].CanvasID == imageSliderBackupImageUrls[u].CanvasID && imageSliderPropsArray[i].WindowID == imageSliderBackupImageUrls[u].WindowID) {
+                    var found = 0;
+                    for (var y = 0; y < imageSliderBackupImageUrls[u].ImageUrls.length; y++) {
+                        if (imageSliderBackupImageUrls[u].ImageUrls[y] == imageSliderPropsArray[i].ImageURLs[j]) {
+                            found = 1;
+                            break;
                         }
-                        if (found == 0) {
-                            var image = new Image();
-                            image.src = imageFaderPropsArray[i].imageURLs[j];
-                            imageFaderPropsArray[i].Images[j] = image;
-                            image.onload = function () { invalidateRect(imageFaderPropsArray[i].CanvasID, null, imageFaderPropsArray[i].X, imageFaderPropsArray[i].Y, 
-                                imageFaderPropsArray[i].Width, imageFaderPropsArray[i].Height); };
-                        }
+                    }
+                    if (found == 0) {
+                        var image = new Image();
+                        image.src = imageSliderPropsArray[i].imageURLs[j];
+                        imageSliderPropsArray[i].Images[j] = image;
+                        image.onload = function () {
+                            invalidateRect(imageSliderPropsArray[i].CanvasID, null, imageSliderPropsArray[i].X, imageSliderPropsArray[i].Y,
+                                imageSliderPropsArray[i].Width, imageSliderPropsArray[i].Height);
+                        };
                     }
                 }
             }
         }
-        for (var i = 0; i < savedArrayFunctionsOnPostback.length; i++) {
-            for (var j = 0; j < menuBarPropsArray.length; j++) {
-                if (savedArrayFunctionsOnPostback[i].CanvasID == menuBarPropsArray[j].CanvasID &&
-                    savedArrayFunctionsOnPostback[i].WindowID == menuBarPropsArray[j].WindowID) {
-                    var arrayIndexes = savedArrayFunctionsOnPostback[i].Index.split(',');
-                    var dataptr = menuBarPropsArray[j].Data;
-                    for (var x = 0; x < arrayIndexes.length - 1; x++) {
-                        dataptr = dataptr[dataptr.length - 1 > arrayIndexes[x] ? arrayIndexes[x] : dataptr.length - 1];
+    }
+    for (var i = 0; i < imageFaderPropsArray.length; i++) {
+        for (var j = 0; j < imageFaderPropsArray[i].ImageURLs.length; j++) {
+            for (var u = 0; u < imageFaderBackupImageUrls.length; u++) {
+                if (imageFaderPropsArray[i].CanvasID == imageFaderBackupImageUrls[u].CanvasID && imageFaderPropsArray[i].WindowID == imageFaderBackupImageUrls[u].WindowID) {
+                    var found = 0;
+                    for (var y = 0; y < imageFaderBackupImageUrls[u].ImageUrls.length; y++) {
+                        if (imageFaderBackupImageUrls[u].ImageUrls[y] == imageFaderPropsArray[i].ImageURLs[j]) {
+                            found = 1;
+                            break;
+                        }
                     }
-                    dataptr.splice(arrayIndexes[arrayIndexes.length - 1], 0, savedArrayFunctionsOnPostback[i].Function);
+                    if (found == 0) {
+                        var image = new Image();
+                        image.src = imageFaderPropsArray[i].imageURLs[j];
+                        imageFaderPropsArray[i].Images[j] = image;
+                        image.onload = function () {
+                            invalidateRect(imageFaderPropsArray[i].CanvasID, null, imageFaderPropsArray[i].X, imageFaderPropsArray[i].Y,
+                                imageFaderPropsArray[i].Width, imageFaderPropsArray[i].Height);
+                        };
+                    }
                 }
             }
         }
+    }
+    for (var i = 0; i < savedArrayFunctionsOnPostback.length; i++) {
         for (var j = 0; j < menuBarPropsArray.length; j++) {
-            for (var k = 0; k < menuBarPropsArray[j].Data.length; k++) {
-                rectifyNullFunctions(menuBarPropsArray[j].Data[k]);
+            if (savedArrayFunctionsOnPostback[i].CanvasID == menuBarPropsArray[j].CanvasID &&
+                savedArrayFunctionsOnPostback[i].WindowID == menuBarPropsArray[j].WindowID) {
+                var arrayIndexes = savedArrayFunctionsOnPostback[i].Index.split(',');
+                var dataptr = menuBarPropsArray[j].Data;
+                for (var x = 0; x < arrayIndexes.length - 1; x++) {
+                    dataptr = dataptr[dataptr.length - 1 > arrayIndexes[x] ? arrayIndexes[x] : dataptr.length - 1];
+                }
+                dataptr.splice(arrayIndexes[arrayIndexes.length - 1], 0, savedArrayFunctionsOnPostback[i].Function);
             }
         }
-        for (var i = 0; i < subMenuBarPropsArray.length; i++) {
-            for (var j = 0; j < menuBarPropsArray.length; j++) {
-                for (var c = 0; c < menuBarPropsArray[j].ChildMenuWindowIDs.length; c++) {
-                    if (subMenuBarPropsArray[i].WindowID == menuBarPropsArray[j].ChildMenuWindowIDs[c] &&
-                        subMenuBarPropsArray[i].CanvasID == menuBarPropsArray[j].CanvasID) {
-                        var x = 0;
-                        for (var k = 0; k < menuBarPropsArray[j].Data.length; k++) {
-                            if (menuBarPropsArray[j].Data[k][6] != null) {
-                                if (x == c) {
-                                    subMenuBarPropsArray[i].Data = menuBarPropsArray[j].Data[k][6];
-                                }
-                                x++;
+    }
+    for (var j = 0; j < menuBarPropsArray.length; j++) {
+        for (var k = 0; k < menuBarPropsArray[j].Data.length; k++) {
+            rectifyNullFunctions(menuBarPropsArray[j].Data[k]);
+        }
+    }
+    for (var i = 0; i < subMenuBarPropsArray.length; i++) {
+        for (var j = 0; j < menuBarPropsArray.length; j++) {
+            for (var c = 0; c < menuBarPropsArray[j].ChildMenuWindowIDs.length; c++) {
+                if (subMenuBarPropsArray[i].WindowID == menuBarPropsArray[j].ChildMenuWindowIDs[c] &&
+                    subMenuBarPropsArray[i].CanvasID == menuBarPropsArray[j].CanvasID) {
+                    var x = 0;
+                    for (var k = 0; k < menuBarPropsArray[j].Data.length; k++) {
+                        if (menuBarPropsArray[j].Data[k][6] != null) {
+                            if (x == c) {
+                                subMenuBarPropsArray[i].Data = menuBarPropsArray[j].Data[k][6];
                             }
+                            x++;
                         }
                     }
                 }
             }
         }
-        for (var i = 0; i < menuBarPropsArray.length; i++) {
-            for (var c = 0; menuBarPropsArray[i].ChildMenuWindowIDs && c < menuBarPropsArray[i].ChildMenuWindowIDs.length; c++) {
-                for (var k = 0; k < subMenuBarPropsArray.length; k++) {
-                    if (subMenuBarPropsArray[k].CanvasID == menuBarPropsArray[i].CanvasID &&
-                        subMenuBarPropsArray[k].WindowID == menuBarPropsArray[i].ChildMenuWindowIDs[c]) {
-                        for (var m = 0; m < subMenuBarPropsArray[k].ChildMenuWindowIDs.length; m++) {
-                            for (var j = 0; j < subMenuBarPropsArray.length; j++) {
-                                if (subMenuBarPropsArray[j].CanvasID == subMenuBarPropsArray[k].CanvasID &&
-                                    subMenuBarPropsArray[j].WindowID == subMenuBarPropsArray[k].ChildMenuWindowIDs[m]) {
-                                    var x = 0;
-                                    for (var u = 0; u < subMenuBarPropsArray[k].Data.length; u++) {
-                                        if (subMenuBarPropsArray[k].Data[u][6] != null) {
-                                            if (x == m) {
-                                                subMenuBarPropsArray[j].Data = subMenuBarPropsArray[k].Data[u][6];
-                                            }
-                                            x++;
+    }
+    for (var i = 0; i < menuBarPropsArray.length; i++) {
+        for (var c = 0; menuBarPropsArray[i].ChildMenuWindowIDs && c < menuBarPropsArray[i].ChildMenuWindowIDs.length; c++) {
+            for (var k = 0; k < subMenuBarPropsArray.length; k++) {
+                if (subMenuBarPropsArray[k].CanvasID == menuBarPropsArray[i].CanvasID &&
+                    subMenuBarPropsArray[k].WindowID == menuBarPropsArray[i].ChildMenuWindowIDs[c]) {
+                    for (var m = 0; m < subMenuBarPropsArray[k].ChildMenuWindowIDs.length; m++) {
+                        for (var j = 0; j < subMenuBarPropsArray.length; j++) {
+                            if (subMenuBarPropsArray[j].CanvasID == subMenuBarPropsArray[k].CanvasID &&
+                                subMenuBarPropsArray[j].WindowID == subMenuBarPropsArray[k].ChildMenuWindowIDs[m]) {
+                                var x = 0;
+                                for (var u = 0; u < subMenuBarPropsArray[k].Data.length; u++) {
+                                    if (subMenuBarPropsArray[k].Data[u][6] != null) {
+                                        if (x == m) {
+                                            subMenuBarPropsArray[j].Data = subMenuBarPropsArray[k].Data[u][6];
                                         }
+                                        x++;
                                     }
                                 }
                             }
@@ -9459,217 +9572,218 @@ function invokeServerSideFunction(ajaxURL, functionName, canvasid, windowid, cal
                 }
             }
         }
-        for (var i = 0; i < savedFunctionsOnPostback.length; i++) {
-            var o = getLabelProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getButtonProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getScrollBarProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getGridProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getComboboxPropsByTextAreaWindowId(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getcheckboxProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getRadioButtonProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getImageControlProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getTreeViewProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getCalenderProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getSliderProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getDatePickerPropsByTextBoxAreaWindowID(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getPanelProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getBarGraphProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getPieChartProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getLineGraphProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getGaugeChartProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getRadarGraphProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getLineAreaGraphProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getCandlesticksGraphProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getDoughnutChartProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getBarsMixedWithLabledLineGraphProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getstackedBarGraphProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getTabProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getImageMapProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getMenuBarProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getSubMenuBarProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getTextBoxProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getVirtualKeyboardProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getSplitterProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
-            var o = getSimpleXMLViewerProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
-            if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+    }
+    for (var i = 0; i < savedFunctionsOnPostback.length; i++) {
+        var o = getLabelProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getButtonProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getScrollBarProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getGridProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getComboboxPropsByTextAreaWindowId(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getcheckboxProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getRadioButtonProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getImageControlProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getTreeViewProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getCalenderProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getSliderProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getDatePickerPropsByTextBoxAreaWindowID(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getPanelProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getBarGraphProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getPieChartProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getLineGraphProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getGaugeChartProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getRadarGraphProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getLineAreaGraphProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getCandlesticksGraphProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getDoughnutChartProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getBarsMixedWithLabledLineGraphProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getstackedBarGraphProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getTabProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getImageMapProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getMenuBarProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getSubMenuBarProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getTextBoxProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getVirtualKeyboardProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getSplitterProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+        var o = getSimpleXMLViewerProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+        if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
+    }
+    savedImagesOnPostback = new Array();
+    for (var i = 0; i < imageControlPropsArray.length; i++) {
+        for (var j = 0; j < imageControlBackupImageUrls.length; j++) {
+            if (imageControlPropsArray[i].CanvasID == imageControlBackupImageUrls[j].CanvasID && imageControlPropsArray[i].WindowID == imageControlBackupImageUrls[j].WindowID &&
+                imageControlPropsArray[i].ImageURL != imageControlBackupImageUrls[j].ImageURL) {
+                var image = new Image();
+                image.src = imageControlPropsArray[i].ImageURL;
+                imageControlPropsArray[i].Image = image;
+                var icpa = imageControlPropsArray[i];
+                image.onload = function () {
+                    invalidateRect(icpa.CanvasID, null, icpa.X, icpa.Y, icpa.Width, icpa.Height);
+                };
+            }
         }
-        savedImagesOnPostback = new Array();
-        for (var i = 0; i < imageControlPropsArray.length; i++) {
-            for (var j = 0; j < imageControlBackupImageUrls.length; j++) {
-                if (imageControlPropsArray[i].CanvasID == imageControlBackupImageUrls[j].CanvasID && imageControlPropsArray[i].WindowID == imageControlBackupImageUrls[j].WindowID &&
-                    imageControlPropsArray[i].ImageURL != imageControlBackupImageUrls[j].ImageURL) {
-                    var image = new Image();
-                    image.src = imageControlPropsArray[i].ImageURL;
-                    imageControlPropsArray[i].Image = image;
-                    var icpa = imageControlPropsArray[i];
-                    image.onload = function () {
-                        invalidateRect(icpa.CanvasID, null, icpa.X, icpa.Y, icpa.Width, icpa.Height);
-                    };
+    }
+    for (var i = 0; i < textBoxPropsArray.length; i++) {
+        for (var j = 0; j < textBoxBackupImageUrls.length; j++) {
+            if (textBoxPropsArray[i].CanvasID == textBoxBackupImageUrls[j].CanvasID && textBoxPropsArray[i].WindowID == textBoxBackupImageUrls[j].WindowID &&
+                textBoxPropsArray[i].BgImageUrl != textBoxBackupImageUrls[j].BgImageUrl) {
+                var image = new Image();
+                image.src = textBoxPropsArray[i].BgImageUrl;
+                textBoxPropsArray[i].Image = image;
+                var xyz = textBoxPropsArray[i];
+                image.onload = function () { invalidateRect(xyz.CanvasID, null, xyz.X, xyz.Y, xyz.Width, xyz.Height); };
+            }
+        }
+    }
+    for (var i = 0; i < wordProcessorPropsArray.length; i++) {
+        for (var j = 0; j < wordProcessorBackupImageUrls.length; j++) {
+            if (wordProcessorPropsArray[i].CanvasID == wordProcessorBackupImageUrls[j].CanvasID && wordProcessorPropsArray[i].WindowID == wordProcessorBackupImageUrls[j].WindowID &&
+                wordProcessorPropsArray[i].BgImageUrl != wordProcessorBackupImageUrls[j].BgImageUrl) {
+                var image = new Image();
+                image.src = wordProcessorPropsArray[i].BgImageUrl;
+                wordProcessorPropsArray[i].Image = image;
+                var wppa = wordProcessorPropsArray[i];
+                image.onload = function () {
+                    invalidateRect(wppa.CanvasID, null, wppa.X, wppa.Y, wppa.Width, wppa.Height);
+                };
+            }
+        }
+    }
+    for (var i = 0; i < treeViewPropsArray.length; i++) {
+        FixChildNodesForRecursionProblem(null, treeViewPropsArray[i].Nodes, treeViewPropsArray[i].Nodes);
+        invalidateRect(treeViewPropsArray[i].CanvasID, treeViewPropsArray[i].ParentWindowID, treeViewPropsArray[i].X, treeViewPropsArray[i].Y,
+            treeViewPropsArray[i].Width, treeViewPropsArray[i].Height);
+    }
+    return getParameters(xmlDoc.firstChild.childNodes[1].childNodes[0].childNodes);
+}
+
+function FixChildNodesForRecursionProblem(parentnode, childnodes, nodes) {
+    for (var i = 0; i < childnodes.length; i++) {
+        childnodes[i].TreeviewNodeInstancesParentNode = parentnode;
+        childnodes[i].TreeviewNodeInstancesRootNodes = nodes;
+        if (childnodes[i].ChildNodes && childnodes[i].ChildNodes.length > 0) {
+            FixChildNodesForRecursionProblem(childnodes[i], childnodes[i].ChildNodes, nodes);
+        } else {
+            childnodes[i].ChildNodes = new Array();
+        }
+    }
+}
+
+function getParameters(nodes) {
+    var arr = new Array();
+    for (var i = 0; i < nodes.length; i++) {
+        if (nodes[i].nodeName == 'Array') {
+            arr.push(getParameters(nodes[i].childNodes));
+        } else {
+            arr.push(correctValueTypes(nodes[i].childNodes.length > 0 ? nodes[i].childNodes[0].nodeValue : nodes[i].nodeValue));
+        }
+    }
+    return arr;
+}
+
+function setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) {
+    if (o != null) {
+        o[savedFunctionsOnPostback[i].PropertyName] = savedFunctionsOnPostback[i].FunctionValue;
+        return 1;
+    }
+    return 0;
+}
+
+function recurseFillVars(node, obj) {
+    for (var i = 0; i < node.childNodes.length; i++) {
+        if (node.childNodes[i].childNodes.length > 0 && node.childNodes[i].childNodes[0].nodeName == "Array") {
+            var arr = new Array();
+            obj[node.childNodes[i].nodeName] = arr;
+            for (var x = 0; x < node.childNodes[i].childNodes[0].childNodes.length; x++) {
+                if (node.childNodes[i].childNodes[0].childNodes[x].childNodes.length > 0 &&
+                    node.childNodes[i].childNodes[0].childNodes[x].childNodes[0].nodeName == "Array") {
+                    var arr2 = new Array();
+                    recurseFillArray(arr2, node.childNodes[i].childNodes[0].childNodes[x]);
+                    arr.push(arr2);
+                } else if (node.childNodes[i].childNodes[0].childNodes[x].childNodes.length > 0 &&
+                    node.childNodes[i].childNodes[0].childNodes[x].childNodes[0].nodeName == "ObjectArray") {
+                    arr.push(FillObjectArrayValues(node.childNodes[i].childNodes[0].childNodes[x].childNodes[0]));
+                } else {
+                    arr.push(correctValueTypes(node.childNodes[i].childNodes[0].childNodes[x].childNodes.length > 0 ?
+                        node.childNodes[i].childNodes[0].childNodes[x].childNodes[0].nodeValue :
+                        node.childNodes[i].childNodes[0].childNodes[x].nodeValue));
                 }
             }
+        } else if (node.childNodes[i].childNodes.length > 0 && node.childNodes[i].childNodes[0].nodeName == "ObjectArray") {
+            obj[node.childNodes[i].nodeName] = FillObjectArrayValues(node.childNodes[i].childNodes[0]);
+        } else {
+            obj[node.childNodes[i].nodeName] = correctValueTypes(node.childNodes[i].childNodes.length > 0 ? node.childNodes[i].childNodes[0].nodeValue : node.childNodes[i].nodeValue);
         }
-        for (var i = 0; i < textBoxPropsArray.length; i++) {
-            for (var j = 0; j < textBoxBackupImageUrls.length; j++) {
-                if (textBoxPropsArray[i].CanvasID == textBoxBackupImageUrls[j].CanvasID && textBoxPropsArray[i].WindowID == textBoxBackupImageUrls[j].WindowID &&
-                    textBoxPropsArray[i].BgImageUrl != textBoxBackupImageUrls[j].BgImageUrl) {
-                    var image = new Image();
-                    image.src = textBoxPropsArray[i].BgImageUrl;
-                    textBoxPropsArray[i].Image = image;
-                    var xyz = textBoxPropsArray[i];
-                    image.onload = function () { invalidateRect(xyz.CanvasID, null, xyz.X, xyz.Y, xyz.Width, xyz.Height); };
-                }
-            }
-        }
-        for (var i = 0; i < wordProcessorPropsArray.length; i++) {
-            for (var j = 0; j < wordProcessorBackupImageUrls.length; j++) {
-                if (wordProcessorPropsArray[i].CanvasID == wordProcessorBackupImageUrls[j].CanvasID && wordProcessorPropsArray[i].WindowID == wordProcessorBackupImageUrls[j].WindowID &&
-                    wordProcessorPropsArray[i].BgImageUrl != wordProcessorBackupImageUrls[j].BgImageUrl) {
-                    var image = new Image();
-                    image.src = wordProcessorPropsArray[i].BgImageUrl;
-                    wordProcessorPropsArray[i].Image = image;
-                    var wppa = wordProcessorPropsArray[i];
-                    image.onload = function () {
-                        invalidateRect(wppa.CanvasID, null, wppa.X, wppa.Y, wppa.Width, wppa.Height);
-                    };
-                }
-            }
-        }
-        for (var i = 0; i < treeViewPropsArray.length; i++) {
-            FixChildNodesForRecursionProblem(null, treeViewPropsArray[i].Nodes, treeViewPropsArray[i].Nodes);
-            invalidateRect(treeViewPropsArray[i].CanvasID, treeViewPropsArray[i].ParentWindowID, treeViewPropsArray[i].X, treeViewPropsArray[i].Y,
-                treeViewPropsArray[i].Width, treeViewPropsArray[i].Height);
-        }
-        return getParameters(xmlDoc.firstChild.childNodes[1].childNodes[0].childNodes);
     }
+}
 
-    function FixChildNodesForRecursionProblem(parentnode, childnodes, nodes) {
-        for (var i = 0; i < childnodes.length; i++) {
-            childnodes[i].TreeviewNodeInstancesParentNode = parentnode;
-            childnodes[i].TreeviewNodeInstancesRootNodes = nodes;
-            if (childnodes[i].ChildNodes && childnodes[i].ChildNodes.length > 0) {
-                FixChildNodesForRecursionProblem(childnodes[i], childnodes[i].ChildNodes, nodes);
-            } else {
-                childnodes[i].ChildNodes = new Array();
-            }
+function FillObjectArrayValues(node) {
+    var newobj = {};
+    for (var p = 0; p < node.childNodes.length; p++) {
+        if (node.childNodes[p].childNodes.length > 0 && node.childNodes[p].childNodes[0].nodeValue == 'Array') {
+            var arr3 = new Array();
+            recurseFillArray(arr3, node.childNodes[p].childNodes[0]);
+            newobj[node.childNodes[p].nodeName] = arr3;
+        } else if (node.childNodes[p].childNodes.length > 0 && node.childNodes[p].childNodes[0].nodeValue == 'ObjectArray') {
+            newobj[node.childNodes[p].nodeName] = FillObjectArrayValues(node.childNodes[p].childNodes[0]);
+        } else {
+            newobj[node.childNodes[p].nodeName] = correctValueTypes(node.childNodes[p].childNodes.length > 0 ? node.childNodes[p].childNodes[0].nodeValue :
+                node.childNodes[p].nodeValue);
         }
     }
+    return newobj;
+}
 
-    function getParameters(nodes) {
-        var arr = new Array();
-        for (var i = 0; i < nodes.length; i++) {
-            if (nodes[i].nodeName == 'Array') {
-                arr.push(getParameters(nodes[i].childNodes));
-            } else {
-                arr.push(correctValueTypes(nodes[i].childNodes.length > 0 ? nodes[i].childNodes[0].nodeValue : nodes[i].nodeValue));
-            }
-        }
-        return arr;
+function correctValueTypes(o) {
+    if (typeof o == 'string' && (parseInt(o) >= 0 || parseInt(o) < 0) && parseInt(o).toString() == o) {
+        return parseInt(o);
+    } else if (typeof o == 'string' && (parseFloat(o) >= 0 || parseFloat(o) < 0) && parseFloat(o).toString() == o) {
+        return parseFloat(o);
+    } else if (typeof o == 'string') {
+        return o.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
     }
+    return o;
+}
 
-    function setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) {
-        if (o != null) {
-            o[savedFunctionsOnPostback[i].PropertyName] = savedFunctionsOnPostback[i].FunctionValue;
-            return 1;
-        }
-        return 0;
-    }
-
-    function recurseFillVars(node, obj) {
-        for (var i = 0; i < node.childNodes.length; i++) {
-            if (node.childNodes[i].childNodes.length > 0 && node.childNodes[i].childNodes[0].nodeName == "Array") {
-                var arr = new Array();
-                obj[node.childNodes[i].nodeName] = arr;
-                for (var x = 0; x < node.childNodes[i].childNodes[0].childNodes.length; x++) {
-                    if (node.childNodes[i].childNodes[0].childNodes[x].childNodes.length > 0 &&
-                        node.childNodes[i].childNodes[0].childNodes[x].childNodes[0].nodeName == "Array") {
-                        var arr2 = new Array();
-                        recurseFillArray(arr2, node.childNodes[i].childNodes[0].childNodes[x]);
-                        arr.push(arr2);
-                    } else if (node.childNodes[i].childNodes[0].childNodes[x].childNodes.length > 0 &&
-                        node.childNodes[i].childNodes[0].childNodes[x].childNodes[0].nodeName == "ObjectArray") {
-                        arr.push(FillObjectArrayValues(node.childNodes[i].childNodes[0].childNodes[x].childNodes[0]));
-                    } else {
-                        arr.push(correctValueTypes(node.childNodes[i].childNodes[0].childNodes[x].childNodes.length > 0 ?
-                            node.childNodes[i].childNodes[0].childNodes[x].childNodes[0].nodeValue :
-                            node.childNodes[i].childNodes[0].childNodes[x].nodeValue));
-                    }
-                }
-            } else if (node.childNodes[i].childNodes.length > 0 && node.childNodes[i].childNodes[0].nodeName == "ObjectArray") {
-                obj[node.childNodes[i].nodeName] = FillObjectArrayValues(node.childNodes[i].childNodes[0]);
-            } else {
-                obj[node.childNodes[i].nodeName] = correctValueTypes(node.childNodes[i].childNodes.length > 0 ? node.childNodes[i].childNodes[0].nodeValue : node.childNodes[i].nodeValue);
-            }
+function recurseFillArray(arr, node) {
+    for (var i = 0; i < node.childNodes.length; i++) {
+        if (node.childNodes[i].childNodes.length > 0 && node.childNodes[i].childNodes[0].nodeName == "Array") {
+            var arr2 = new Array();
+            recurseFillArray(arr2, node.childNodes[i].childNodes[0]);
+            arr.push(arr2);
+        } else if (node.childNodes[i].childNodes.length > 0 && node.childNodes[i].childNodes[0].nodeName == "ObjectArray") {
+            arr.push(FillObjectArrayValues(node.childNodes[i].childNodes[0]));
+        } else {
+            arr.push(correctValueTypes(node.childNodes[i].childNodes.length > 0 ? node.childNodes[i].childNodes[0].nodeValue : node.childNodes[i].nodeValue));
         }
     }
-
-    function FillObjectArrayValues(node) {
-        var newobj = {};
-        for (var p = 0; p < node.childNodes.length; p++) {
-            if (node.childNodes[p].childNodes.length > 0 && node.childNodes[p].childNodes[0].nodeValue == 'Array') {
-                var arr3 = new Array();
-                recurseFillArray(arr3, node.childNodes[p].childNodes[0]);
-                newobj[node.childNodes[p].nodeName] = arr3;
-            } else if (node.childNodes[p].childNodes.length > 0 && node.childNodes[p].childNodes[0].nodeValue == 'ObjectArray') {
-                newobj[node.childNodes[p].nodeName] = FillObjectArrayValues(node.childNodes[p].childNodes[0]);
-            } else {
-                newobj[node.childNodes[p].nodeName] = correctValueTypes(node.childNodes[p].childNodes.length > 0 ? node.childNodes[p].childNodes[0].nodeValue :
-                    node.childNodes[p].nodeValue);
-            }
-        }
-        return newobj;
-    }
-
-    function correctValueTypes(o) {
-        if (typeof o == 'string' && (parseInt(o) >= 0 || parseInt(o) < 0) && parseInt(o).toString() == o) {
-            return parseInt(o);
-        } else if (typeof o == 'string' && (parseFloat(o) >= 0 || parseFloat(o) < 0) && parseFloat(o).toString() == o) {
-            return parseFloat(o);
-        } else if (typeof o == 'string') {
-            return o.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-        }
-        return o;
-    }
-
-    function recurseFillArray(arr, node) {
-        for (var i = 0; i < node.childNodes.length; i++) {
-            if (node.childNodes[i].childNodes.length > 0 && node.childNodes[i].childNodes[0].nodeName == "Array") {
-                var arr2 = new Array();
-                recurseFillArray(arr2, node.childNodes[i].childNodes[0]);
-                arr.push(arr2);
-            } else if (node.childNodes[i].childNodes.length > 0 && node.childNodes[i].childNodes[0].nodeName == "ObjectArray") {
-                arr.push(FillObjectArrayValues(node.childNodes[i].childNodes[0]));
-            } else {
-                arr.push(correctValueTypes(node.childNodes[i].childNodes.length > 0 ? node.childNodes[i].childNodes[0].nodeValue : node.childNodes[i].nodeValue));
-            }
-        }
-    }
+}

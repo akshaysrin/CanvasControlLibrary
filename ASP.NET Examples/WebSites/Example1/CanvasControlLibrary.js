@@ -8816,7 +8816,6 @@ function createBoundaryFillableMap(canvasid, controlNameId, x, y, width, height,
             imgdata = fillImageData(boundaryFillableMapProps.FillPoints[i], imgdata);
         }
         ctxdest.putImageData(imgdata, boundaryFillableMapProps.X, boundaryFillableMapProps.Y);
-        gaussianBlur(null, ctxdest, boundaryFillableMapProps.X, boundaryFillableMapProps.Y, 500, 389, 95, 155, 155);
     }, canvasid);
 }
 
@@ -8852,6 +8851,14 @@ function fillImageData(fillpoints, imgdata) {
 
 //XML Viewer Control
 var simpleXMLViewerPropsArray = new Array();
+
+function getSimpleXMLViewerProps(canvasid, windowid) {
+    for (var i = 0; i < simpleXMLViewerPropsArray.length; i++) {
+        if (simpleXMLViewerPropsArray[i].CanvasID == canvasid && simpleXMLViewerPropsArray[i].WindowID == windowid) {
+            return simpleXMLViewerPropsArray[i];
+        }
+    }
+}
 
 function fillSimpleXMLViewerChildNodes(node, childNodes, xmlDoc, hasicons, imgURLNode, imgURLValue, imgURLAttribute) {
     for (var i = 0; i < childNodes.length; i++) {
@@ -8907,9 +8914,111 @@ function createSimpleXMLViewer(canvasid, controlNameId, x, y, width, height, dep
     return windowid;
 }
 
-function createVoteAndRatingControl(canvasid, controlNameId, x, y, width, height, depth, numstars, maxvalueofallstars, spacinginpixelsbetweenstars,
-    haspartialstars, editable, hasvaluelabel, labelxpos, labelypos, starsxposwhenlabel, starsyposwhenlabel, initialvalue, outlinethicknessofemptystar,
-    starcolor, starsorientation, fillorientation, iscustompattern, imgurl, fillpoint, imgwidth, imgheight) {
+//Voting Control
+
+var votingPropsArray = new Array();
+var votingOutlineImage;
+
+function getVotingProps(canvasid, windowid) {
+    for (var i = 0; i < votingPropsArray.length; i++) {
+        if (votingPropsArray[i].CanvasID == canvasid && votingPropsArray[i].WindowID == windowid) {
+            return votingPropsArray[i];
+        }
+    }
+}
+
+function createVotingControl(canvasid, controlNameId, x, y, width, height, depth, numstars, maxvalueofallstars, starcolorred, starcolorgreen, starcolorblue,
+    starcoloralpha, starsizeinpixels, spacinginpixelsbetweenstars, haspartialstars, editable, hasvaluelabel, labelxpos, labelypos,
+    labeltextcolor, labeltextfontstring, labeltextheight, starsstartingposoffsetwhenlabel, starsyposwhenlabel, initialvalue, 
+    outlinethicknessofemptystar, starsorientation, fillorientation, iscustompattern, outlineimgurl, customfillpoint,
+    imgwidth, imgheight, hasmouseoverlabel, staroutlinebgcolorred, staroutlinebgcolorgreen, staroutlinebgcolorblue, staroutlinebgcoloralpha) {
+    var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'VotingControl', controlNameId);
+    if (iscustompattern == 1) {
+        votingOutlineImage = new Image();
+        votingOutlineImage.onload = function () {
+            invalidateRect(canvasid, null, x, y, width, height);
+        }
+        votingOutlineImage.src = outlineimgurl;
+    }
+    votingPropsArray.push({
+        CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, NumStars: numstars, MaxValueOfAllStars: maxvalueofallstars, 
+        StarColorRed: starcolorred, StarColorGreen: starcolorgreen, StarColorBlue: starcolorblue, StarColorAlpha: starcoloralpha,
+        SpacingInPixelsBetweenStars: spacinginpixelsbetweenstars, HasPartialStars: haspartialstars, Editable: editable,
+        HasValueLabel: hasvaluelabel, LabelXPos: labelxpos, LabelYPos: labelypos, StarsStartingPosOffsetWhenLabel: starsstartingposoffsetwhenlabel, 
+        StarsYPosWhenLabel: starsyposwhenlabel, InitialValue: initialvalue, OutlineThicknessOfEmptyStar: outlinethicknessofemptystar,
+        StarsOrientation: starsorientation, FillOrientation: fillorientation, IsCustomPattern: iscustompattern, OutLineImgURL: outlineimgurl, 
+        CustomFillPoint: customfillpoint, ImgWidth: imgwidth, ImgHeight: imgheight, StarSizeInPixels: starsizeinpixels, HasMouseOverLabel: hasmouseoverlabel,
+        StarOutlineBgColorRed: staroutlinebgcolorred, StarOutlineBgColorGreen: staroutlinebgcolorgreen, StarOutlineBgColorBlue: staroutlinebgcolorblue, 
+        StarOutlineBgColorAlpha: staroutlinebgcoloralpha, LabelTextColor: labeltextcolor, LabelTextFontString: labeltextfontstring, 
+        LabelTextHeight: labeltextheight
+    });
+    registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
+        var votingProps = getVotingProps(canvasid1, windowid1);
+        if (votingProps.IsCustomPattern == 1) {
+            var ctxdest = getCtx(canvasid1);
+            var canvas = document.createElement('canvas');
+            canvas.width = votingProps.ImgWidth;
+            canvas.height = votingProps.ImgHeight;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(votingOutlineImage, 0, 0);
+            var imgdata = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            var numfullstars = votingProps.HasPartialStars == 1 ? Math.floor(votingProps.InitialValue / (votingProps.MaxValueOfAllStars / votingProps.NumStars)) :
+                Math.round(votingProps.InitialValue / (votingProps.MaxValueOfAllStars / votingProps.NumStars));
+            if (numfullstars > 0) {
+                imgdata = fillImageData(votingProps.CustomFillPoint, imgdata);
+            }
+            for (var i = 0; i < numfullstars; i++) {
+                ctxdest.putImageData(imgdata, votingProps.X + (votingProps.StarsOrientation == 0 ? (votingProps.HasValueLabel == 1 ?
+                    votingProps.StarsStartingPosOffsetWhenLabel : 0) + (i * (votingProps.ImgWidth + votingProps.SpacingInPixelsBetweenStars)) : 0),
+                    votingProps.Y + (votingProps.StarsOrientation == 1 ? (votingProps.HasValueLabel == 1 ? votingProps.StarsStartingPosOffsetWhenLabel : 0) +
+                    (i * (votingProps.ImgHeight + votingProps.SpacingInPixelsBetweenStars)) : 0));
+            }
+            var didapartialstar = 0;
+            if (votingProps.HasPartialStars == 1) {
+                didapartialstar = 1;
+                var partialfillamountinpixels = Math.round(((votingProps.InitialValue / (votingProps.MaxValueOfAllStars / votingProps.NumStars)) % 1) * votingProps.ImgWidth);
+                if (partialfillamountinpixels > 0) {
+                    var canvas2 = document.createElement('canvas');
+                    canvas2.width = votingProps.ImgWidth;
+                    canvas2.height = votingProps.ImgHeight;
+                    var ctx2 = canvas2.getContext('2d');
+                    ctx2.drawImage(votingOutlineImage, 0, 0);
+                    var imgdata = ctx2.getImageData(0, 0, canvas.width, canvas.height);
+                    var fillpoints = [votingProps.FillOrientation == 0 ? Math.round(partialfillamountinpixels / 2) : Math.round(votingProps.ImgWidth / 2),
+                        votingProps.FillOrientation == 1 ? Math.round(partialfillamountinpixels / 2) : Math.round(votingProps.ImgHeight / 2),
+                        0, 0, votingProps.ImgWidth, votingProps.ImgHeight, votingProps.StarOutlineBgColorRed, votingProps.StarOutlineBgColorGreen,
+                        votingProps.StarOutlineBgColorBlue, votingProps.StarOutlineBgColorAlpha, votingProps.StarColorRed, votingProps.StarColorGreen,
+                        votingProps.StarColorBlue, votingProps.StarColorAlpha, votingProps.FillOrientation, 0, partialfillamountinpixels];
+                    imgdata = fillImageData(fillpoints, imgdata);
+                    ctxdest.putImageData(imgdata, votingProps.X + (votingProps.StarsOrientation == 0 ? (votingProps.HasValueLabel == 1 ?
+                        votingProps.StarsStartingPosOffsetWhenLabel : 0) + (numfullstars * (votingProps.ImgWidth + votingProps.SpacingInPixelsBetweenStars)) : 0),
+                        votingProps.Y + (votingProps.StarsOrientation == 1 ? (votingProps.HasValueLabel == 1 ?
+                        votingProps.StarsStartingPosOffsetWhenLabel : 0) + (numfullstars * (votingProps.ImgHeight + votingProps.SpacingInPixelsBetweenStars)) : 0));
+                }
+            }
+            if (numfullstars + didapartialstar < votingProps.NumStars) {
+                var canvas3 = document.createElement('canvas');
+                canvas3.width = votingProps.ImgWidth;
+                canvas3.height = votingProps.ImgHeight;
+                var ctx3 = canvas3.getContext('2d');
+                ctx3.drawImage(votingOutlineImage, 0, 0);
+                var imgdata2 = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                for (var i = numfullstars + didapartialstar; i < votingProps.NumStars; i++) {
+                    ctxdest.putImageData(imgdata2, votingProps.X + (votingProps.StarsOrientation == 0 ? (votingProps.HasValueLabel == 1 ?
+                        votingProps.StarsStartingPosOffsetWhenLabel : 0) + (i * (votingProps.ImgWidth + votingProps.SpacingInPixelsBetweenStars)) : 0),
+                        votingProps.Y + (votingProps.StarsOrientation == 1 ? (votingProps.HasValueLabel == 1 ?
+                        votingProps.StarsStartingPosOffsetWhenLabel : 0) + (i * (votingProps.ImgHeight + votingProps.SpacingInPixelsBetweenStars)) : 0));
+                }
+            }
+            if (votingProps.HasValueLabel == 1) {
+                ctxdest.fillStyle = votingProps.LabelTextColor;
+                ctxdest.fillText(votingProps.InitialValue.toString() + ' out of ' + votingProps.MaxValueOfAllStars.toString(), votingProps.X + votingProps.LabelXPos,
+                    votingProps.Y + votingProps.LabelYPos);
+            }
+        } else {
+
+        }
+    }, canvasid);
 }
 
 //AJAX Postback code Starts here
