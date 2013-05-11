@@ -9117,6 +9117,7 @@ function drawOutlineEmptyStarOnCtx(ctx, votingProps) {
     ctx.strokeStyle = 'rgb(' + votingProps.StarColorRed.toString() + ',' + votingProps.StarColorGreen.toString() + ',' + votingProps.StarColorBlue.toString() + ')';
     ctx.lineWidth = votingProps.OutlineThicknessOfEmptyStar;
     ctx.beginPath();
+    /*
     ctx.moveTo(0, votingProps.StarSizeInPixels / 2);
     ctx.lineTo(votingProps.StarSizeInPixels / 3, votingProps.StarSizeInPixels / 3);
     ctx.lineTo(votingProps.StarSizeInPixels / 2, 0);
@@ -9125,6 +9126,17 @@ function drawOutlineEmptyStarOnCtx(ctx, votingProps) {
     ctx.lineTo(2 * votingProps.StarSizeInPixels / 3, 2 * votingProps.StarSizeInPixels / 3);
     ctx.lineTo(votingProps.StarSizeInPixels / 2, votingProps.StarSizeInPixels);
     ctx.lineTo(votingProps.StarSizeInPixels / 3, 2 * votingProps.StarSizeInPixels / 3);
+    ctx.closePath();*/
+    ctx.moveTo(0, 24 * votingProps.StarSizeInPixels / 70);
+    ctx.lineTo(27 * votingProps.StarSizeInPixels / 70, 24 * votingProps.StarSizeInPixels / 70);
+    ctx.lineTo(votingProps.StarSizeInPixels / 2, 0);
+    ctx.lineTo(43 * votingProps.StarSizeInPixels / 70, 24 * votingProps.StarSizeInPixels / 70);
+    ctx.lineTo(votingProps.StarSizeInPixels, 24 * votingProps.StarSizeInPixels / 70);
+    ctx.lineTo(49 * votingProps.StarSizeInPixels / 70, 39 * votingProps.StarSizeInPixels / 70);
+    ctx.lineTo(55 * votingProps.StarSizeInPixels / 70, votingProps.StarSizeInPixels);
+    ctx.lineTo(votingProps.StarSizeInPixels / 2, 50 * votingProps.StarSizeInPixels / 70);
+    ctx.lineTo(15 * votingProps.StarSizeInPixels / 70, votingProps.StarSizeInPixels);
+    ctx.lineTo(21 * votingProps.StarSizeInPixels / 70, 41 * votingProps.StarSizeInPixels / 70);
     ctx.closePath();
     ctx.stroke();
 }
