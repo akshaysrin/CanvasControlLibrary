@@ -2441,7 +2441,7 @@ public class CanvasControlLibrary
                             }
                         }
                         break;
-                    case "Voting":
+                    case "VotingControl":
                         foreach (CCLVotingProps o in VotingProps)
                         {
                             if (o.CanvasID == w.CanvasID && o.WindowID == w.WindowCount)
