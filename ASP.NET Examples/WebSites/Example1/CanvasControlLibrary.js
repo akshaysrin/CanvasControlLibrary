@@ -8995,10 +8995,12 @@ function createVotingControl(canvasid, controlNameId, x, y, width, height, depth
                     ctx2.drawImage(getVotingOutlineImage(canvasid1, windowid1), 0, 0);
                     var imgdata = ctx2.getImageData(0, 0, canvas.width, canvas.height);
                     var findstartingpoint = findStartingFillPointXY(passImageDataAsArray(imgdata), imgdata.width, votingProps.CustomFillPoint, votingProps.FillOrientation, partialfillamountinpixels);
-                    var fillpoints = [findstartingpoint.X, findstartingpoint.Y, 0, 0, votingProps.ImgWidth, votingProps.ImgHeight, votingProps.StarOutlineBgColorRed,
-                        votingProps.StarOutlineBgColorGreen, votingProps.StarOutlineBgColorBlue, votingProps.StarOutlineBgColorAlpha, votingProps.StarColorRed,
-                        votingProps.StarColorGreen, votingProps.StarColorBlue, votingProps.StarColorAlpha, votingProps.FillOrientation, 0, partialfillamountinpixels];
-                    imgdata = fillImageData(fillpoints, imgdata);
+                    for (var j = 0; j < findstartingpoint.length; j++) {
+                        var fillpoints = [findstartingpoint[j].X, findstartingpoint[j].Y, 0, 0, votingProps.ImgWidth, votingProps.ImgHeight, votingProps.StarOutlineBgColorRed,
+                            votingProps.StarOutlineBgColorGreen, votingProps.StarOutlineBgColorBlue, votingProps.StarOutlineBgColorAlpha, votingProps.StarColorRed,
+                            votingProps.StarColorGreen, votingProps.StarColorBlue, votingProps.StarColorAlpha, votingProps.FillOrientation, 0, partialfillamountinpixels];
+                        imgdata = fillImageData(fillpoints, imgdata);
+                    }
                     ctxdest.putImageData(imgdata, votingProps.X + (votingProps.StarsOrientation == 0 ? (votingProps.HasValueLabel == 1 ?
                         votingProps.StarsStartingPosOffsetWhenLabel : 0) + (numfullstars * (votingProps.ImgWidth + votingProps.SpacingInPixelsBetweenStars)) : 0),
                         votingProps.Y + (votingProps.StarsOrientation == 1 ? (votingProps.HasValueLabel == 1 ?
@@ -9060,11 +9062,12 @@ function createVotingControl(canvasid, controlNameId, x, y, width, height, depth
                     var findstartingpoint = findStartingFillPointXY(passImageDataAsArray(imgdata2), imgdata2.width, [votingProps.StarSizeInPixels / 2, votingProps.StarSizeInPixels / 2, 0, 0,
                         votingProps.StarSizeInPixels, votingProps.StarSizeInPixels, 255, 255, 255, 255, votingProps.StarColorRed, votingProps.StarColorGreen,
                         votingProps.StarColorBlue, votingProps.StarColorAlpha], votingProps.FillOrientation, partialfillamountinpixels);
-                    var fillpoints = [votingProps.FillOrientation == 0 ? Math.round(partialfillamountinpixels / 2) : Math.round(votingProps.StarSizeInPixels / 2),
-                        votingProps.FillOrientation == 1 ? Math.round(partialfillamountinpixels / 2) : Math.round(votingProps.StarSizeInPixels / 2),
-                        0, 0, votingProps.StarSizeInPixels, votingProps.StarSizeInPixels, 255, 255, 255, 255, votingProps.StarColorRed, votingProps.StarColorGreen,
-                        votingProps.StarColorBlue, votingProps.StarColorAlpha, votingProps.FillOrientation, 0, partialfillamountinpixels];
-                    imgdata2 = fillImageData(fillpoints, imgdata2);
+                    for (var j = 0; j < findstartingpoint.length; j++) {
+                        var fillpoints = [findstartingpoint[j].X, findstartingpoint[j].Y, 0, 0, votingProps.StarSizeInPixels, votingProps.StarSizeInPixels,
+                            255, 255, 255, 255, votingProps.StarColorRed, votingProps.StarColorGreen, votingProps.StarColorBlue, votingProps.StarColorAlpha,
+                            votingProps.FillOrientation, 0, partialfillamountinpixels];
+                        imgdata2 = fillImageData(fillpoints, imgdata2);
+                    }
                     ctxdest.putImageData(imgdata2, votingProps.X + (votingProps.StarsOrientation == 0 ? (votingProps.HasValueLabel == 1 ?
                         votingProps.StarsStartingPosOffsetWhenLabel : 0) + (numfullstars * (votingProps.StarSizeInPixels + votingProps.SpacingInPixelsBetweenStars)) : 0),
                         votingProps.Y + (votingProps.StarsOrientation == 1 ? (votingProps.HasValueLabel == 1 ?
@@ -9132,6 +9135,7 @@ function passImageDataAsArray(imgdata) {
 }
 
 function findStartingFillPointXY(imgdata, width, fillpoints, fillorientation, partialfillamountinpixels) {
+    var points = new Array();
     var buff = new Array();
     buff.push([fillpoints[0], fillpoints[1]]);
     while (buff.length > 0) {
@@ -9157,10 +9161,11 @@ function findStartingFillPointXY(imgdata, width, fillpoints, fillorientation, pa
                 buff.push([x, y + 1]);
             }
             if (fillorientation == 0 ? x <= partialfillamountinpixels : y <= partialfillamountinpixels) {
-                return { X: x, Y: y };
+                points.push({ X: x, Y: y });
             }
         }
     }
+    return points;
 }
 
 function drawOutlineEmptyStarOnCtx(ctx, votingProps, canvas) {
