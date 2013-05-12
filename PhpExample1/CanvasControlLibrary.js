@@ -8994,11 +8994,10 @@ function createVotingControl(canvasid, controlNameId, x, y, width, height, depth
                     var ctx2 = canvas2.getContext('2d');
                     ctx2.drawImage(getVotingOutlineImage(canvasid1, windowid1), 0, 0);
                     var imgdata = ctx2.getImageData(0, 0, canvas.width, canvas.height);
-                    var fillpoints = [votingProps.FillOrientation == 0 ? Math.round(partialfillamountinpixels / 2) : Math.round(votingProps.ImgWidth / 2),
-                        votingProps.FillOrientation == 1 ? Math.round(partialfillamountinpixels / 2) : Math.round(votingProps.ImgHeight / 2),
-                        0, 0, votingProps.ImgWidth, votingProps.ImgHeight, votingProps.StarOutlineBgColorRed, votingProps.StarOutlineBgColorGreen,
-                        votingProps.StarOutlineBgColorBlue, votingProps.StarOutlineBgColorAlpha, votingProps.StarColorRed, votingProps.StarColorGreen,
-                        votingProps.StarColorBlue, votingProps.StarColorAlpha, votingProps.FillOrientation, 0, partialfillamountinpixels];
+                    var findstartingpoint = findStartingFillPointXY(passImageDataAsArray(imgdata), imgdata.width, votingProps.CustomFillPoint, votingProps.FillOrientation, partialfillamountinpixels);
+                    var fillpoints = [findstartingpoint.X, findstartingpoint.Y, 0, 0, votingProps.ImgWidth, votingProps.ImgHeight, votingProps.StarOutlineBgColorRed,
+                        votingProps.StarOutlineBgColorGreen, votingProps.StarOutlineBgColorBlue, votingProps.StarOutlineBgColorAlpha, votingProps.StarColorRed,
+                        votingProps.StarColorGreen, votingProps.StarColorBlue, votingProps.StarColorAlpha, votingProps.FillOrientation, 0, partialfillamountinpixels];
                     imgdata = fillImageData(fillpoints, imgdata);
                     ctxdest.putImageData(imgdata, votingProps.X + (votingProps.StarsOrientation == 0 ? (votingProps.HasValueLabel == 1 ?
                         votingProps.StarsStartingPosOffsetWhenLabel : 0) + (numfullstars * (votingProps.ImgWidth + votingProps.SpacingInPixelsBetweenStars)) : 0),
@@ -9058,6 +9057,9 @@ function createVotingControl(canvasid, controlNameId, x, y, width, height, depth
                     var ctx2 = canvas2.getContext('2d');
                     drawOutlineEmptyStarOnCtx(ctx2, votingProps, canvas2);
                     var imgdata2 = ctx2.getImageData(0, 0, canvas2.width, canvas2.height);
+                    var findstartingpoint = findStartingFillPointXY(passImageDataAsArray(imgdata2), imgdata2.width, [votingProps.StarSizeInPixels / 2, votingProps.StarSizeInPixels / 2, 0, 0,
+                        votingProps.StarSizeInPixels, votingProps.StarSizeInPixels, 255, 255, 255, 255, votingProps.StarColorRed, votingProps.StarColorGreen,
+                        votingProps.StarColorBlue, votingProps.StarColorAlpha], votingProps.FillOrientation, partialfillamountinpixels);
                     var fillpoints = [votingProps.FillOrientation == 0 ? Math.round(partialfillamountinpixels / 2) : Math.round(votingProps.StarSizeInPixels / 2),
                         votingProps.FillOrientation == 1 ? Math.round(partialfillamountinpixels / 2) : Math.round(votingProps.StarSizeInPixels / 2),
                         0, 0, votingProps.StarSizeInPixels, votingProps.StarSizeInPixels, 255, 255, 255, 255, votingProps.StarColorRed, votingProps.StarColorGreen,
@@ -9118,6 +9120,46 @@ function createVotingControl(canvasid, controlNameId, x, y, width, height, depth
                 }
             }
         }, canvasid);
+    }
+}
+
+function passImageDataAsArray(imgdata) {
+    var data = new Array();
+    for (var i = 0; i < imgdata.width * imgdata.height * 4; i++) {
+        data.push(imgdata.data[i]);
+    }
+    return data;
+}
+
+function findStartingFillPointXY(imgdata, width, fillpoints, fillorientation, partialfillamountinpixels) {
+    var buff = new Array();
+    buff.push([fillpoints[0], fillpoints[1]]);
+    while (buff.length > 0) {
+        var x = buff[buff.length - 1][0];
+        var y = buff[buff.length - 1][1];
+        buff.pop();
+        if (imgdata[(y * width * 4) + (x * 4)] == fillpoints[6] && imgdata[(y * width * 4) + (x * 4) + 1] == fillpoints[7] &&
+            imgdata[(y * width * 4) + (x * 4) + 2] == fillpoints[8] && imgdata[(y * width * 4) + (x * 4) + 3] == fillpoints[9]) {
+            imgdata[(y * width * 4) + (x * 4)] = fillpoints[10];
+            imgdata[(y * width * 4) + (x * 4) + 1] = fillpoints[11];
+            imgdata[(y * width * 4) + (x * 4) + 2] = fillpoints[12];
+            imgdata[(y * width * 4) + (x * 4) + 3] = fillpoints[13];
+            if (fillpoints.length == 17 && fillpoints[14] == 0 ? x - 1 > fillpoints[15] : x - 1 > fillpoints[2]) {
+                buff.push([x - 1, y]);
+            }
+            if (fillpoints.length == 17 && fillpoints[14] == 0 ? x + 1 < fillpoints[16] : x + 1 < fillpoints[4]) {
+                buff.push([x + 1, y]);
+            }
+            if (fillpoints.length == 17 && fillpoints[14] == 1 ? y - 1 > fillpoints[15] : y - 1 > fillpoints[3]) {
+                buff.push([x, y - 1]);
+            }
+            if (fillpoints.length == 17 && fillpoints[14] == 1 ? x - 1 > fillpoints[16] : y + 1 < fillpoints[5]) {
+                buff.push([x, y + 1]);
+            }
+            if (fillorientation == 0 ? x <= partialfillamountinpixels : y <= partialfillamountinpixels) {
+                return { X: x, Y: y };
+            }
+        }
     }
 }
 
