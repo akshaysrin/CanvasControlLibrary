@@ -87,6 +87,11 @@
                     votingProps.InitialValue = value;
                     invalidateRect(canvasid, null, votingProps.X, votingProps.Y, votingProps.Width, votingProps.Height);
                 });
+            createVotingControl(elemId, 'vc3', 450, 250, 300, 30, highestDepth, 5, 5, 59, 172, 53, 255, 0, 5, 1, 1, 1, 180, 21, '#000000', '12pt Ariel', 12, 0,
+                0, 0.5, 1, 0, 0, 1, 'staroutline.png', [8, 8, 0, 0, 30, 26, 255, 255, 255, 255, 59, 172, 53, 255], 17, 17, 0, 255, 255, 255, 255, function (canvasid, windowid, votingProps, clickx, clicky, value) {
+                    votingProps.InitialValue = value;
+                    invalidateRect(canvasid, null, votingProps.X, votingProps.Y, votingProps.Width, votingProps.Height);
+                }, 1);
             invalidateRect(elemId, null, 0, 0, 1500, 1500);
             alert(navigator.userAgent);
         </script>

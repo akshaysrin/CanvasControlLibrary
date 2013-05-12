@@ -8917,7 +8917,15 @@ function createSimpleXMLViewer(canvasid, controlNameId, x, y, width, height, dep
 //Voting Control
 
 var votingPropsArray = new Array();
-var votingOutlineImage;
+var votingOutlineImageArray = new Array();
+
+function getVotingOutlineImage(canvasid, windowid) {
+    for (var i = 0; i < votingOutlineImageArray.length; i++) {
+        if (votingOutlineImageArray[i][0] == canvasid && votingOutlineImageArray[i][1] == windowid) {
+            return votingOutlineImageArray[i][2];
+        }
+    }
+}
 
 function getVotingProps(canvasid, windowid) {
     for (var i = 0; i < votingPropsArray.length; i++) {
@@ -8940,6 +8948,7 @@ function createVotingControl(canvasid, controlNameId, x, y, width, height, depth
             invalidateRect(canvasid, null, x, y, width, height);
         }
         votingOutlineImage.src = outlineimgurl;
+        votingOutlineImageArray.push([canvasid, windowid, votingOutlineImage]);
     }
     votingPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, NumStars: numstars, MaxValueOfAllStars: maxvalueofallstars, 
@@ -8961,7 +8970,7 @@ function createVotingControl(canvasid, controlNameId, x, y, width, height, depth
             canvas.width = votingProps.ImgWidth;
             canvas.height = votingProps.ImgHeight;
             var ctx = canvas.getContext('2d');
-            ctx.drawImage(votingOutlineImage, 0, 0);
+            ctx.drawImage(getVotingOutlineImage(canvasid1, windowid1), 0, 0);
             var imgdata = ctx.getImageData(0, 0, canvas.width, canvas.height);
             var numfullstars = votingProps.HasPartialStars == 1 ? Math.floor(votingProps.InitialValue / (votingProps.MaxValueOfAllStars / votingProps.NumStars)) :
                 Math.round(votingProps.InitialValue / (votingProps.MaxValueOfAllStars / votingProps.NumStars));
@@ -8983,7 +8992,7 @@ function createVotingControl(canvasid, controlNameId, x, y, width, height, depth
                     canvas2.width = votingProps.ImgWidth;
                     canvas2.height = votingProps.ImgHeight;
                     var ctx2 = canvas2.getContext('2d');
-                    ctx2.drawImage(votingOutlineImage, 0, 0);
+                    ctx2.drawImage(getVotingOutlineImage(canvasid1, windowid1), 0, 0);
                     var imgdata = ctx2.getImageData(0, 0, canvas.width, canvas.height);
                     var fillpoints = [votingProps.FillOrientation == 0 ? Math.round(partialfillamountinpixels / 2) : Math.round(votingProps.ImgWidth / 2),
                         votingProps.FillOrientation == 1 ? Math.round(partialfillamountinpixels / 2) : Math.round(votingProps.ImgHeight / 2),
@@ -9002,7 +9011,7 @@ function createVotingControl(canvasid, controlNameId, x, y, width, height, depth
                 canvas3.width = votingProps.ImgWidth;
                 canvas3.height = votingProps.ImgHeight;
                 var ctx3 = canvas3.getContext('2d');
-                ctx3.drawImage(votingOutlineImage, 0, 0);
+                ctx3.drawImage(getVotingOutlineImage(canvasid1, windowid1), 0, 0);
                 var imgdata2 = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 for (var i = numfullstars + didapartialstar; i < votingProps.NumStars; i++) {
                     ctxdest.putImageData(imgdata2, votingProps.X + (votingProps.StarsOrientation == 0 ? (votingProps.HasValueLabel == 1 ?
@@ -9023,7 +9032,7 @@ function createVotingControl(canvasid, controlNameId, x, y, width, height, depth
             canvas.width = votingProps.StarSizeInPixels;
             canvas.height = votingProps.StarSizeInPixels;
             var ctx = canvas.getContext('2d');
-            drawOutlineEmptyStarOnCtx(ctx, votingProps);
+            drawOutlineEmptyStarOnCtx(ctx, votingProps, canvas);
             var imgdata = ctx.getImageData(0, 0, canvas.width, canvas.height);
             var numfullstars = votingProps.HasPartialStars == 1 ? Math.floor(votingProps.InitialValue / (votingProps.MaxValueOfAllStars / votingProps.NumStars)) :
                 Math.round(votingProps.InitialValue / (votingProps.MaxValueOfAllStars / votingProps.NumStars));
@@ -9047,8 +9056,8 @@ function createVotingControl(canvasid, controlNameId, x, y, width, height, depth
                     canvas2.width = votingProps.StarSizeInPixels;
                     canvas2.height = votingProps.StarSizeInPixels;
                     var ctx2 = canvas2.getContext('2d');
-                    drawOutlineEmptyStarOnCtx(ctx2, votingProps);
-                    var imgdata2 = ctx2.getImageData(0, 0, canvas.width, canvas.height);
+                    drawOutlineEmptyStarOnCtx(ctx2, votingProps, canvas2);
+                    var imgdata2 = ctx2.getImageData(0, 0, canvas2.width, canvas2.height);
                     var fillpoints = [votingProps.FillOrientation == 0 ? Math.round(partialfillamountinpixels / 2) : Math.round(votingProps.StarSizeInPixels / 2),
                         votingProps.FillOrientation == 1 ? Math.round(partialfillamountinpixels / 2) : Math.round(votingProps.StarSizeInPixels / 2),
                         0, 0, votingProps.StarSizeInPixels, votingProps.StarSizeInPixels, 255, 255, 255, 255, votingProps.StarColorRed, votingProps.StarColorGreen,
@@ -9065,8 +9074,8 @@ function createVotingControl(canvasid, controlNameId, x, y, width, height, depth
                 canvas3.width = votingProps.ImgWidth;
                 canvas3.height = votingProps.ImgHeight;
                 var ctx3 = canvas3.getContext('2d');
-                drawOutlineEmptyStarOnCtx(ctx3, votingProps);
-                var imgdata2 = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                drawOutlineEmptyStarOnCtx(ctx3, votingProps, canvas3);
+                var imgdata2 = ctx3.getImageData(0, 0, canvas3.width, canvas3.height);
                 for (var i = numfullstars + didapartialstar; i < votingProps.NumStars; i++) {
                     ctxdest.putImageData(imgdata2, votingProps.X + (votingProps.StarsOrientation == 0 ? (votingProps.HasValueLabel == 1 ?
                         votingProps.StarsStartingPosOffsetWhenLabel : 0) + (i * (votingProps.StarSizeInPixels + votingProps.SpacingInPixelsBetweenStars)) : 0),
@@ -9089,10 +9098,12 @@ function createVotingControl(canvasid, controlNameId, x, y, width, height, depth
             var clicky = e.calcY;
             for (var i = 0; i < votingProps.NumStars; i++) {
                 var starminx = votingProps.X + (votingProps.StarsOrientation == 0 ? (votingProps.HasValueLabel == 1 ?
-                    votingProps.StarsStartingPosOffsetWhenLabel : 0) + (i * (votingProps.StarSizeInPixels + votingProps.SpacingInPixelsBetweenStars)) : 0);
+                    votingProps.StarsStartingPosOffsetWhenLabel : 0) + (i * ((votingProps.IsCustomPattern == 1 ? votingProps.ImgWidth :
+                    votingProps.StarSizeInPixels) + votingProps.SpacingInPixelsBetweenStars)) : 0);
                 var starmaxx = starminx + (votingProps.IsCustomPattern == 1 ? votingProps.ImgWidth : votingProps.StarSizeInPixels);
                 var starminy = votingProps.Y + (votingProps.StarsOrientation == 1 ? (votingProps.HasValueLabel == 1 ?
-                    votingProps.StarsStartingPosOffsetWhenLabel : 0) + (i * (votingProps.StarSizeInPixels + votingProps.SpacingInPixelsBetweenStars)) : 0)
+                    votingProps.StarsStartingPosOffsetWhenLabel : 0) + (i * ((votingProps.IsCustomPattern == 1 ? votingProps.ImgHeight :
+                    votingProps.StarSizeInPixels) + votingProps.SpacingInPixelsBetweenStars)) : 0)
                 var starmaxy = starminy + (votingProps.IsCustomPattern == 1 ? votingProps.ImgHeight : votingProps.StarSizeInPixels);
                 if (starminx < clickx && starmaxx > clickx && starminy < clicky && starmaxy > clicky) {
                     var value = (i * (votingProps.MaxValueOfAllStars / votingProps.NumStars)) + ((votingProps.FillOrientation == 0 ? ((clickx - starminx) /
@@ -9110,35 +9121,100 @@ function createVotingControl(canvasid, controlNameId, x, y, width, height, depth
     }
 }
 
-function drawOutlineEmptyStarOnCtx(ctx, votingProps) {
+function drawOutlineEmptyStarOnCtx(ctx, votingProps, canvas) {
     ctx.fillStyle = '#FFFFFF';
     ctx.rect(0, 0, votingProps.StarSizeInPixels, votingProps.StarSizeInPixels);
     ctx.fill();
-    ctx.strokeStyle = 'rgb(' + votingProps.StarColorRed.toString() + ',' + votingProps.StarColorGreen.toString() + ',' + votingProps.StarColorBlue.toString() + ')';
+    ctx.strokeStyle = '#000000';
     ctx.lineWidth = votingProps.OutlineThicknessOfEmptyStar;
     ctx.beginPath();
-    /*
-    ctx.moveTo(0, votingProps.StarSizeInPixels / 2);
-    ctx.lineTo(votingProps.StarSizeInPixels / 3, votingProps.StarSizeInPixels / 3);
-    ctx.lineTo(votingProps.StarSizeInPixels / 2, 0);
-    ctx.lineTo(2 * votingProps.StarSizeInPixels / 3, votingProps.StarSizeInPixels / 3);
-    ctx.lineTo(votingProps.StarSizeInPixels, votingProps.StarSizeInPixels / 2);
-    ctx.lineTo(2 * votingProps.StarSizeInPixels / 3, 2 * votingProps.StarSizeInPixels / 3);
-    ctx.lineTo(votingProps.StarSizeInPixels / 2, votingProps.StarSizeInPixels);
-    ctx.lineTo(votingProps.StarSizeInPixels / 3, 2 * votingProps.StarSizeInPixels / 3);
-    ctx.closePath();*/
-    ctx.moveTo(0, 24 * votingProps.StarSizeInPixels / 70);
-    ctx.lineTo(27 * votingProps.StarSizeInPixels / 70, 24 * votingProps.StarSizeInPixels / 70);
-    ctx.lineTo(votingProps.StarSizeInPixels / 2, 0);
-    ctx.lineTo(43 * votingProps.StarSizeInPixels / 70, 24 * votingProps.StarSizeInPixels / 70);
-    ctx.lineTo(votingProps.StarSizeInPixels, 24 * votingProps.StarSizeInPixels / 70);
-    ctx.lineTo(49 * votingProps.StarSizeInPixels / 70, 39 * votingProps.StarSizeInPixels / 70);
-    ctx.lineTo(55 * votingProps.StarSizeInPixels / 70, votingProps.StarSizeInPixels);
-    ctx.lineTo(votingProps.StarSizeInPixels / 2, 50 * votingProps.StarSizeInPixels / 70);
-    ctx.lineTo(15 * votingProps.StarSizeInPixels / 70, votingProps.StarSizeInPixels);
-    ctx.lineTo(21 * votingProps.StarSizeInPixels / 70, 41 * votingProps.StarSizeInPixels / 70);
-    ctx.closePath();
-    ctx.stroke();
+    var points = [[0, Math.floor(24 * votingProps.StarSizeInPixels / 70)],
+        [Math.floor(27 * votingProps.StarSizeInPixels / 70), Math.floor(24 * votingProps.StarSizeInPixels / 70)],
+        [Math.floor(votingProps.StarSizeInPixels / 2), 0], [Math.floor(43 * votingProps.StarSizeInPixels / 70), Math.floor(24 * votingProps.StarSizeInPixels / 70)],
+        [votingProps.StarSizeInPixels, Math.floor(24 * votingProps.StarSizeInPixels / 70)], [Math.floor(49 * votingProps.StarSizeInPixels / 70),
+            Math.floor(39 * votingProps.StarSizeInPixels / 70)], [Math.floor(55 * votingProps.StarSizeInPixels / 70), votingProps.StarSizeInPixels],
+            [Math.floor(votingProps.StarSizeInPixels / 2), Math.floor(50 * votingProps.StarSizeInPixels / 70)],
+        [Math.floor(15 * votingProps.StarSizeInPixels / 70), Math.floor(votingProps.StarSizeInPixels)], [Math.floor(21 * votingProps.StarSizeInPixels / 70),
+            Math.floor(41 * votingProps.StarSizeInPixels / 70)]];
+    var imgdata = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    ctx.putImageData(drawClosedLoopLines(imgdata, points, votingProps.StarColorRed, votingProps.StarColorGreen, votingProps.StarColorBlue, votingProps.StarColorAlpha),
+        0, 0);
+}
+
+function drawClosedLoopLines(imgdata, points, red, green, blue, alpha) {
+    if (points.length > 1) {
+        for (var i = 0; i < points.length; i++) {
+            imgdata = drawline(imgdata, points[i][0], points[i][1], i == points.length - 1 ? points[0][0] : points[i + 1][0],
+                i == points.length - 1 ? points[0][1] : points[i + 1][1], red, green, blue, alpha);
+        }
+    }
+    return imgdata;
+}
+
+function drawline(imgdata, x1, y1, x2, y2, red, green, blue, alpha) {
+    var dx = x2 - x1; var sx = 1;
+    var dy = y2 - y1; var sy = 1;
+
+    if (dx < 0) {
+        sx = -1;
+        dx = -dx;
+    }
+    if (dy < 0) {
+        sy = -1;
+        dy = -dy;
+    }
+
+    dx = dx << 1;
+    dy = dy << 1;
+    imgdata = setPixel(imgdata, x1, y1, red, green, blue, alpha);
+    if (dy < dx) {
+        var fraction = dy - (dx >> 1);
+        while (x1 != x2) {
+            if (fraction >= 0) {
+                y1 += sy;
+                fraction -= dx;
+            }
+            fraction += dy;
+            x1 += sx;
+            imgdata = setPixel(imgdata, x1, y1, red, green, blue, alpha);
+        }
+    }
+    else {
+        var fraction = dx - (dy >> 1);
+        while (y1 != y2) {
+            if (fraction >= 0) {
+                x1 += sx;
+                fraction -= dy;
+            }
+            fraction += dx;
+            y1 += sy;
+            imgdata = setPixel(imgdata, x1, y1, red, green, blue, alpha);
+        }
+    }
+    return imgdata;
+}
+
+function setPixel(imgdata, x, y, red, green, blue, alpha) {
+    imgdata.data[(y * imgdata.width * 4) + (x * 4)] = red;
+    imgdata.data[(y * imgdata.width * 4) + (x * 4) + 1] = green;
+    imgdata.data[(y * imgdata.width * 4) + (x * 4) + 2] = blue;
+    imgdata.data[(y * imgdata.width * 4) + (x * 4) + 3] = alpha;
+    return imgdata;
+}
+
+function findMinValueIndex(array) {
+    var index = -1;
+    if (array.length > 1) {
+        var currmax = array[0];
+        var index = 0;
+        for (var i = 1; i < array.length; i++) {
+            if (currmax > array[i]) {
+                currmax = array[i];
+                index = i;
+            }
+        }
+    }
+    return index;
 }
 
 //AJAX Postback code Starts here
