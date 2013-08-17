@@ -178,7 +178,7 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
     var consumeevent = 0;
     var dodrawforwindowids = new Array();
     var dodraw = 0;
-    for (var d = highestDepth; d >= 0; d--) {
+    for (var d = 0; d <= highestDepth; d++) {
         for (var i = 0; i < windows.length; i++) {
             if (windows[i].ParentWindowID == parentwindowid && checkIfModalWindow(canvasId, windows[i].WindowCount) == 1 &&
                 checkIfHiddenWindow(canvasId, windows[i].WindowCount) == 0 && windows[i].CanvasID == canvasId && windows[i].Depth == d &&
@@ -235,7 +235,7 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
                         } else {
                             eventArray[u][1](canvasId, windows[i].WindowCount, e);
                         }
-                        if (!donotredaw) {
+                        if (!donotredaw && windows[i]) {
                             invalidateRect(canvasId, null, windows[i].X, windows[i].Y, windows[i].Width, windows[i].Height);
                             if (windows[i].ControlType == 'ScrollBar') {
                                 var scrollbarprops = getScrollBarProps(canvasId, windows[i].WindowCount);
@@ -251,7 +251,7 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
                                 }
                             }
                         }
-                        if (windows[i].ControlType != 'TextBox' && suppressPreventDefault != 1) {
+                        if (windows[i] && windows[i].ControlType != 'TextBox' && suppressPreventDefault != 1) {
                             if (e.preventDefault)
                                 e.preventDefault();
                             e.returnValue = false;
@@ -266,7 +266,7 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
             }
         }
     }
-    for (var d = highestDepth; d >= 0; d--) {
+    for (var d = 0; d <= highestDepth; d++) {
         for (var i = 0; i < windows.length; i++) {
             if (windows[i].ParentWindowID == parentwindowid && checkIfModalWindow(canvasId, windows[i].WindowCount) == 0 && checkIfHiddenWindow(canvasId, windows[i].WindowCount) == 0 &&
                 windows[i].CanvasID == canvasId && windows[i].Depth == d && x >= windows[i].X && x <= windows[i].X + windows[i].Width &&
@@ -324,7 +324,7 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
                         } else {
                             eventArray[u][1](canvasId, windows[i].WindowCount, e);
                         }
-                        if (!donotredaw) {
+                        if (!donotredaw && windows[i]) {
                             invalidateRect(canvasId, null, windows[i].X, windows[i].Y, windows[i].Width, windows[i].Height);
                             if (windows[i].ControlType == 'ScrollBar') {
                                 var scrollbarprops = getScrollBarProps(canvasId, windows[i].WindowCount);
@@ -340,7 +340,7 @@ function pointEvent(eventArray, canvasId, e, parentwindowid, suppressPreventDefa
                                 }
                             }
                         }
-                        if (windows[i].ControlType != 'TextBox' && suppressPreventDefault != 1) {
+                        if (windows[i] && windows[i].ControlType != 'TextBox' && suppressPreventDefault != 1) {
                             if (e.preventDefault)
                                 e.preventDefault();
                             e.returnValue = false;
@@ -540,8 +540,6 @@ function registerCanvasElementId(canvasId) {
 }
 
 function createWindow(canvasId, x, y, width, height, depth, parentwindowid, controlTypeNameString, controlNameId) {
-    if (depth > highestDepth)
-        highestDepth = depth;
     ++windowCount;
     windows.push({
         WindowCount: windowCount, X: x, Y: y, Width: width, Height: height, Depth: depth, CanvasID: canvasId, ParentWindowID: parentwindowid, ChildWindowIDs: new Array(),
@@ -6815,7 +6813,9 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
                     ctx.moveTo(textBoxProps.X + 2, textBoxProps.Y + 4);
                     ctx.lineTo(textBoxProps.X + 2, textBoxProps.Y + textBoxProps.Height - 4);
                 } else if (textBoxProps.CaretPosIndex > -1) {
-                    var tempstr = (textBoxProps.UserInputText && textBoxProps.UserInputText.length - 1 >= textBoxProps.CaretPosIndex ? textBoxProps.UserInputText.substring(0, textBoxProps.CaretPosIndex + 1) :
+                    var tempstr = (textBoxProps.UserInputText && textBoxProps.UserInputText.length - 1 >= textBoxProps.CaretPosIndex ?
+                        (textBoxProps.IsPassword == 1 ? repeatPasswordChar(textBoxProps.PasswordChar, textBoxProps.UserInputText.length) :
+                        textBoxProps.UserInputText.substring(0, textBoxProps.CaretPosIndex + 1)) :
                         '');
                     ctx.font = textBoxProps.TextFontString;
                     var w = ctx.measureText(tempstr).width;
@@ -7130,6 +7130,14 @@ function createTextBox(canvasid, controlNameId, x, y, width, height, depth, wate
     });
     registerAnimatedWindow(canvasid, windowid);
     return windowid;
+}
+
+function repeatPasswordChar(char, x) {
+    var str = '';
+    for (var i = 0; i < x; i++) {
+        str = str + char;
+    }
+    return str;
 }
 
 function FindTextBoxPossible(textBoxProps, c) {
@@ -9179,7 +9187,7 @@ function drawOutlineEmptyStarOnCtx(ctx, votingProps, canvas) {
         [Math.floor(27 * votingProps.StarSizeInPixels / 70), Math.floor(24 * votingProps.StarSizeInPixels / 70)],
         [Math.floor(votingProps.StarSizeInPixels / 2), 0], [Math.floor(43 * votingProps.StarSizeInPixels / 70), Math.floor(24 * votingProps.StarSizeInPixels / 70)],
         [votingProps.StarSizeInPixels, Math.floor(24 * votingProps.StarSizeInPixels / 70)], [Math.floor(49 * votingProps.StarSizeInPixels / 70),
-            Math.floor(39 * votingProps.StarSizeInPixels / 70)], [Math.floor(55 * votingProps.StarSizeInPixels / 70), votingProps.StarSizeInPixels],
+            Math.floor(41 * votingProps.StarSizeInPixels / 70)], [Math.floor(60 * votingProps.StarSizeInPixels / 70), votingProps.StarSizeInPixels],
             [Math.floor(votingProps.StarSizeInPixels / 2), Math.floor(50 * votingProps.StarSizeInPixels / 70)],
         [Math.floor(15 * votingProps.StarSizeInPixels / 70), Math.floor(votingProps.StarSizeInPixels)], [Math.floor(21 * votingProps.StarSizeInPixels / 70),
             Math.floor(41 * votingProps.StarSizeInPixels / 70)]];
@@ -9262,6 +9270,87 @@ function findMinValueIndex(array) {
         }
     }
     return index;
+}
+
+//Carousel control code starts here
+
+var carouselArrayProps = new Array();
+var carouselImagesArray = new Array();
+var carouselBgImagesArray = new Array();
+
+function getCarouselProps(canvasid, windowid) {
+    for (var i = 0; i < carouselArrayProps.length; i++) {
+        if (carouselArrayProps[i].CanvasID == canvasid && carouselArrayProps[i].WindowID == windowid) {
+            return carouselArrayProps[i];
+        }
+    }
+}
+
+function getCarouselImage(canvasid, windowid, imgurl) {
+    for (var i = 0; i < carouselImagesArray.length; i++) {
+        if (carouselArrayProps[i][0] == canvasid && carouselImagesArray[i][1] == windowid) {
+            for (var x = 0; x < carouselImagesArray[i][2].length; x++) {
+                if (carouselImagesArray[i][2][x][0] == imgurl) {
+                    return carouselImagesArray[i][2][x][1];
+                }
+            }
+        }
+    }
+}
+
+function getCarouselBgImage(canvasid, windowid) {
+    for (var i = 0; i < carouselBgImagesArray.length; i++) {
+        if (carouselBgImagesArray[i][0] == canvasid && carouselBgImagesArray[i][1] == windowid) {
+            return carouselBgImagesArray[i][2];
+        }
+    }
+}
+
+function createCarouselControl(canvasid, controlNameId, x, y, width, height, depth, orientation, buttonwidth, buttonheight, buttontopleftxoffset,
+    buttontopleftyoffset, buttonoutlineimgurl, buttonfillcolorred, buttonfillcolorgreen, buttonfillcolorblue, buttonfillcoloralpha,
+    buttonbgcolorred, buttonbgcolorgreen, buttonbgcolorblue, buttonbgcoloralpha, buttonfillpointx, buttonfillpointy, hasbgfill, bgfillcolor, hasbgimg, bgimgurl,
+    spacingbetweenimagesinpixels, imageURLs, flowdirection, incpertick, timeoutinmilliseconds, startingimageindex, imageindexinc, hasslidinganimation) {
+    var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Carousel', controlNameId);
+    carouselArrayProps.push({
+        CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Orientation: orientation, ButtonWidth: buttonwidth, 
+        ButtonHeight: buttonheight, ButtonTopLeftXOffset: buttontopleftxoffset, ButtonTopLeftYOffset: buttontopleftyoffset, 
+        ButtonOutlineImgURL: buttonoutlineimgurl, ButtonFillColorRed: buttonfillcolorred, ButtonFillColorGreen: buttonfillcolorgreen, 
+        ButtonFillColorBlue: buttonfillcolorblue, ButtonFillColorAlpha: buttonfillcoloralpha, ButtonBgColorRed: buttonbgcolorred, 
+        ButtonBgColorGreen: buttonbgcolorgreen, ButtonBgColorBlue: buttonbgcolorblue, ButtonBgColorAlpha: buttonbgcoloralpha,
+        ButtonFillPointX: buttonfillpointx, ButtonFillPointY: buttonfillpointy, HasBgFill: hasbgfill, BgFillColor: bgfillcolor, HasBgImg: hasbgimg,
+        BgImgURL: bgimgurl, SpacingBetweenImagesInPixels: spacingbetweenimagesinpixels, ImageURLs: imageURLs,
+        Countdown: 0, FlowDirection: flowdirection, IncPerTick: incpertick, TimeoutInMilliseconds: timeoutinmilliseconds,
+        CurrentImageIndex: startingimageindex, ImageIndexInc: imageindexinc, HasSlidingAnimation: hasslidinganimation
+    });
+    registerWindowDrawFunction(windowid, caroselDraw, canvasid);
+    registerClickFunction(windowid, carouselClick, canvasid);
+}
+
+function carouselClick(canvasid, windowid, e) {
+    var carouselProps = getCarouselProps(canvasid, windowid);
+}
+
+function carouselDraw(canvasid, windowid) {
+    var carouselProps = getCarouselProps(canvasid, windowid);
+    var ctx = getCtx(canvasid);
+    if (carouselProps.HasBgFill == 1) {
+        ctx.fillStyle = carouselProps.BgFillColor;
+        ctx.rect(carouselProps.X, carouselProps.Y, carouselProps.Width, carouselProps.Height);
+        ctx.fill();
+    } else if (carouselProps.HasBgImg == 1) {
+        var image = getCarouselBgImage(canvasid, windowid);
+        ctx.drawImage(image, carouselProps.X, carouselProps.Y);
+    }
+    if (carouselProps.Countdown == 0) {
+        var currwidth = 0;
+        for (var i = carouselProps.CurrentImageIndex; currwidth < carouselProps.Width; i++) {
+            if (i == carouselProps.ImageURLs.length) {
+                i = 0;
+            }
+            var image = getCarouselImage(canvasid, windowid, carouselProps.imageURLs[i]);
+
+        }
+    }
 }
 
 //AJAX Postback code Starts here

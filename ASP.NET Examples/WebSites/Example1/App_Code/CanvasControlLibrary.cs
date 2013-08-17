@@ -2079,7 +2079,7 @@ public class CanvasControlLibrary
             }
             else
             {
-                strParameters += "[i]" + obj.ToString() + "[/i]";
+                strParameters += "[i]" + obj.ToString().Replace("[", "&lb;").Replace("]", "&rb;") + "[/i]";
             }
         }
         return strParameters;

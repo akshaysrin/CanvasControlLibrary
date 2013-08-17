@@ -23,7 +23,7 @@ using System.Xml;
 using System.Reflection;
 using System.Collections;
 
-public partial class Default2 : System.Web.UI.Page
+public partial class AjaxEx1 : System.Web.UI.Page
 {
     CanvasControlLibrary ccl;
     ArrayList parameters = new ArrayList();

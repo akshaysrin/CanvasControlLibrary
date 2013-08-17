@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="AjaxEx1.aspx.cs" Inherits="AjaxEx1" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Ajax.aspx.cs" Inherits="Ajax" %>
 
 <!DOCTYPE html>
 
