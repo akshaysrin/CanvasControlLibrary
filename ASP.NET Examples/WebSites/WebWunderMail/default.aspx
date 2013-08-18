@@ -76,7 +76,13 @@
                             }
                             createTreeView(elemId, 'foldersTreeView', 0, 0, 300, 900, highestDepth, rootnodes, '#000000', '12pt Ariel', 12, function (canvasid, windowid) {
                             }, null, 0, 0, 0, inboxnode);
-                            invalidateRect(canvasid, null, 0, 0, 1800, 900);
+                            invalidateRect(elemId, null, 0, 0, 1800, 900);
+                            invokeServerSideFunction('Ajax.aspx', 'getEmailHeaders', elemId, 1, function (params) {
+                                createGrid(elemId, 'EmailDataGrid', 301, 0, 1499, 900, highestDepth, params, ['From', 'Subject', 'Date Sent', 'Date Received', 'Has Attachments'],
+                                    '#000000', 12, '12pt Ariel', '#FFFFFF', 14, '14pt Ariel', null, null, null, 20, 30, [400, 599, 150, 150, 200], 0, null, 0,
+                                    '#000026', '#000026', '#f7f7f7', '#f7f7f7', '#FFFFFF', '#FFFFFF', null);
+                                invalidateRect(elemId, null, 0, 0, 1800, 900);
+                            }, [loginEmailAddress, loginPassword, emailServerAddress]);
                         }, [loginEmailAddress, loginPassword, emailServerAddress]);
                     }, null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1', null));
                 invalidateRect(elemId, null, 0, 0, 1800, 900);

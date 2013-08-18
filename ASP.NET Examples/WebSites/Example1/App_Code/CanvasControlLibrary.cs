@@ -1795,9 +1795,9 @@ public class CanvasControlLibrary
         return str + "[/Array]";
     }
 
-    public string encodeString(string str)
+    public static string encodeString(string str)
     {
-        return str.Replace("&", "&amp;").Replace("[", "&lb;").Replace("]", "&rb;");
+        return str.Replace("&", "&amp;").Replace("\"", "&quot;").Replace("'", "&apos;").Replace("[", "&lb;").Replace("]", "&rb;").Replace("<", "&lt;").Replace(">", "&gt;");
     }
 
     public string encodeObject(object o)
@@ -2079,7 +2079,7 @@ public class CanvasControlLibrary
             }
             else
             {
-                strParameters += "[i]" + obj.ToString().Replace("[", "&lb;").Replace("]", "&rb;") + "[/i]";
+                strParameters += "[i]" + encodeString(obj.ToString()) + "[/i]";
             }
         }
         return strParameters;

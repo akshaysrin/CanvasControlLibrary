@@ -60,4 +60,24 @@ public partial class Ajax : System.Web.UI.Page
         }
         imp.Disconnect();
     }
+
+    public void getEmailHeaders(string canvasid, int windowid)
+    {
+        Imap imp = new Imap();
+        imp.Connect(((ArrayList)ccl.InputParams[0])[2].ToString());
+        imp.Login(((ArrayList)ccl.InputParams[0])[0].ToString(), ((ArrayList)ccl.InputParams[0])[1].ToString());
+        imp.SelectFolder("Inbox");
+        MailMessageCollection msgs = imp.DownloadMessageHeaders(Imap.AllMessages, false);
+        for (int i = msgs.Count - 1; i > -1; i--)
+        {
+            MailMessage msg = msgs[i] as MailMessage;
+            ArrayList arlmsg = new ArrayList();
+            arlmsg.Add(msg.From);
+            arlmsg.Add(msg.Subject);
+            arlmsg.Add(msg.DateSent.ToString());
+            arlmsg.Add(msg.DateReceived.ToString());
+            arlmsg.Add(msg.Attachments.Count > 0 ? 1 : 0);
+            parameters.Add(arlmsg);
+        }
+    }
 }
