@@ -26,7 +26,7 @@ using System.Collections;
 public partial class AjaxEx1 : System.Web.UI.Page
 {
     CanvasControlLibrary ccl;
-    ArrayList parameters = new ArrayList();
+    List<object> parameters = new List<object>();
     ArrayList movieIndexes = new ArrayList();
 
     protected void Page_Load(object sender, EventArgs e)
@@ -50,15 +50,15 @@ public partial class AjaxEx1 : System.Web.UI.Page
     public void ClickMe(string canvasid, int windowid)
     {
         CanvasControlLibrary.CCLLabelProps lp = ccl.getControlPropsByControlNameID("l1") as CanvasControlLibrary.CCLLabelProps;
-        if (ccl.CurrentSessionObj.Data.Count == 0)
+        if (Convert.ToInt32(ccl.CurrentSessionObj.Data.GetValue("Count")) == 0)
         {
             ccl.CurrentSessionObj.Data.Add("Counter", 1);
         }
         else
         {
-            ccl.CurrentSessionObj.Data["Counter"] = (int)ccl.CurrentSessionObj.Data["Counter"] + 1;
+            ccl.CurrentSessionObj.Data.SetValue("Counter", (Convert.ToInt32(ccl.CurrentSessionObj.Data.GetValue("Counter")) + 1).ToString());
         }
-        lp.Text = ccl.CurrentSessionObj.Data["Counter"].ToString();
+        lp.Text = ccl.CurrentSessionObj.Data.GetValue("Counter").ToString();
         CanvasControlLibrary.CCLImageProps i1 = ccl.getControlPropsByControlNameID("i1") as CanvasControlLibrary.CCLImageProps;
         i1.ImageURL = "Bombay.png";
         parameters.Add(ccl.InputParams);
@@ -71,7 +71,7 @@ public partial class AjaxEx1 : System.Web.UI.Page
     public void InitializeForm1(string canvasid, int windowid)
     {
         CanvasControlLibrary.CCLComboBoxProps selectCityComboBox = ccl.getControlPropsByControlNameID("selectCityComboBoxComboBoxTextArea") as CanvasControlLibrary.CCLComboBoxProps;
-        selectCityComboBox.Data = new System.Collections.ArrayList();
+        selectCityComboBox.Data = new List<object>();
         selectCityComboBox.Data.Add("Select a city");
         selectCityComboBox.Data.Add("Mumbai");
         selectCityComboBox.Data.Add("Delhi");
@@ -84,7 +84,7 @@ public partial class AjaxEx1 : System.Web.UI.Page
     {
         CanvasControlLibrary.CCLComboBoxProps selectCityComboBox = ccl.getControlPropsByControlNameID("selectCityComboBoxComboBoxTextArea") as CanvasControlLibrary.CCLComboBoxProps;
         CanvasControlLibrary.CCLComboBoxProps selectCinemaComboBox = ccl.getControlPropsByControlNameID("selectCinemaComboBoxComboBoxTextArea") as CanvasControlLibrary.CCLComboBoxProps;
-        selectCinemaComboBox.Data = new System.Collections.ArrayList();
+        selectCinemaComboBox.Data = new List<object>();
         switch (selectCityComboBox.Data[Convert.ToInt32(selectCityComboBox.SelectedID)].ToString())
         {
             case "Mumbai":
@@ -145,40 +145,64 @@ public partial class AjaxEx1 : System.Web.UI.Page
         switch (selectCinemaComboBox.Data[Convert.ToInt32(selectCinemaComboBox.SelectedID)].ToString())
         {
             case "Phoenix Mills":
-                parameters = new ArrayList{new ArrayList { "fantastic_four.jpg", "1:30 pm", "5:45 pm" }, new ArrayList { "ferrisbuellersdayoff.jpg", "9:00 pm", "11:30 pm" }, new ArrayList { "IncredibleHulk.jpg", "6:00 pm", "8:30 pm" }};
+                parameters = new List<object> { new List<object> { "fantastic_four.jpg", "1:30 pm", "5:45 pm" }, 
+                    new List<object> { "ferrisbuellersdayoff.jpg", "9:00 pm", "11:30 pm" },
+                    new List<object> { "IncredibleHulk.jpg", "6:00 pm", "8:30 pm" } };
                 break;
             case "Juhu":
-                parameters = new ArrayList { new ArrayList { "ironman.jpg", "4:30 pm", "9:45 pm" }, new ArrayList { "pointbreak.jpg", "6:00 pm", "7:30 pm" }, new ArrayList { "Spider-Man-2.jpg", "5:00 pm", "10:30 pm" } };
+                parameters = new List<object> { new List<object> { "ironman.jpg", "4:30 pm", "9:45 pm" }, 
+                    new List<object> { "pointbreak.jpg", "6:00 pm", "7:30 pm" }, 
+                    new List<object> { "Spider-Man-2.jpg", "5:00 pm", "10:30 pm" } };
                 break;
             case "Nariman Point":
-                parameters = new ArrayList { new ArrayList { "spider-man4.jpg", "7:30 pm", "8:45 pm" }, new ArrayList { "spider_man3.jpg", "2:00 pm", "5:30 pm" }, new ArrayList { "The-Avengers.jpg", "9:00 pm", "9:30 pm", "10:30 pm", "11:30 pm" } };
+                parameters = new List<object> { new List<object> { "spider-man4.jpg", "7:30 pm", "8:45 pm" }, 
+                    new List<object> { "spider_man3.jpg", "2:00 pm", "5:30 pm" }, 
+                    new List<object> { "The-Avengers.jpg", "9:00 pm", "9:30 pm", "10:30 pm", "11:30 pm" } };
                 break;
             case "Chitrapur":
-                parameters = new ArrayList { new ArrayList { "thor.jpg", "8:30 pm", "10:45 pm" }, new ArrayList { "wolverine.jpg", "2:00 pm", "5:30 pm" }, new ArrayList { "xmen_first_class.jpg", "9:00 pm", "11:30 pm" } };
+                parameters = new List<object> { new List<object> { "thor.jpg", "8:30 pm", "10:45 pm" }, 
+                    new List<object> { "wolverine.jpg", "2:00 pm", "5:30 pm" }, 
+                    new List<object> { "xmen_first_class.jpg", "9:00 pm", "11:30 pm" } };
                 break;
             case "Khari Baoli":
-                parameters = new ArrayList { new ArrayList { "gijoeriseofcobra.jpg", "2:30 pm", "5:45 pm" }, new ArrayList { "The-Avengers.jpg", "8:00 pm", "9:15 pm" }, new ArrayList { "wolverine.jpg", "7:30 pm", "10:15 pm" } };
+                parameters = new List<object> { new List<object> { "gijoeriseofcobra.jpg", "2:30 pm", "5:45 pm" },
+                    new List<object> { "The-Avengers.jpg", "8:00 pm", "9:15 pm" },
+                    new List<object> { "wolverine.jpg", "7:30 pm", "10:15 pm" } };
                 break;
             case "Lakshmi Garden":
-                parameters = new ArrayList { new ArrayList { "Thor.jpg", "8:30 pm", "10:45 pm" }, new ArrayList { "pointbreak.jpg", "3:00 pm", "4:15 pm" }, new ArrayList { "ironman.jpg", "8:45 pm", "9:15 pm" } };
+                parameters = new List<object> { new List<object> { "Thor.jpg", "8:30 pm", "10:45 pm" }, 
+                    new List<object> { "pointbreak.jpg", "3:00 pm", "4:15 pm" }, 
+                    new List<object> { "ironman.jpg", "8:45 pm", "9:15 pm" } };
                 break;
             case "Gandhi Nagar":
-                parameters = new ArrayList { new ArrayList { "Spider-Man-2.jpg", "4:30 pm", "6:45 pm" }, new ArrayList { "IncredibleHulk.jpg", "7:00 pm", "9:15 pm" }, new ArrayList { "gijoeriseofcobra.jpg", "3:45 pm", "4:15 pm" } };
+                parameters = new List<object> { new List<object> { "Spider-Man-2.jpg", "4:30 pm", "6:45 pm" }, 
+                    new List<object> { "IncredibleHulk.jpg", "7:00 pm", "9:15 pm" }, 
+                    new List<object> { "gijoeriseofcobra.jpg", "3:45 pm", "4:15 pm" } };
                 break;
             case "Lake City":
-                parameters = new ArrayList { new ArrayList { "The-Avengers.jpg", "9:30 pm", "9:45 pm" }, new ArrayList { "xmen_first_class.jpg", "6:00 pm", "8:15 pm" }, new ArrayList { "ironman.jpg", "8:45 pm", "10:15 pm" } };
+                parameters = new List<object> { new List<object> { "The-Avengers.jpg", "9:30 pm", "9:45 pm" }, 
+                    new List<object> { "xmen_first_class.jpg", "6:00 pm", "8:15 pm" },
+                    new List<object> { "ironman.jpg", "8:45 pm", "10:15 pm" } };
                 break;
             case "Rajaji Nagar":
-                parameters = new ArrayList { new ArrayList { "fantastic_four.jpg", "9:30 pm", "11:45 pm" }, new ArrayList { "wolverine.jpg", "8:00 pm", "9:15 pm" }, new ArrayList { "Thor.jpg", "6:45 pm", "10:15 pm" } };
+                parameters = new List<object> { new List<object> { "fantastic_four.jpg", "9:30 pm", "11:45 pm" }, 
+                    new List<object> { "wolverine.jpg", "8:00 pm", "9:15 pm" }, 
+                    new List<object> { "Thor.jpg", "6:45 pm", "10:15 pm" } };
                 break;
             case "Harrington Road":
-                parameters = new ArrayList { new ArrayList { "The-Avengers.jpg", "10:30 pm", "10:45 pm" }, new ArrayList { "xmen_first_class.jpg", "9:00 pm", "10:15 pm" }, new ArrayList { "ironman.jpg", "8:45 pm", "11:15 pm" } };
+                parameters = new List<object> { new List<object> { "The-Avengers.jpg", "10:30 pm", "10:45 pm" }, 
+                    new List<object> { "xmen_first_class.jpg", "9:00 pm", "10:15 pm" }, 
+                    new List<object> { "ironman.jpg", "8:45 pm", "11:15 pm" } };
                 break;
             case "Boat Club":
-                parameters = new ArrayList { new ArrayList { "gijoeriseofcobra.jpg", "8:30 pm", "8:45 pm" }, new ArrayList { "spider_man3.jpg", "10:00 pm", "11:15 pm" }, new ArrayList { "IncredibleHulk.jpg", "8:45 pm", "9:15 pm" } };
+                parameters = new List<object> { new List<object> { "gijoeriseofcobra.jpg", "8:30 pm", "8:45 pm" }, 
+                    new List<object> { "spider_man3.jpg", "10:00 pm", "11:15 pm" }, 
+                    new List<object> { "IncredibleHulk.jpg", "8:45 pm", "9:15 pm" } };
                 break;
             case "Chetpet":
-                parameters = new ArrayList { new ArrayList { "Thor.jpg", "7:30 pm", "8:45 pm" }, new ArrayList { "fantastic_four.jpg", "5:00 pm", "6:15 pm" }, new ArrayList { "The-Avengers.jpg", "10:45 pm", "11:15 pm" } };
+                parameters = new List<object> { new List<object> { "Thor.jpg", "7:30 pm", "8:45 pm" }, 
+                    new List<object> { "fantastic_four.jpg", "5:00 pm", "6:15 pm" }, 
+                    new List<object> { "The-Avengers.jpg", "10:45 pm", "11:15 pm" } };
                 break;
         }
         ((CanvasControlLibrary.CCLScrollBarProps)ccl.getControlPropsByWindowID(canvasid, selectCinemaComboBox.VScrollBarWindowID)).MaxItems = selectCinemaComboBox.Data.Count.ToString();

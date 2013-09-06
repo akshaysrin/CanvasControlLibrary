@@ -35,7 +35,7 @@ using MailBee.ImapMail;
 public partial class Ajax : System.Web.UI.Page
 {
     CanvasControlLibrary ccl;
-    ArrayList parameters = new ArrayList();
+    List<object> parameters = new List<object>();
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -51,8 +51,8 @@ public partial class Ajax : System.Web.UI.Page
     public void getFolders(string canvasid, int windowid)
     {
         Imap imp = new Imap();
-        imp.Connect(((ArrayList)ccl.InputParams[0])[2].ToString());
-        imp.Login(((ArrayList)ccl.InputParams[0])[0].ToString(), ((ArrayList)ccl.InputParams[0])[1].ToString());
+        imp.Connect(((List<object>)ccl.InputParams[0])[2].ToString());
+        imp.Login(((List<object>)ccl.InputParams[0])[0].ToString(), ((List<object>)ccl.InputParams[0])[1].ToString());
         FolderCollection fc = imp.DownloadFolders();
         foreach (Folder fcx in fc)
         {
@@ -64,14 +64,14 @@ public partial class Ajax : System.Web.UI.Page
     public void getEmailHeaders(string canvasid, int windowid)
     {
         Imap imp = new Imap();
-        imp.Connect(((ArrayList)ccl.InputParams[0])[2].ToString());
-        imp.Login(((ArrayList)ccl.InputParams[0])[0].ToString(), ((ArrayList)ccl.InputParams[0])[1].ToString());
+        imp.Connect(((List<object>)ccl.InputParams[0])[2].ToString());
+        imp.Login(((List<object>)ccl.InputParams[0])[0].ToString(), ((List<object>)ccl.InputParams[0])[1].ToString());
         imp.SelectFolder("Inbox");
         MailMessageCollection msgs = imp.DownloadMessageHeaders(Imap.AllMessages, false);
         for (int i = msgs.Count - 1; i > -1; i--)
         {
             MailMessage msg = msgs[i] as MailMessage;
-            ArrayList arlmsg = new ArrayList();
+            List<object> arlmsg = new List<object>();
             arlmsg.Add(msg.From);
             arlmsg.Add(msg.Subject);
             arlmsg.Add(msg.DateSent.ToString());
@@ -86,11 +86,11 @@ public partial class Ajax : System.Web.UI.Page
     public void getMailMessage(string canvasid, int windowid)
     {
         Imap imp = new Imap();
-        imp.Connect(((ArrayList)ccl.InputParams[0])[2].ToString());
-        imp.Login(((ArrayList)ccl.InputParams[0])[0].ToString(), ((ArrayList)ccl.InputParams[0])[1].ToString());
+        imp.Connect(((List<object>)ccl.InputParams[0])[2].ToString());
+        imp.Login(((List<object>)ccl.InputParams[0])[0].ToString(), ((List<object>)ccl.InputParams[0])[1].ToString());
         imp.SelectFolder("Inbox");
-        MailMessage msg = imp.DownloadEntireMessage((long)Convert.ToInt32(((ArrayList)ccl.InputParams[0])[3]), true);
-        ArrayList arlmsg = new ArrayList();
+        MailMessage msg = imp.DownloadEntireMessage((long)Convert.ToInt32(((List<object>)ccl.InputParams[0])[3]), true);
+        List<object> arlmsg = new List<object>();
         arlmsg.Add(msg.From);
         arlmsg.Add(msg.Subject);
         arlmsg.Add(msg.Cc);

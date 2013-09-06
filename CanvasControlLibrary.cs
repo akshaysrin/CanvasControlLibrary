@@ -31,17 +31,66 @@ public static class Sessions
 public class CanvasControlLibrary
 {
     public Session CurrentSessionObj;
-    public ArrayList InputParams;
+    public List<object> InputParams;
+
+    public class LightWeightDictionary
+    {
+        public class KeyValuePair{
+            public string Key;
+            public object Value;
+
+            public KeyValuePair(string key, object value)
+            {
+                Key = key;
+                Value = value;
+            }
+        }
+
+        List<KeyValuePair> KeyValuePairs;
+
+        public void Add(string key, object value)
+        {
+            KeyValuePair kvp = new KeyValuePair(key, value);
+            KeyValuePairs.Add(kvp);
+        }
+
+        public object GetValue(string key)
+        {
+            foreach (KeyValuePair kvp in KeyValuePairs)
+            {
+                if (kvp.Key == key)
+                {
+                    return kvp.Value;
+                }
+            }
+            return null;
+        }
+
+        public List<string> GetAllKeys()
+        {
+            List<string> keys = new List<string>();
+            foreach (KeyValuePair kvp in KeyValuePairs)
+            {
+                keys.Add(kvp.Key);
+            }
+            return keys;
+        }
+
+        public LightWeightDictionary()
+        {
+            KeyValuePairs = new List<KeyValuePair>();
+        }
+    }
 
     public class Session
     {
         public Guid ID;
-        public Dictionary<string, object> Data;
+        public LightWeightDictionary Data;
 
         public Session()
         {
             ID = Guid.NewGuid();
-            Data = new Dictionary<string, object>();
+            Data = new LightWeightDictionary();
         }
     }
 
@@ -57,13 +106,13 @@ public class CanvasControlLibrary
         public string Depth { get; set; }
         public string CanvasID { get; set; }
         public string ParentWindowID { get; set; }
-        public ArrayList ChildWindowIDs { get; set; }
+        public List<object> ChildWindowIDs { get; set; }
         public string ControlType { get; set; }
         public string ControlNameID { get; set; }
 
         public CCLWindow()
         {
-            ChildWindowIDs = new ArrayList();
+            ChildWindowIDs = new List<object>();
         }
     }
 
@@ -167,8 +216,8 @@ public class CanvasControlLibrary
         public string Y { get; set; }
         public string Width { get; set; }
         public string Height { get; set; }
-        public ArrayList RowData { get; set; }
-        public ArrayList HeaderData { get; set; }
+        public List<object> RowData { get; set; }
+        public List<object> HeaderData { get; set; }
         public string RowDataTextColor { get; set; }
         public string RowDataTextFontString { get; set; }
         public string HeaderDataTextColor { get; set; }
@@ -176,7 +225,7 @@ public class CanvasControlLibrary
         public string HeaderDataTextFontString { get; set; }
         public string CellClickFunction { get; set; }
         public string DataRowHeight { get; set; }
-        public ArrayList ColumnWidthArray { get; set; }
+        public List<object> ColumnWidthArray { get; set; }
         public string HeaderRowHeight { get; set; }
         public string HasBorder { get; set; }
         public string BorderColor { get; set; }
@@ -190,12 +239,18 @@ public class CanvasControlLibrary
         public string AltRowBgColorStart2 { get; set; }
         public string AltRowBgColorEnd2 { get; set; }
         public object Tag { get; set; }
+        public string HasSelectedRow { get; set; }
+        public string SelectedRowBgColor { get; set; }
+        public string HasSelectedCell { get; set; }
+        public string SelectedCellBgColor { get; set; }
+        public string SelectedRow { get; set; }
+        public string SelectedCell { get; set; }
 
         public CCLGridProps()
         {
-            RowData = new ArrayList();
-            HeaderData = new ArrayList();
-            ColumnWidthArray = new ArrayList();
+            RowData = new List<object>();
+            HeaderData = new List<object>();
+            ColumnWidthArray = new List<object>();
         }
     }
 
@@ -213,7 +268,7 @@ public class CanvasControlLibrary
         public string Y { get; set; }
         public string Width { get; set; }
         public string Height { get; set; }
-        public ArrayList Data { get; set; }
+        public List<object> Data { get; set; }
         public string SelectedID { get; set; }
         public string TextAreaTextColor { get; set; }
         public string TextAreaTextHeight { get; set; }
@@ -225,7 +280,7 @@ public class CanvasControlLibrary
 
         public CCLComboBoxProps()
         {
-            Data = new ArrayList();
+            Data = new List<object>();
         }
     }
 
@@ -253,19 +308,19 @@ public class CanvasControlLibrary
         public string Height { get; set; }
         public string Alignment { get; set; }
         public string GroupName { get; set; }
-        public ArrayList Labels { get; set; }
+        public List<object> Labels { get; set; }
         public string SelectedID { get; set; }
         public string LabelTextColor { get; set; }
         public string LabelFontString { get; set; }
         public string Radius { get; set; }
-        public ArrayList ButtonExtents { get; set; }
+        public List<object> ButtonExtents { get; set; }
         public string LabelTextHeight { get; set; }
         public object Tag { get; set; }
 
         public CCLRadioButtonGroupProps()
         {
-            Labels = new ArrayList();
-            ButtonExtents = new ArrayList();
+            Labels = new List<object>();
+            ButtonExtents = new List<object>();
         }
     }
 
@@ -311,27 +366,16 @@ public class CanvasControlLibrary
         public string Y { get; set; }
         public string Width { get; set; }
         public string Height { get; set; }
-        public ArrayList Nodes { get; set; }
         public string VScrollBarWindowID { get; set; }
         public string HScrollBarWindowID { get; set; }
         public string TextColor { get; set; }
         public string TextFontString { get; set; }
         public string TextHeight { get; set; }
-        public ArrayList ClickButtonExtents { get; set; }
-        public ArrayList ClickLabelExtents { get; set; }
         public string ClickNodeFunction { get; set; }
-        public Dictionary<string, object> SelectedNode { get; set; }
         public object Tag { get; set; }
         public string HasIcons { get; set; }
         public string IconWidth { get; set; }
         public string IconHeight { get; set; }
-
-        public CCLTreeViewProps()
-        {
-            Nodes = new ArrayList();
-            ClickButtonExtents = new ArrayList();
-            ClickLabelExtents = new ArrayList();
-        }
     }
 
     public List<CCLCalenderProps> CalenderPropsArray = new List<CCLCalenderProps>();
@@ -372,8 +416,8 @@ public class CanvasControlLibrary
         public string BodyBackgroundColor { get; set; }
         public string MouseOverHightLightColor { get; set; }
         public string MouseHoverDate { get; set; }
-        public ArrayList ButtonClickExtents { get; set; }
-        public ArrayList DateClickExtents { get; set; }
+        public List<object> ButtonClickExtents { get; set; }
+        public List<object> DateClickExtents { get; set; }
         public string DayLabelTextColor { get; set; }
         public string DayLabelTextHeight { get; set; }
         public string DayLabelTextFontString { get; set; }
@@ -381,8 +425,8 @@ public class CanvasControlLibrary
 
         public CCLCalenderProps()
         {
-            ButtonClickExtents = new ArrayList();
-            DateClickExtents = new ArrayList();
+            ButtonClickExtents = new List<object>();
+            DateClickExtents = new List<object>();
         }
     }
 
@@ -486,7 +530,7 @@ public class CanvasControlLibrary
         public string Y { get; set; }
         public string Width { get; set; }
         public string Height { get; set; }
-        public ArrayList Data { get; set; }
+        public List<object> Data { get; set; }
         public string MaxValue { get; set; }
         public string NumMarksY { get; set; }
         public string Title { get; set; }
@@ -494,7 +538,7 @@ public class CanvasControlLibrary
         public string TitleTextHeight { get; set; }
         public string TitleTextFontString { get; set; }
         public string BarWidth { get; set; }
-        public ArrayList BarLabelsWithBoundingBoxes { get; set; }
+        public List<object> BarLabelsWithBoundingBoxes { get; set; }
         public string H { get; set; }
         public string AxisLabelsTextHeight { get; set; }
         public string AxisLabelsTextFontString { get; set; }
@@ -509,8 +553,8 @@ public class CanvasControlLibrary
 
         public CCLBarGraphProps()
         {
-            Data = new ArrayList();
-            BarLabelsWithBoundingBoxes = new ArrayList();
+            Data = new List<object>();
+            BarLabelsWithBoundingBoxes = new List<object>();
         }
     }
 
@@ -524,7 +568,7 @@ public class CanvasControlLibrary
         public string Y { get; set; }
         public string Width { get; set; }
         public string Height { get; set; }
-        public ArrayList Data { get; set; }
+        public List<object> Data { get; set; }
         public string Title { get; set; }
         public string TitleTextColor { get; set; }
         public string TitleTextHeight { get; set; }
@@ -543,7 +587,7 @@ public class CanvasControlLibrary
 
         public CCLPieChartProps()
         {
-            Data = new ArrayList();
+            Data = new List<object>();
         }
     }
 
@@ -557,7 +601,7 @@ public class CanvasControlLibrary
         public string Y { get; set; }
         public string Width { get; set; }
         public string Height { get; set; }
-        public ArrayList Data { get; set; }
+        public List<object> Data { get; set; }
         public string XMaxValue { get; set; }
         public string NumMarksX { get; set; }
         public string YMaxValue { get; set; }
@@ -571,7 +615,7 @@ public class CanvasControlLibrary
         public string AxisLabelsTextFontString { get; set; }
         public string H { get; set; }
         public string HMax { get; set; }
-        public ArrayList LineXYs { get; set; }
+        public List<object> LineXYs { get; set; }
         public string ClickFunction { get; set; }
         public string AlreadyUnregisteredAnimation { get; set; }
         public string MarginLeft { get; set; }
@@ -580,8 +624,8 @@ public class CanvasControlLibrary
 
         public CCLLineGraphProps()
         {
-            Data = new ArrayList();
-            LineXYs = new ArrayList();
+            Data = new List<object>();
+            LineXYs = new List<object>();
         }
     }
 
@@ -595,7 +639,7 @@ public class CanvasControlLibrary
         public string Y { get; set; }
         public string Width { get; set; }
         public string Height { get; set; }
-        public ArrayList Data { get; set; }
+        public List<object> Data { get; set; }
         public string Title { get; set; }
         public string TitleTextColor { get; set; }
         public string TitleTextHeight { get; set; }
@@ -612,7 +656,7 @@ public class CanvasControlLibrary
 
         public CCLGaugeChartProps()
         {
-            Data = new ArrayList();
+            Data = new List<object>();
         }
     }
 
@@ -626,7 +670,7 @@ public class CanvasControlLibrary
         public string Y { get; set; }
         public string Width { get; set; }
         public string Height { get; set; }
-        public ArrayList Data { get; set; }
+        public List<object> Data { get; set; }
         public string MaxValue { get; set; }
         public string ColorStr { get; set; }
         public string NumMarks { get; set; }
@@ -643,7 +687,7 @@ public class CanvasControlLibrary
 
         public CCLRadarGraphProps()
         {
-            Data = new ArrayList();
+            Data = new List<object>();
         }
     }
 
@@ -657,7 +701,7 @@ public class CanvasControlLibrary
         public string Y { get; set; }
         public string Width { get; set; }
         public string Height { get; set; }
-        public ArrayList Data { get; set; }
+        public List<object> Data { get; set; }
         public string XMaxValue { get; set; }
         public string YMaxValue { get; set; }
         public string NumMarksX { get; set; }
@@ -677,7 +721,7 @@ public class CanvasControlLibrary
 
         public CCLLineAreaGraphProps()
         {
-            Data = new ArrayList();
+            Data = new List<object>();
         }
     }
 
@@ -691,8 +735,8 @@ public class CanvasControlLibrary
         public string Y { get; set; }
         public string Width { get; set; }
         public string Height { get; set; }
-        public ArrayList Data { get; set; }
-        public ArrayList XMarksLabelData { get; set; }
+        public List<object> Data { get; set; }
+        public List<object> XMarksLabelData { get; set; }
         public string XMarksWidth { get; set; }
         public string YMaxValue { get; set; }
         public string NumMarksY { get; set; }
@@ -711,8 +755,8 @@ public class CanvasControlLibrary
 
         public CCLCandlesticksGraphProps()
         {
-            Data = new ArrayList();
-            XMarksLabelData = new ArrayList();
+            Data = new List<object>();
+            XMarksLabelData = new List<object>();
         }
     }
 
@@ -726,7 +770,7 @@ public class CanvasControlLibrary
         public string Y { get; set; }
         public string Width { get; set; }
         public string Height { get; set; }
-        public ArrayList Data { get; set; }
+        public List<object> Data { get; set; }
         public string Title { get; set; }
         public string TitleColor { get; set; }
         public string TitleTextHeight { get; set; }
@@ -750,7 +794,7 @@ public class CanvasControlLibrary
 
         public CCLDoughnutChartProps()
         {
-            Data = new ArrayList();
+            Data = new List<object>();
         }
     }
 
@@ -764,7 +808,7 @@ public class CanvasControlLibrary
         public string Y { get; set; }
         public string Width { get; set; }
         public string Height { get; set; }
-        public ArrayList Data { get; set; }
+        public List<object> Data { get; set; }
         public string MaxValue { get; set; }
         public string NumMarksY { get; set; }
         public string Title { get; set; }
@@ -772,7 +816,7 @@ public class CanvasControlLibrary
         public string TitleTextHeight { get; set; }
         public string TitleTextFontString { get; set; }
         public string BarWidth { get; set; }
-        public ArrayList BarLabelsWithBoundingBoxes { get; set; }
+        public List<object> BarLabelsWithBoundingBoxes { get; set; }
         public string H { get; set; }
         public string AxisLabelsTextHeight { get; set; }
         public string AxisLabelsTextFontString { get; set; }
@@ -783,18 +827,18 @@ public class CanvasControlLibrary
         public string AlreadyUnregisteredAnimation { get; set; }
         public string HasLegend { get; set; }
         public string MarginRight { get; set; }
-        public ArrayList LinesData { get; set; }
-        public ArrayList LineXYs { get; set; }
+        public List<object> LinesData { get; set; }
+        public List<object> LineXYs { get; set; }
         public string LineClickFunction { get; set; }
         public string YMaxValue { get; set; }
         public object Tag { get; set; }
 
         public CCLBarsMixedWithLabeledLineGraphProps()
         {
-            Data = new ArrayList();
-            BarLabelsWithBoundingBoxes = new ArrayList();
-            LinesData = new ArrayList();
-            LineXYs = new ArrayList();
+            Data = new List<object>();
+            BarLabelsWithBoundingBoxes = new List<object>();
+            LinesData = new List<object>();
+            LineXYs = new List<object>();
         }
     }
 
@@ -808,7 +852,7 @@ public class CanvasControlLibrary
         public string Y { get; set; }
         public string Width { get; set; }
         public string Height { get; set; }
-        public ArrayList Data { get; set; }
+        public List<object> Data { get; set; }
         public string MaxValue { get; set; }
         public string NumMarksY { get; set; }
         public string Title { get; set; }
@@ -821,7 +865,7 @@ public class CanvasControlLibrary
         public string AxisLabelsColor { get; set; }
         public string AxisLabelsHeight { get; set; }
         public string AxisLabelsFontString { get; set; }
-        public ArrayList BarLabelsWithBoundingBoxes { get; set; }
+        public List<object> BarLabelsWithBoundingBoxes { get; set; }
         public string BarClickFunction { get; set; }
         public string AlreadyUnregisteredAnimation { get; set; }
         public string MarginLeft { get; set; }
@@ -829,7 +873,7 @@ public class CanvasControlLibrary
 
         public CCLStackedBarGraphProps()
         {
-            BarLabelsWithBoundingBoxes = new ArrayList();
+            BarLabelsWithBoundingBoxes = new List<object>();
         }
     }
 
@@ -843,15 +887,15 @@ public class CanvasControlLibrary
         public string Y { get; set; }
         public string Width { get; set; }
         public string Height { get; set; }
-        public ArrayList TabLabels { get; set; }
+        public List<object> TabLabels { get; set; }
         public string TabLabelColor { get; set; }
         public string TabLabelHeight { get; set; }
         public string TabLabelFontString { get; set; }
-        public ArrayList PanelWindowIDs { get; set; }
+        public List<object> PanelWindowIDs { get; set; }
         public string SelectedTabID { get; set; }
         public string TabLabelGradientStartColor { get; set; }
         public string TabLabelGradientEndColor { get; set; }
-        public ArrayList TabLabelHitAreas { get; set; }
+        public List<object> TabLabelHitAreas { get; set; }
         public string GapBetweenTabs { get; set; }
         public string SelectedTabBorderColor { get; set; }
         public string SelectedTabBorderLineWidth { get; set; }
@@ -859,9 +903,9 @@ public class CanvasControlLibrary
 
         public CCLTabProps()
         {
-            TabLabels = new ArrayList();
-            PanelWindowIDs = new ArrayList();
-            TabLabelHitAreas = new ArrayList();
+            TabLabels = new List<object>();
+            PanelWindowIDs = new List<object>();
+            TabLabelHitAreas = new List<object>();
         }
     }
 
@@ -876,7 +920,7 @@ public class CanvasControlLibrary
         public string Width { get; set; }
         public string Height { get; set; }
         public string ImgUrl { get; set; }
-        public ArrayList PinXYs { get; set; }
+        public List<object> PinXYs { get; set; }
         public string PinClickFunction { get; set; }
         public string HasZoom { get; set; }
         public string ImageTopLeftXOffset { get; set; }
@@ -890,7 +934,7 @@ public class CanvasControlLibrary
 
         public CCLImageMapProps()
         {
-            PinXYs = new ArrayList();
+            PinXYs = new List<object>();
         }
     }
 
@@ -904,19 +948,19 @@ public class CanvasControlLibrary
         public string Y { get; set; }
         public string Width { get; set; }
         public string Height { get; set; }
-        public ArrayList Data { get; set; }
+        public List<object> Data { get; set; }
         public string BarColorStart { get; set; }
         public string BarColorMiddle { get; set; }
         public string BarColorEnd { get; set; }
         public string DropDownColorStart { get; set; }
         public string DropDownColorEnd { get; set; }
-        public ArrayList ChildMenuWindowIDs { get; set; }
+        public List<object> ChildMenuWindowIDs { get; set; }
         public object Tag { get; set; }
 
         public CCLMenuBarProps()
         {
-            Data = new ArrayList();
-            ChildMenuWindowIDs = new ArrayList();
+            Data = new List<object>();
+            ChildMenuWindowIDs = new List<object>();
         }
     }
 
@@ -930,18 +974,18 @@ public class CanvasControlLibrary
         public string Y { get; set; }
         public string Width { get; set; }
         public string Height { get; set; }
-        public ArrayList Data { get; set; }
+        public List<object> Data { get; set; }
         public string ParentMenuWindowID { get; set; }
         public string ParentIndexInParentMenu { get; set; }
-        public ArrayList ChildMenuWindowIDs { get; set; }
+        public List<object> ChildMenuWindowIDs { get; set; }
         public string DropDownColorStart { get; set; }
         public string DropDownColorEnd { get; set; }
         public object Tag { get; set; }
 
         public CCLSubMenuBarProps()
         {
-            Data = new ArrayList();
-            ChildMenuWindowIDs = new ArrayList();
+            Data = new List<object>();
+            ChildMenuWindowIDs = new List<object>();
         }
     }
 
@@ -1004,7 +1048,7 @@ public class CanvasControlLibrary
         public string Y { get; set; }
         public string Width { get; set; }
         public string Height { get; set; }
-        public ArrayList ImageURLs { get; set; }
+        public List<object> ImageURLs { get; set; }
         public string FadeStartValue { get; set; }
         public string FadeEndValue { get; set; }
         public string FadeStepValue { get; set; }
@@ -1017,7 +1061,7 @@ public class CanvasControlLibrary
 
         public CCLImageFaderProps()
         {
-            ImageURLs = new ArrayList();
+            ImageURLs = new List<object>();
         }
     }
 
@@ -1031,7 +1075,7 @@ public class CanvasControlLibrary
         public string Y { get; set; }
         public string Width { get; set; }
         public string Height { get; set; }
-        public ArrayList ImageURLs { get; set; }
+        public List<object> ImageURLs { get; set; }
         public string Direction { get; set; }
         public string StepIncrement { get; set; }
         public string ClickFunction { get; set; }
@@ -1042,7 +1086,7 @@ public class CanvasControlLibrary
 
         public CCLImageSliderProps()
         {
-            ImageURLs = new ArrayList();
+            ImageURLs = new List<object>();
         }
     }
 
@@ -1062,14 +1106,14 @@ public class CanvasControlLibrary
         public string TextHeight { get; set; }
         public string TextFontString { get; set; }
         public string LineSpacingInPixels { get; set; }
-        public ArrayList LineBreakIndexes { get; set; }
-        public ArrayList MarkupTextExtents { get; set; }
+        public List<object> LineBreakIndexes { get; set; }
+        public List<object> MarkupTextExtents { get; set; }
         public string MarkupText { get; set; }
 
         public CCLMultiLineLabelProps()
         {
-            LineBreakIndexes = new ArrayList();
-            MarkupTextExtents = new ArrayList();
+            LineBreakIndexes = new List<object>();
+            MarkupTextExtents = new List<object>();
         }
     }
 
@@ -1115,7 +1159,7 @@ public class CanvasControlLibrary
         public string CaretPosIndex { get; set; }
         public string ShowCaret { get; set; }
         public string CaretColor { get; set; }
-        public ArrayList LineBreakIndexes { get; set; }
+        public List<object> LineBreakIndexes { get; set; }
         public string SelectedTextStartIndex { get; set; }
         public string SelectedTextEndIndex { get; set; }
         public string MouseDown { get; set; }
@@ -1125,7 +1169,7 @@ public class CanvasControlLibrary
 
         public CCLWordProcessorProps()
         {
-            LineBreakIndexes = new ArrayList();
+            LineBreakIndexes = new List<object>();
         }
     }
 
@@ -1139,12 +1183,12 @@ public class CanvasControlLibrary
         public string Y { get; set; }
         public string Width { get; set; }
         public string Height { get; set; }
-        public ArrayList Keys { get; set; }
+        public List<object> Keys { get; set; }
         public string KeyPressFunction { get; set; }
         public string GapBetweenButtons { get; set; }
         public string GapBetweenRows { get; set; }
         public string CurrentKeyboardIndex { get; set; }
-        public ArrayList KeyExtents { get; set; }
+        public List<object> KeyExtents { get; set; }
         public string TextHeight { get; set; }
         public string TextFontString { get; set; }
         public string CustomKeys { get; set; }
@@ -1154,8 +1198,8 @@ public class CanvasControlLibrary
 
         public CCLVirtualKeyboardProps()
         {
-            Keys = new ArrayList();
-            KeyExtents = new ArrayList();
+            Keys = new List<object>();
+            KeyExtents = new List<object>();
         }
     }
 
@@ -1183,14 +1227,14 @@ public class CanvasControlLibrary
         public string Y { get; set; }
         public string Width { get; set; }
         public string Height { get; set; }
-        public ArrayList FillPoints { get; set; }
+        public List<object> FillPoints { get; set; }
         public string ImgURL { get; set; }
         public string ImageWidth { get; set; }
         public string ImageHeight { get; set; }
 
         public CCLBoundaryFillableMapProps()
         {
-            FillPoints = new ArrayList();
+            FillPoints = new List<object>();
         }
     }
 
@@ -1247,7 +1291,7 @@ public class CanvasControlLibrary
         public string FillOrientation { get; set; }
         public string IsCustomPattern { get; set; }
         public string OutLineImgURL { get; set; }
-        public ArrayList CustomFillPoint { get; set; }
+        public List<object> CustomFillPoint { get; set; }
         public string ImgWidth { get; set; }
         public string ImgHeight { get; set; }
         public string StarSizeInPixels { get; set; }
@@ -1263,7 +1307,7 @@ public class CanvasControlLibrary
 
         public CCLVotingProps()
         {
-            CustomFillPoint = new ArrayList();
+            CustomFillPoint = new List<object>();
         }
     }
 
@@ -1295,7 +1339,7 @@ public class CanvasControlLibrary
 
     public CanvasControlLibrary(Stream InputStream)
     {
-        InputParams = new ArrayList();
+        InputParams = new List<object>();
         byte[] rdata = new byte[Convert.ToInt32(InputStream.Length)];
         InputStream.Read(rdata, 0, Convert.ToInt32(InputStream.Length));
         string strData = Encoding.ASCII.GetString(rdata);
@@ -1675,14 +1719,14 @@ public class CanvasControlLibrary
         }
     }
 
-    public Dictionary<string, object> FillObjectArray(XmlNode child)
+    public LightWeightDictionary FillObjectArray(XmlNode child)
     {
-        Dictionary<string, object> dict = new Dictionary<string, object>();
+        LightWeightDictionary dict = new LightWeightDictionary();
         foreach (XmlNode childofOA in child.ChildNodes)
         {
             if (childofOA.ChildNodes.Count > 0 && childofOA.ChildNodes[0].Name == "Array")
             {
-                ArrayList al = new ArrayList();
+                List<object> al = new List<object>();
                 foreach (XmlNode childofOA2 in childofOA.ChildNodes[0].ChildNodes)
                 {
                     if (childofOA2.Name == "Array")
@@ -1728,7 +1772,7 @@ public class CanvasControlLibrary
                 }
                 else if (child3.ChildNodes.Count > 1 || (child3.ChildNodes.Count != 0 && child3.ChildNodes[0].Name == "i"))
                 {
-                    ArrayList al = new ArrayList();
+                    List<object> al = new List<object>();
                     foreach (XmlNode child4 in child3.ChildNodes)
                     {
                         if (child4.Name == "Array")
@@ -1753,9 +1797,9 @@ public class CanvasControlLibrary
         }
     }
 
-    public void AddArrayData(XmlNode node, ArrayList pal)
+    public void AddArrayData(XmlNode node, List<object> pal)
     {
-        ArrayList al = new ArrayList();
+        List<object> al = new List<object>();
         foreach (XmlNode child in node.ChildNodes)
         {
             if (child.ChildNodes.Count > 0 && child.ChildNodes[0].Name == "ObjectArray")
@@ -1774,22 +1818,22 @@ public class CanvasControlLibrary
         pal.Add(al);
     }
 
-    public string recurseArrayList(ArrayList al)
+    public string recurseArrayList(List<object> al)
     {
         string str = "[Array]";
         foreach (object obj in al)
         {
-            if (obj is Dictionary<string, object>)
+            if (obj is LightWeightDictionary)
             {
-                str += "[i]" + recurseDictionary(obj as Dictionary<string, object>) + "[/i]";
+                str += "[i]" + recurseDictionary(obj as LightWeightDictionary) + "[/i]";
             }
-            else if (obj is ArrayList)
+            else if (obj is List<object>)
             {
-                str += "[i]" + recurseArrayList(obj as ArrayList) + "[/i]";
+                str += "[i]" + recurseArrayList(obj as List<object>) + "[/i]";
             }
             else
             {
-                str += "[i]" + obj.ToString() + "[/i]";
+                str += "[i]" + encodeString(obj.ToString()) + "[/i]";
             }
         }
         return str + "[/Array]";
@@ -1806,19 +1850,19 @@ public class CanvasControlLibrary
         PropertyInfo[] pis = o.GetType().GetProperties();
         foreach (PropertyInfo pi in pis)
         {
-            if (pi.PropertyType.Name == "ArrayList")
+            if (pi.PropertyType.IsGenericType && pi.PropertyType.GetGenericTypeDefinition() == typeof(List<>))
             {
-                ArrayList al = pi.GetValue(o) as ArrayList;
+                List<object> al = pi.GetValue(o) as List<object>;
                 str += "[" + pi.Name + "][Array]";
                 foreach (object obj in al)
                 {
-                    if (obj is ArrayList)
+                    if (obj.GetType().IsGenericType && obj.GetType().GetGenericTypeDefinition() == typeof(List<>))
                     {
-                        str += "[i]" + recurseArrayList(obj as ArrayList) + "[/i]";
+                        str += "[i]" + recurseArrayList(obj as List<object>) + "[/i]";
                     }
-                    else if (obj is Dictionary<string, object>)
+                    else if (obj is LightWeightDictionary)
                     {
-                        str += "[i]" + recurseDictionary(obj as Dictionary<string, object>) + "[/i]";
+                        str += "[i]" + recurseDictionary(obj as LightWeightDictionary) + "[/i]";
                     }
                     else
                     {
@@ -1827,9 +1871,9 @@ public class CanvasControlLibrary
                 }
                 str += "[/Array][/" + pi.Name + "]";
             }
-            else if (pi.PropertyType.Name == "Dictionary")
+            else if (pi.PropertyType.Name == "LightWeightDictionary")
             {
-                str += recurseDictionary(pi.GetValue(o) as Dictionary<string, object>);
+                str += recurseDictionary(pi.GetValue(o) as LightWeightDictionary);
             }
             else
             {
@@ -1840,20 +1884,20 @@ public class CanvasControlLibrary
         return str;
     }
 
-    public string recurseDictionary(Dictionary<string, object> dict)
+    public string recurseDictionary(LightWeightDictionary dict)
     {
         string str = "[ObjectArray]";
-        foreach (string key in dict.Keys)
+        foreach (string key in dict.GetAllKeys())
         {
             str += "[" + key + "]";
-            object dictvalue = dict[key];
-            if (dictvalue is ArrayList)
+            object dictvalue = dict.GetValue(key);
+            if (dictvalue.GetType().IsGenericType && dictvalue.GetType().GetGenericTypeDefinition() == typeof(List<>))
             {
-                str += recurseArrayList(dictvalue as ArrayList);
+                str += recurseArrayList(dictvalue as List<object>);
             }
-            else if (dictvalue is Dictionary<string, object>)
+            else if (dictvalue is LightWeightDictionary)
             {
-                str += recurseDictionary(dictvalue as Dictionary<string, object>);
+                str += recurseDictionary(dictvalue as LightWeightDictionary);
             }
             else
             {
@@ -1865,7 +1909,7 @@ public class CanvasControlLibrary
         return str;
     }
 
-    public void SendVars(Stream OutputStream, ArrayList parameters)
+    public void SendVars(Stream OutputStream, List<object> parameters)
     {
         string strVars = "[root][Vars][windows]";
         foreach (CCLWindow w in Windows)
@@ -2068,14 +2112,14 @@ public class CanvasControlLibrary
         OutputStream.Write(wdata, 0, wdata.Length);
     }
 
-    public string encodeParameters(ArrayList parameters)
+    public string encodeParameters(List<object> parameters)
     {
         string strParameters = "";
         foreach (object obj in parameters)
         {
-            if (obj is ArrayList)
+            if (obj.GetType().IsGenericType && obj.GetType().GetGenericTypeDefinition() == typeof(List<>))
             {
-                strParameters += "[Array]" + encodeParameters(obj as ArrayList) + "[/Array]";
+                strParameters += "[Array]" + encodeParameters(obj as List<object>) + "[/Array]";
             }
             else
             {
