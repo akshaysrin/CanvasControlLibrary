@@ -2038,7 +2038,8 @@ function getGridProps(canvasid, windowid) {
 function createGrid(canvasid, controlNameId, x, y, width, height, depth, rowData, headerData, rowDataTextColor, rowDataTextHeight, rowDataTextFontString,
     headerDataTextColor, headerDataTextHeight, headerDataTextFontString, drawRowDataCellFunction, drawHeaderCellFunction,
     cellClickFunction, dataRowHeight, headerRowHeight, columnWidthArray, hasBorder, borderColor, borderLineWidth,
-    headerbackgroundstartcolor, headerbackgroundendcolor, altrowbgcolorstart1, altrowbgcolorend1, altrowbgcolorstart2, altrowbgcolorend2, tag) {
+    headerbackgroundstartcolor, headerbackgroundendcolor, altrowbgcolorstart1, altrowbgcolorend1, altrowbgcolorstart2, altrowbgcolorend2, tag,
+    hasSelectedRow, selectedRowBgColor, hasSelectedCell, selectedCellBgColor) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Grid');
     var effectiveWidth = 0;
     for (var i = 0; i < columnWidthArray.length; i++) {
@@ -2068,10 +2069,12 @@ function createGrid(canvasid, controlNameId, x, y, width, height, depth, rowData
         HScrollBarWindowId: hscrollBarWindowId, HeaderBackgroundStartColor: headerbackgroundstartcolor,
         HeaderBackgroundEndColor: headerbackgroundendcolor, AltRowBgColorStart1: altrowbgcolorstart1,
         AltRowBgColorEnd1: altrowbgcolorend1, AltRowBgColorStart2: altrowbgcolorstart2,
-        AltRowBgColorEnd2: altrowbgcolorend2, Tag: tag
+        AltRowBgColorEnd2: altrowbgcolorend2, Tag: tag,
+        HasSelectedRow: hasSelectedRow, SelectedRowBgColor: selectedRowBgColor, HasSelectedCell: hasSelectedCell,
+        SelectedCellBgColor: selectedCellBgColor, SelectedRow: -1, SelectedCell: -1
     });
-    registerWindowDrawFunction(windowid, function () { drawGrid(canvasid, windowid); }, canvasid);
-    registerClickFunction(windowid, function () { clickGrid(canvasid, windowid); }, canvasid);
+    registerWindowDrawFunction(windowid, drawGrid, canvasid);
+    registerClickFunction(windowid, clickGrid, canvasid);
     return windowid;
 }
 
@@ -2155,6 +2158,22 @@ function drawGrid(canvasid, windowid) {
                 gridProps.HeaderRowHeight, (totalWidth > gridProps.Width ? gridProps.ColumnWidthArray[c] + gridProps.Width - totalWidth :
                 gridProps.ColumnWidthArray[c]), gridProps.DataRowHeight);
             ctx.fill();
+            if (gridProps.HasSelectedRow == 1 && gridProps.SelectedRowBgColor && r == gridProps.SelectedRow) {
+                ctx.fillStyle = gridProps.SelectedRowBgColor;
+                ctx.beginPath();
+                ctx.rect(gridProps.X + totalWidth - gridProps.ColumnWidthArray[c], gridProps.Y + ((r - startRow) * gridProps.DataRowHeight) +
+                    gridProps.HeaderRowHeight, (totalWidth > gridProps.Width ? gridProps.ColumnWidthArray[c] + gridProps.Width - totalWidth :
+                    gridProps.ColumnWidthArray[c]), gridProps.DataRowHeight);
+                ctx.fill();
+            }
+            if (gridProps.HasSelectedCell == 1 && gridProps.SelectedCellBgColor && c == gridProps.SelectedCell) {
+                ctx.fillStyle = gridProps.SelectedCellBgColor;
+                ctx.beginPath();
+                ctx.rect(gridProps.X + totalWidth - gridProps.ColumnWidthArray[c], gridProps.Y + ((r - startRow) *
+                    gridProps.DataRowHeight) - ((gridProps.DataRowHeight - gridProps.HeaderDataTextHeight) / 2) + gridProps.HeaderRowHeight + gridProps.DataRowHeight,
+                    gridProps.ColumnWidthArray[c], gridProps.DataRowHeight);
+                ctx.fill();
+            }
             ctx.fillStyle = gridProps.RowDataTextColor;
             ctx.font = gridProps.RowDataTextFontString;
             ctx.fillText(gridProps.RowData[r][c], gridProps.X + totalWidth - gridProps.ColumnWidthArray[c], gridProps.Y + ((r - startRow) *
@@ -2207,7 +2226,11 @@ function clickGrid(canvasid, windowid, e) {
                 gridProps.ColumnWidthArray[c] + gridProps.Width - totalWidth :
                 gridProps.ColumnWidthArray[c]) && y < gridProps.DataRowHeight + gridProps.Y + ((r - startRow) * gridProps.DataRowHeight) +
                 gridProps.HeaderRowHeight) {
-                gridProps.CellClickFunction(canvasid, windowid, c + 1, r + 1);
+                gridProps.SelectedRow = r;
+                gridProps.SelectedCell = c;
+                if (gridProps.CellClickFunction) {
+                    gridProps.CellClickFunction(canvasid, windowid, c + 1, r + 1);
+                }
                 return;
             }
         }
@@ -10162,11 +10185,13 @@ function recurseFillVars(node, obj) {
                 if (node.childNodes[i].childNodes[0].childNodes[x].childNodes.length > 0 &&
                     node.childNodes[i].childNodes[0].childNodes[x].childNodes[0].nodeName == "Array") {
                     var arr2 = new Array();
-                    recurseFillArray(arr2, node.childNodes[i].childNodes[0].childNodes[x]);
+                    for (var y = 0; y < node.childNodes[i].childNodes[0].childNodes[x].childNodes[0].childNodes.length; y++) {
+                        recurseFillArray(arr2, node.childNodes[i].childNodes[0].childNodes[x].childNodes[0].childNodes[y]);
+                    }
                     arr.push(arr2);
                 } else if (node.childNodes[i].childNodes[0].childNodes[x].childNodes.length > 0 &&
                     node.childNodes[i].childNodes[0].childNodes[x].childNodes[0].nodeName == "ObjectArray") {
-                    arr.push(FillObjectArrayValues(node.childNodes[i].childNodes[0].childNodes[x].childNodes[0]));
+                    arr.push(FillObjectArrayValues(node.childNodes[i].childNodes[0].childNodes[x]));
                 } else {
                     arr.push(correctValueTypes(node.childNodes[i].childNodes[0].childNodes[x].childNodes.length > 0 ?
                         node.childNodes[i].childNodes[0].childNodes[x].childNodes[0].nodeValue :
@@ -10176,7 +10201,8 @@ function recurseFillVars(node, obj) {
         } else if (node.childNodes[i].childNodes.length > 0 && node.childNodes[i].childNodes[0].nodeName == "ObjectArray") {
             obj[node.childNodes[i].nodeName] = FillObjectArrayValues(node.childNodes[i].childNodes[0]);
         } else {
-            obj[node.childNodes[i].nodeName] = correctValueTypes(node.childNodes[i].childNodes.length > 0 ? node.childNodes[i].childNodes[0].nodeValue : node.childNodes[i].nodeValue);
+            obj[node.childNodes[i].nodeName] = correctValueTypes(node.childNodes[i].childNodes.length > 0 ?
+                node.childNodes[i].childNodes[0].nodeValue : node.childNodes[i].nodeValue);
         }
     }
 }
@@ -10186,7 +10212,9 @@ function FillObjectArrayValues(node) {
     for (var p = 0; p < node.childNodes.length; p++) {
         if (node.childNodes[p].childNodes.length > 0 && node.childNodes[p].childNodes[0].nodeValue == 'Array') {
             var arr3 = new Array();
-            recurseFillArray(arr3, node.childNodes[p].childNodes[0]);
+            for (var k = 0; k < node.childNodes[p].childNodes[0].childNodes.length; k++) {
+                recurseFillArray(arr3, node.childNodes[p].childNodes[0].childNodes[k]);
+            }
             newobj[node.childNodes[p].nodeName] = arr3;
         } else if (node.childNodes[p].childNodes.length > 0 && node.childNodes[p].childNodes[0].nodeValue == 'ObjectArray') {
             newobj[node.childNodes[p].nodeName] = FillObjectArrayValues(node.childNodes[p].childNodes[0]);
@@ -10211,12 +10239,14 @@ function correctValueTypes(o) {
 
 function recurseFillArray(arr, node) {
     for (var i = 0; i < node.childNodes.length; i++) {
-        if (node.childNodes[i].childNodes.length > 0 && node.childNodes[i].childNodes[0].nodeName == "Array") {
+        if (node.childNodes[i].childNodes.length > 0 && node.childNodes[i].nodeName == "Array") {
             var arr2 = new Array();
-            recurseFillArray(arr2, node.childNodes[i].childNodes[0]);
+            for (var x = 0; x < node.childNodes[i].childNodes.length; x++) {
+                recurseFillArray(arr2, node.childNodes[i].childNodes[x]);
+            }
             arr.push(arr2);
-        } else if (node.childNodes[i].childNodes.length > 0 && node.childNodes[i].childNodes[0].nodeName == "ObjectArray") {
-            arr.push(FillObjectArrayValues(node.childNodes[i].childNodes[0]));
+        } else if (node.childNodes[i].childNodes.length > 0 && node.childNodes[i].nodeName == "ObjectArray") {
+            arr.push(FillObjectArrayValues(node.childNodes[i]));
         } else {
             arr.push(correctValueTypes(node.childNodes[i].childNodes.length > 0 ? node.childNodes[i].childNodes[0].nodeValue : node.childNodes[i].nodeValue));
         }

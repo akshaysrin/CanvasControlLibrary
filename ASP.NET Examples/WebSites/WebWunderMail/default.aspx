@@ -18,6 +18,7 @@
             var loginPassword = '';
             var elemId = 'canvas';
             var loginFormWindowIDs = new Array();
+            var uids = new Array();
             var emailServerAddress;
             registerCanvasElementId(elemId);
             function loginForm() {
@@ -78,9 +79,18 @@
                             }, null, 0, 0, 0, inboxnode);
                             invalidateRect(elemId, null, 0, 0, 1800, 900);
                             invokeServerSideFunction('Ajax.aspx', 'getEmailHeaders', elemId, 1, function (params) {
-                                createGrid(elemId, 'EmailDataGrid', 301, 0, 1499, 900, highestDepth, params, ['From', 'Subject', 'Date Sent', 'Date Received', 'Has Attachments'],
-                                    '#000000', 12, '12pt Ariel', '#FFFFFF', 14, '14pt Ariel', null, null, null, 20, 30, [400, 599, 150, 150, 200], 0, null, 0,
-                                    '#000026', '#000026', '#f7f7f7', '#f7f7f7', '#FFFFFF', '#FFFFFF', null);
+                                var rowData = new Array();
+                                for (var i = 0; i < params.length; i++) {
+                                    uids.push(params[i].splice(5, 1));
+                                }
+                                createGrid(elemId, 'EmailDataGrid', 316, 0, 1469, 900, highestDepth, params, ['From', 'Subject', 'Date Sent', 'Date Received', 'Has Attachments'],
+                                    '#000000', 12, '12pt Ariel', '#FFFFFF', 14, '14pt Ariel', null, null, function (canvasid, windowid, c, r) {
+                                        invokeServerSideFunction('Ajax.aspx', 'getMailMessage', elemId, 1, function (params) {
+                                            alert(params);
+                                        }, [loginEmailAddress, loginPassword, emailServerAddress, uids[r - 1][0]]);
+                                        invalidateRect(elemId, null, 0, 0, 1800, 900);
+                                    }, 20, 30, [400, 539, 180, 180, 170], 0, null, 0, '#000026', '#000026', '#f7f7f7', '#f7f7f7', '#FFFFFF', '#FFFFFF', null, 1,
+                                    '#fcb931', 0, null);
                                 invalidateRect(elemId, null, 0, 0, 1800, 900);
                             }, [loginEmailAddress, loginPassword, emailServerAddress]);
                         }, [loginEmailAddress, loginPassword, emailServerAddress]);

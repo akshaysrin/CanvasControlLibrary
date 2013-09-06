@@ -77,7 +77,33 @@ public partial class Ajax : System.Web.UI.Page
             arlmsg.Add(msg.DateSent.ToString());
             arlmsg.Add(msg.DateReceived.ToString());
             arlmsg.Add(msg.Attachments.Count > 0 ? 1 : 0);
+            arlmsg.Add(msg.UidOnServer);
             parameters.Add(arlmsg);
         }
+        imp.Disconnect();
+    }
+
+    public void getMailMessage(string canvasid, int windowid)
+    {
+        Imap imp = new Imap();
+        imp.Connect(((ArrayList)ccl.InputParams[0])[2].ToString());
+        imp.Login(((ArrayList)ccl.InputParams[0])[0].ToString(), ((ArrayList)ccl.InputParams[0])[1].ToString());
+        imp.SelectFolder("Inbox");
+        MailMessage msg = imp.DownloadEntireMessage((long)Convert.ToInt32(((ArrayList)ccl.InputParams[0])[3]), true);
+        ArrayList arlmsg = new ArrayList();
+        arlmsg.Add(msg.From);
+        arlmsg.Add(msg.Subject);
+        arlmsg.Add(msg.Cc);
+        arlmsg.Add(XmlEscape(msg.BodyPlainText));
+        parameters.Add(arlmsg);
+        imp.Disconnect();
+    }
+
+    public static string XmlEscape(string unescaped)
+    {
+        XmlDocument doc = new XmlDocument();
+        var node = doc.CreateElement("root");
+        node.InnerText = unescaped;
+        return node.InnerXml;
     }
 }

@@ -190,6 +190,12 @@ public class CanvasControlLibrary
         public string AltRowBgColorStart2 { get; set; }
         public string AltRowBgColorEnd2 { get; set; }
         public object Tag { get; set; }
+        public string HasSelectedRow { get; set; }
+        public string SelectedRowBgColor { get; set; }
+        public string HasSelectedCell { get; set; }
+        public string SelectedCellBgColor { get; set; }
+        public string SelectedRow { get; set; }
+        public string SelectedCell { get; set; }
 
         public CCLGridProps()
         {
@@ -1789,7 +1795,7 @@ public class CanvasControlLibrary
             }
             else
             {
-                str += "[i]" + obj.ToString() + "[/i]";
+                str += "[i]" + encodeString(obj.ToString()) + "[/i]";
             }
         }
         return str + "[/Array]";
