@@ -66,6 +66,17 @@ public class CanvasControlLibrary
             return null;
         }
 
+        public void SetValue(string key, object value)
+        {
+            foreach (KeyValuePair kvp in KeyValuePairs)
+            {
+                if (kvp.Key == key)
+                {
+                    kvp.Value = value;
+                }
+            }
+        }
+
         public List<string> GetAllKeys()
         {
             List<string> keys = new List<string>();
@@ -79,17 +90,6 @@ public class CanvasControlLibrary
         public LightWeightDictionary()
         {
             KeyValuePairs = new List<KeyValuePair>();
-        }
-
-        public void SetValue(string key, string value)
-        {
-            foreach (KeyValuePair kvp in KeyValuePairs)
-            {
-                if (kvp.Key == key)
-                {
-                    kvp.Value = value;
-                }
-            }
         }
     }
 
@@ -256,12 +256,31 @@ public class CanvasControlLibrary
         public string SelectedCellBgColor { get; set; }
         public string SelectedRow { get; set; }
         public string SelectedCell { get; set; }
+        public string HasSorting { get; set; }
+        public List<object> SortableColumnsArray { get; set; }
+        public string HasSortImages { get; set; }
+        public List<object> SortImageURLsArray { get; set; }
+        public string SortImageShowIndex { get; set; }
+        public List<object> SortedData { get; set; }
+        public string CustomSortFunction { get; set; }
+        public string HasFilters { get; set; }
+        public List<object> FilterColumnsArray { get; set; }
+        public string HasFilterImageIcon { get; set; }
+        public string FilterImageIconURL { get; set; }
+        public List<object> FilteredData { get; set; }
+        public List<object> SortClickExtents { get; set; }
 
         public CCLGridProps()
         {
             RowData = new List<object>();
             HeaderData = new List<object>();
             ColumnWidthArray = new List<object>();
+            SortableColumnsArray = new List<object>();
+            SortImageURLsArray = new List<object>();
+            SortedData = new List<object>();
+            FilterColumnsArray = new List<object>();
+            FilteredData = new List<object>();
+            SortClickExtents = new List<object>();
         }
     }
 
@@ -1035,7 +1054,7 @@ public class CanvasControlLibrary
         public string HasBgImage { get; set; }
         public string BgImageUrl { get; set; }
         public string HasAutoComplete { get; set; }
-        public string ListPossibles { get; set; }
+        public List<object> ListPossibles { get; set; }
         public string DropDownPossiblesListIfThereIsInputText { get; set; }
         public string LimitToListPossibles { get; set; }
         public string ListPossiblesTextHeight { get; set; }
@@ -1047,6 +1066,11 @@ public class CanvasControlLibrary
         public string CaretColor { get; set; }
         public object Tag { get; set; }
         public string CaretTime { get; set; }
+
+        public CCLTextBoxProps()
+        {
+            ListPossibles = new List<object>();
+        }
     }
 
     public List<CCLImageFaderProps> ImageFaderPropsArray = new List<CCLImageFaderProps>();
@@ -1777,9 +1801,11 @@ public class CanvasControlLibrary
                 {
                     prop.SetValue(g, FillObjectArray(child3.ChildNodes[0]), null);
                 }
-                else if (child3.ChildNodes.Count == 1 && child3.ChildNodes[0].Name != "i")
+                else if (child3.ChildNodes.Count == 1 && child3.ChildNodes[0].Name == "Array")
                 {
-                    prop.SetValue(g, DecodeXML(child3.InnerXml), null);
+                    List<object> al = new List<object>();
+                    AddArrayData(child3.ChildNodes[0], al);
+                    prop.SetValue(g, al, null);
                 }
                 else if (child3.ChildNodes.Count > 1 || (child3.ChildNodes.Count != 0 && child3.ChildNodes[0].Name == "i"))
                 {
@@ -1804,34 +1830,44 @@ public class CanvasControlLibrary
                     }
                     prop.SetValue(g, al, null);
                 }
+                else if (child3.ChildNodes.Count == 1 && child3.ChildNodes[0].Name != "i")
+                {
+                    prop.SetValue(g, DecodeXML(child3.InnerXml), null);
+                }
             }
         }
     }
 
     public void AddArrayData(XmlNode node, List<object> pal)
     {
-        List<object> al = new List<object>();
         foreach (XmlNode child in node.ChildNodes)
         {
             if (child.ChildNodes.Count > 0 && child.ChildNodes[0].Name == "ObjectArray")
             {
-                al.Add(FillObjectArray(child.ChildNodes[0]));
+                pal.Add(FillObjectArray(child.ChildNodes[0]));
             }
-            if (child.ChildNodes.Count == 1)
+            else if (child.ChildNodes.Count > 0 && child.ChildNodes[0].Name == "Array")
             {
-                al.Add(child.InnerXml);
+                List<object> al = new List<object>();
+                AddArrayData(child.ChildNodes[0], al);
+                pal.Add(al);
+            }
+            else if (child.ChildNodes.Count == 1)
+            {
+                pal.Add(child.InnerXml);
             }
             else if (child.ChildNodes.Count > 1)
             {
+                List<object> al = new List<object>();
                 AddArrayData(child, al);
+                pal.Add(al);
             }
         }
-        pal.Add(al);
     }
 
     public string recurseArrayList(List<object> al)
     {
-        string str = "[Array]";
+        string str = "";
         foreach (object obj in al)
         {
             if (obj is LightWeightDictionary)
@@ -1840,14 +1876,14 @@ public class CanvasControlLibrary
             }
             else if (obj is List<object>)
             {
-                str += "[i]" + recurseArrayList(obj as List<object>) + "[/i]";
+                str += "[i][Array]" + recurseArrayList(obj as List<object>) + "[/Array][/i]";
             }
             else
             {
                 str += "[i]" + encodeString(obj.ToString()) + "[/i]";
             }
         }
-        return str + "[/Array]";
+        return str;
     }
 
     public static string encodeString(string str)
@@ -1869,7 +1905,7 @@ public class CanvasControlLibrary
                 {
                     if (obj.GetType().IsGenericType && obj.GetType().GetGenericTypeDefinition() == typeof(List<>))
                     {
-                        str += "[i]" + recurseArrayList(obj as List<object>) + "[/i]";
+                        str += "[i][Array]" + recurseArrayList(obj as List<object>) + "[/Array][/i]";
                     }
                     else if (obj is LightWeightDictionary)
                     {

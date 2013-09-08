@@ -2035,11 +2035,16 @@ function getGridProps(canvasid, windowid) {
     }
 }
 
+//sortableColumnsArray format - 0: Column Index; Type of sort - Alphabetical, Numerical, Date, Custom; Direction Ascending Descending, Unsorted
+//sortImageURLsArray - the image that will be displayed is the image url index given by sortImageShowIndex
+//filterColumnsArray format - 0: Column Index; Type of filter - Unique values, Custom; 
+//There will be a remove all filters function and checkboxes per value to filter on
 function createGrid(canvasid, controlNameId, x, y, width, height, depth, rowData, headerData, rowDataTextColor, rowDataTextHeight, rowDataTextFontString,
     headerDataTextColor, headerDataTextHeight, headerDataTextFontString, drawRowDataCellFunction, drawHeaderCellFunction,
     cellClickFunction, dataRowHeight, headerRowHeight, columnWidthArray, hasBorder, borderColor, borderLineWidth,
     headerbackgroundstartcolor, headerbackgroundendcolor, altrowbgcolorstart1, altrowbgcolorend1, altrowbgcolorstart2, altrowbgcolorend2, tag,
-    hasSelectedRow, selectedRowBgColor, hasSelectedCell, selectedCellBgColor) {
+    hasSelectedRow, selectedRowBgColor, hasSelectedCell, selectedCellBgColor, hasSorting, sortableColumnsArray, hasSortImages, sortImageURLsArray,
+    sortImageShowIndex, customSortFunction, hasFilters, filterColumnsArray, hasFilterImageIcon, filterImageIcon) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Grid');
     var effectiveWidth = 0;
     for (var i = 0; i < columnWidthArray.length; i++) {
@@ -2071,8 +2076,20 @@ function createGrid(canvasid, controlNameId, x, y, width, height, depth, rowData
         AltRowBgColorEnd1: altrowbgcolorend1, AltRowBgColorStart2: altrowbgcolorstart2,
         AltRowBgColorEnd2: altrowbgcolorend2, Tag: tag,
         HasSelectedRow: hasSelectedRow, SelectedRowBgColor: selectedRowBgColor, HasSelectedCell: hasSelectedCell,
-        SelectedCellBgColor: selectedCellBgColor, SelectedRow: -1, SelectedCell: -1
+        SelectedCellBgColor: selectedCellBgColor, SelectedRow: -1, SelectedCell: -1,
+        HasSorting: hasSorting, SortableColumnsArray: sortableColumnsArray, HasSortImages: hasSortImages, 
+        SortImageURLsArray: sortImageURLsArray, SortImageShowIndex: sortImageShowIndex, SortedData:rowData, 
+        CustomSortFunction: customSortFunction, HasFilters: hasFilters, FilterColumnsArray: filterColumnsArray, 
+        HasFilterImageIcon: hasFilterImageIcon, FilterImageIcon: filterImageIcon, FilteredData: rowData, 
+        SortClickExtents: new Array()
     });
+    if (hasSorting == 1 && checkIfAllUnsorted(getGridProps(canvasid, windowid)) == 0) {
+        if (customSortFunction != null) {
+            customSortFunction(getGridProps(canvasid, windowid));
+        } else {
+            sortGridData(getGridProps(canvasid, windowid));
+        }
+    }
     registerWindowDrawFunction(windowid, drawGrid, canvasid);
     registerClickFunction(windowid, clickGrid, canvasid);
     return windowid;
@@ -2092,6 +2109,7 @@ function drawGrid(canvasid, windowid) {
         startCol = hscrollBarProps.SelectedID;
     }
     var totalWidth = 0;
+    gridProps.SortClickExtents = new Array();
     for (var c = startCol; c < gridProps.ColumnWidthArray.length; c++) {
         if (totalWidth >= gridProps.Width) {
             break;
@@ -2124,9 +2142,40 @@ function drawGrid(canvasid, windowid) {
                 gridProps.Width - totalWidth, gridProps.HeaderRowHeight);
             ctx.stroke();
         }
+        var gcc = getGridSortedColumnIndex(gridProps, c);
+        if (gridProps.HasSorting == 1 && gcc > -1) {
+            var offsetY = gridProps.Y + ((gridProps.HeaderRowHeight - 9) / 2);
+            if (gridProps.SortableColumnsArray[gcc][2] == "Ascending") {
+                ctx.strokeStyle = '#FFFFFF';
+                ctx.beginPath();
+                ctx.moveTo(gridProps.X + totalWidth - 6, offsetY + 3);
+                ctx.lineTo(gridProps.X + totalWidth - 6, offsetY + 12);
+                ctx.lineTo(gridProps.X + totalWidth - 9, offsetY + 9);
+                ctx.moveTo(gridProps.X + totalWidth - 2, offsetY + 9);
+                ctx.lineTo(gridProps.X + totalWidth - 6, offsetY + 12);
+                ctx.stroke();
+                gridProps.SortClickExtents.push([c, gridProps.X + totalWidth - 9, offsetY + 3, 7, 9]);
+            } else if (gridProps.SortableColumnsArray[gcc][2] == "Descending") {
+                ctx.strokeStyle = '#FFFFFF';
+                ctx.beginPath();
+                ctx.moveTo(gridProps.X + totalWidth - 6, offsetY + 12);
+                ctx.lineTo(gridProps.X + totalWidth - 6, offsetY + 3);
+                ctx.lineTo(gridProps.X + totalWidth - 9, offsetY + 5);
+                ctx.moveTo(gridProps.X + totalWidth - 2, offsetY + 5);
+                ctx.lineTo(gridProps.X + totalWidth - 6, offsetY + 3);
+                ctx.stroke();
+                gridProps.SortClickExtents.push([c, gridProps.X + totalWidth - 9, offsetY + 3, 7, 9]);
+            } else if (gridProps.SortableColumnsArray[gcc][2] == "Unsorted") {
+                ctx.strokeStyle = '#FFFFFF';
+                ctx.beginPath();
+                ctx.rect(gridProps.X + totalWidth - 11, offsetY + 3, 9, 9);
+                ctx.stroke();
+                gridProps.SortClickExtents.push([c, gridProps.X + totalWidth - 11, offsetY + 3, 9, 9]);
+            }
+        }
     }
     var altrow = 0;
-    for (var r = startRow; r < gridProps.RowData.length; r++) {
+    for (var r = startRow; r < (gridProps.HasSorting == 1 ? gridProps.SortedData.length : gridProps.RowData.length); r++) {
         if (((r - startRow) * gridProps.DataRowHeight) + gridProps.HeaderRowHeight >= gridProps.Height) {
             break;
         }
@@ -2174,10 +2223,12 @@ function drawGrid(canvasid, windowid) {
                     gridProps.ColumnWidthArray[c], gridProps.DataRowHeight);
                 ctx.fill();
             }
+            ctx.beginPath();
             ctx.fillStyle = gridProps.RowDataTextColor;
             ctx.font = gridProps.RowDataTextFontString;
-            ctx.fillText(gridProps.RowData[r][c], gridProps.X + totalWidth - gridProps.ColumnWidthArray[c], gridProps.Y + ((r - startRow) *
-                gridProps.DataRowHeight) - ((gridProps.DataRowHeight - gridProps.HeaderDataTextHeight) / 2) + gridProps.HeaderRowHeight + gridProps.DataRowHeight);
+            ctx.fillText((gridProps.HasSorting == 1 ? gridProps.SortedData : gridProps.RowData)[r][c], gridProps.X + totalWidth -
+                gridProps.ColumnWidthArray[c], gridProps.Y + ((r - startRow) * gridProps.DataRowHeight) - ((gridProps.DataRowHeight -
+                gridProps.HeaderDataTextHeight) / 2) + gridProps.HeaderRowHeight + gridProps.DataRowHeight);
             ctx.restore();
             if (gridProps.HasBorder == 1) {
                 ctx.strokeStyle = gridProps.BorderColor;
@@ -2197,7 +2248,6 @@ function drawGrid(canvasid, windowid) {
 }
 
 function clickGrid(canvasid, windowid, e) {
-
     var gridProps = getGridProps(canvasid, windowid);
     var vscrollBarProps = getScrollBarProps(canvasid, gridProps.VScrollBarWindowId);
     var hscrollBarProps = getScrollBarProps(canvasid, gridProps.HScrollBarWindowId);
@@ -2234,6 +2284,110 @@ function clickGrid(canvasid, windowid, e) {
                 return;
             }
         }
+    }
+    var sortingChanged = 0;
+    if (gridProps.HasSorting == 1) {
+        for (var i = 0; i < gridProps.SortClickExtents.length; i++) {
+            if (x > gridProps.SortClickExtents[i][1] && x < gridProps.SortClickExtents[i][1] + gridProps.SortClickExtents[i][3] &&
+                y > gridProps.SortClickExtents[i][2] && y < gridProps.SortClickExtents[i][2] + gridProps.SortClickExtents[i][4]) {
+                for (var j = 0; j < gridProps.SortableColumnsArray.length; j++) {
+                    if (gridProps.SortableColumnsArray[j][0] == gridProps.SortClickExtents[i][0]) {
+                        if (gridProps.SortableColumnsArray[j][2] == "Unsorted") {
+                            gridProps.SortableColumnsArray[j][2] = "Ascending";
+                            sortingChanged = 1;
+                        } else if (gridProps.SortableColumnsArray[j][2] == "Ascending") {
+                            gridProps.SortableColumnsArray[j][2] = "Descending";
+                            sortingChanged = 1;
+                        } else if (gridProps.SortableColumnsArray[j][2] = "Descending") {
+                            gridProps.SortableColumnsArray[j][2] = "Unsorted";
+                            sortingChanged = 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if (sortingChanged == 1) {
+        if (gridProps.CustomSortFunction != null) {
+            gridProps.CustomSortFunction(gridProps);
+        } else {
+            sortGridData(gridProps);
+        }
+        invalidateRect(gridProps.CanvasID, null, gridProps.X, gridProps.Y, gridProps.Width, gridProps.Height);
+    }
+}
+
+function getGridSortedColumnIndex(gridProps, c) {
+    if (gridProps.SortableColumnsArray) {
+        for (var i = 0; i < gridProps.SortableColumnsArray.length; i++) {
+            if (gridProps.SortableColumnsArray[i][0] == c) {
+                return i;
+            }
+        }
+    }
+    return -1;
+}
+
+function checkIfAllUnsorted(gridProps) {
+    for (var i = 0; i < gridProps.SortableColumnsArray.length; i++) {
+        if (gridProps.SortableColumnsArray[i][2] != "Unsorted") {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+function sortGridData(gridProps) {
+    if (gridProps.SortedData && gridProps.SortedData.length > 1 && checkIfAllUnsorted(gridProps) == 0) {
+        var sortedRows = new Array();
+        sortedRows.push(gridProps.SortedData[0]);
+        for (var r = 1; r < gridProps.SortedData.length; r++) {
+            var rowOutcomeHighestPlacement = sortedRows.length;
+            for (var r3 = 0; r3 < sortedRows.length; r3++) {
+                var prevOutcome = 1;
+                for (var c = 0; c < gridProps.SortedData[r].length; c++) {
+                    var c2 = getGridSortedColumnIndex(gridProps, c);
+                    if (c2 > -1) {
+                        if (gridProps.SortableColumnsArray[c2][2] != "Unsorted") {
+                            var localOutcome;
+                            if (gridProps.SortableColumnsArray[c2][1] == "Alphabetical") {
+                                localOutcome = gridProps.SortedData[r][c] && sortedRows[r3][c] ?
+                                    gridProps.SortedData[r][c].localeCompare(sortedRows[r3][c]) :
+                                    gridProps.SortedData[r][c] && !sortedRows[r3][c] ? 1 :
+                                    !gridProps.SortedData[r][c] && !sortedRows[r3][c] ? 0 : -1;
+                            } else if (gridProps.SortableColumnsArray[c2][1] == "Numerical" ||
+                                gridProps.SortableColumnsArray[c2][1] == "Date") {
+                                localOutcome = gridProps.SortedData[r][c] && sortedRows[r3][c] ?
+                                    Number(gridProps.SortedData[r][c]) > Number(sortedRows[r3][c]) ? 1 :
+                                    Number(gridProps.SortedData[r][c]) < Number(sortedRows[r3][c]) ? -1 : 0 :
+                                    !gridProps.SortedData[r][c] && !sortedRows[r3][c] ? 0 :
+                                    gridProps.SortedData[r][c] && !sortedRows[r3][c] ? 1 : -1;
+                            }
+                            if (gridProps.SortableColumnsArray[c2][2] == "Ascending") {
+                                if (localOutcome == 1) {
+                                    localOutcome = -1;
+                                } else if (localOutcome = -1) {
+                                    localOutcome = 1;
+                                }
+                            }
+                            if (localOutcome <= prevOutcome) {
+                                prevOutcome = localOutcome;
+                            }
+                        }
+                    }
+                }
+                if (prevOutcome == 1) {
+                    rowOutcomeHighestPlacement = r3;
+                    break;
+                } else {
+                    rowOutcomeHighestPlacement = r3 + 1;
+                }
+            }
+            sortedRows.splice(rowOutcomeHighestPlacement, 0, gridProps.SortedData[r]);
+        }
+        gridProps.SortedData = sortedRows;
+    } else {
+        gridProps.SortedData = gridProps.RowData;
     }
 }
 
@@ -3061,11 +3215,12 @@ function clickTreeView(canvasid, windowid, e) {
     var scrollBarProps = getScrollBarProps(canvasid, treeViewProps.VScrollBarWindowID);
     var x = e.calcX;
     var y = e.calcY;
-    for (var i = 0; i < treeViewProps.ClickButtonExtents.length; i++) {
-        if (treeViewProps.ClickButtonExtents[i].Node && x > treeViewProps.ClickButtonExtents[i].X &&
-            x < treeViewProps.ClickButtonExtents[i].X + 9 && y > treeViewProps.ClickButtonExtents[i].Y &&
-            y < treeViewProps.ClickButtonExtents[i].Y + 9) {
-            toggleNodeExpandedState(treeViewProps, getTreeviewClickButtonExtents(treeViewProps)[i].Node);
+    var clickButtonExtents = getTreeviewClickButtonExtents(treeViewProps);
+    for (var i = 0; i < clickButtonExtents.length; i++) {
+        if (clickButtonExtents[i].Node && x > clickButtonExtents[i].X &&
+            x < clickButtonExtents[i].X + 9 && y > clickButtonExtents[i].Y &&
+            y < clickButtonExtents[i].Y + 9) {
+            toggleNodeExpandedState(treeViewProps, clickButtonExtents[i].Node);
             scrollBarProps.MaxItems = checkHowManyChildNodesAreExpandedInAll(getTreeviewNodes(treeViewProps));
             invalidateRect(canvasid, null, treeViewProps.X, treeViewProps.Y, treeViewProps.Width, treeViewProps.Height);
             return;
@@ -7508,6 +7663,7 @@ function createImageFader(canvasid, controlNameId, x, y, width, height, depth, i
         FadeStartValue: fadeStartValue, FadeEndValue: fadeEndValue, FadeStepValue: fadeStepValue, HoldForTicks: holdForTicks, ClickFunction: clickFunction,
         HoldCountDown: holdForTicks, CurrentImageIndex: 0, CurrentGlobalAlphaValue: fadeStartValue, OverlayImages: overlayimages
     });
+    setImageFaderDrawingCanvasAndCtx(getImageFaderProps(canvasid, windowid), drawingCanvas, drawingCanvasCtx);
     for (var i = 0; i < imageURLs.length; i++) {
         var image = new Image();
         image.onload = function () {
@@ -7559,7 +7715,7 @@ function createImageFader(canvasid, controlNameId, x, y, width, height, depth, i
         } else {
             imageFaderProps.HoldCountDown--;
             ctx.globalAlpha = imageFaderProps.FadeEndValue;
-            realCtx.drawImage(getImageFaderImageByIndex(imageFaderProps, CurrentImageIndex), imageFaderProps.X, imageFaderProps.Y);
+            realCtx.drawImage(getImageFaderImageByIndex(imageFaderProps, imageFaderProps.CurrentImageIndex), imageFaderProps.X, imageFaderProps.Y);
         }
         ctx.restore();
     }, canvasid);
@@ -7636,6 +7792,11 @@ function getImageSliderImageByIndex(imageSliderProps, index) {
 
 function createImageSlider(canvasid, controlNameId, x, y, width, height, depth, imageURLs, direction, stepIncrement, holdForTicks, clickFunction) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'ImageSlider');
+    imageSliderPropsArray.push({
+        CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, ImageURLs: imageURLs,
+        Direction: direction, StepIncrement: stepIncrement, ClickFunction: clickFunction, HoldForTicks: holdForTicks, CurrentImageIndex: 0,
+        Slide: 0, HoldCountDown: holdForTicks
+    });
     for (var i = 0; i < imageURLs.length; i++) {
         var image = new Image();
         image.onload = function () {
@@ -7644,11 +7805,6 @@ function createImageSlider(canvasid, controlNameId, x, y, width, height, depth, 
         image.src = imageURLs[i];
         setImageSliderImage(getImageSliderProps(canvasid, windowid), imageURLs[i], image);
     }
-    imageSliderPropsArray.push({
-        CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, ImageURLs: imageURLs,
-        Direction: direction, StepIncrement: stepIncrement, ClickFunction: clickFunction, HoldForTicks: holdForTicks, CurrentImageIndex: 0,
-        Slide: 0, HoldCountDown: holdForTicks
-    });
     registerWindowDrawFunction(windowid, function (canvasid1, windowid1) {
         var imageSliderProps = getImageSliderProps(canvasid1, windowid1);
         var ctx = getCtx(canvasid1);
@@ -9595,14 +9751,14 @@ function drawOutlineEmptyStarOnCtx(ctx, votingProps, canvas) {
 function drawClosedLoopLines(imgdata, points, red, green, blue, alpha) {
     if (points.length > 1) {
         for (var i = 0; i < points.length; i++) {
-            imgdata = drawline(imgdata, points[i][0], points[i][1], i == points.length - 1 ? points[0][0] : points[i + 1][0],
+            imgdata = drawline2(imgdata, points[i][0], points[i][1], i == points.length - 1 ? points[0][0] : points[i + 1][0],
                 i == points.length - 1 ? points[0][1] : points[i + 1][1], red, green, blue, alpha);
         }
     }
     return imgdata;
 }
 
-function drawline(imgdata, x1, y1, x2, y2, red, green, blue, alpha) {
+function drawline2(imgdata, x1, y1, x2, y2, red, green, blue, alpha) {
     var dx = x2 - x1; var sx = 1;
     var dy = y2 - y1; var sy = 1;
 
@@ -9775,10 +9931,10 @@ function invokeServerSideFunction(ajaxURL, functionName, canvasid, windowid, cal
     if (navigator.userAgent.toLowerCase().indexOf('msie') == -1) {
         xmlhttp.overrideMimeType("application/octet-stream");
     }
-    //    xmlhttp.setRequestHeader('Connection', 'close');
+        xmlhttp.setRequestHeader('Connection', 'close');
     xmlhttp.setRequestHeader("Content-Type", "text/xml");
-    //    xmlhttp.setRequestHeader("Content-Length", data.length);
-    //xmlhttp.setRequestHeader("Cache-Control", "max-age=0");
+    xmlhttp.setRequestHeader("Content-Length", data.length);
+    xmlhttp.setRequestHeader("Cache-Control", "max-age=0");
     xmlhttp.send(data);
 }
 
@@ -9995,7 +10151,7 @@ function stringEncodeObject(obj) {
                 }
                 str += '[' + name + ']' + encodeAllBrackets(obj[name].toString()) + '[/' + name + ']';
             } else if (obj[name] instanceof Array) {
-                str += '[' + name + ']';
+                str += '[' + name + '][Array]';
                 for (var i = 0; i < obj[name].length; i++) {
                     if (obj[name] != null) {
                         if (obj[name][i] && typeof obj[name][i] == 'function') {
@@ -10008,13 +10164,13 @@ function stringEncodeObject(obj) {
                         if (typeof obj[name][i] === 'string' || typeof obj[name][i] === 'number') {
                             str += '[i]' + encodeAllBrackets(obj[name][i].toString()) + '[/i]';
                         } else if (obj[name][i] instanceof Array) {
-                            str += encodeArray(obj[name][i], (strIndexes && strIndexes.length > 0 ? strIndexes + ',' + i.toString() : i.toString()));
+                            str += '[i]' + encodeArray(obj[name][i], (strIndexes && strIndexes.length > 0 ? strIndexes + ',' + i.toString() : i.toString())) + '[/i]';
                         } else if (typeof obj[name] === 'object') {
                             str += '[i]' + stringEncodeValueObject(obj[name][i]) + '[/i]';
                         }
                     }
                 }
-                str += '[/' + name + ']';
+                str += '[/Array][/' + name + ']';
             } else if (typeof obj[name] === 'object') {
                 str += '[' + name + ']' + stringEncodeValueObject(obj[name]) + '[/' + name + ']';
             }
@@ -10045,7 +10201,7 @@ function encodeArray(arr, strIndexes) {
             if (typeof arr[i] === 'string' || typeof arr[i] === 'number') {
                 str += '[i]' + encodeAllBrackets(arr[i].toString()) + '[/i]';
             } else if (arr[i] instanceof Array) {
-                str += encodeArray(arr[i], (strIndexes && strIndexes.length > 0 ? strIndexes + ',' + i.toString() : i.toString()));
+                str += '[i]' + encodeArray(arr[i], (strIndexes && strIndexes.length > 0 ? strIndexes + ',' + i.toString() : i.toString())) + '[/i]';
             } else if (typeof arr[i] === 'object') {
                 str += '[i]' + stringEncodeValueObject(arr[i]) + '[/i]';
             }
@@ -10320,6 +10476,12 @@ function recurseFillArray(arr, node) {
             var arr2 = new Array();
             for (var x = 0; x < node.childNodes[i].childNodes.length; x++) {
                 recurseFillArray(arr2, node.childNodes[i].childNodes[x]);
+            }
+            arr.push(arr2);
+        } else if (node.childNodes[i].childNodes.length > 0 && node.childNodes[i].childNodes[0].nodeName == "Array") {
+            var arr2 = new Array();
+            for (var x = 0; x < node.childNodes[i].childNodes[0].childNodes.length; x++) {
+                recurseFillArray(arr2, node.childNodes[i].childNodes[0].childNodes[x]);
             }
             arr.push(arr2);
         } else if (node.childNodes[i].childNodes.length > 0 && node.childNodes[i].nodeName == "ObjectArray") {

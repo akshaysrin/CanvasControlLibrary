@@ -17,8 +17,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <title></title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="chrome=1, IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=EmulateIE9" />
     <script src="CanvasControlLibrary.js" type="text/javascript"></script>
 </head>
 <body>
