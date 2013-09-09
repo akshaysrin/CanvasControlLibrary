@@ -1950,13 +1950,12 @@ function scrollBarMouseMove(canvasid, windowid, e) {
             scrollBarProps.CustomMouseMoveFunction(scrollBarProps, scrollBarProps.SelectedID);
         }
     }
-    /*
     if (scrollBarProps.SelectedID != tmp) {
         var wprops = getWindowProps(canvasid, scrollBarProps.OwnedByWindowID);
         if (wprops) {
             invalidateRect(canvasid, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
         }
-    }*/
+    }
 }
 
 function scrollBarMouseUp(canvasid, windowid) {
