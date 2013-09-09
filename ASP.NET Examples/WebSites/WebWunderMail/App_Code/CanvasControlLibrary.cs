@@ -1862,6 +1862,10 @@ public class CanvasControlLibrary
                 AddArrayData(child, al);
                 pal.Add(al);
             }
+            else
+            {
+                pal.Add("");
+            }
         }
     }
 

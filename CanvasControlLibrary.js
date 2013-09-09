@@ -9907,7 +9907,8 @@ function carouselDraw(canvasid, windowid) {
 //AJAX Postback code Starts here
 
 function invokeServerSideFunction(ajaxURL, functionName, canvasid, windowid, callBackFunc, params) {
-    var data = "[FunctionName]" + functionName + "[/FunctionName][CanvasID]" + canvasid + "[/CanvasID][WindowID]" + windowid.toString() + "[/WindowID][Vars]" + getEncodedVariables() +
+    var data = "[FunctionName]" + functionName + "[/FunctionName][CanvasID]" + canvasid + "[/CanvasID][WindowID]" +
+        windowid.toString() + "[/WindowID][Vars]" + getEncodedVariables() +
         "[/Vars][SessionID]" + sessionID + "[/SessionID][Params]" + encodeParams(params) + "[/Params]";
     var xmlhttp;
     if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
@@ -10167,6 +10168,8 @@ function stringEncodeObject(obj) {
                         } else if (typeof obj[name] === 'object') {
                             str += '[i]' + stringEncodeValueObject(obj[name][i]) + '[/i]';
                         }
+                    } else {
+                        str += '[i][/i]';
                     }
                 }
                 str += '[/Array][/' + name + ']';
@@ -10204,6 +10207,8 @@ function encodeArray(arr, strIndexes) {
             } else if (typeof arr[i] === 'object') {
                 str += '[i]' + stringEncodeValueObject(arr[i]) + '[/i]';
             }
+        } else {
+            str += '[i][/i]';
         }
     }
     return str + '[/Array]';
@@ -10221,6 +10226,8 @@ function stringEncodeValueObject(obj) {
             } else if (typeof obj[name] === 'object' && !obj[name] instanceof Array) {
                 str += '[' + name + ']' + stringEncodeValueObject(obj[name]) + '[/' + name + ']';
             }
+        } else if (obj[name] == null) {
+            str += '[' + name + '][/' + name + ']';
         }
     }
     return str + '[/ObjectArray]';
@@ -10417,9 +10424,7 @@ function recurseFillVars(node, obj) {
                 if (node.childNodes[i].childNodes[0].childNodes[x].childNodes.length > 0 &&
                     node.childNodes[i].childNodes[0].childNodes[x].childNodes[0].nodeName == "Array") {
                     var arr2 = new Array();
-                    for (var y = 0; y < node.childNodes[i].childNodes[0].childNodes[x].childNodes[0].childNodes.length; y++) {
-                        recurseFillArray(arr2, node.childNodes[i].childNodes[0].childNodes[x].childNodes[0].childNodes[y]);
-                    }
+                    recurseFillArray(arr2, node.childNodes[i].childNodes[0].childNodes[x].childNodes[0]);
                     arr.push(arr2);
                 } else if (node.childNodes[i].childNodes[0].childNodes[x].childNodes.length > 0 &&
                     node.childNodes[i].childNodes[0].childNodes[x].childNodes[0].nodeName == "ObjectArray") {
@@ -10459,6 +10464,9 @@ function FillObjectArrayValues(node) {
 }
 
 function correctValueTypes(o) {
+    if (!o) {
+        return null;
+    }
     if (typeof o == 'string' && (parseInt(o) >= 0 || parseInt(o) < 0) && parseInt(o).toString() == o) {
         return parseInt(o);
     } else if (typeof o == 'string' && (parseFloat(o) >= 0 || parseFloat(o) < 0) && parseFloat(o).toString() == o) {
