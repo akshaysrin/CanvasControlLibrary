@@ -22,15 +22,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Reflection;
 using System.Collections;
-
-using MailBee;
-using MailBee.Mime;
-using MailBee.Security;
-using MailBee.SmtpMail;
-
-using MailBee.DnsMX;
-using MailBee.Pop3Mail;
-using MailBee.ImapMail;
+using S22.Imap;
 
 public partial class Ajax : System.Web.UI.Page
 {
@@ -50,53 +42,56 @@ public partial class Ajax : System.Web.UI.Page
 
     public void getFolders(string canvasid, int windowid)
     {
-        Imap imp = new Imap();
-        imp.Connect(ccl.InputParams[2].ToString());
-        imp.Login(ccl.InputParams[0].ToString(), ccl.InputParams[1].ToString());
-        FolderCollection fc = imp.DownloadFolders();
-        foreach (Folder fcx in fc)
-        {
-            parameters.Add(fcx.Name);
+        ImapClient imp = new ImapClient(ccl.InputParams[2].ToString(), 993, true, null);
+        imp.Login(ccl.InputParams[0].ToString(), ccl.InputParams[1].ToString(), AuthMethod.Login);
+        string[] mailboxes = imp.ListMailboxes();
+        foreach(string mb in mailboxes){
+            parameters.Add(mb);
         }
-        imp.Disconnect();
+        imp.Logout();
+        imp.Dispose();
     }
 
     public void getEmailHeaders(string canvasid, int windowid)
     {
-        Imap imp = new Imap();
-        imp.Connect(ccl.InputParams[2].ToString());
-        imp.Login(ccl.InputParams[0].ToString(), ccl.InputParams[1].ToString());
-        imp.SelectFolder("Inbox");
-        MailMessageCollection msgs = imp.DownloadMessageHeaders(Imap.AllMessages, false);
-        for (int i = msgs.Count - 1; i > -1; i--)
+        ImapClient imp = new ImapClient(ccl.InputParams[2].ToString(), 993, true, null);
+        imp.Login(ccl.InputParams[0].ToString(), ccl.InputParams[1].ToString(), AuthMethod.Login);
+        uint[] ids = imp.Search(SearchCondition.All(), "Inbox");
+        int count = 0;
+        foreach (int id in ids)
         {
-            MailMessage msg = msgs[i] as MailMessage;
+            System.Net.Mail.MailMessage msg = imp.GetMessage(Convert.ToUInt32(id), FetchOptions.HeadersOnly, true, "Inbox");
             List<object> arlmsg = new List<object>();
             arlmsg.Add(msg.From);
             arlmsg.Add(msg.Subject);
-            arlmsg.Add(msg.DateSent.ToString());
-            arlmsg.Add(msg.DateReceived.ToString());
-            arlmsg.Add(msg.Attachments.Count > 0 ? 1 : 0);
-            arlmsg.Add(msg.UidOnServer);
+            arlmsg.Add("");
+            arlmsg.Add("");
+            arlmsg.Add("");
+            arlmsg.Add(id);
             parameters.Add(arlmsg);
+            count++;
+            if (count > 30)
+            {
+                break;
+            }
         }
-        imp.Disconnect();
+        imp.Logout();
+        imp.Dispose();
     }
 
     public void getMailMessage(string canvasid, int windowid)
     {
-        Imap imp = new Imap();
-        imp.Connect(ccl.InputParams[2].ToString());
-        imp.Login(ccl.InputParams[0].ToString(), ccl.InputParams[1].ToString());
-        imp.SelectFolder("Inbox");
-        MailMessage msg = imp.DownloadEntireMessage((long)Convert.ToInt32(ccl.InputParams[3]), true);
+        ImapClient imp = new ImapClient(ccl.InputParams[2].ToString(), 993, true, null);
+        imp.Login(ccl.InputParams[0].ToString(), ccl.InputParams[1].ToString(), AuthMethod.Login);
+        System.Net.Mail.MailMessage msg = imp.GetMessage(Convert.ToUInt32(ccl.InputParams[3]), true, "Inbox");
         List<object> arlmsg = new List<object>();
         arlmsg.Add(msg.From);
         arlmsg.Add(msg.Subject);
-        arlmsg.Add(msg.Cc);
-        arlmsg.Add(XmlEscape(msg.BodyPlainText));
+        arlmsg.Add(msg.CC);
+        arlmsg.Add(XmlEscape(msg.Body.ToString()));
         parameters.Add(arlmsg);
-        imp.Disconnect();
+        imp.Logout();
+        imp.Dispose();
     }
 
     public static string XmlEscape(string unescaped)

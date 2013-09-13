@@ -269,6 +269,9 @@ public class CanvasControlLibrary
         public string FilterImageIconURL { get; set; }
         public List<object> FilteredData { get; set; }
         public List<object> SortClickExtents { get; set; }
+        public string HasUIDs { get; set; }
+        public List<object> OrigUIDs { get; set; } 
+        public List<object> SortedUIDs { get; set; }
 
         public CCLGridProps()
         {
@@ -281,6 +284,8 @@ public class CanvasControlLibrary
             FilterColumnsArray = new List<object>();
             FilteredData = new List<object>();
             SortClickExtents = new List<object>();
+            OrigUIDs = new List<object>();
+            SortedUIDs = new List<object>();
         }
     }
 
@@ -2168,13 +2173,13 @@ public class CanvasControlLibrary
         string strParameters = "";
         foreach (object obj in parameters)
         {
-            if (obj.GetType().IsGenericType && obj.GetType().GetGenericTypeDefinition() == typeof(List<>))
+            if (obj != null && obj.GetType().IsGenericType && obj.GetType().GetGenericTypeDefinition() == typeof(List<>))
             {
                 strParameters += "[Array]" + encodeParameters(obj as List<object>) + "[/Array]";
             }
             else
             {
-                strParameters += "[i]" + encodeString(obj.ToString()) + "[/i]";
+                strParameters += "[i]" + (obj == null ? "" : encodeString(obj.ToString())) + "[/i]";
             }
         }
         return strParameters;
