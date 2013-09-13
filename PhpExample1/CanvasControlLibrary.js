@@ -2043,7 +2043,7 @@ function createGrid(canvasid, controlNameId, x, y, width, height, depth, rowData
     cellClickFunction, dataRowHeight, headerRowHeight, columnWidthArray, hasBorder, borderColor, borderLineWidth,
     headerbackgroundstartcolor, headerbackgroundendcolor, altrowbgcolorstart1, altrowbgcolorend1, altrowbgcolorstart2, altrowbgcolorend2, tag,
     hasSelectedRow, selectedRowBgColor, hasSelectedCell, selectedCellBgColor, hasSorting, sortableColumnsArray, hasSortImages, sortImageURLsArray,
-    sortImageShowIndex, customSortFunction, hasFilters, filterColumnsArray, hasFilterImageIcon, filterImageIcon) {
+    sortImageShowIndex, customSortFunction, hasuids, uids, hasFilters, filterColumnsArray, hasFilterImageIcon, filterImageIcon) {
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Grid');
     var effectiveWidth = 0;
     for (var i = 0; i < columnWidthArray.length; i++) {
@@ -2080,7 +2080,7 @@ function createGrid(canvasid, controlNameId, x, y, width, height, depth, rowData
         SortImageURLsArray: sortImageURLsArray, SortImageShowIndex: sortImageShowIndex, SortedData:rowData, 
         CustomSortFunction: customSortFunction, HasFilters: hasFilters, FilterColumnsArray: filterColumnsArray, 
         HasFilterImageIcon: hasFilterImageIcon, FilterImageIcon: filterImageIcon, FilteredData: rowData, 
-        SortClickExtents: new Array()
+        SortClickExtents: new Array(), HasUIDs: hasuids, OrigUIDs: uids, SortedUIDs: uids
     });
     if (hasSorting == 1 && checkIfAllUnsorted(getGridProps(canvasid, windowid)) == 0) {
         if (customSortFunction != null) {
@@ -2339,7 +2339,11 @@ function checkIfAllUnsorted(gridProps) {
 function sortGridData(gridProps) {
     if (gridProps.SortedData && gridProps.SortedData.length > 1 && checkIfAllUnsorted(gridProps) == 0) {
         var sortedRows = new Array();
+        var sortedUIDS = new Array();
         sortedRows.push(gridProps.SortedData[0]);
+        if (gridProps.HasUIDs == 1) {
+            sortedUIDS.push(gridProps.SortedUIDs[0]);
+        }
         for (var r = 1; r < gridProps.SortedData.length; r++) {
             var rowOutcomeHighestPlacement = sortedRows.length;
             for (var r3 = 0; r3 < sortedRows.length; r3++) {
@@ -2347,7 +2351,7 @@ function sortGridData(gridProps) {
                 for (var c = 0; c < gridProps.SortedData[r].length; c++) {
                     var c2 = getGridSortedColumnIndex(gridProps, c);
                     if (c2 > -1) {
-                        if (gridProps.SortableColumnsArray[c2][2] != "Unsorted") {
+                        if (gridProps.SortableColumnsArray[c2][1] == "Alphabetical" && gridProps.SortableColumnsArray[c2][2] != "Unsorted") {
                             var localOutcome;
                             if (gridProps.SortableColumnsArray[c2][1] == "Alphabetical") {
                                 localOutcome = gridProps.SortedData[r][c] && sortedRows[r3][c] ?
@@ -2383,10 +2387,19 @@ function sortGridData(gridProps) {
                 }
             }
             sortedRows.splice(rowOutcomeHighestPlacement, 0, gridProps.SortedData[r]);
+            if (gridProps.HasUIDs == 1) {
+                sortedUIDS.splice(rowOutcomeHighestPlacement, 0, gridProps.SortedUIDs[r]);
+            }
         }
         gridProps.SortedData = sortedRows;
+        if (gridProps.HasUIDs == 1) {
+            gridProps.SortedUIDs = sortedUIDS;
+        }
     } else {
         gridProps.SortedData = gridProps.RowData;
+        if (gridProps.HasUIDs == 1) {
+            gridProps.SortedUIDs = gridProps.OrigUIDs;
+        }
     }
 }
 
