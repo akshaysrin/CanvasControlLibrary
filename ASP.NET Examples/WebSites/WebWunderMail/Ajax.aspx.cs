@@ -57,23 +57,19 @@ public partial class Ajax : System.Web.UI.Page
         ImapClient imp = new ImapClient(ccl.InputParams[2].ToString(), 993, true, null);
         imp.Login(ccl.InputParams[0].ToString(), ccl.InputParams[1].ToString(), AuthMethod.Login);
         uint[] ids = imp.Search(SearchCondition.All(), "Inbox");
+        List<ImapClient.x> headers = imp.GetMailHeaders(ids, true, "Inbox");
         int count = 0;
-        foreach (int id in ids)
+        foreach (ImapClient.x msg in headers)
         {
-            System.Net.Mail.MailMessage msg = imp.GetMessage(Convert.ToUInt32(id), FetchOptions.HeadersOnly, true, "Inbox");
             List<object> arlmsg = new List<object>();
-            arlmsg.Add(msg.From);
-            arlmsg.Add(msg.Subject);
+            arlmsg.Add(msg.msg.From);
+            arlmsg.Add(msg.msg.Subject);
             arlmsg.Add("");
             arlmsg.Add("");
             arlmsg.Add("");
-            arlmsg.Add(id);
+            arlmsg.Add(msg.uid);
             parameters.Add(arlmsg);
             count++;
-            if (count > 30)
-            {
-                break;
-            }
         }
         imp.Logout();
         imp.Dispose();
