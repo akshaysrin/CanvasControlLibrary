@@ -62,10 +62,10 @@ public partial class Ajax : System.Web.UI.Page
         foreach (ImapClient.x msg in headers)
         {
             List<object> arlmsg = new List<object>();
-            arlmsg.Add(msg.msg.From);
-            arlmsg.Add(msg.msg.Subject);
+            arlmsg.Add(msg.msg.msg.From);
+            arlmsg.Add(msg.msg.msg.Subject);
             arlmsg.Add("");
-            arlmsg.Add("");
+            arlmsg.Add(msg.msg.Received.ToString());
             arlmsg.Add("");
             arlmsg.Add(msg.uid);
             parameters.Add(arlmsg);

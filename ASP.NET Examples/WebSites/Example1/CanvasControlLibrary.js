@@ -2223,11 +2223,13 @@ function drawGrid(canvasid, windowid) {
                 ctx.fill();
             }
             ctx.beginPath();
-            ctx.fillStyle = gridProps.RowDataTextColor;
-            ctx.font = gridProps.RowDataTextFontString;
-            ctx.fillText((gridProps.HasSorting == 1 ? gridProps.SortedData : gridProps.RowData)[r][c], gridProps.X + totalWidth -
-                gridProps.ColumnWidthArray[c], gridProps.Y + ((r - startRow) * gridProps.DataRowHeight) - ((gridProps.DataRowHeight -
-                gridProps.HeaderDataTextHeight) / 2) + gridProps.HeaderRowHeight + gridProps.DataRowHeight);
+            if ((gridProps.HasSorting == 1 ? gridProps.SortedData : gridProps.RowData)[r][c]) {
+                ctx.fillStyle = gridProps.RowDataTextColor;
+                ctx.font = gridProps.RowDataTextFontString;
+                ctx.fillText((gridProps.HasSorting == 1 ? gridProps.SortedData : gridProps.RowData)[r][c], gridProps.X + totalWidth -
+                    gridProps.ColumnWidthArray[c], gridProps.Y + ((r - startRow) * gridProps.DataRowHeight) - ((gridProps.DataRowHeight -
+                    gridProps.HeaderDataTextHeight) / 2) + gridProps.HeaderRowHeight + gridProps.DataRowHeight);
+            }
             ctx.restore();
             if (gridProps.HasBorder == 1) {
                 ctx.strokeStyle = gridProps.BorderColor;

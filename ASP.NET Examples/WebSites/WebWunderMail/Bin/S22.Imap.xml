@@ -4788,7 +4788,7 @@
             or invalid, a normal priority is assumed and MailPriority.Normal
             is returned.</returns>
         </member>
-        <member name="M:S22.Imap.MessageBuilder.SetAddressFields(System.Net.Mail.MailMessage,System.Collections.Specialized.NameValueCollection)">
+        <member name="M:S22.Imap.MessageBuilder.SetAddressFields(S22.Imap.MailMessageX,System.Collections.Specialized.NameValueCollection)">
             <summary>
             Sets the address fields (From, To, CC, etc.) of a MailMessage
             object using the specified mail message header information.
