@@ -215,6 +215,7 @@ public class CanvasControlLibrary
         public string Alignment { get; set; }
         public string MouseDownState { get; set; }
         public object Tag { get; set; }
+        public string OwnedByWindowID { get; set; }
     }
 
     public List<CCLGridProps> GridPropsArray = new List<CCLGridProps>();
@@ -272,7 +273,6 @@ public class CanvasControlLibrary
         public string HasUIDs { get; set; }
         public List<object> OrigUIDs { get; set; } 
         public List<object> SortedUIDs { get; set; }
-        public string OwnedByWindowID { get; set; }
 
         public CCLGridProps()
         {
