@@ -21,6 +21,7 @@
             var emailServerAddress;
             var currMailboxName = '';
             var gridWindowID = 0;
+            var labelwindowid = 0;
             registerCanvasElementId(elemId);
             function loginForm() {
                 loginFormWindowIDs.push(createLabel(elemId, 'emailAddressLabel', 10, 10, 100, 20, 'Email Address ::', '#000000', 12, '12pt Ariel', null, highestDepth));
@@ -88,17 +89,31 @@
                                 for (var i = 0; i < params.length; i++) {
                                     uids.push(params[i].splice(5, 1)[0]);
                                 }
-                                gridWindowID = createGrid(elemId, 'EmailDataGrid', 316, 0, 1469, 900, highestDepth, params, ['From', 'Subject', 'Date Sent', 'Date Received', 'Has Attachments'],
-                                    '#000000', 12, '12pt Ariel', '#FFFFFF', 14, '14pt Ariel', null, null, function (canvasid, windowid, c, r) {
+                                gridWindowID = createGrid(elemId, 'EmailDataGrid', 316, 0, 1469, 450, highestDepth, params, ['From', 'Subject', 'Date Sent',
+                                    'Date Received', 'Has Attachments'], '#000000', 12, '12pt Ariel', '#FFFFFF', 14, '14pt Ariel', null, null,
+                                    function (canvasid, windowid, c, r) {
                                         var gridProps = getGridProps(canvasid, windowid);
                                         invokeServerSideFunction('Ajax.aspx', 'getMailMessage', elemId, 1, function (params) {
-                                            alert(params);
+                                            var multilinelableprops = getMultiLineLabelProps(elemId, labelwindowid);
+                                            multilinelableprops.Text = params[0][3];
+                                            invalidateRect(elemId, null, 0, 0, 1800, 900);
                                         }, [loginEmailAddress, loginPassword, emailServerAddress, (gridProps.HasUIDs == 1 ? gridProps.SortedUIDs :
                                             gridProps.OrigUIDs)[r - 1], currMailboxName]);
                                         invalidateRect(elemId, null, 0, 0, 1800, 900);
                                     }, 20, 30, [400, 539, 180, 180, 170], 0, null, 0, '#000026', '#000026', '#f7f7f7', '#f7f7f7', '#FFFFFF', '#FFFFFF', null, 1,
                                     '#fcb931', 0, null, 1, [[0, "Alphabetical", "Ascending"], [1, "Alphabetical", "Ascending"], [3, "Date", "Descending"]], 0,
                                     null, 0, null, 1, uids, 0, null, 0, null);
+                                var gridProps = getGridProps(elemId, gridWindowID);
+                                invokeServerSideFunction('Ajax.aspx', 'getMailMessage', elemId, 1, function (params) {
+                                    var panelwindowid = createPanel(elemId, 'DisplayedEmailPanel', 316, 450, 1469, 450, highestDepth, 1, '#C0C0C0', 0, null,
+                                        null, 0, null, null, null, null, null, null, null, null, null, null, 1, null, null);
+                                    labelwindowid = createMultiLineLabel(elemId, "DisplayedEmail", 316, 450, 1469, highestDepth, 0, params[0][3],
+                                        '#000000', 12, '12pt Ariel', 5, 0);
+                                    registerChildWindow(elemId, labelwindowid, panelwindowid);
+                                    invalidateRect(elemId, null, 0, 0, 1800, 900);
+                                }, [loginEmailAddress, loginPassword, emailServerAddress, (gridProps.HasUIDs == 1 ? gridProps.SortedUIDs :
+                                            gridProps.OrigUIDs)[(gridProps.HasUIDs == 1 ? gridProps.SortedUIDs :
+                                            gridProps.OrigUIDs).length - 1], currMailboxName]);
                                 invalidateRect(elemId, null, 0, 0, 1800, 900);
                             }, [loginEmailAddress, loginPassword, emailServerAddress, currMailboxName]);
                         }, [loginEmailAddress, loginPassword, emailServerAddress]);
