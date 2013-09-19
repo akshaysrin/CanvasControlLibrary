@@ -3243,11 +3243,11 @@ function clickTreeView(canvasid, windowid, e) {
     if (treeViewProps.ClickNodeFunction != null) {
         var cletvp = getTreeviewClickLabelExtents(treeViewProps);
         for (var i = 0; i < cletvp.length; i++) {
-            if (cletvp[i].Node && x > cletvp[i].X &&
+            if (cletvp[i].TreeviewClickLabelExtentsNode && x > cletvp[i].X &&
                 x < cletvp[i].X + cletvp[i].Width &&
                 y > cletvp[i].Y && y < cletvp[i].Y + cletvp[i].TextHeight) {
-                treeViewProps.ClickNodeFunction(canvasid, windowid, cletvp[i].Node);
-                setTreeviewSelectedNode(treeViewProps, cletvp[i].Node);
+                treeViewProps.ClickNodeFunction(canvasid, windowid, cletvp[i].TreeviewClickLabelExtentsNode);
+                setTreeviewSelectedNode(treeViewProps, cletvp[i].TreeviewClickLabelExtentsNode);
                 invalidateRect(canvasid, null, treeViewProps.X, treeViewProps.Y, treeViewProps.Width, treeViewProps.Height);
                 return;
             }

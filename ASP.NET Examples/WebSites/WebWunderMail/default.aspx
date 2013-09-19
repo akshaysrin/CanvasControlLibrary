@@ -19,6 +19,8 @@
             var elemId = 'canvas';
             var loginFormWindowIDs = new Array();
             var emailServerAddress;
+            var currMailboxName = '';
+            var gridWindowID = 0;
             registerCanvasElementId(elemId);
             function loginForm() {
                 loginFormWindowIDs.push(createLabel(elemId, 'emailAddressLabel', 10, 10, 100, 20, 'Email Address ::', '#000000', 12, '12pt Ariel', null, highestDepth));
@@ -55,6 +57,7 @@
                                 if (foldersplitnames[i][1].length == 1) {
                                     foldersplitnames[i].push(addChildNodes(rootnodes, null, null, 1, foldersplitnames[i][0], foldersplitnames[i]));
                                     if (foldersplitnames[i][0].toLowerCase() == 'inbox') {
+                                        currMailboxName = foldersplitnames[i][0];
                                         inboxnode = foldersplitnames[i][2];
                                     }
                                 } else {
@@ -74,7 +77,9 @@
                                     }
                                 }
                             }
-                            createTreeView(elemId, 'foldersTreeView', 0, 0, 300, 900, highestDepth, rootnodes, '#000000', '12pt Ariel', 12, function (canvasid, windowid) {
+                            createTreeView(elemId, 'foldersTreeView', 0, 0, 300, 900, highestDepth, rootnodes, '#000000', '12pt Ariel', 12, function (canvasid, windowid, node) {
+                                currMailboxName = getMailboxName(node);
+                                getEmailHeaders();
                             }, null, 0, 0, 0, inboxnode);
                             invalidateRect(elemId, null, 0, 0, 1800, 900);
                             invokeServerSideFunction('Ajax.aspx', 'getEmailHeaders', elemId, 1, function (params) {
@@ -83,22 +88,52 @@
                                 for (var i = 0; i < params.length; i++) {
                                     uids.push(params[i].splice(5, 1)[0]);
                                 }
-                                createGrid(elemId, 'EmailDataGrid', 316, 0, 1469, 900, highestDepth, params, ['From', 'Subject', 'Date Sent', 'Date Received', 'Has Attachments'],
+                                gridWindowID = createGrid(elemId, 'EmailDataGrid', 316, 0, 1469, 900, highestDepth, params, ['From', 'Subject', 'Date Sent', 'Date Received', 'Has Attachments'],
                                     '#000000', 12, '12pt Ariel', '#FFFFFF', 14, '14pt Ariel', null, null, function (canvasid, windowid, c, r) {
                                         var gridProps = getGridProps(canvasid, windowid);
                                         invokeServerSideFunction('Ajax.aspx', 'getMailMessage', elemId, 1, function (params) {
                                             alert(params);
-                                        }, [loginEmailAddress, loginPassword, emailServerAddress, (gridProps.HasUIDs == 1 ? gridProps.SortedUIDs : 
-                                            gridProps.OrigUIDs)[r - 1]]);
+                                        }, [loginEmailAddress, loginPassword, emailServerAddress, (gridProps.HasUIDs == 1 ? gridProps.SortedUIDs :
+                                            gridProps.OrigUIDs)[r - 1], currMailboxName]);
                                         invalidateRect(elemId, null, 0, 0, 1800, 900);
                                     }, 20, 30, [400, 539, 180, 180, 170], 0, null, 0, '#000026', '#000026', '#f7f7f7', '#f7f7f7', '#FFFFFF', '#FFFFFF', null, 1,
                                     '#fcb931', 0, null, 1, [[0, "Alphabetical", "Ascending"], [1, "Alphabetical", "Ascending"], [3, "Date", "Descending"]], 0,
                                     null, 0, null, 1, uids, 0, null, 0, null);
                                 invalidateRect(elemId, null, 0, 0, 1800, 900);
-                            }, [loginEmailAddress, loginPassword, emailServerAddress]);
+                            }, [loginEmailAddress, loginPassword, emailServerAddress, currMailboxName]);
                         }, [loginEmailAddress, loginPassword, emailServerAddress]);
                     }, null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1', null));
                 invalidateRect(elemId, null, 0, 0, 1800, 900);
+            }
+            function getMailboxName(node) {
+                var str = '';
+                if (node.TreeviewNodeInstancesParentNode != null) {
+                    str = getMailboxName(node.TreeviewNodeInstancesParentNode) + '/' + str;
+                }
+                str = str + node.Label;
+                return str;
+            }
+            function getEmailHeaders() {
+                invokeServerSideFunction('Ajax.aspx', 'getEmailHeaders', elemId, 1, function (params) {
+                    var uids = new Array();
+                    var rowData = new Array();
+                    for (var i = 0; i < params.length; i++) {
+                        uids.push(params[i].splice(5, 1)[0]);
+                    }
+                    var gridProps = getGridProps(elemId, gridWindowID);
+                    gridProps.RowData = params;
+                    gridProps.SortedData = params;
+                    gridProps.OrigUIDs = uids;
+                    gridProps.SortedUIDs = uids;
+                    if (gridProps.HasSorting == 1 && checkIfAllUnsorted(getGridProps(elemId, gridWindowID)) == 0) {
+                        if (gridProps.CustomSortFunction != null) {
+                            gridProps.CustomSortFunction(getGridProps(canvasid, windowid));
+                        } else {
+                            sortGridData(getGridProps(elemId, gridWindowID));
+                        }
+                    }
+                    invalidateRect(elemId, null, 0, 0, 1800, 900);
+                }, [loginEmailAddress, loginPassword, emailServerAddress, currMailboxName]);
             }
             loginForm();
         </script>

@@ -1380,12 +1380,19 @@ namespace S22.Imap {
                     {
                         int size = Convert.ToInt32(m.Groups[1].Value);
                         StringBuilder builder = new StringBuilder();
-                        x x = new ImapClient.x();
-                        x.uid = Convert.ToInt32(uids[count]);
-                        count++;
-                        builder.Append(GetData(size));
-                        x.msg = MessageBuilder.FromHeader(builder.ToString());
-                        msgs.Add(x);
+                        if (count < uids.Count())
+                        {
+                            x x = new ImapClient.x();
+                            x.uid = Convert.ToInt32(uids[count]);
+                            count++;
+                            builder.Append(GetData(size));
+                            x.msg = MessageBuilder.FromHeader(builder.ToString());
+                            msgs.Add(x);
+                        }
+                        else
+                        {
+                            builder.Append(GetData(size));
+                        }
                         response = GetResponse();
                         if (!Regex.IsMatch(response, @"\)\s*$"))
                             throw new BadServerResponseException(response);
