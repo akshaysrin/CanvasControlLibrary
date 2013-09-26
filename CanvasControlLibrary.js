@@ -7583,7 +7583,7 @@ function setImageFaderImage(imageFaderProps, imgurl, image) {
             foundControl = 1;
             var foundImage = 0;
             for (var j = 0; j < imageFaderImages[i].Images.length; j++) {
-                if (imageFaderImages[i].Images[j].ImgURL = imgurl) {
+                if (imageFaderImages[i].Images[j].ImgURL == imgurl) {
                     foundImage = 1;
                     imageFaderImages[i].Images[j].Image = image;
                 }
