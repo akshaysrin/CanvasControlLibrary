@@ -1,4 +1,4 @@
-﻿/*
+/*
     Canvas Control Library Copyright 2012
     Created by Akshay Srinivasan [akshay.srin@gmail.com]
     This javascript code is provided as is with no warranty implied.
@@ -9946,9 +9946,9 @@ function invokeServerSideFunction(ajaxURL, functionName, canvasid, windowid, cal
     if (navigator.userAgent.toLowerCase().indexOf('msie') == -1) {
         xmlhttp.overrideMimeType("application/octet-stream");
     }
-        xmlhttp.setRequestHeader('Connection', 'close');
+    //xmlhttp.setRequestHeader('Connection', 'close');
     xmlhttp.setRequestHeader("Content-Type", "text/xml");
-    xmlhttp.setRequestHeader("Content-Length", data.length);
+    //xmlhttp.setRequestHeader("Content-Length", data.length);
     xmlhttp.setRequestHeader("Cache-Control", "max-age=0");
     xmlhttp.send(data);
 }
