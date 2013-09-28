@@ -111,9 +111,11 @@ import java.util.regex.Pattern;
             CCLLabelProps lp = (CCLLabelProps) ccl.getControlPropsByControlNameID((String)buttonProps.Tag);
             CCLTextBoxProps textbox = (CCLTextBoxProps) ccl.getControlPropsByControlNameID("numTicketsTextBox");
             CCLComboBoxProps selectCinemaComboBox = (CCLComboBoxProps) ccl.getControlPropsByControlNameID("selectCinemaComboBoxComboBoxTextArea");
-            Pattern p = Pattern.compile("(MovieTimeLabel)([0-9]+)(Poster)([0-9]+)");
+            Pattern p = Pattern.compile("\\d+");
             Matcher m = p.matcher((String)buttonProps.Tag);
-            int movieIndex = Integer.parseInt(m.group(4));
+            m.find();
+            m.find();
+            int movieIndex = Integer.parseInt(m.group());
             String movieName = "";
             for (int i = 0; i < movieIndexes.size(); i++)
             {

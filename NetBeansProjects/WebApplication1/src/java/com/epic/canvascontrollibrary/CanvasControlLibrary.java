@@ -627,7 +627,7 @@ public class CanvasControlLibrary
         StringBuilder str = new StringBuilder();
         for (Object obj : al)
         {
-            if (Class.forName("LightWeightDictionary").isInstance(obj))
+            if (obj instanceof LightWeightDictionary)
             {
                 str.append("[i]").append(recurseDictionary((LightWeightDictionary)obj)).append("[/i]");
             }
@@ -936,7 +936,7 @@ public class CanvasControlLibrary
         {
             if (obj != null && obj instanceof List<?>)
             {
-                strParameters.append("[i][Array]").append(encodeParameters((List<Object>)obj)).append("[/Array][/i]");
+                strParameters.append("[Array]").append(encodeParameters((List<Object>)obj)).append("[/Array]");
             }
             else
             {
