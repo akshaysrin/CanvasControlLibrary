@@ -1877,23 +1877,23 @@ public class CanvasControlLibrary
 
     public string recurseArrayList(List<object> al)
     {
-        string str = "";
+        StringBuilder str = new StringBuilder();
         foreach (object obj in al)
         {
             if (obj is LightWeightDictionary)
             {
-                str += "[i]" + recurseDictionary(obj as LightWeightDictionary) + "[/i]";
+                str.Append("[i]").Append(recurseDictionary(obj as LightWeightDictionary)).Append("[/i]");
             }
             else if (obj is List<object>)
             {
-                str += "[i][Array]" + recurseArrayList(obj as List<object>) + "[/Array][/i]";
+                str.Append("[i][Array]").Append(recurseArrayList(obj as List<object>)).Append("[/Array][/i]");
             }
             else
             {
-                str += "[i]" + encodeString(obj.ToString()) + "[/i]";
+                str.Append("[i]").Append(encodeString(obj.ToString())).Append("[/i]");
             }
         }
-        return str;
+        return str.ToString();
     }
 
     public static string encodeString(string str)
@@ -1903,287 +1903,288 @@ public class CanvasControlLibrary
 
     public string encodeObject(object o)
     {
-        string str = "";
+        StringBuilder str = new StringBuilder();
         PropertyInfo[] pis = o.GetType().GetProperties();
         foreach (PropertyInfo pi in pis)
         {
             if (pi.PropertyType.IsGenericType && pi.PropertyType.GetGenericTypeDefinition() == typeof(List<>))
             {
                 List<object> al = pi.GetValue(o) as List<object>;
-                str += "[" + pi.Name + "][Array]";
+                str.Append("[").Append(pi.Name).Append("][Array]");
                 foreach (object obj in al)
                 {
                     if (obj.GetType().IsGenericType && obj.GetType().GetGenericTypeDefinition() == typeof(List<>))
                     {
-                        str += "[i][Array]" + recurseArrayList(obj as List<object>) + "[/Array][/i]";
+                        str.Append("[i][Array]").Append(recurseArrayList(obj as List<object>)).Append("[/Array][/i]");
                     }
                     else if (obj is LightWeightDictionary)
                     {
-                        str += "[i]" + recurseDictionary(obj as LightWeightDictionary) + "[/i]";
+                        str.Append("[i]").Append(recurseDictionary(obj as LightWeightDictionary)).Append("[/i]");
                     }
                     else
                     {
-                        str += "[i]" + encodeString(obj.ToString()) + "[/i]";
+                        str.Append("[i]").Append(encodeString(obj.ToString())).Append("[/i]");
                     }
                 }
-                str += "[/Array][/" + pi.Name + "]";
+                str.Append("[/Array][/").Append(pi.Name).Append("]");
             }
             else if (pi.PropertyType.Name == "LightWeightDictionary")
             {
-                str += recurseDictionary(pi.GetValue(o) as LightWeightDictionary);
+                str.Append(recurseDictionary(pi.GetValue(o) as LightWeightDictionary));
             }
             else
             {
                 object x = pi.GetValue(o);
-                str += "[" + pi.Name + "]" + (x != null && x.ToString().Length > 0 ? encodeString(x.ToString()) : "") + "[/" + pi.Name + "]";
+                str.Append("[").Append(pi.Name).Append("]").Append((x != null && x.ToString().Length > 0 ? encodeString(x.ToString()) : "")).
+                    Append("[/").Append(pi.Name).Append("]");
             }
         }
-        return str;
+        return str.ToString();
     }
 
     public string recurseDictionary(LightWeightDictionary dict)
     {
-        string str = "[ObjectArray]";
+        StringBuilder str = new StringBuilder("[ObjectArray]");
         foreach (string key in dict.GetAllKeys())
         {
-            str += "[" + key + "]";
+            str.Append("[").Append(key).Append("]");
             object dictvalue = dict.GetValue(key);
             if (dictvalue.GetType().IsGenericType && dictvalue.GetType().GetGenericTypeDefinition() == typeof(List<>))
             {
-                str += recurseArrayList(dictvalue as List<object>);
+                str.Append(recurseArrayList(dictvalue as List<object>));
             }
             else if (dictvalue is LightWeightDictionary)
             {
-                str += recurseDictionary(dictvalue as LightWeightDictionary);
+                str.Append(recurseDictionary(dictvalue as LightWeightDictionary));
             }
             else
             {
-                str += dictvalue;
+                str.Append(dictvalue);
             }
-            str += "[/" + key + "]";
+            str.Append("[/").Append(key).Append("]");
         }
-        str += "[/ObjectArray]";
-        return str;
+        str.Append("[/ObjectArray]");
+        return str.ToString();
     }
 
     public void SendVars(Stream OutputStream, List<object> parameters)
     {
-        string strVars = "[root][Vars][windows]";
+        StringBuilder strVars = new StringBuilder("[root][Vars][windows]");
         foreach (CCLWindow w in Windows)
         {
-            strVars += "[i]" + encodeObject(w) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(w)).Append("[/i]");
         }
-        strVars += "[/windows][labelPropsArray]";
+        strVars.Append("[/windows][labelPropsArray]");
         foreach (CCLLabelProps l in LabelPropsArray)
         {
-            strVars += "[i]" + encodeObject(l) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(l)).Append("[/i]");
         }
-        strVars += "[/labelPropsArray][buttonPropsArray]";
+        strVars.Append("[/labelPropsArray][buttonPropsArray]");
         foreach (CCLButtonProps b in ButtonPropsArray)
         {
-            strVars += "[i]" + encodeObject(b) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(b)).Append("[/i]");
         }
-        strVars += "[/buttonPropsArray][scrollBarPropsArray]";
+        strVars.Append("[/buttonPropsArray][scrollBarPropsArray]");
         foreach (CCLScrollBarProps s in ScrollBarPropsArray)
         {
-            strVars += "[i]" + encodeObject(s) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(s)).Append("[/i]");
         }
-        strVars += "[/scrollBarPropsArray][gridPropsArray]";
+        strVars.Append("[/scrollBarPropsArray][gridPropsArray]");
         foreach (CCLGridProps g in GridPropsArray)
         {
-            strVars += "[i]" + encodeObject(g) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(g)).Append("[/i]");
         }
-        strVars += "[/gridPropsArray][comboboxPropsArray]";
+        strVars.Append("[/gridPropsArray][comboboxPropsArray]");
         foreach (CCLComboBoxProps c in ComboBoxPropsArray)
         {
-            strVars += "[i]" + encodeObject(c) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(c)).Append("[/i]");
         }
-        strVars += "[/comboboxPropsArray][checkboxPropsArray]";
+        strVars.Append("[/comboboxPropsArray][checkboxPropsArray]");
         foreach (CCLCheckBoxProps chk in CheckBoxPropsArray)
         {
-            strVars += "[i]" + encodeObject(chk) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(chk)).Append("[/i]");
         }
-        strVars += "[/checkboxPropsArray][radiobuttonPropsArray]";
+        strVars.Append("[/checkboxPropsArray][radiobuttonPropsArray]");
         foreach (CCLRadioButtonGroupProps r in RadioButtonGroupPropsArray)
         {
-            strVars += "[i]" + encodeObject(r) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(r)).Append("[/i]");
         }
-        strVars += "[/radiobuttonPropsArray][imageControlPropsArray]";
+        strVars.Append("[/radiobuttonPropsArray][imageControlPropsArray]");
         foreach (CCLImageProps i in ImagePropsArray)
         {
-            strVars += "[i]" + encodeObject(i) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(i)).Append("[/i]");
         }
-        strVars += "[/imageControlPropsArray][treeViewPropsArray]";
+        strVars.Append("[/imageControlPropsArray][treeViewPropsArray]");
         foreach (CCLTreeViewProps t in TreeViewPropsArray)
         {
-            strVars += "[i]" + encodeObject(t) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(t)).Append("[/i]");
         }
-        strVars += "[/treeViewPropsArray][calenderPropsArray]";
+        strVars.Append("[/treeViewPropsArray][calenderPropsArray]");
         foreach (CCLCalenderProps cal in CalenderPropsArray)
         {
-            strVars += "[i]" + encodeObject(cal) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(cal)).Append("[/i]");
         }
-        strVars += "[/calenderPropsArray][progressBarPropsArray]";
+        strVars.Append("[/calenderPropsArray][progressBarPropsArray]");
         foreach (CCLProgressBarProps pb in ProgressBarPropsArray)
         {
-            strVars += "[i]" + encodeObject(pb) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(pb)).Append("[/i]");
         }
-        strVars += "[/progressBarPropsArray][sliderPropsArray]";
+        strVars.Append("[/progressBarPropsArray][sliderPropsArray]");
         foreach (CCLSliderProps sl in SliderPropsArray)
         {
-            strVars += "[i]" + encodeObject(sl) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(sl)).Append("[/i]");
         }
-        strVars += "[/sliderPropsArray][datePickerPropsArray]";
+        strVars.Append("[/sliderPropsArray][datePickerPropsArray]");
         foreach (CCLDatePickerProps dp in DatePrickerPropsArray)
         {
-            strVars += "[i]" + encodeObject(dp) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(dp)).Append("[/i]");
         }
-        strVars += "[/datePickerPropsArray][panelPropsArray]";
+        strVars.Append("[/datePickerPropsArray][panelPropsArray]");
         foreach (CCLPanelProps pp in PanelPropsArray)
         {
-            strVars += "[i]" + encodeObject(pp) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(pp)).Append("[/i]");
         }
-        strVars += "[/panelPropsArray][barGraphsPropsArray]";
+        strVars.Append("[/panelPropsArray][barGraphsPropsArray]");
         foreach (CCLBarGraphProps bg in BarGraphPropsArray)
         {
-            strVars += "[i]" + encodeObject(bg) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(bg)).Append("[/i]");
         }
-        strVars += "[/barGraphsPropsArray][pieChartsPropsArray]";
+        strVars.Append("[/barGraphsPropsArray][pieChartsPropsArray]");
         foreach (CCLPieChartProps pc in PieChartPropsArray)
         {
-            strVars += "[i]" + encodeObject(pc) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(pc)).Append("[/i]");
         }
-        strVars += "[/pieChartsPropsArray][lineGraphsPropsArray]";
+        strVars.Append("[/pieChartsPropsArray][lineGraphsPropsArray]");
         foreach (CCLLineGraphProps lg in LineGraphPropsArray)
         {
-            strVars += "[i]" + encodeObject(lg) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(lg)).Append("[/i]");
         }
-        strVars += "[/lineGraphsPropsArray][gaugeChartPropsArray]";
+        strVars.Append("[/lineGraphsPropsArray][gaugeChartPropsArray]");
         foreach (CCLGaugeChartProps gc in GaugeChartPropsArray)
         {
-            strVars += "[i]" + encodeObject(gc) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(gc)).Append("[/i]");
         }
-        strVars += "[/gaugeChartPropsArray][radarGraphPropsArray]";
+        strVars.Append("[/gaugeChartPropsArray][radarGraphPropsArray]");
         foreach (CCLRadarGraphProps rg in RadarGraphPropsArray)
         {
-            strVars += "[i]" + encodeObject(rg) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(rg)).Append("[/i]");
         }
-        strVars += "[/radarGraphPropsArray][lineAreaGraphPropsArray]";
+        strVars.Append("[/radarGraphPropsArray][lineAreaGraphPropsArray]");
         foreach (CCLLineAreaGraphProps lag in LineAreaGraphPropsArray)
         {
-            strVars += "[i]" + encodeObject(lag) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(lag)).Append("[/i]");
         }
-        strVars += "[/lineAreaGraphPropsArray][candlesticksGraphPropsArray]";
+        strVars.Append("[/lineAreaGraphPropsArray][candlesticksGraphPropsArray]");
         foreach (CCLCandlesticksGraphProps cs in CandlesticksGraphPropsArray)
         {
-            strVars += "[i]" + encodeObject(cs) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(cs)).Append("[/i]");
         }
-        strVars += "[/candlesticksGraphPropsArray][doughnutChartPropsArray]";
+        strVars.Append("[/candlesticksGraphPropsArray][doughnutChartPropsArray]");
         foreach (CCLDoughnutChartProps dc in DoughnutChartPropsArray)
         {
-            strVars += "[i]" + encodeObject(dc) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(dc)).Append("[/i]");
         }
-        strVars += "[/doughnutChartPropsArray][barsMixedWithLabledLineGraphsPropsArray]";
+        strVars.Append("[/doughnutChartPropsArray][barsMixedWithLabledLineGraphsPropsArray]");
         foreach (CCLBarsMixedWithLabeledLineGraphProps bm in BarsMixedWithLabeledLineGraphPropsArray)
         {
-            strVars += "[i]" + encodeObject(bm) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(bm)).Append("[/i]");
         }
-        strVars += "[/barsMixedWithLabledLineGraphsPropsArray][stackedBarGraphPropsArray]";
+        strVars.Append("[/barsMixedWithLabledLineGraphsPropsArray][stackedBarGraphPropsArray]");
         foreach (CCLStackedBarGraphProps sb in StackedBarGraphPropsArray)
         {
-            strVars += "[i]" + encodeObject(sb) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(sb)).Append("[/i]");
         }
-        strVars += "[/stackedBarGraphPropsArray][tabPropsArray]";
+        strVars.Append("[/stackedBarGraphPropsArray][tabPropsArray]");
         foreach (CCLTabProps tb in TabPropsArray)
         {
-            strVars += "[i]" + encodeObject(tb) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(tb)).Append("[/i]");
         }
-        strVars += "[/tabPropsArray][imageMapPropsArray]";
+        strVars.Append("[/tabPropsArray][imageMapPropsArray]");
         foreach (CCLImageMapProps im in ImageMapPropsArray)
         {
-            strVars += "[i]" + encodeObject(im) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(im)).Append("[/i]");
         }
-        strVars += "[/imageMapPropsArray][menuBarPropsArray]";
+        strVars.Append("[/imageMapPropsArray][menuBarPropsArray]");
         foreach (CCLMenuBarProps mb in MenuBarPropsArray)
         {
-            strVars += "[i]" + encodeObject(mb) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(mb)).Append("[/i]");
         }
-        strVars += "[/menuBarPropsArray][subMenuBarPropsArray]";
+        strVars.Append("[/menuBarPropsArray][subMenuBarPropsArray]");
         foreach (CCLSubMenuBarProps smb in SubMenuBarPropsArray)
         {
-            strVars += "[i]" + encodeObject(smb) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(smb)).Append("[/i]");
         }
-        strVars += "[/subMenuBarPropsArray][textBoxPropsArray]";
+        strVars.Append("[/subMenuBarPropsArray][textBoxPropsArray]");
         foreach (CCLTextBoxProps smb in TextBoxPropsArray)
         {
-            strVars += "[i]" + encodeObject(smb) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(smb)).Append("[/i]");
         }
-        strVars += "[/textBoxPropsArray][imageFaderPropsArray]";
+        strVars.Append("[/textBoxPropsArray][imageFaderPropsArray]");
         foreach (CCLImageFaderProps smb in ImageFaderPropsArray)
         {
-            strVars += "[i]" + encodeObject(smb) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(smb)).Append("[/i]");
         }
-        strVars += "[/imageFaderPropsArray][imageSliderPropsArray]";
+        strVars.Append("[/imageFaderPropsArray][imageSliderPropsArray]");
         foreach (CCLImageSliderProps smb in ImageSliderPropsArray)
         {
-            strVars += "[i]" + encodeObject(smb) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(smb)).Append("[/i]");
         }
-        strVars += "[/imageSliderPropsArray][multiLineLabelPropsArray]";
+        strVars.Append("[/imageSliderPropsArray][multiLineLabelPropsArray]");
         foreach (CCLMultiLineLabelProps smb in MultiLineLabelPropsArray)
         {
-            strVars += "[i]" + encodeObject(smb) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(smb)).Append("[/i]");
         }
-        strVars += "[/multiLineLabelPropsArray][wordProcessorPropsArray]";
+        strVars.Append("[/multiLineLabelPropsArray][wordProcessorPropsArray]");
         foreach (CCLWordProcessorProps smb in WordProcessorPropsArray)
         {
-            strVars += "[i]" + encodeObject(smb) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(smb)).Append("[/i]");
         }
-        strVars += "[/wordProcessorPropsArray][virtualKeyboardPropsArray]";
+        strVars.Append("[/wordProcessorPropsArray][virtualKeyboardPropsArray]");
         foreach (CCLVirtualKeyboardProps smb in VirtualKeyboardPropsArray)
         {
-            strVars += "[i]" + encodeObject(smb) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(smb)).Append("[/i]");
         }
-        strVars += "[/virtualKeyboardPropsArray][splitterPropsArray]";
+        strVars.Append("[/virtualKeyboardPropsArray][splitterPropsArray]");
         foreach (CCLSplitterProps smb in SplitterPropsArray)
         {
-            strVars += "[i]" + encodeObject(smb) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(smb)).Append("[/i]");
         }
-        strVars += "[/splitterPropsArray][boundaryFillableMapPropsArray]";
+        strVars.Append("[/splitterPropsArray][boundaryFillableMapPropsArray]");
         foreach (CCLBoundaryFillableMapProps smb in BoundaryFillableMapProps)
         {
-            strVars += "[i]" + encodeObject(smb) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(smb)).Append("[/i]");
         }
-        strVars += "[/boundaryFillableMapPropsArray][simpleXMLViewerPropsArray]";
+        strVars.Append("[/boundaryFillableMapPropsArray][simpleXMLViewerPropsArray]");
         foreach (CCLSimpleXMLViewerProps smb in SimpleXMLViewerProps)
         {
-            strVars += "[i]" + encodeObject(smb) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(smb)).Append("[/i]");
         }
-        strVars += "[/simpleXMLViewerPropsArray][votingPropsArray]";
+        strVars.Append("[/simpleXMLViewerPropsArray][votingPropsArray]");
         foreach (CCLVotingProps smb in VotingProps)
         {
-            strVars += "[i]" + encodeObject(smb) + "[/i]";
+            strVars.Append("[i]").Append(encodeObject(smb)).Append("[/i]");
         }
-        strVars += "[/votingPropsArray]";
-        strVars += "[/Vars][Params][Array]" + encodeParameters(parameters) + "[/Array][/Params][/root]";
-        byte[] wdata = Encoding.ASCII.GetBytes(strVars);
+        strVars.Append("[/votingPropsArray]");
+        strVars.Append("[/Vars][Params][Array]" + encodeParameters(parameters) + "[/Array][/Params][/root]");
+        byte[] wdata = Encoding.ASCII.GetBytes(strVars.ToString());
         OutputStream.Write(wdata, 0, wdata.Length);
     }
 
     public string encodeParameters(List<object> parameters)
     {
-        string strParameters = "";
+        StringBuilder strParameters = new StringBuilder();
         foreach (object obj in parameters)
         {
             if (obj != null && obj.GetType().IsGenericType && obj.GetType().GetGenericTypeDefinition() == typeof(List<>))
             {
-                strParameters += "[Array]" + encodeParameters(obj as List<object>) + "[/Array]";
+                strParameters.Append("[Array]" + encodeParameters(obj as List<object>) + "[/Array]");
             }
             else
             {
-                strParameters += "[i]" + (obj == null ? "" : encodeString(obj.ToString())) + "[/i]";
+                strParameters.Append("[i]" + (obj == null ? "" : encodeString(obj.ToString())) + "[/i]");
             }
         }
-        return strParameters;
+        return strParameters.ToString();
     }
 
     public CCLWindow getWindowProps(string canvasid, string windowid)
