@@ -1292,7 +1292,7 @@ function createLabel(canvasid, controlNameId, x, y, width, height, text, textCol
         width = ctx.measureText(text).width;
     }
     var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Label', controlNameId);
-    var label = new Label();
+    var label = new CCLLabel();
     labelPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Text: text,
         TextHeight: textHeight, TextFontString: textFontString, TextColor: textColor, IsHyperlink: isHyperlink, URL: url,
@@ -4216,7 +4216,7 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
     function CCLDatePicker() { }
 
     CCLDatePicker.prototype = {
-        CanvasID: canvasid, X: null, Y: null, Width: null, Height: null, TextBoxAreaTextColor: null,
+        CanvasID: null, X: null, Y: null, Width: null, Height: null, TextBoxAreaTextColor: null,
         TextBoxAreaTextHeight: null, TextBoxAreaTextFontString: null, Tag: null,
         ControlNameID: null, Depth: null, VisibleMonth: null, VisibleYear: null,
         SelectedDay: null, DayCellWidth: null, DayCellHeight: null, HeaderHeight: null,
@@ -7272,9 +7272,9 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
     function CCLMenuBar() { }
 
     CCLMenuBar.prototype = {
-        CanvasID: canvasid, X: x, Y: y, Width: width, Height: height,
-        Data: data, BarColorStart: barcolorstart, BarColorMiddle: barcolormiddle, BarColorEnd: barcolorend,
-        DropDownColorStart: dropdowncolorstart, DropDownColorEnd: dropdowncolorend, Tag: tag, Orientation: null,
+        CanvasID: null, X: null, Y: null, Width: null, Height: null,
+        Data: null, BarColorStart: null, BarColorMiddle: null, BarColorEnd: null,
+        DropDownColorStart: null, DropDownColorEnd: null, Tag: null, Orientation: null,
         ControlNameID: null, Depth: null,
 
         Initialize: function () {

@@ -188,7 +188,7 @@ public class ImapClient
         StringBuilder sb = new StringBuilder();
         for (int i = 1; i < headerdata.Count - 1; i++)
         {
-            sb.Append(headerdata[i].Replace("\r\n", "\n"));
+            sb.Append(headerdata[i]);
         }
         return sb.ToString();
     }
