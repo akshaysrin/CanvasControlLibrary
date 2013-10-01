@@ -24,7 +24,19 @@
             var labelwindowid = 0;
             registerCanvasElementId(elemId);
             function loginForm() {
-                loginFormWindowIDs.push(createLabel(elemId, 'emailAddressLabel', 10, 10, 100, 20, 'Email Address ::', '#000000', 12, '12pt Ariel', null, highestDepth));
+                var emailAddressLabel = new CCLLabel();
+                emailAddressLabel.CanvasID = elemId;
+                emailAddressLabel.ControlNameID = 'emailAddressLabel';
+                emailAddressLabel.X = 10;
+                emailAddressLabel.Y = 10;
+                emailAddressLabel.Width = 100;
+                emailAddressLabel.Height = 20;
+                emailAddressLabel.Text = 'Email Address ::';
+                emailAddressLabel.TextColor = '#000000';
+                emailAddressLabel.TextHeight = 12;
+                emailAddressLabel.TextFontString = '12pt Ariel';
+                emailAddressLabel.Depth = highestDepth;
+                loginFormWindowIDs.push(emailAddressLabel.Initialize());
                 var emailAddressTextBoxWindowID = createTextBox(elemId, 'emailAddressTextBox', 200, 5, 200, 30, highestDepth, 'Email Address',
                     '#C0C0C0', 20, '12pt Ariel', '#000000', 12, '12pt Ariel', 500, '.+', 0, '', 1, '#C0C0C0', 1, 0, '#D0D0D0', 2, 2, 2, 1, 10, 1,
                     '#FFFFFF', '#F0F0F0', 0, '', 0, null, null, null, null, null, null, null, '#000000', '#FFAFAF', 1, null, null);
