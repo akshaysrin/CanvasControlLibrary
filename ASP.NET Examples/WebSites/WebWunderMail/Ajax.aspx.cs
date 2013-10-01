@@ -22,7 +22,6 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Reflection;
 using System.Collections;
-using S22.Imap;
 
 public partial class Ajax : System.Web.UI.Page
 {
@@ -42,52 +41,44 @@ public partial class Ajax : System.Web.UI.Page
 
     public void getFolders(string canvasid, int windowid)
     {
-        ImapClient imp = new ImapClient(ccl.InputParams[2].ToString(), 993, true, null);
-        imp.Login(ccl.InputParams[0].ToString(), ccl.InputParams[1].ToString(), AuthMethod.Login);
-        string[] mailboxes = imp.ListMailboxes();
+        ImapClient imp = new ImapClient(ccl.InputParams[2].ToString(), 993, ccl.InputParams[0].ToString(), ccl.InputParams[1].ToString(), true);
+        List<string> mailboxes = imp.GetAllFolders();
         foreach(string mb in mailboxes){
             parameters.Add(mb);
         }
         imp.Logout();
-        imp.Dispose();
     }
 
     public void getEmailHeaders(string canvasid, int windowid)
     {
-        ImapClient imp = new ImapClient(ccl.InputParams[2].ToString(), 993, true, null);
-        imp.Login(ccl.InputParams[0].ToString(), ccl.InputParams[1].ToString(), AuthMethod.Login);
-        uint[] ids = imp.Search(SearchCondition.All(), ccl.InputParams[3].ToString());
-        List<ImapClient.x> headers = imp.GetMailHeaders(ids, true, ccl.InputParams[3].ToString());
+        ImapClient imp = new ImapClient(ccl.InputParams[2].ToString(), 993, ccl.InputParams[0].ToString(), ccl.InputParams[1].ToString(), true);
+        List<ImapClient.Message> headers = imp.GetAllHeaders(ccl.InputParams[3].ToString());
         int count = 0;
-        foreach (ImapClient.x msg in headers)
+        foreach (ImapClient.Message msg in headers)
         {
             List<object> arlmsg = new List<object>();
-            arlmsg.Add(msg.msg.msg.From);
-            arlmsg.Add(msg.msg.msg.Subject);
+            arlmsg.Add(msg.From);
+            arlmsg.Add(msg.Subject);
             arlmsg.Add("");
-            arlmsg.Add(msg.msg.Received.ToString());
+            arlmsg.Add(msg.Date.ToString());
             arlmsg.Add("");
-            arlmsg.Add(msg.uid);
+            arlmsg.Add(msg.ID);
             parameters.Add(arlmsg);
             count++;
         }
         imp.Logout();
-        imp.Dispose();
     }
 
     public void getMailMessage(string canvasid, int windowid)
     {
-        ImapClient imp = new ImapClient(ccl.InputParams[2].ToString(), 993, true, null);
-        imp.Login(ccl.InputParams[0].ToString(), ccl.InputParams[1].ToString(), AuthMethod.Login);
-        System.Net.Mail.MailMessage msg = imp.GetMessage(Convert.ToUInt32(ccl.InputParams[3]), true, ccl.InputParams[4].ToString());
+        ImapClient imp = new ImapClient(ccl.InputParams[2].ToString(), 993, ccl.InputParams[0].ToString(), ccl.InputParams[1].ToString(), true);
         List<object> arlmsg = new List<object>();
-        arlmsg.Add(msg.From);
-        arlmsg.Add(msg.Subject);
-        arlmsg.Add(msg.CC);
-        arlmsg.Add(XmlEscape(msg.Body.ToString()));
+        arlmsg.Add("");
+        arlmsg.Add("");
+        arlmsg.Add("");
+        arlmsg.Add(XmlEscape(imp.GetMessageBody(ccl.InputParams[3].ToString(), ccl.InputParams[4].ToString())));
         parameters.Add(arlmsg);
         imp.Logout();
-        imp.Dispose();
     }
 
     public static string XmlEscape(string unescaped)

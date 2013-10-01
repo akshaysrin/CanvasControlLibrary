@@ -5,7 +5,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "WebWunderMail", "http://loc
 	ProjectSection(WebsiteProperties) = preProject
 		UseIISExpress = "true"
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
-		ProjectReferences = "{369c32a5-e099-4bd5-bbbf-51713947ca99}|S22.Imap.dll;"
+		ProjectReferences = ""
 		Debug.AspNetCompiler.VirtualPath = "/localhost_50970"
 		Debug.AspNetCompiler.PhysicalPath = "..\..\WebSites\WebWunderMail\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_50970\"
@@ -24,8 +24,6 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "WebWunderMail", "http://loc
 		DefaultWebSiteLanguage = "Visual C#"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "S22.Imap", "..\S22.Imap-master\S22.Imap.csproj", "{369C32A5-E099-4BD5-BBBF-51713947CA99}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,10 +34,6 @@ Global
 		{944B6D71-BE01-4C5B-9AED-CD44C5295980}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{944B6D71-BE01-4C5B-9AED-CD44C5295980}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{944B6D71-BE01-4C5B-9AED-CD44C5295980}.Release|Any CPU.Build.0 = Debug|Any CPU
-		{369C32A5-E099-4BD5-BBBF-51713947CA99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{369C32A5-E099-4BD5-BBBF-51713947CA99}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{369C32A5-E099-4BD5-BBBF-51713947CA99}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{369C32A5-E099-4BD5-BBBF-51713947CA99}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
