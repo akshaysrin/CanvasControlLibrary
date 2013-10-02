@@ -8,6 +8,9 @@ using System.Net.Security;
 using System.Threading;
 using System.Text;
 using System.Text.RegularExpressions;
+using Limilabs.Mail;
+using Limilabs.Client.IMAP;
+
 
 /// <summary>
 /// Summary description for ImapClient
@@ -16,9 +19,28 @@ public class ImapClient
 {
     int tag = 0;
     Stream stream;
+    string hostname;
+    string username;
+    string password;
+    int port;
+    bool ssl;
+
+    public ImapClient(string hostname, string username, string password, int port, bool ssl)
+    {
+        this.hostname = hostname;
+        this.username = username;
+        this.password = password;
+        this.port = port;
+        this.ssl = ssl;
+    }
 
     public ImapClient(string hostname, int port, string username, string password, bool ssl = false)
     {
+        this.hostname = hostname;
+        this.username = username;
+        this.password = password;
+        this.port = port;
+        this.ssl = ssl;
         RemoteCertificateValidationCallback validate = null;
         TcpClient client = new TcpClient(hostname, port);
         stream = client.GetStream();
@@ -30,11 +52,6 @@ public class ImapClient
         string tagStr = GetTag();
         writestreamdata(tagStr + "LOGIN " + QuoteString(username) + " " + QuoteString(password) + "\r\n");
         readstreamdata(tagStr + "OK");
-        /*
-        GetAllFolders();
-        SelectMailbox("INBOX");
-        List<Message> headers = GetAllHeaders(false);
-        GetMessageBody(headers[headers.Count - 1].ID, "INBOX");*/
     }
 
     void writestreamdata(string data)
@@ -181,6 +198,7 @@ public class ImapClient
 
     public string GetMessageBody(string id, string mailbox)
     {
+        /*
         SelectMailbox(mailbox);
         string tagStr = GetTag();
         writestreamdata(tagStr + "FETCH " + id + " BODY[TEXT]\r\n");
@@ -191,6 +209,24 @@ public class ImapClient
             sb.Append(headerdata[i]);
         }
         return sb.ToString();
+         * */
+        using (Imap imap = new Imap())
+        {
+            if (ssl)
+            {
+                imap.ConnectSSL(hostname);       // or ConnectSSL for SSL
+            }
+            else
+            {
+                imap.Connect(hostname);
+            }
+            imap.UseBestLogin(username, password);
+
+            imap.SelectInbox();
+            IMail email = new MailBuilder().CreateFromEml(imap.GetMessageByNumber((long)Convert.ToDouble(id)));
+            imap.Close();
+            return email.GetBodyAsText();
+        }
     }
 
     string GetTag()

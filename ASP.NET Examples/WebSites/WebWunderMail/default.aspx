@@ -22,6 +22,7 @@
             var currMailboxName = '';
             var gridWindowID = 0;
             var labelwindowid = 0;
+            var panelwindowid = 0;
             registerCanvasElementId(elemId);
             function loginForm() {
                 var emailAddressLabel = new CCLLabel();
@@ -117,11 +118,21 @@
                                     null, 0, null, 1, uids, 0, null, 0, null);
                                 var gridProps = getGridProps(elemId, gridWindowID);
                                 invokeServerSideFunction('Ajax.aspx', 'getMailMessage', elemId, 1, function (params) {
-                                    var panelwindowid = createPanel(elemId, 'DisplayedEmailPanel', 316, 450, 1469, 450, highestDepth, 1, '#C0C0C0', 0, null,
-                                        null, 0, null, null, null, null, null, null, null, null, null, null, 1, null, null);
-                                    labelwindowid = createMultiLineLabel(elemId, "DisplayedEmail", 316, 450, 1469, highestDepth, 0, params[0][3],
-                                        '#000000', 12, '12pt Ariel', 5, 0);
-                                    registerChildWindow(elemId, labelwindowid, panelwindowid);
+                                    if (panelwindowid == 0) {
+                                        panelwindowid = createPanel(elemId, 'DisplayedEmailPanel', 316, 450, 1469, 450, highestDepth, 1, '#C0C0C0', 0, null,
+                                            null, 0, null, null, null, null, null, null, null, null, null, null, 1, null, null);
+                                        if (labelwindowid == 0) {
+                                            labelwindowid = createMultiLineLabel(elemId, "DisplayedEmail", 316, 450, 1469, highestDepth, 0, params[0][3],
+                                                '#000000', 12, '12pt Ariel', 5, 0);
+                                            registerChildWindow(elemId, labelwindowid, panelwindowid);
+                                        } else {
+                                            var mlblprops = getMultiLineLabelProps(elemId, labelwindowid);
+                                            mlblprops.Text = params[0][3];
+                                        }
+                                    } else {
+                                        var mlblprops = getMultiLineLabelProps(elemId, labelwindowid);
+                                        mlblprops.Text = params[0][3];
+                                    }
                                     invalidateRect(elemId, null, 0, 0, 1800, 900);
                                 }, [loginEmailAddress, loginPassword, emailServerAddress, (gridProps.HasUIDs == 1 ? gridProps.SortedUIDs :
                                             gridProps.OrigUIDs)[(gridProps.HasUIDs == 1 ? gridProps.SortedUIDs :

@@ -71,14 +71,13 @@ public partial class Ajax : System.Web.UI.Page
 
     public void getMailMessage(string canvasid, int windowid)
     {
-        ImapClient imp = new ImapClient(ccl.InputParams[2].ToString(), 993, ccl.InputParams[0].ToString(), ccl.InputParams[1].ToString(), true);
+        ImapClient imp = new ImapClient(ccl.InputParams[2].ToString(), ccl.InputParams[0].ToString(), ccl.InputParams[1].ToString(), 993, true);
         List<object> arlmsg = new List<object>();
         arlmsg.Add("");
         arlmsg.Add("");
         arlmsg.Add("");
         arlmsg.Add(XmlEscape(imp.GetMessageBody(ccl.InputParams[3].ToString(), ccl.InputParams[4].ToString())));
         parameters.Add(arlmsg);
-        imp.Logout();
     }
 
     public static string XmlEscape(string unescaped)
