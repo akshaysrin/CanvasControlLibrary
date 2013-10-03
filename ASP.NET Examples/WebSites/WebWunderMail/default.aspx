@@ -7,7 +7,7 @@
     <title>Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="chrome=1, IE=EmulateIE9" /> <!-- Eliminated IE=edge for compatibility for IE 10 on Windows 7 -->
-    <script src="CanvasControlLibrary.js" type="text/javascript"></script>
+    <script src="minCCL.js" type="text/javascript"></script>
 </head>
 <body>
     <form id="form1" runat="server" method="post">

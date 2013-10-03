@@ -8,8 +8,6 @@ using System.Net.Security;
 using System.Threading;
 using System.Text;
 using System.Text.RegularExpressions;
-using Limilabs.Mail;
-using Limilabs.Client.IMAP;
 
 
 /// <summary>
@@ -198,7 +196,6 @@ public class ImapClient
 
     public string GetMessageBody(string id, string mailbox)
     {
-        /*
         SelectMailbox(mailbox);
         string tagStr = GetTag();
         writestreamdata(tagStr + "FETCH " + id + " BODY[TEXT]\r\n");
@@ -209,24 +206,6 @@ public class ImapClient
             sb.Append(headerdata[i]);
         }
         return sb.ToString();
-         * */
-        using (Imap imap = new Imap())
-        {
-            if (ssl)
-            {
-                imap.ConnectSSL(hostname);       // or ConnectSSL for SSL
-            }
-            else
-            {
-                imap.Connect(hostname);
-            }
-            imap.UseBestLogin(username, password);
-
-            imap.SelectInbox();
-            IMail email = new MailBuilder().CreateFromEml(imap.GetMessageByNumber((long)Convert.ToDouble(id)));
-            imap.Close();
-            return email.GetBodyAsText();
-        }
     }
 
     string GetTag()
