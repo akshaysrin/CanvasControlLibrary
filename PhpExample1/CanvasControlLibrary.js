@@ -8110,10 +8110,10 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         return windowid;
     }
 
-    function repeatPasswordChar(char, x) {
+    function repeatPasswordChar(c, x) {
         var str = '';
         for (var i = 0; i < x; i++) {
-            str = str + char;
+            str = str + c;
         }
         return str;
     }
@@ -10219,7 +10219,7 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         SpacingInPixelsBetweenStars: null, HasPartialStars: null, Editable: null,
         HasValueLabel: null, LabelXPos: null, LabelYPos: null, StarsStartingPosOffsetWhenLabel: null,
         StarsYPosWhenLabel: null, InitialValue: null, OutlineThicknessOfEmptyStar: null,
-        StarsOrientation: null, FillOrientation: null, null: null, OutLineImgURL: null,
+        StarsOrientation: null, FillOrientation: null, OutLineImgURL: null,
         CustomFillPoint: null, ImgWidth: null, ImgHeight: null, StarSizeInPixels: null, HasMouseOverLabel: null,
         StarOutlineBgColorRed: null, StarOutlineBgColorGreen: null, StarOutlineBgColorBlue: null,
         StarOutlineBgColorAlpha: null, LabelTextColor: null, LabelTextFontString: null,
