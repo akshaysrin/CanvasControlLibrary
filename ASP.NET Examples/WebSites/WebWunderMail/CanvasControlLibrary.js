@@ -33,8 +33,8 @@ function canvasGetOffsetLeft(obj) {
     var curleft = 0;
     if (obj.offsetParent) {
         do {
-            curleft += ((parseInt(obj.offsetLeft) >= 0 || parseInt(obj.offsetLeft) < 0) && parseInt(obj.offsetLeft).toString() ==
-                obj.offsetLeft.toString() ? obj.offsetLeft : 0);
+            curleft += ((parseInt(obj.offsetLeft, 10) >= 0 || parseInt(obj.offsetLeft, 10) < 0) &&
+                parseInt(obj.offsetLeft, 10).toString() == obj.offsetLeft.toString() ? obj.offsetLeft : 0);
         } while (obj = obj.offsetParent);
         return curleft;
     }
