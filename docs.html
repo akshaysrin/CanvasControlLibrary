@@ -7,7 +7,7 @@
 
 <p>Since the article is very long as it documents the entire system of Canvas Control Library I will use this section to describe what has changed in the article 
 from the last version to this current one so you do not have to go through the entire article again. &nbsp;Towards that end here are the <strong>changes</strong>:</p>
-<ul><li>At this point I feel the windowing system and the postback system should be pretty solid. &nbsp;So I would like to invite anyone who wants to make custom controls 
+<ul><li>I have created a section called "<a href="#HowToCreateControls">How to create a control using Button control as an example.</a>" for those who I am trying to encourage to write their own custom controls and contribute it back to the CCL community.</li><li>At this point I feel the windowing system and the postback system should be pretty solid. &nbsp;So I would like to invite anyone who wants to make custom controls 
 for Canvas Control Library to please do so. &nbsp;You can email me at akshay.srin@gmail.com and also can just fork the github project and add your controls and ask me 
 for a pull request at which point I will review your code and add it as is or correct it if needed and add it. &nbsp;All controls are welcome small or big. 
 At this point I would like to say CCL is at version 1.0 stable release in other words.</li><li>Well have ported the C# code to PHP. &nbsp;However there are problems and I am unable 
@@ -1679,11 +1679,12 @@ public partial class _Default : System.Web.UI.Page
            (int)ccl.CurrentSessionObj.Data[&quot;Counter&quot;] + 1;
     }
     lp.Text = ccl.CurrentSessionObj.Data[&quot;Counter&quot;].ToString();
-} </pre>
+}
+</pre>
 
 <p>This technique is a substitute if you want to use it for the normal ASP.NET sessions as it is lighter and much faster. &nbsp;For PHP just use regular PHP sessions which supports AJAX calls as PHP does not support global vars which will stick due to the nature of design of PHP which makes a separate process for each request.</p>
 
-<p><strong><a name="Browsers">How to create a control using Button control as an example:</a></strong></p>
+<p><strong><a name="HowToCreateControls">How to create a control using Button control as an example:</a></strong></p>
 
 <p>The first thing about your control is its basically visually something you will draw in a window.  Also unless the control is merely visual i.e. only presents data it might have some interaction like doing something on click events.  A simple example of this is the Button control.</p>
 
@@ -1700,7 +1701,7 @@ function getButtonProps(canvasid, windowid) {
 }
 </pre>
 <p>Now the next thing to do is come up with a create function so that the user can create an instance of your custom control.  There are some minimum parameters such as canvasid, controlNameId (this is the id name of the control used to uniquely identify the user instance of this control in the CCL subsytem), the window co-ordinates as given by x, y, width, height and the depth the layering of the window which defines which windows it will be on top of under as given by the depth parameter.  So the minimum create function signature would be like the following example:</p>
-<pre lang="jscript">function createCustomControlTypeName(canvasid, controlNameId, x, y, width, height, depth);</p>
+<pre lang="jscript">function createCustomControlTypeName(canvasid, controlNameId, x, y, width, height, depth);</pre>
 <p>However your control just as in the example case of button will require some additional information to customize the control according to the users wishes.  In the case of button it would the text to be displayed on the button various parameters such as width and height and color.  Event based information as in the case of the button what would you like to happen when the button is clicked.  So you create additional parameters that collect this user information and pass it along to the create control function.  Also to allow Object Oriented access to the create control function you would add an OO wrapper.  The naming convention is CCLCustomControlTypeName.  The simplest example follows:</p>
 <pre>
 function CCLControlTypeName() { }
@@ -1716,115 +1717,127 @@ CCLControlTypeName.prototype = {
 <p>Why it is a wrapper is because of the Initialize parameter which just calls the underlying create control function passing in the parameters.  You can allow the end user of your control to use OO creation of your control or directly call the javascript function both ways will be supported.  If you want to provide defaults do not put them in the OO prototype property level instead code for it inside the create control function call so both ways will be supported.</p>
 <p>The process of create control function call is essentially setup the window this is a call to createWindow function call in the example of button it is the following:</p>
 <pre lang="jscript">
-    var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Button', controlNameId);
+var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Button', controlNameId);
 </pre>
 <p>You want to save the window id which uniquely identifies the controls instances window and pass it back at the end of the create control function.  The next thing to do is fill the passed in parameters to an object with properties and then add that to the array you created to hold the control properties.  In the case of the button control it is the following:</p>
 <pre lang="jscript">
-    buttonPropsArray.push({
-        CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Text: text,
-        EdgeRadius: edgeRadius, BottomColorStart: bottomColorStart, BottomColorEnd: bottomColorEnd,
-        TopColorStart: topColorStart, TopColorEnd: topColorEnd, TextHeight: textHeight, TextFontString: textFontString,
-        TextColor: textColor, IsPressed: 0, BorderColor: borderColor, IsHyperlink: isHyperlink, URL: url,
-        NoBrowserHistory: nobrowserhistory, IsNewBrowserWindow: isnewbrowserwindow,
-        NameOfNewBrowserWindow: nameofnewbrowserwindow, WidthOfNewBrowserWindow: widthofnewbrowserwindow,
-        HeightOfNewBrowserWindow: heightofnewbrowserwindow, NewBrowserWindowIsResizable: newbrowserwindowisresizable,
-        NewBrowserWindowHasScrollBars: newbrowserwindowhasscrollbars, NewBrowserWindowHasToolbar: newbrowserwindowhastoolbar,
-        NewBrowserWindowHasLocationOrURLOrAddressBox: newbrowserwindowhaslocationorurloraddressbox,
-        NewBrowserWindowHasDirectoriesOrExtraButtons: newbrowserwindowhasdirectoriesorextrabuttons,
-        NewBrowserWindowHasStatusBar: newbrowserwindowhasstatusbar, NewBrowserWindowHasMenuBar: newbrowserwindowhasmenubar,
-        NewBrowserWindowCopyHistory: newbrowserwindowcopyhistory, Tag: tag, Theme: theme, HasGloss: hasgloss
-    });
+buttonPropsArray.push({
+    CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Text: text,
+    EdgeRadius: edgeRadius, BottomColorStart: bottomColorStart, BottomColorEnd: bottomColorEnd,
+    TopColorStart: topColorStart, TopColorEnd: topColorEnd, TextHeight: textHeight, TextFontString: textFontString,
+    TextColor: textColor, IsPressed: 0, BorderColor: borderColor, IsHyperlink: isHyperlink, URL: url,
+    NoBrowserHistory: nobrowserhistory, IsNewBrowserWindow: isnewbrowserwindow,
+    NameOfNewBrowserWindow: nameofnewbrowserwindow, WidthOfNewBrowserWindow: widthofnewbrowserwindow,
+    HeightOfNewBrowserWindow: heightofnewbrowserwindow, NewBrowserWindowIsResizable: newbrowserwindowisresizable,
+    NewBrowserWindowHasScrollBars: newbrowserwindowhasscrollbars, NewBrowserWindowHasToolbar: newbrowserwindowhastoolbar,
+    NewBrowserWindowHasLocationOrURLOrAddressBox: newbrowserwindowhaslocationorurloraddressbox,
+    NewBrowserWindowHasDirectoriesOrExtraButtons: newbrowserwindowhasdirectoriesorextrabuttons,
+    NewBrowserWindowHasStatusBar: newbrowserwindowhasstatusbar, NewBrowserWindowHasMenuBar: newbrowserwindowhasmenubar,
+    NewBrowserWindowCopyHistory: newbrowserwindowcopyhistory, Tag: tag, Theme: theme, HasGloss: hasgloss
+});
 </pre>
 <p>Now you have the minimums of the control at this point.  But it does nothing as it doesnt draw anything.  So the most important thing any normal control will want to do is draw something that is a representation of that control the end user can see on the web page.  For this you call the registerWindowDrawFunction which accepts the canvasid, windowid and a function that will be called everytime CCL needs the control to be redrawn on the web page or canvas element it belongs to.  You can also do an optional thing in your parameters to create control function you can provide the user of the control with an optional custom drawing function they can pass in which will be called instead to draw the control.  The button example is the following:</p>
 <pre lang="jscript">
-    if (drawFunction != undefined && drawFunction != null)
-        registerWindowDrawFunction(windowid, function () { drawFunction(canvasid, windowid); }, canvasid);
-    else
-        registerWindowDrawFunction(windowid, function () { defaultButtonDrawFunction(canvasid, windowid); }, canvasid);
+if (drawFunction != undefined && drawFunction != null)
+    registerWindowDrawFunction(windowid, function () { drawFunction(canvasid, windowid); }, canvasid);
+else
+    registerWindowDrawFunction(windowid, function () { defaultButtonDrawFunction(canvasid, windowid); }, canvasid);
 </pre>
 <p>You can draw your control using the normal javascript canvas drawing functions as per HTML5 specification.  Try here to stick to the minimum that all browsers support.  Then in the case of the button example you have a click function which basically does the action specified calls a user supplied click function to execute or acts like a hyperlink calling another web page etc.  One small discussion I will include which the click button example does not provide which you will need in more complex controls is to figure out if the x y coordinates of the click falls within a rectangle.  You should always divide your controls different clickable areas into rectangular regions.  In many controls I have created I used the ClickExtents array which I fill in the draw function.  You then loop through these checking if the click fell in the rectangular region for example in the following code:</p>
 <pre lang="jscript">
-    var xm = e.calcX;
-    var ym = e.calcY;
-    if (xm > scrollBarProps.X && xm < controlProps.X + controlProps.Width &&
-        ym > controlProps.Y && ym < controlProps.Y + controlProps.Height) {
-            //Do some custom code logic here
-        }
+var xm = e.calcX;
+var ym = e.calcY;
+if (xm > scrollBarProps.X && xm < controlProps.X + controlProps.Width &&
+    ym > controlProps.Y && ym < controlProps.Y + controlProps.Height) {
+        //Do some custom code logic here
     }
-<pre>
+}
+</pre>
 <p>The logic is simple if x is greater than the topleft corner of the rectangular areas x co-ordinate and less than the topright coordinate x value then it falls inbetween which means there is a click hit in the x axis.  The same check is done for y co-ordinates.  If both are tru you have a hit in the rectangular region and now you can perform some click function code specific to the control.</p>
 <p>The other thing when dealing with objects that are self referential do not include them in the properties of the control which will go through the postback system as it will die due to infinite looping.  The other thing not to include is the actual image binary data or any kind of binary data in a property that will go back thought the postback system.  Instead store such data locally as they will always be available as we never move off the page and wont be lost during ajax postback calls.</p>
 <p>So the postback system is first step there is a call to invokeServerSideFunction which cause the javascript on the client side do to an ajax server side call.  It then calls getEncodedVariables to wrap all the properties and their values in all the control arrays and send them as POST data on the ajax call to the server side.  So the first thing you have to do for your control is add code in getEncodedVariables function so that your controls properties and values are sent across as well.  So for example in the case of button here is its code addition to work with the postback system within getEncodedVariables function call:</p>
 <pre lang="jscript">
 strVars += '[/labelPropsArray][buttonPropsArray]';
-        for (var i = 0; i < buttonPropsArray.length; i++) {
-            strVars += '[i]' + stringEncodeObject(buttonPropsArray[i]) + '[/i]';
-        }
-        strVars += '[/buttonPropsArray][scrollBarPropsArray]';
+for (var i = 0; i < buttonPropsArray.length; i++) {
+    strVars += '[i]' + stringEncodeObject(buttonPropsArray[i]) + '[/i]';
+}
+strVars += '[/buttonPropsArray][scrollBarPropsArray]';
 </pre>
 <p>Then we arrive on the server side and all this data is unwrapped for use in say C#.  So now you have to modify CanvasControlLibrary.cs file.  This happens in the UnwrapVars function.  In the case of button the code is:>/p>
 <pre lang="csharp">
-                case "buttonPropsArray":
-                    foreach (XmlNode child2 in child1.ChildNodes)
-                    {
-                        CCLButtonProps b = new CCLButtonProps();
-                        ButtonPropsArray.Add(b);
-                        FillClassObject(child2, b);
-                    }
-                    break;
+case "buttonPropsArray":
+    foreach (XmlNode child2 in child1.ChildNodes)
+    {
+        CCLButtonProps b = new CCLButtonProps();
+        ButtonPropsArray.Add(b);
+        FillClassObject(child2, b);
+    }
+    break;
 </pre>
 <p>Notice something that is going on the name of the button control properties is called buttonPropsArray.  So on the javascript side we did in the pseudo xml '[buttonPropsArray]' so now what the C# server side code is doing its keyed into this as a XML node name which it uses reflection to then recurse over a class which you have to define in the case of button it is CCLButtonProps and also you have to create an array to hold it which button does and code for button is the following:</p>
 <pre lang="csharp">
-    public List<CCLButtonProps> ButtonPropsArray = new List<CCLButtonProps>();
+public List<CCLButtonProps> ButtonPropsArray = new List<CCLButtonProps>();
 
-    public class CCLButtonProps
-    {
-        public string CanvasID { get; set; }
-        public string WindowID { get; set; }
-        public string X { get; set; }
-        public string Y { get; set; }
-        public string Width { get; set; }
-        public string Height { get; set; }
-        public string Text { get; set; }
-        public string EdgeRadius { get; set; }
-        public string BottomColorStart { get; set; }
-        public string BottomColorEnd { get; set; }
-        public string TopColorStart { get; set; }
-        public string TopColorEnd { get; set; }
-        public string TextHeight { get; set; }
-        public string TextFontString { get; set; }
-        public string TextColor { get; set; }
-        public string IsPressed { get; set; }
-        public string BorderColor { get; set; }
-        public string IsHyperlink { get; set; }
-        public string URL { get; set; }
-        public string NoBrowserHistory { get; set; }
-        public string IsNewBrowserWindow { get; set; }
-        public string NameOfNewBrowserWindow { get; set; }
-        public string WidthOfNewBrowserWindow { get; set; }
-        public string HeightOfNewBrowserWindow { get; set; }
-        public string NewBrowserWindowIsResizable { get; set; }
-        public string NewBrowserWindowHasScrollBars { get; set; }
-        public string NewBrowserWindowHasToolbar { get; set; }
-        public string NewBrowserWindowHasLocationOrURLOrAddressBox { get; set; }
-        public string NewBrowserWindowHasDirectoriesOrExtraButtons { get; set; }
-        public string NewBrowserWindowHasStatusBar { get; set; }
-        public string NewBrowserWindowHasMenuBar { get; set; }
-        public string NewBrowserWindowCopyHistory { get; set; }
-        public object Tag { get; set; }
-        public string Theme { get; set; }
-        public string HasGloss { get; set; }
-    }
+public class CCLButtonProps
+{
+    public string CanvasID { get; set; }
+    public string WindowID { get; set; }
+    public string X { get; set; }
+    public string Y { get; set; }
+    public string Width { get; set; }
+    public string Height { get; set; }
+    public string Text { get; set; }
+    public string EdgeRadius { get; set; }
+    public string BottomColorStart { get; set; }
+    public string BottomColorEnd { get; set; }
+    public string TopColorStart { get; set; }
+    public string TopColorEnd { get; set; }
+    public string TextHeight { get; set; }
+    public string TextFontString { get; set; }
+    public string TextColor { get; set; }
+    public string IsPressed { get; set; }
+    public string BorderColor { get; set; }
+    public string IsHyperlink { get; set; }
+    public string URL { get; set; }
+    public string NoBrowserHistory { get; set; }
+    public string IsNewBrowserWindow { get; set; }
+    public string NameOfNewBrowserWindow { get; set; }
+    public string WidthOfNewBrowserWindow { get; set; }
+    public string HeightOfNewBrowserWindow { get; set; }
+    public string NewBrowserWindowIsResizable { get; set; }
+    public string NewBrowserWindowHasScrollBars { get; set; }
+    public string NewBrowserWindowHasToolbar { get; set; }
+    public string NewBrowserWindowHasLocationOrURLOrAddressBox { get; set; }
+    public string NewBrowserWindowHasDirectoriesOrExtraButtons { get; set; }
+    public string NewBrowserWindowHasStatusBar { get; set; }
+    public string NewBrowserWindowHasMenuBar { get; set; }
+    public string NewBrowserWindowCopyHistory { get; set; }
+    public object Tag { get; set; }
+    public string Theme { get; set; }
+    public string HasGloss { get; set; }
+}
 </pre>
 <p>Now sometimes we pass back arrays and sometimes even objects so for objects define their type as not string but List<object> and for javascript objects as LightWeightDictionary types.  You can also see object is fine too as Tag property of button uses this.  It does not matter as all the reflection code logic will handle the rest transparently for your control.</p>
 <p>After whatever happens custom C# logic on the ajax aspx page holding your end user of the controls code it is time to wrap up all the controls and send the long pseudo xml string back to the client that made the ajax request.  All that action happens in SendVars.  So now of course you have to add support for your control in this function.  The button example code is the following in the SendVars function:</p>
 <pre lang="csharp">
-        strVars.Append("[/labelPropsArray][buttonPropsArray]");
-        foreach (CCLButtonProps b in ButtonPropsArray)
-        {
-            strVars.Append("[i]").Append(encodeObject(b)).Append("[/i]");
-        }
-        strVars.Append("[/buttonPropsArray][scrollBarPropsArray]");
+strVars.Append("[/labelPropsArray][buttonPropsArray]");
+foreach (CCLButtonProps b in ButtonPropsArray)
+{
+    strVars.Append("[i]").Append(encodeObject(b)).Append("[/i]");
+}
+strVars.Append("[/buttonPropsArray][scrollBarPropsArray]");
+</pre>
+<p>The other thing that will need to be changed is the function getControlPropsByControlNameID.  This basically allows the user to pass in the unique control name id and get back the properties in the server side code.  In the case of button example here is the code:</p>
+<pre lang="csharp">
+case "Button":
+foreach (CCLButtonProps o in ButtonPropsArray)
+{
+    if (o.CanvasID == w.CanvasID && o.WindowID == w.WindowCount)
+    {
+        return (object)o;
+    }
+}
+break;
 </pre>
 <p>Now you come back to the client the web browser and the javascript unwraps the XML into the controls on the web page setting their properties etc.  So here to you have to modify the javascript client side function UnWrapVars.  Here there is logic to restore lost properties that had function logic which was saved before the ajax postback call was made and now needs to be restored.  So there is a loop in which you need to add support for your control.  An example of this is shown below for button:</p>
 <pre lang="jscript">
