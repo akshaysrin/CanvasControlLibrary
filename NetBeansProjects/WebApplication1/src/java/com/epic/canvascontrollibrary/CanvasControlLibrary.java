@@ -1,10 +1,6 @@
 package com.epic.canvascontrollibrary;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +11,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletOutputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;

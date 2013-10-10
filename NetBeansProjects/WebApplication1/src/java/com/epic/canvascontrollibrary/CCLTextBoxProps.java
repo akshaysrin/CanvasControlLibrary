@@ -56,6 +56,7 @@ import java.util.List;
         public String CaretColor;
         public Object Tag;
         public String CaretTime;
+        public String TabStopIndex;
 
         CCLTextBoxProps()
         {

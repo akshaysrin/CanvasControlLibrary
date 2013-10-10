@@ -32,6 +32,7 @@ import java.util.List;
         public String ListAreaTextHeight;
         public String ListAreaFontString;
         public Object Tag;
+        public String TabStopIndex; 
 
         CCLComboBoxProps()
         {

@@ -2346,7 +2346,7 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
             }
             totalWidth += gridProps.ColumnWidthArray[c];
             var g = ctx.createLinearGradient(gridProps.X + totalWidth - gridProps.ColumnWidthArray[c], gridProps.Y,
-                gridProps.X + totalWidth - gridProps.ColumnWidthArray[c], gridProps.Y + gridProps.HeaderRowHeight);
+                gridProps.X + totalWidth - gridProps.ColumnWidthcArray[c], gridProps.Y + gridProps.HeaderRowHeight);
             g.addColorStop(0, gridProps.HeaderBackgroundStartColor);
             g.addColorStop(1, gridProps.HeaderBackgroundEndColor);
             ctx.fillStyle = g;

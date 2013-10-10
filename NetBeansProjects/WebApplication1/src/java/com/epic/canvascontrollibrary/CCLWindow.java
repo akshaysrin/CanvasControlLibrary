@@ -24,6 +24,9 @@ import java.util.List;
         public List<Object> ChildWindowIDs;
         public String ControlType;
         public String ControlNameID;
+        public String MultiWindowControlsMainWindowId;
+        public String TabStopIndex;
+
 
         CCLWindow()
         {

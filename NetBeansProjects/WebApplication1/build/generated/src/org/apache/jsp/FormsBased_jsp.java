@@ -78,7 +78,7 @@ public final class FormsBased_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("            labelWindowIDS.push(createLabel(elemId, 'numTicketsLabel', 630, 220, 160, 30, 'Number of Tickets:', '#131aa3', 16, '16pt Ariel', null, highestDepth));\n");
       out.write("            labelWindowIDS.push(createTextBox(elemId, 'numTicketsTextBox', 800, 220, 50, 30, highestDepth, 'No.', '#F0F0F0', 12, '12pt Ariel', '#051329', 12,\n");
       out.write("                '12pt Ariel', 2, '[0-9]', 0, null, 1, '#2e3642', 1, 0, '#000000', 3, 3, 20, 1, 10, 1, '#9bacc6', '#d6e4f9', 0, null, 0, null, 0, 0,\n");
-      out.write("                '#D0D000', 12, '12pt Ariel', '', '#0d2952', 'rgba(0, 0, 240, 0.2)', 1));\n");
+      out.write("                '#D0D000', 12, '12pt Ariel', '', '#0d2952', 'rgba(0, 0, 240, 0.2)', 1, null, null, 3));\n");
       out.write("            labelWindowIDS.push(createButton(elemId, 'PaymentButton', 875, 220, 100, 30, 'Book Tickets', '#0000FF', 12, '12pt Ariel', 2, highestDepth, 1, 1,\n");
       out.write("                function (canvasid, windowid) {\n");
       out.write("                    invokeServerSideFunction('ajax.jsp', 'DoPaymentForTickets', elemId, windowid, afterPayment, new Array());\n");
@@ -149,10 +149,10 @@ public final class FormsBased_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("                ['CONTACT US', '#000000', 20, '20pt Ariel', 0, null, null]], '#fdf2c0', '#f0cc75', '#d99839', '#e3e7ff', '#c5cdff', 0);\n");
       out.write("            createLabel(elemId, 'label1', 10, 220, 50, 30, 'City', '#131aa3', 16, '16pt Ariel', null, highestDepth);\n");
       out.write("            createComboBox(elemId, 'selectCityComboBox', 75, 220, 200, 30, highestDepth, ['Cities'], null, null, null, null, null, '#131aa3', 16,\n");
-      out.write("                '16pt Ariel', '#131aa3', 16, '16pt Ariel', cityChanged);\n");
+      out.write("                '16pt Ariel', '#131aa3', 16, '16pt Ariel', cityChanged, null, 1);\n");
       out.write("            createLabel(elemId, 'label2', 300, 220, 120, 30, 'Multiplex', '#131aa3', 16, '16pt Ariel', null, highestDepth);\n");
       out.write("            selecteCinemaWindowID = createComboBox(elemId, 'selectCinemaComboBox', 400, 220, 200, 30, highestDepth, ['Select a city first'], null,\n");
-      out.write("                null, null, null, null, '#131aa3', 16, '16pt Ariel', '#131aa3', 16, '16pt Ariel', onSelectCinema);\n");
+      out.write("                null, null, null, null, '#131aa3', 16, '16pt Ariel', '#131aa3', 16, '16pt Ariel', onSelectCinema, null, 2);\n");
       out.write("            return selecteCinemaWindowID;\n");
       out.write("        }\n");
       out.write("        var windowid = form1();\n");
