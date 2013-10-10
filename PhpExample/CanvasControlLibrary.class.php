@@ -73,6 +73,8 @@ class CCLWindow
     public $ChildWindowIDs;
     public $ControlType;
     public $ControlNameID;
+    public $TabStopIndex;
+    public $MultiWindowControlsMainWindowId;
 
     public function __construct()
     {
@@ -256,6 +258,7 @@ class CCLComboBoxProps
     public $ListAreaTextHeight;
     public $ListAreaFontString;
     public $Tag;
+    public $TabStopIndex;
 
     public function __construct()
     {
@@ -967,6 +970,7 @@ class CCLTextBoxProps
     public $CaretColor;
     public $Tag;
     public $CaretTime;
+    public $TabStopIndex;
 
     public function __construct()
     {
