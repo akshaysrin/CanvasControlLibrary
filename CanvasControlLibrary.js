@@ -495,10 +495,126 @@ function registerCanvasElementId(canvasId) {
                 }
             }
         }
+        return false;
     };
     canvas.onkeydown = function (e) {
         for (var i = 0; i < keyDownFunctions.length; i++) {
             for (var j = 0; j < windowIdWithFocus.length; j++) {
+                if (e.keyCode == 9) {
+                    var wprops = getWindowProps(windowIdWithFocus[j][0], windowIdWithFocus[j][1]);
+                    if (wprops.CanvasID == keyDownFunctions[i].CanvasID && wprops.WindowCount == keyDownFunctions[i].WindowID) {
+                        if (wprops.ControlType != 'WordProcessor') {
+                            var found = 0;
+                            for (var k = 0; k < windows.length; k++) {
+                                if (windows[k].WindowCount != wprops.WindowCount && wprops.TabStopIndex + 1 == windows[k].TabStopIndex) {
+                                    found = 1;
+                                    windowIdWithFocus[j][1] = windows[k].WindowCount;
+                                    for (var f = 0; f < lostFocusFunctions.length; f++) {
+                                        if (lostFocusFunctions[f][0] == wprops.CanvasID && lostFocusFunctions[f][1] == wprops.WindowCount &&
+                                            lostFocusFunctions[f][1] != windows[k].WindowCount) {
+                                            lostFocusFunctions[f][2](canvasId, wprops.WindowCount);
+                                        }
+                                    }
+                                    for (var f = 0; f < gotFocusFunctions.length; f++) {
+                                        if (gotFocusFunctions[f][0] == wprops.CanvasID && gotFocusFunctions[f][1] == windows[k].WindowCount) {
+                                            gotFocusFunctions[f][2](canvasId, windows[k].WindowCount);
+                                        }
+                                    }
+                                    var can = getCanvas(windows[k].CanvasID);
+                                    invalidateRect(windows[k].CanvasID, null, 0, 0, can.width, can.height);
+                                    if (e.preventDefault)
+                                        e.preventDefault();
+                                    e.returnValue = false;
+                                    return false;
+                                }
+                            }
+                            if (found == 0) {
+                                if (wprops.TabStopIndex != 1) {
+                                    for (var k = 0; k < windows.length; k++) {
+                                        if (windows[k].WindowCount != wprops.WindowCount && windows[k].TabStopIndex == 1) {
+                                            found = 1;
+                                            windowIdWithFocus[j][1] = windows[k].WindowCount;
+                                            for (var f = 0; f < lostFocusFunctions.length; f++) {
+                                                if (lostFocusFunctions[f][0] == wprops.CanvasID && lostFocusFunctions[f][1] == wprops.WindowCount &&
+                                                    lostFocusFunctions[f][1] != windows[k].WindowCount) {
+                                                    lostFocusFunctions[f][2](wprops.CanvasID, wprops.WindowCount);
+                                                }
+                                            }
+                                            for (var f = 0; f < gotFocusFunctions.length; f++) {
+                                                if (gotFocusFunctions[f][0] == wprops.CanvasID && gotFocusFunctions[f][1] == windows[k].WindowCount) {
+                                                    gotFocusFunctions[f][2](canvasId, windows[k].WindowCount);
+                                                }
+                                            }
+                                            var can = getCanvas(windows[k].CanvasID);
+                                            invalidateRect(windows[k].CanvasID, null, 0, 0, can.width, can.height);
+                                            if (e.preventDefault)
+                                                e.preventDefault();
+                                            e.returnValue = false;
+                                            return false;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else if (wprops.MultiWindowControlsMainWindowId != null && wprops.MultiWindowControlsMainWindowId >= 0) {
+                        wprops = getWindowProps(wprops.CanvasID, wprops.MultiWindowControlsMainWindowId);
+                        if (wprops.CanvasID == keyDownFunctions[i].CanvasID && wprops.WindowCount == keyDownFunctions[i].WindowID) {
+                            if (wprops.ControlType != 'WordProcessor') {
+                                var found = 0;
+                                for (var k = 0; k < windows.length; k++) {
+                                    if (windows[k].WindowCount != wprops.WindowCount && wprops.TabStopIndex + 1 == windows[k].TabStopIndex) {
+                                        found = 1;
+                                        windowIdWithFocus[j][1] = windows[k].WindowCount;
+                                        for (var f = 0; f < lostFocusFunctions.length; f++) {
+                                            if (lostFocusFunctions[f][0] == wprops.CanvasID && lostFocusFunctions[f][1] == wprops.WindowCount &&
+                                                lostFocusFunctions[f][1] != windows[k].WindowCount) {
+                                                lostFocusFunctions[f][2](canvasId, wprops.WindowCount);
+                                            }
+                                        }
+                                        for (var f = 0; f < gotFocusFunctions.length; f++) {
+                                            if (gotFocusFunctions[f][0] == wprops.CanvasID && gotFocusFunctions[f][1] == windows[k].WindowCount) {
+                                                gotFocusFunctions[f][2](canvasId, windows[k].WindowCount);
+                                            }
+                                        }
+                                        var can = getCanvas(windows[k].CanvasID);
+                                        invalidateRect(windows[k].CanvasID, null, 0, 0, can.width, can.height);
+                                        if (e.preventDefault)
+                                            e.preventDefault();
+                                        e.returnValue = false;
+                                        return false;
+                                    }
+                                }
+                                if (found == 0) {
+                                    if (wprops.TabStopIndex != 1) {
+                                        for (var k = 0; k < windows.length; k++) {
+                                            if (windows[k].WindowCount != wprops.WindowCount && windows[k].TabStopIndex == 1) {
+                                                found = 1;
+                                                windowIdWithFocus[j][1] = windows[k].WindowCount;
+                                                for (var f = 0; f < lostFocusFunctions.length; f++) {
+                                                    if (lostFocusFunctions[f][0] == wprops.CanvasID && lostFocusFunctions[f][1] == wprops.WindowCount &&
+                                                        lostFocusFunctions[f][1] != windows[k].WindowCount) {
+                                                        lostFocusFunctions[f][2](wprops.CanvasID, wprops.WindowCount);
+                                                    }
+                                                }
+                                                for (var f = 0; f < gotFocusFunctions.length; f++) {
+                                                    if (gotFocusFunctions[f][0] == wprops.CanvasID && gotFocusFunctions[f][1] == windows[k].WindowCount) {
+                                                        gotFocusFunctions[f][2](canvasId, windows[k].WindowCount);
+                                                    }
+                                                }
+                                                var can = getCanvas(windows[k].CanvasID);
+                                                invalidateRect(windows[k].CanvasID, null, 0, 0, can.width, can.height);
+                                                if (e.preventDefault)
+                                                    e.preventDefault();
+                                                e.returnValue = false;
+                                                return false;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                 if (windowIdWithFocus[j][0] == keyDownFunctions[i].CanvasID && windowIdWithFocus[j][1] == keyDownFunctions[i].WindowID) {
                     keyDownFunctions[i].KeyDownFunction(keyDownFunctions[i].CanvasID, keyDownFunctions[i].WindowID, e);
                     var wprops = getWindowProps(keyDownFunctions[i].CanvasID, keyDownFunctions[i].WindowID);
@@ -511,6 +627,7 @@ function registerCanvasElementId(canvasId) {
                 }
             }
         }
+        return false;
     };
     if (navigator.userAgent.toLowerCase().indexOf('android') > -1 || navigator.userAgent.toLowerCase().indexOf('ipad') > -1 || navigator.userAgent.toLowerCase().indexOf('iphone') > -1 || navigator.userAgent.toLowerCase().indexOf('ipod') > -1) {
         canvas.addEventListener("touchstart", function (e) {
@@ -539,11 +656,11 @@ function registerCanvasElementId(canvasId) {
     }
 }
 
-function createWindow(canvasId, x, y, width, height, depth, parentwindowid, controlTypeNameString, controlNameId) {
+function createWindow(canvasId, x, y, width, height, depth, parentwindowid, controlTypeNameString, controlNameId, multiWindowControlsMainWindowId, tabstopindex) {
     ++windowCount;
     windows.push({
         WindowCount: windowCount, X: x, Y: y, Width: width, Height: height, Depth: depth, CanvasID: canvasId, ParentWindowID: parentwindowid, ChildWindowIDs: new Array(),
-        ControlType: controlTypeNameString, ControlNameID: controlNameId
+        ControlType: controlTypeNameString, ControlNameID: controlNameId, MultiWindowControlsMainWindowId: multiWindowControlsMainWindowId, TabStopIndex: tabstopindex
     });
     return windowCount;
 }
@@ -2064,12 +2181,12 @@ CCLScrollbar.prototype = {
 }
 
 function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, alignment, ownedbywindowid, drawFunction, clickFunction, tag,
-    customIncrementFunction, selectedTag, customMouseMoveFunction) {
+    customIncrementFunction, selectedTag, customMouseMoveFunction, multiWindowControlsMainWindowId) {
     var windowid;
     if (alignment == 1) {
-        windowid = createWindow(canvasid, x, y, 15, len, depth, null, 'ScrollBar', controlNameId);
+        windowid = createWindow(canvasid, x, y, 15, len, depth, null, 'ScrollBar', controlNameId, multiWindowControlsMainWindowId);
     } else {
-        windowid = createWindow(canvasid, x, y, len, 15, depth, null, 'ScrollBar', controlNameId);
+        windowid = createWindow(canvasid, x, y, len, 15, depth, null, 'ScrollBar', controlNameId, multiWindowControlsMainWindowId);
     }
     scrollBarPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Len: len, SelectedID: 0,
@@ -2568,23 +2685,24 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         OnSelectionChanged: null, Tag: null, DrawListAreaFunction: null,
         ListAreaClickFunction: null, ControlNameID: null,
         ButtonClickFunction: null, DrawButtonFunction: null,
-        DrawTextAreaFunction: null, Depth: null,
+        DrawTextAreaFunction: null, Depth: null, TabStopIndex: null,
 
         Initialize: function () {
             return createComboBox(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Height, this.Depth,
                 this.Data, this.DrawTextAreaFunction, this.DrawButtonFunction, this.DrawListAreaFunction, this.ButtonClickFunction,
                 this.ListAreaClickFunction, this.TextAreaTextColor, this.TextAreaTextHeight, this.TextAreaFontString,
-                this.ListAreaTextColor, this.ListAreaTextHeight, this.ListAreaFontString, this.OnSelectionChanged, this.Tag);
+                this.ListAreaTextColor, this.ListAreaTextHeight, this.ListAreaFontString, this.OnSelectionChanged, this.Tag, this.TabStopIndex);
         }
     }
 
     function createComboBox(canvasid, controlNameId, x, y, width, height, depth, data, drawTextAreaFunction, drawButtonFunction, drawListAreaFunction, buttonClickFunction,
-        listAreaClickFunction, textAreaTextColor, textAreaTextHeight, textAreaFontString, listAreaTextColor, listAreaTextHeight, listAreaFontString, onSelectionChanged, tag) {
-        var textareawindowid = createWindow(canvasid, x, y, width - height, height, depth, null, 'ComboBoxTextArea', controlNameId + 'ComboBoxTextArea');
-        var buttonwindowid = createWindow(canvasid, x + width - height, y, height, height, depth, null, 'ComboBoxButton', controlNameId + 'ComboBoxButton');
-        var dropdownlistareawindowid = createWindow(canvasid, x, y + height, width - 15, 100, depth, null, 'ComboBoxListArea', controlNameId + 'ComboBoxListArea');
+        listAreaClickFunction, textAreaTextColor, textAreaTextHeight, textAreaFontString, listAreaTextColor, listAreaTextHeight, listAreaFontString, onSelectionChanged, tag,
+        tabstopindex) {
+        var textareawindowid = createWindow(canvasid, x, y, width - height, height, depth, null, 'ComboBoxTextArea', controlNameId + 'ComboBoxTextArea', null, tabstopindex);
+        var buttonwindowid = createWindow(canvasid, x + width - height, y, height, height, depth, null, 'ComboBoxButton', controlNameId + 'ComboBoxButton', textareawindowid, tabstopindex);
+        var dropdownlistareawindowid = createWindow(canvasid, x, y + height, width - 15, 100, depth, null, 'ComboBoxListArea', controlNameId + 'ComboBoxListArea', textareawindowid, tabstopindex);
         var vscrollBarComboboxWindowId = createScrollBar(canvasid, controlNameId + 'VS', x + width - 15, y + height, 100, depth, data.length, 1, dropdownlistareawindowid,
-            function () { drawComboboxScrollBar(canvasid, vscrollBarComboboxWindowId); }, null);
+            function () { drawComboboxScrollBar(canvasid, vscrollBarComboboxWindowId); }, null, textareawindowid, tabstopindex);
         comboboxPropsArray.push({
             CanvasID: canvasid, WindowID: textareawindowid, TextAreaWindowID: textareawindowid,
             ButtonWindowID: buttonwindowid, ListAreaWindowID: dropdownlistareawindowid,
@@ -2630,6 +2748,9 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         registerLostFocusFunction(canvasid, textareawindowid, function () { comboboxTextAreaLostFocus(canvasid, textareawindowid); });
         registerLostFocusFunction(canvasid, vscrollBarComboboxWindowId, function () { comboboxScrollBarLostFocus(canvasid, vscrollBarComboboxWindowId); });
         registerLostFocusFunction(canvasid, buttonwindowid, function () { comboboxButtonLostFocus(canvasid, buttonwindowid); });
+        if (tabstopindex != null && tabstopindex > 0) {
+            registerKeyDownFunction(canvasid, function () { }, textareawindowid);
+        }
         return textareawindowid;
     }
 
@@ -7584,7 +7705,7 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         ListPossiblesTextFontString: null, UserInputText: null, ShadowColor: null, ShowCaret: null, CaretColor: null,
         TextSelectionBgColor: null, Tag: null, DropDownWindowID: null, ListPossiblesTextColor: null, VScrollBarWindowID: null, 
         ListPossiblesAllChoices: null, CustomKeyboardWindowID: null, ControlNameID: null, Depth: null, HasFocusInitially: null,
-        WaterMarkTextHeight: null,
+        WaterMarkTextHeight: null, TabStopIndex: null,
 
         Initialize: function () {
             return createTextBox(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Height, this.Depth,
@@ -7604,8 +7725,8 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         borderLineWidth, hasShadow, shadowColor, shadowOffsetX, shadowOffsetY, shadowBlurValue, hasRoundedEdges, edgeRadius,
         hasBgGradient, bgGradientStartColor, bgGradientEndColor, hasBgImage, bgImageUrl, hasAutoComplete, listPossibles,
         dropDownPossiblesListIfThereIsInputText, limitToListPossibles, listPossiblesTextColor, listPossiblesTextHeight,
-        listPossiblesTextFontString, initialText, caretColor, textSelectionBgColor, hasFocusInitially, tag, customKeyboardWindowID) {
-        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'TextBox', controlNameId);
+        listPossiblesTextFontString, initialText, caretColor, textSelectionBgColor, hasFocusInitially, tag, customKeyboardWindowID, tabstopindex) {
+        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'TextBox', controlNameId, null, tabstopindex);
         var dropdownwindowid, vscrollbarwindowid;
         if (hasAutoComplete == 1) {
             dropdownwindowid = createWindow(canvasid, x, y + height, width, 100, depth, null, 'TextBoxDropDown', controlNameId + 'TextBoxDropDown');
@@ -7675,7 +7796,7 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
             ListPossiblesTextFontString: listPossiblesTextFontString, CaretPosIndex: -1, UserInputText: initialText, ShadowColor: shadowColor, ShowCaret: 0, CaretColor: caretColor,
             SelectedTextStartIndex: -1, SelectedTextEndIndex: -1, TextSelectionBgColor: textSelectionBgColor, MouseDown: 0, WasSelecting: 0, MouseDownTime: 0, Tag: tag,
             DropDownWindowID: dropdownwindowid, ListPossiblesTextColor: listPossiblesTextColor, VScrollBarWindowID: vscrollbarwindowid, ListPossiblesSelectedID: -1,
-            ListPossiblesAllChoices: listPossibles, CaretTime: Date.now(), CustomKeyboardWindowID: customKeyboardWindowID
+            ListPossiblesAllChoices: listPossibles, CaretTime: Date.now(), CustomKeyboardWindowID: customKeyboardWindowID, TabStopIndex: tabstopindex
         });
         if (hasBgImage == 1) {
             var image = new Image(width, height);

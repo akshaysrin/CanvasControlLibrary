@@ -120,6 +120,8 @@ public class CanvasControlLibrary
         public List<object> ChildWindowIDs { get; set; }
         public string ControlType { get; set; }
         public string ControlNameID { get; set; }
+        public string MultiWindowControlsMainWindowId { get; set; }
+        public string TabStopIndex { get; set; }
 
         public CCLWindow()
         {
@@ -313,6 +315,7 @@ public class CanvasControlLibrary
         public string ListAreaTextHeight { get; set; }
         public string ListAreaFontString { get; set; }
         public object Tag { get; set; }
+        public string TabStopIndex { get; set; }
 
         public CCLComboBoxProps()
         {
@@ -1072,6 +1075,7 @@ public class CanvasControlLibrary
         public string CaretColor { get; set; }
         public object Tag { get; set; }
         public string CaretTime { get; set; }
+        public string TabStopIndex { get; set; }
 
         public CCLTextBoxProps()
         {

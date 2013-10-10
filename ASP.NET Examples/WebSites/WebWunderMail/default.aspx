@@ -7,7 +7,7 @@
     <title>Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="chrome=1, IE=EmulateIE9" /> <!-- Eliminated IE=edge for compatibility for IE 10 on Windows 7 -->
-    <script src="minCCL.js" type="text/javascript"></script>
+    <script src="CanvasControlLibrary.js" type="text/javascript"></script>
 </head>
 <body>
     <form id="form1" runat="server" method="post">
@@ -40,17 +40,17 @@
                 loginFormWindowIDs.push(emailAddressLabel.Initialize());
                 var emailAddressTextBoxWindowID = createTextBox(elemId, 'emailAddressTextBox', 200, 5, 200, 30, highestDepth, 'Email Address',
                     '#C0C0C0', 20, '12pt Ariel', '#000000', 12, '12pt Ariel', 500, '.+', 0, '', 1, '#C0C0C0', 1, 0, '#D0D0D0', 2, 2, 2, 1, 10, 1,
-                    '#FFFFFF', '#F0F0F0', 0, '', 0, null, null, null, null, null, null, null, '#000000', '#FFAFAF', 1, null, null);
+                    '#FFFFFF', '#F0F0F0', 0, '', 0, null, null, null, null, null, null, null, '#000000', '#FFAFAF', 1, null, null, 1);
                 loginFormWindowIDs.push(emailAddressTextBoxWindowID);
                 loginFormWindowIDs.push(createLabel(elemId, 'passwordLabel', 10, 60, 100, 20, 'Password ::', '#000000', 12, '12pt Ariel', null, highestDepth));
                 var passwordTextBoxWindowId = createTextBox(elemId, 'passwordTextBox', 200, 55, 200, 30, highestDepth, 'Password', '#C0C0C0', 20, '12pt Ariel', '#000000',
                     12, '12pt Ariel', 500, '.+', 1, '*', 1, '#C0C0C0', 1, 0, '#D0D0D0', 2, 2, 2, 1, 10, 1, '#FFFFFF', '#F0F0F0', 0, '', 0, null, null, null, null,
-                    null, null, null, '#000000', '#FFAFAF', 0, null, null);
+                    null, null, null, '#000000', '#FFAFAF', 0, null, null, 2);
                 loginFormWindowIDs.push(passwordTextBoxWindowId);
                 loginFormWindowIDs.push(createLabel(elemId, 'emailServerAddressLabel', 10, 100, 200, 20, 'Email Server Address ::', '#000000', 12, '12pt Ariel', null, highestDepth));
                 var emailServerAddressTextBoxWindowID = createTextBox(elemId, 'emailServerAddressTextBox', 200, 95, 200, 30, highestDepth, 'Email Server Address',
                     '#C0C0C0', 20, '12pt Ariel', '#000000', 12, '12pt Ariel', 500, '.+', 0, '', 1, '#C0C0C0', 1, 0, '#D0D0D0', 2, 2, 2, 1, 10, 1,
-                    '#FFFFFF', '#F0F0F0', 0, '', 0, null, null, null, null, null, null, null, '#000000', '#FFAFAF', 0, null, null);
+                    '#FFFFFF', '#F0F0F0', 0, '', 0, null, null, null, null, null, null, null, '#000000', '#FFAFAF', 0, null, null, 3);
                 loginFormWindowIDs.push(emailServerAddressTextBoxWindowID);
                 loginFormWindowIDs.push(createButton(elemId, 'loginButton', 10, 140, 400, 30, 'Login', '#0000FF', 12, '12pt Ariel', 5, highestDepth, 1, 0,
                     function (canvasid, windowid) {
