@@ -61,7 +61,7 @@
                     alert('you clicked cell number ' + c + ' at row number ' + r);
                 }, 20, 30, [150, 150, 200], 1, '#b7bfc8', 1, '#fbfbfb', '#d9dde1', '#f6f8fb', '#e7e7e7', '#eaf1ff', '#d7e5ff');
             createComboBox(elemId, 'cb1', 10, 280, 200, 20, highestDepth, ['Mumbai','Pune','Juhu','Phoenix','London','New York','San Fransisco','Los Angeles','Houston','Boston'], null, null, null, null,
-                null, '#364635', 10, '10pt Ariel', '#1b213b', 10, '10pt Ariel');
+                null, '#364635', 10, '10pt Ariel', '#1b213b', 10, '10pt Ariel', null, null, 2);
             createCheckbox(elemId, 'chk1', 150, 320, highestDepth, 0);
             createRadioButtonGroup(elemId, 'rg1', 10, 350, 0, highestDepth, 'test1', ['Dog', 'Cat', 'Horse', 'Cow', 'Giraffe'], 0, '#000000', '10pt Ariel', 10, 10);
             createImage(elemId, 'i1', 10, 400, 64, 64, highestDepth, 'test.png', function (canvasid, windowid) { alert('You clicked the image'); });
@@ -69,7 +69,7 @@
                 '<root><Databases><Employees><Tables><Employee><Column ColumnName="id">1</Column><Column ColumnName="FirstName">Akshay</Column><Column ColumnName="MiddleName"></Column><Column ColumnName="LastName">Srinivasan</Column><Column ColumnName="EmpId">42312345672892</Column></Employee></Tables></Employees></Databases></root>',
                 '#000000', '12pt Ariel', 12, null, null, 1, 16, 16, 'Node.png', 'Value.png', 'Attribute.png');
             createTextBox(elemId, 'textbox1', 400, 10, 300, 60, highestDepth, 'Type your name here', '#F0F0F0', 18, '18pt Ariel', '#051329', 18, '18pt Ariel', 50, '[a-zA-Z ]', 0, null, 1, '#2e3642',
-                1, 0, '#000000', 3, 3, 20, 1, 10, 1, '#9bacc6', '#d6e4f9', 0, 'Title.png', 1, ['India', 'America', 'China', 'Russia', 'Brazil'], 0, 0, '#D0D000', 12, '12pt Ariel', '', '#0d2952', 'rgba(0, 0, 240, 0.2)', 1);
+                1, 0, '#000000', 3, 3, 20, 1, 10, 1, '#9bacc6', '#d6e4f9', 0, 'Title.png', 1, ['India', 'America', 'China', 'Russia', 'Brazil'], 0, 0, '#D0D000', 12, '12pt Ariel', '', '#0d2952', 'rgba(0, 0, 240, 0.2)', 1, null, null, 1);
             createVirtualKeyboard(elemId, 'vkb1', 300, 600, 360, 180, highestDepth, null, function (c, w, l) { alert(l); }, 5, 5, 1, 12, '12pt Ariel');
             createBoundaryFillableMap(elemId, 'bfm1', 800, 10, 500, 389, highestDepth, [[95, 155, 40, 130, 160, 185, 255, 255, 255, 255, 0, 0, 255, 255],
                 [338, 180, 320, 160, 360, 205, 255, 255, 255, 255, 0, 255, 0, 255]], 'WorldMap.png', 500, 389);

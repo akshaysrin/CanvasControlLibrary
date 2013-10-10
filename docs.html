@@ -198,13 +198,13 @@ one bad error in the OO addition code null: null fixed. &nbsp;So also will help 
 <p>To add a grid to your canvas you would make the following JavaScript call from your web page after the canvas element on which you mean to draw the grid as follows:</p>
 
 <pre lang="jscript">createGrid(elemId, 'g1', 10, 150, 400, 90, highestDepth, 
-  [['123567891011121314', 'abcdefghijklmnopqrst', '000-89843-8983459'], ['2356789101112131415', 
-  'bcdefghijklmnopqrstu', '000-89843-8983459'], ['35678910111213141516', 'cdefghijklmnopqrstuv', 
-  '000-89843-8983459'], ['45678910111213141516', 'defghijklmnopqrstuv', '000-89843-8983459'], 
-  ['5678910111213141516', 'efghijklmnopqrstuv', '000-89843-8983459'], ['678910111213141516', 
-  'fghijklmnopqrstuv', '000-89843-8983459']], ['Numbers', 'Alphabets', 'GUIDS'], '#000000', 12, 
+  <<'123567891011121314', 'abcdefghijklmnopqrst', '000-89843-8983459'>, <'2356789101112131415', 
+  'bcdefghijklmnopqrstu', '000-89843-8983459'>, <'35678910111213141516', 'cdefghijklmnopqrstuv', 
+  '000-89843-8983459'>, <'45678910111213141516', 'defghijklmnopqrstuv', '000-89843-8983459'>, 
+  <'5678910111213141516', 'efghijklmnopqrstuv', '000-89843-8983459'>, <'678910111213141516', 
+  'fghijklmnopqrstuv', '000-89843-8983459'>>, <'Numbers', 'Alphabets', 'GUIDS'>, '#000000', 12, 
   '12pt Ariel', '#000000', 14, '14pt Ariel', null, null, function (canvasid, windowid, c, r) { 
-  alert('you clicked cell number ' + c + ' at row number ' + r); }, 20, 30, [150, 150, 200], 1, 
+  alert('you clicked cell number ' + c + ' at row number ' + r); }, 20, 30, <150, 150, 200>, 1, 
   '#b7bfc8', 1, '#fbfbfb', '#d9dde1', '#f6f8fb', '#e7e7e7', '#eaf1ff', '#d7e5ff');  </pre>
 
 <p>The basic function call for&nbsp; creating a&nbsp;grid is:</p>
@@ -224,8 +224,8 @@ one bad error in the OO addition code null: null fixed. &nbsp;So also will help 
 
 <p>To add a ComboBox to your canvas you would make the following JavaScript call from your web page after the canvas element on which you mean to draw the&nbsp; ComboBox&nbsp;as follows:</p>
 
-<pre lang="jscript">createComboBox(elemId, 'cb1', 10, 280, 200, 20, highestDepth, ['Mumbai','Pune','Juhu', 
-  'Phoenix','London','New York','San Fransisco','Los Angeles','Houston','Boston'], null, null, 
+<pre lang="jscript">createComboBox(elemId, 'cb1', 10, 280, 200, 20, highestDepth, <'Mumbai','Pune','Juhu', 
+  'Phoenix','London','New York','San Fransisco','Los Angeles','Houston','Boston'>, null, null, 
   null, null, null, '#364635', 10, '10pt Ariel', '#1b213b', 10, '10pt Ariel'); </pre>
 
 <p>The basic function call for create&nbsp;ComboBox&nbsp;is:</p>
@@ -254,7 +254,7 @@ one bad error in the OO addition code null: null fixed. &nbsp;So also will help 
 <p>To add a Radio Button Group to your canvas you would make the following JavaScript call from your web page after the canvas element on which you mean to draw the Radio Button Group as follows:</p>
 
 <pre lang="jscript">createRadioButtonGroup(elemId, 'rg1', 10, 350, 0, highestDepth, 'test1', 
-  ['Dog', 'Cat', 'Horse', 'Cow', 'Giraffe'], 0, '#000000', '10pt Ariel', 10, 10); </pre>
+  <'Dog', 'Cat', 'Horse', 'Cow', 'Giraffe'>, 0, '#000000', '10pt Ariel', 10, 10); </pre>
 
 <p>The basic function call for&nbsp; creating a&nbsp;Radio Button Group is:</p>
 
@@ -295,7 +295,7 @@ one bad error in the OO addition code null: null fixed. &nbsp;So also will help 
 <pre lang="jscript">createTreeView(canvasid, controlNameId, x, y, width, height, depth, nodes, textcolor, 
   textfontstring, textheight, clickNodeFunction, tag, hasicons, iconwidth, iconheight) </pre>
 
-<p>The nodes parameter replaces the data parameter from the old version. &nbsp;You do not create this yourself any longer you instead use the helper function <code>addChildNodes(nodes, parentnode, imageurl, expanded, label, customextrainfo)</code>. Also each node format is { TreeviewNodeInstancesParentNode: parentnode, TreeviewNodeInstancesRootNodes: nodes, ImageURL: imageurl, Expanded: expanded, ChildNodes: new Array(), Label: label, CustomExtraInfo: customextrainfo&nbsp;}. &nbsp;This is self explanatory. &nbsp;The <code>clickNodeFunction</code> is the JavaScript function to execute when a node is clicked which in the case of the example just pops up a message giving the id col index value of the node.&nbsp;&nbsp;Now the node array can have an additional element the URL of an icon image to display so for example a node will be [2,1,'Test',1,'MyImage.png']. &nbsp;If you are using icons then hasicons should be 1 and you must provide width and height and all icons therefore obviously must be same width and height or there will be dispay errors.</p>
+<p>The nodes parameter replaces the data parameter from the old version. &nbsp;You do not create this yourself any longer you instead use the helper function <code>addChildNodes(nodes, parentnode, imageurl, expanded, label, customextrainfo)</code>. Also each node format is { TreeviewNodeInstancesParentNode: parentnode, TreeviewNodeInstancesRootNodes: nodes, ImageURL: imageurl, Expanded: expanded, ChildNodes: new Array(), Label: label, CustomExtraInfo: customextrainfo&nbsp;}. &nbsp;This is self explanatory. &nbsp;The <code>clickNodeFunction</code> is the JavaScript function to execute when a node is clicked which in the case of the example just pops up a message giving the id col index value of the node.&nbsp;&nbsp;Now the node array can have an additional element the URL of an icon image to display so for example a node will be <2,1,'Test',1,'MyImage.png'>. &nbsp;If you are using icons then hasicons should be 1 and you must provide width and height and all icons therefore obviously must be same width and height or there will be dispay errors.</p>
 
 <p><strong><a name="ProgressBarControl">ProgressBar Control :</a></strong></p>
 
@@ -448,11 +448,11 @@ registerChildWindow(elemId, createSlider(elemId, 10, 420, 200, 20,
 
 <p>To add an animated bar graph control to your canvas you would make the following JavaScript call from your web page after the canvas element on which you mean to draw the bar graph as follows:</p>
 
-<pre lang="jscript">createBarGraph(elemId, 'bg1', 500, 500, 400, 300, highestDepth, [['GM', 50, '#FF0000'], 
-  ['Ford', 30, '#00FF00'], ['Chrysler', 20, '#0000FF']], 100, 5, &quot;Auto Industry %'s&quot;, '#000000', 
+<pre lang="jscript">createBarGraph(elemId, 'bg1', 500, 500, 400, 300, highestDepth, <<'GM', 50, '#FF0000'>, 
+  <'Ford', 30, '#00FF00'>, <'Chrysler', 20, '#0000FF'>>, 100, 5, &quot;Auto Industry %'s&quot;, '#000000', 
   12, '12pt Ariel', 50, '#000000', 10, '10pt Ariel', 50, 20, function (canvasid, windowid, i) 
   { var barGraphProps = getBarGraphProps(canvasid, windowid); 
-  alert('You clicked on the bar labeled:: ' + barGraphProps.Data[i][0]); }, 1, 100); </pre>
+  alert('You clicked on the bar labeled:: ' + barGraphProps.Data<i><0>); }, 1, 100); </pre>
 
 <p>The basic function call for creating a bar graph is:</p>
 
@@ -471,11 +471,11 @@ registerChildWindow(elemId, createSlider(elemId, 10, 420, 200, 20,
 
 <p>To add an animated pie chart control to your canvas you would make the following JavaScript call from your web page after the canvas element on which you mean to draw the pie chart as follows:</p>
 
-<pre lang="jscript">createPieChart(elemId, 'pc1', 10, 10, 500, 336, highestDepth, [['GM', 50, '#FF0000'], 
-  ['Ford', 30, '#00FF00'], ['Chrysler', 20, '#0000FF']], &quot;Auto Industry %'s&quot;, '#000000', 
+<pre lang="jscript">createPieChart(elemId, 'pc1', 10, 10, 500, 336, highestDepth, <<'GM', 50, '#FF0000'>, 
+  <'Ford', 30, '#00FF00'>, <'Chrysler', 20, '#0000FF'>>, &quot;Auto Industry %'s&quot;, '#000000', 
   10, '10pt Ariel', '#000000', 10, '10pt Ariel', function (c, w, i) 
   { var p = getPieChartProps(c, w); 
-  alert(&quot;You clicked on slice for &quot; + p.Data[i][0]); }); </pre>
+  alert(&quot;You clicked on slice for &quot; + p.Data<i><0>); }); </pre>
 
 <p>The basic function call for creating a bar graph is:</p>
 
@@ -497,16 +497,16 @@ registerChildWindow(elemId, createSlider(elemId, 10, 420, 200, 20,
 
 <p>To add an animated multi line graph control to your canvas you would make the following JavaScript call from your web page after the canvas element on which you mean to draw the multi line graph as follows:</p>
 
-<pre lang="jscript">createLineGraph(elemId, 'lg1', 10, 550, 400, 336, highestDepth, [[[[10, 80], [20, 50], 
-  [30, 75], [40, 34], [50, 20], [60, 80], [70, 68], [80, 90], [90, 45]], '#00FF00'], [[[10, 45], [20, 70], 
-  [30, 35], [40, 64], [50, 50], [60, 30], [70, 40], [80, 70], [90, 90]], '#FF0000']], 100, 5, 100, 5, 
+<pre lang="jscript">createLineGraph(elemId, 'lg1', 10, 550, 400, 336, highestDepth, <<<<10, 80>, <20, 50>, 
+  <30, 75>, <40, 34>, <50, 20>, <60, 80>, <70, 68>, <80, 90>, <90, 45>>, '#00FF00'>, <<<10, 45>, <20, 70>, 
+  <30, 35>, <40, 64>, <50, 50>, <60, 30>, <70, 40>, <80, 70>, <90, 90>>, '#FF0000'>>, 100, 5, 100, 5, 
   'Automotive Sales', '#000000', 10, '10pt Ariel', '#000000', 10, '10pt Ariel', 
   function (canvasid1, windowid1, i) { alert(i.toString()); }, 50);
 
-createLineGraph(elemId, 'lg2', 550, 10, 400, 336, highestDepth, [[[['A1', 80], 
-  ['A2', 50], ['A3', 75], ['A4', 34], ['A5', 20], ['A6', 80], ['A7', 68], ['A8', 90], ['A9', 45], 
-  ['A10', 68]], '#00FF00'], [[['A1', 45], ['A2', 70], ['A3', 35], ['A4', 64], ['A5', 50], ['A6', 30],   
-  ['A7', 40], ['A8', 70], ['A9', 90], ['A10', 28]], '#FF0000']], 100, 5, 100, 5, 'Automotive Sales', 
+createLineGraph(elemId, 'lg2', 550, 10, 400, 336, highestDepth, <<<<'A1', 80>, 
+  <'A2', 50>, <'A3', 75>, <'A4', 34>, <'A5', 20>, <'A6', 80>, <'A7', 68>, <'A8', 90>, <'A9', 45>, 
+  <'A10', 68>>, '#00FF00'>, <<<'A1', 45>, <'A2', 70>, <'A3', 35>, <'A4', 64>, <'A5', 50>, <'A6', 30>,   
+  <'A7', 40>, <'A8', 70>, <'A9', 90>, <'A10', 28>>, '#FF0000'>>, 100, 5, 100, 5, 'Automotive Sales', 
   '#000000', 10, '10pt Ariel', '#000000', 10, '10pt Ariel', 
     function (canvasid1, windowid1, i) { alert(i.toString()); }, 50, 1); </pre>
 
@@ -531,8 +531,8 @@ createLineGraph(elemId, 'lg2', 550, 10, 400, 336, highestDepth, [[[['A1', 80],
 
 <p>To add an animated gauge chart control to your canvas you would make the following JavaScript call from your web page after the canvas element on which you mean to draw the gauge chart as follows:</p>
 
-<pre lang="jscript">createGauge(elemId, 'g1', 10, 950, 350, 350, highestDepth, [0, 100, [0, 30, '#FF0000'], 
-  [30, 60, '#FFF000'], [60, 100, '#00FF00'], 10, 5, 80], 'Automotive Efficiency %', 
+<pre lang="jscript">createGauge(elemId, 'g1', 10, 950, 350, 350, highestDepth, <0, 100, <0, 30, '#FF0000'>, 
+  <30, 60, '#FFF000'>, <60, 100, '#00FF00'>, 10, 5, 80>, 'Automotive Efficiency %', 
   '#000000', 16, '16pt Ariel', 150, '#FFFFFF', 10, '10pt Ariel');</pre>
 
 <p>The basic function call for creating a gauge chart is:</p>
@@ -551,7 +551,7 @@ createLineGraph(elemId, 'lg2', 550, 10, 400, 336, highestDepth, [[[['A1', 80],
 
 <p>To add an animated radar graph control to your canvas you would make the following JavaScript call from your web page after the canvas element on which you mean to draw the radar graph as follows:</p>
 
-<pre lang="jscript">createRadarGraph(elemId, 'rg1', 400, 950, 350, 400, highestDepth, [10, 20, 30, 40, 50, 60], 
+<pre lang="jscript">createRadarGraph(elemId, 'rg1', 400, 950, 350, 400, highestDepth, <10, 20, 30, 40, 50, 60>, 
   60, '#5f69b3', 6, 'Test Radar Graph', '#000000', 16, '16pt Ariel', '#000000', 10, '10pt Ariel');</pre>
 
 <p>The basic function call for creating a gauge chart is:</p>
@@ -568,16 +568,16 @@ createLineGraph(elemId, 'lg2', 550, 10, 400, 336, highestDepth, [[[['A1', 80],
 
 <p>To add an animated line area graph control to your canvas you would make the following JavaScript call from your web page after the canvas element on which you mean to draw the line area graph as follows:</p>
 
-<pre lang="jscript">createLineAreaGraph(elemId, 'lag1', 1000, 10, 400, 400, highestDepth, [[[10, [20, 30, 10]], 
-  [20, [50, 30, 20]], [30, [20, 40, 30]], [40, [10, 20, 40]], [50, [20, 20, 10]], [60, [40, 40, 20]], 
-  [70, [50, 10, 10]], [80, [10, 20, 10]], [90, [20, 30, 10]], [100, [40, 20, 10]]], ['#FF0000', '#00FF00', 
-  '#0000FF']], 100, 100, 5, 5, 'Regional Sales', '#000000', 16, &quot;normal 16px 'Trebuchet MS', Verdana, 
+<pre lang="jscript">createLineAreaGraph(elemId, 'lag1', 1000, 10, 400, 400, highestDepth, <<<10, <20, 30, 10>>, 
+  <20, <50, 30, 20>>, <30, <20, 40, 30>>, <40, <10, 20, 40>>, <50, <20, 20, 10>>, <60, <40, 40, 20>>, 
+  <70, <50, 10, 10>>, <80, <10, 20, 10>>, <90, <20, 30, 10>>, <100, <40, 20, 10>>>, <'#FF0000', '#00FF00', 
+  '#0000FF'>>, 100, 100, 5, 5, 'Regional Sales', '#000000', 16, &quot;normal 16px 'Trebuchet MS', Verdana, 
   Arial, Helvetica, sans-serif&quot;, '#000000', 10, '10pt Ariel', 50); </pre>
 
-<pre lang="jscript">createLineAreaGraph(elemId, 'lag2', 1450, 10, 400, 400, highestDepth, [[['A1', [20, 30, 10]], 
-  ['A2', [50, 30, 20]], ['A3', [20, 40, 30]], ['A4', [10, 20, 40]], ['A5', [20, 20, 10]], ['A6', [40, 40, 20]], 
-  ['A7', [50, 10, 10]], ['A8', [10, 20, 10]], ['A9', [20, 30, 10]], ['A10', [40, 20, 10]]], ['#FF0000', '#00FF00', 
-  '#0000FF']], 100, 100, 5, 5, 'Regional Sales', '#000000', 16, &quot;normal 16px 'Trebuchet MS', Verdana, 
+<pre lang="jscript">createLineAreaGraph(elemId, 'lag2', 1450, 10, 400, 400, highestDepth, <<<'A1', <20, 30, 10>>, 
+  <'A2', <50, 30, 20>>, <'A3', <20, 40, 30>>, <'A4', <10, 20, 40>>, <'A5', <20, 20, 10>>, <'A6', <40, 40, 20>>, 
+  <'A7', <50, 10, 10>>, <'A8', <10, 20, 10>>, <'A9', <20, 30, 10>>, <'A10', <40, 20, 10>>>, <'#FF0000', '#00FF00', 
+  '#0000FF'>>, 100, 100, 5, 5, 'Regional Sales', '#000000', 16, &quot;normal 16px 'Trebuchet MS', Verdana, 
   Arial, Helvetica, sans-serif&quot;, '#000000', 10, '10pt Ariel', 50, 1);
 </pre>
 The basic function call for creating a line area graph is:&nbsp;&nbsp;&nbsp; 
@@ -602,8 +602,8 @@ The basic function call for creating a line area graph is:&nbsp;&nbsp;&nbsp;
 
 <p>To add a candlesticks graph control to your canvas you would make the following JavaScript call from your web page after the canvas element on which you mean to draw the candlesticks graph as follows:</p>
 
-<pre lang="jscript">createCandlesticksGraph(elemId, 'cg1', 1000, 500, 350, 400, highestDepth, [[30, 70, 20, 80], 
-  [10, 30, 5, 35], [50, 30, 23, 80]], [[0, 'GM'], [1, 'Ford'], [2, 'Chrysler']], 75, 100, 5, 'Automotive Stocks', 
+<pre lang="jscript">createCandlesticksGraph(elemId, 'cg1', 1000, 500, 350, 400, highestDepth, <<30, 70, 20, 80>, 
+  <10, 30, 5, 35>, <50, 30, 23, 80>>, <<0, 'GM'>, <1, 'Ford'>, <2, 'Chrysler'>>, 75, 100, 5, 'Automotive Stocks', 
   '#000000', 16, '16pt Ariel', 20, '#586d8c', '#305791', 50, '#000000', 10, '10pt Ariel');
 </pre>
 The basic function call for creating a candlesticks graph is:&nbsp;&nbsp; 
@@ -624,10 +624,10 @@ The basic function call for creating a candlesticks graph is:&nbsp;&nbsp;
 
 <p>To add a doughnut chart control to your canvas you would make the following JavaScript call from your web page after the canvas element on which you mean to draw the doughnut chart as follows:</p>
 
-<pre lang="jscript">createDoughnutChart(elemId, 'dgc1', 1000, 950, 450, 450, highestDepth, [['GM', 50, '#FF0000'], 
-  ['Ford', 30, '#00FF00'], ['Chrysler', 20, '#0000FF']], &quot;Auto Industry %'s&quot;, '#000000', 16, '16pt Ariel', 
+<pre lang="jscript">createDoughnutChart(elemId, 'dgc1', 1000, 950, 450, 450, highestDepth, <<'GM', 50, '#FF0000'>, 
+  <'Ford', 30, '#00FF00'>, <'Chrysler', 20, '#0000FF'>>, &quot;Auto Industry %'s&quot;, '#000000', 16, '16pt Ariel', 
   80, 25, '#000000', 10, '10pt Ariel', 100, 10, '10pt Ariel', function (c, w, i) { var p = getDoughnutChartProps(c, w); 
-  alert(&quot;You clicked on slice for &quot; + p.Data[i][0]); });
+  alert(&quot;You clicked on slice for &quot; + p.Data<i><0>); });
 </pre>
 The basic function call for creating a doughnut chart is:&nbsp;&nbsp; 
 <pre lang="jscript">createDoughnutChart(canvasid, controlNameId, x, y, width, height, 
@@ -651,13 +651,13 @@ The basic function call for creating a doughnut chart is:&nbsp;&nbsp;
 <p>To add a stacked bar chart control to your canvas you would make the following JavaScript call from your web page after the canvas element on which you mean to draw the stacked bar chart as follows:</p>
 
 <pre lang="jscript">createStackedBarGraph(elemId, 'sbg1', 1450, 800, 400, 400, highestDepth, 
-  [['GM', [10, '#FF0000'], [20, '#0000FF'], [10, '#00FF00']], 
-   ['Ford', [20, '#FF0000'], [10, '#0000FF'], 
-  [30, '#00FF00']], ['Chrysler', [32, '#FF0000'], 
-   [25, '#0000FF'], [35, '#00FF00']]], 100, 5, 'Stacked Bar Graph', 
+  <<'GM', <10, '#FF0000'>, <20, '#0000FF'>, <10, '#00FF00'>>, 
+   <'Ford', <20, '#FF0000'>, <10, '#0000FF'>, 
+  <30, '#00FF00'>>, <'Chrysler', <32, '#FF0000'>, 
+   <25, '#0000FF'>, <35, '#00FF00'>>>, 100, 5, 'Stacked Bar Graph', 
   '#000000', 16, '16pt Ariel', 100, 40, '#000000', 10, '10pt Ariel', function (c, w, i) 
   { var p = getstackedBarGraphProps(c, w); alert(&quot;You clicked on the &quot; + 
-    p.Data[i][0] + &quot; stacked bar!&quot;); }, 50);
+    p.Data<i><0> + &quot; stacked bar!&quot;); }, 50);
 </pre>
 The basic function call for creating a stacked bar chart is:&nbsp;&nbsp;&nbsp; 
 <pre lang="jscript">createStackedBarGraph(canvasid, controlNameId, 
@@ -677,12 +677,12 @@ The basic function call for creating a stacked bar chart is:&nbsp;&nbsp;&nbsp;
 <p>To add a bars mixed with labeled line chart control to your canvas you would make the following JavaScript call from your web page after the canvas element on which you mean to draw the&nbsp;bars mixed with labeled line&nbsp;chart as follows: &nbsp; </p>
 
 <pre lang="jscript">createBarsMixedWithLabledLineGraph(elemId, 'mbwllg1', 1450, 450, 400, 300, 
-  highestDepth, [['GM', 50, '#FF0000'], ['Ford', 30, '#00FF00'], ['Chrysler', 20, '#0000FF']], 100, 5, 
+  highestDepth, <<'GM', 50, '#FF0000'>, <'Ford', 30, '#00FF00'>, <'Chrysler', 20, '#0000FF'>>, 100, 5, 
   &quot;Auto Industry %'s&quot;, '#000000', 12, '12pt Ariel', 50, '#000000', 10, '10pt Ariel', 50, 20, 
   function (canvasid, windowid, i) { var barGraphProps = getBarGraphProps(canvasid, windowid); 
-  alert('You clicked on the bar labeled:: ' + barGraphProps.Data[i][0]); }, 1, 100, [[[['GM', 80], 
-  ['Ford', 50], ['Chrysler', 75]], '#00FF00'], 
-  [[['GM', 45], ['Ford', 70], ['Chrysler', 35]], '#FF0000']], 
+  alert('You clicked on the bar labeled:: ' + barGraphProps.Data<i><0>); }, 1, 100, <<<<'GM', 80>, 
+  <'Ford', 50>, <'Chrysler', 75>>, '#00FF00'>, 
+  <<<'GM', 45>, <'Ford', 70>, <'Chrysler', 35>>, '#FF0000'>>, 
   function (c, w, i) { alert(&quot;You clicked on the line &quot; + i); });</pre>
 
 <p>The basic function call for creating a stacked bar chart is:</p>
@@ -705,15 +705,15 @@ The basic function call for creating a stacked bar chart is:&nbsp;&nbsp;&nbsp;
 <p>To add a tab control to your canvas you would make the following JavaScript call from your web page after the canvas element on which you mean to draw the tab control as follows:</p>
 
 <pre lang="jscript">var tabwindowid = createTabControl(elemId, 'tab1', 200, 60, 250, 100, highestDepth, 
-  ['Tab 1', 'Tab 2', 'Tab 3'], '#000000', 10, '10pt Ariel', '#C0C0C0', 
+  <'Tab 1', 'Tab 2', 'Tab 3'>, '#000000', 10, '10pt Ariel', '#C0C0C0', 
   '#D0D0D0', 1, '#6c6cde', 1, '#C0C0C0', '#D0D0D0', 0, 3, '#6c6cde', 1);
 var tabp = getTabProps(elemId, tabwindowid);
 registerChildWindow(elemId, createImage(elemId, 'i1', 250, 90, 50, 50, highestDepth, 
-  'Madras.png', function () { alert('You clicked Madras.png'); }), tabp.PanelWindowIDs[0]);
+  'Madras.png', function () { alert('You clicked Madras.png'); }), tabp.PanelWindowIDs<0>);
 registerChildWindow(elemId, createImage(elemId, 'i2', 250, 90, 50, 50, highestDepth, 
-  'Bombay.png', function () { alert('You clicked Bombay.png'); }), tabp.PanelWindowIDs[1]);
+  'Bombay.png', function () { alert('You clicked Bombay.png'); }), tabp.PanelWindowIDs<1>);
 registerChildWindow(elemId, createImage(elemId, 'i3', 250, 90, 50, 50, highestDepth, 
-  'Pune.png', function () { alert('You clicked Pune.png'); }), tabp.PanelWindowIDs[2]);
+  'Pune.png', function () { alert('You clicked Pune.png'); }), tabp.PanelWindowIDs<2>);
 </pre>
 The basic function call for creating a tab control is: &nbsp;&nbsp; 
 <pre lang="jscript">createTabControl(canvasid, controlNameId, x, y, width, 
@@ -735,7 +735,7 @@ The basic function call for creating a tab control is: &nbsp;&nbsp;
 <p>To add a image map control to your canvas you would make the following JavaScript call from your web page after the canvas element on which you mean to draw the image map control as follows:</p>
 
 <pre lang="jscript">createImageMapControl(elemId, 'im1', 250, 200, 200, 150, highestDepth, 'indiamap.gif', 
-  [[134, 261, 10, '#00FF00'], [219, 291, 7, '#FF0000'], [248, 361, 10, '#0000FF']], 
+  <<134, 261, 10, '#00FF00'>, <219, 291, 7, '#FF0000'>, <248, 361, 10, '#0000FF'>>, 
   function (c, w, i) { alert(&quot;You clicked on &quot; + (i == 0 ? 
   &quot;Mumbai&quot; : (i == 1 ? &quot;Hyderabad&quot; : &quot;Chennai&quot;))); }, 1, 90, 240, 1, 0.1); </pre>
 
@@ -745,7 +745,7 @@ The basic function call for creating a tab control is: &nbsp;&nbsp;
   height, depth, imgurl, pinxys, pinClickFunction, hasZoom, imagetopleftxoffset, 
   imagetopleftyoffset, scale, scaleincrementfactor, tag) </pre>
 
-<p>The first thing of course is to supply a url to load the image from. &nbsp;In this case I use an India map since I am from that country however you can use any image does not have to be a map that you need to put pins or pan and zoom. &nbsp;The pinxys is an array in which each element of the array is [x, y, radius, color]. &nbsp;The x and y is relative to the top left corner of the image being 0, 0. You can use Gimp or any image manipulation software to find the x, y pixel co-ordinates within the image to supply for each point you want a pin. &nbsp;The radius is of course the radius of the pin to be drawn at that x, y co-ordinate on the image. &nbsp;The <code>pinClickFunction</code> is invoked when the user clicks a pin and you are supplied with the standard canvas id and window id and an index i into the pinxys array. &nbsp;In the case of the example I make it simple by just saying the name of the city whose pin you clicked on. &nbsp;If <code>hasZoom</code> is 1 then you will be able to zoom in and out with the mouse wheel. &nbsp;This will work with any browser such as Google Chrome which supports onmousewheel event which is what I use. &nbsp;The <code>imagetopleftxoffset</code> and <code>imagetopleftyoffset</code> is the point on the image to start showing the portion of the image in the window at startup. &nbsp;Again it follows the rules of pinxys co-ordinates. &nbsp;Scale is whatever scale you want to startup with if the scale is too small or your starting window into the image is off image you will not see an image at all so be careful and pick meaningful values i.e. ones which will crop a portion on the image without going off it. &nbsp;The <code>scaleincrementfactor</code> is by how much per mouse wheel move do you want to zoom in and out so in the example I choose 0.1 so it scales slowly on mousewheel as my image for the example is not very large.</p>
+<p>The first thing of course is to supply a url to load the image from. &nbsp;In this case I use an India map since I am from that country however you can use any image does not have to be a map that you need to put pins or pan and zoom. &nbsp;The pinxys is an array in which each element of the array is <x, y, radius, color>. &nbsp;The x and y is relative to the top left corner of the image being 0, 0. You can use Gimp or any image manipulation software to find the x, y pixel co-ordinates within the image to supply for each point you want a pin. &nbsp;The radius is of course the radius of the pin to be drawn at that x, y co-ordinate on the image. &nbsp;The <code>pinClickFunction</code> is invoked when the user clicks a pin and you are supplied with the standard canvas id and window id and an index i into the pinxys array. &nbsp;In the case of the example I make it simple by just saying the name of the city whose pin you clicked on. &nbsp;If <code>hasZoom</code> is 1 then you will be able to zoom in and out with the mouse wheel. &nbsp;This will work with any browser such as Google Chrome which supports onmousewheel event which is what I use. &nbsp;The <code>imagetopleftxoffset</code> and <code>imagetopleftyoffset</code> is the point on the image to start showing the portion of the image in the window at startup. &nbsp;Again it follows the rules of pinxys co-ordinates. &nbsp;Scale is whatever scale you want to startup with if the scale is too small or your starting window into the image is off image you will not see an image at all so be careful and pick meaningful values i.e. ones which will crop a portion on the image without going off it. &nbsp;The <code>scaleincrementfactor</code> is by how much per mouse wheel move do you want to zoom in and out so in the example I choose 0.1 so it scales slowly on mousewheel as my image for the example is not very large.</p>
 
 <p>A screenshot of the example follows below:</p>
 
@@ -755,18 +755,18 @@ The basic function call for creating a tab control is: &nbsp;&nbsp;
 
 <p>To add a menu bar control to your canvas you would make the following JavaScript call from your web page after the canvas element on which you mean to draw the menu bar control as follows:</p>
 
-<pre lang="jscript">createMenuBarControl(elemId, 'mb1', 0, 0, 800, 20, highestDepth, [['File', '#000000', 10, 
-  '10pt Ariel', 0, null, [['Save', '#000000', 10, '10pt Ariel', 0, 
+<pre lang="jscript">createMenuBarControl(elemId, 'mb1', 0, 0, 800, 20, highestDepth, <<'File', '#000000', 10, 
+  '10pt Ariel', 0, null, <<'Save', '#000000', 10, '10pt Ariel', 0, 
          function () { alert('You choose Save from the menu.'); }, 
-  null], ['Save As', '#000000', 10, '10pt Ariel', 0, 
+  null>, <'Save As', '#000000', 10, '10pt Ariel', 0, 
          function () { alert('You choose Sava As from the menu'); }, 
-  null], ['Options', '#000000', 10, '10pt Ariel', 0, null, 
-         [['Advanced', '#000000', 10, '10pt Ariel', 0, 
+  null>, <'Options', '#000000', 10, '10pt Ariel', 0, null, 
+         <<'Advanced', '#000000', 10, '10pt Ariel', 0, 
   function () { alert('You choose Advanced from the menu'); }, 
-                null], ['Configuration', '#000000', 10, '10pt Ariel', 0, 
+                null>, <'Configuration', '#000000', 10, '10pt Ariel', 0, 
   function () { alert('You choose Configuration from the menu'); }, 
-                null]]]]], ['Help', '#000000', 10, '10pt Ariel', 0, 
-  function () { alert('You choose Help from the menu'); }, null]], 
+                null>>>>>, <'Help', '#000000', 10, '10pt Ariel', 0, 
+  function () { alert('You choose Help from the menu'); }, null>>, 
                 '#bec7ff', '#848ec9', '#515eac', '#e3e7ff', '#c5cdff', 0); </pre>
 
 <p>The basic function call for creating a menu bar control is:</p>
@@ -786,7 +786,7 @@ The basic function call for creating a tab control is: &nbsp;&nbsp;
 <p>To add a textbox control to your canvas you would make the following JavaScript call from your web page after the canvas element on which you mean to draw the textbox control as follows:</p>
 
 <pre lang="jscript">createTextBox(elemId, 'textbox1', 400, 10, 300, 60, highestDepth, 'Type your name here', 
-  '#F0F0F0', 18, '18pt Ariel', '#051329', 18, '18pt Ariel', 50, '[a-Z]+', 0, null, 1, '#2e3642', 1, 0, 
+  '#F0F0F0', 18, '18pt Ariel', '#051329', 18, '18pt Ariel', 50, '<a-Z>+', 0, null, 1, '#2e3642', 1, 0, 
   '#000000', 3, 3, 20, 1, 10, 1, '#9bacc6', '#d6e4f9', 
   0, null, 0, null, 0, 0, 0, null, '', '#0d2952', '#0000F0', 1);  </pre>
 
@@ -815,9 +815,9 @@ The basic function call for creating a tab control is: &nbsp;&nbsp;
 
 <p>To add a image fader control to your canvas you would make the following JavaScript call from your web page after the canvas element on which you mean to draw the image fader control as follows:</p>
 
-<pre lang="jscript">createImageFader(elemId, 'MoviePosters', 500, 200, 135, 200, highestDepth, ['fantastic_four.jpg', 
-  'IncredibleHulk.jpg', 'Thor.jpg', 'xmen_first_class.jpg'], 0, 1, 0.01, 100, function (canvasid, windowid, e, i) 
-  { var imageFaderProps = getImageFaderProps(canvasid, windowid); alert(imageFaderProps.ImageURLs[i]); }, 1); </pre>
+<pre lang="jscript">createImageFader(elemId, 'MoviePosters', 500, 200, 135, 200, highestDepth, <'fantastic_four.jpg', 
+  'IncredibleHulk.jpg', 'Thor.jpg', 'xmen_first_class.jpg'>, 0, 1, 0.01, 100, function (canvasid, windowid, e, i) 
+  { var imageFaderProps = getImageFaderProps(canvasid, windowid); alert(imageFaderProps.ImageURLs<i>); }, 1); </pre>
 
 <p>The basic function call for creating a &nbsp;image fader &nbsp;control is:</p>
 
@@ -831,7 +831,7 @@ The basic function call for creating a tab control is: &nbsp;&nbsp;
 <p>To add a image slider control to your canvas you would make the following JavaScript call from your web page after the canvas element on which you mean to draw the image slider control as follows:</p>
 
 <pre lang="jscript">createImageSlider(elemId, 'MoviePosters2', 500, 500, 135, 200, highestDepth, 
-  ['fantastic_four.jpg', 'IncredibleHulk.jpg', 'Thor.jpg', 'xmen_first_class.jpg'], 
+  <'fantastic_four.jpg', 'IncredibleHulk.jpg', 'Thor.jpg', 'xmen_first_class.jpg'>, 
   1, -1, 100, function (canvasid, windowid, e, idx) { alert(idx.toString()); }); </pre>
 
 <p>The basic function call for creating a &nbsp;image fader &nbsp;control is:</p>
@@ -845,9 +845,9 @@ The basic function call for creating a tab control is: &nbsp;&nbsp;
 
 <p>To add a boundary fillable map control to your canvas you would make the following JavaScript call from your web page after the canvas element on which you mean to draw the boundary fillable map control as follows:</p>
 
-<pre lang="jscript">createBoundaryFillableMap(elemId, 'bfm1', 10, 420, 500, 389, highestDepth, [[95, 155, 
-  40, 130, 160, 185, 255, 255, 255, 255, 0, 0, 255, 255], [338, 180, 320, 160, 360, 
-  205, 255, 255, 255, 255, 0, 255, 0, 255]], 'WorldMap.png', 500, 389);  </pre>
+<pre lang="jscript">createBoundaryFillableMap(elemId, 'bfm1', 10, 420, 500, 389, highestDepth, <<95, 155, 
+  40, 130, 160, 185, 255, 255, 255, 255, 0, 0, 255, 255>, <338, 180, 320, 160, 360, 
+  205, 255, 255, 255, 255, 0, 255, 0, 255>>, 'WorldMap.png', 500, 389);  </pre>
 
 <p>The basic function call for creating a &nbsp;image fader &nbsp;control is:</p>
 
@@ -863,8 +863,8 @@ The basic function call for creating a tab control is: &nbsp;&nbsp;
 <p>The following example is how to fill horizontally from left to right for america only in blue color:&nbsp;</p>
 
 <pre lang="jscript">createBoundaryFillableMap(elemId, 'bfm1', 800, 400, 500, 389, highestDepth, 
-  [[95, 155, 40, 130, 160, 185, 255, 255, 255, 255, 0, 0, 255, 255, 0, 40, 100], 
-  [338, 180, 320, 160, 360, 205, 255, 255, 255, 255, 0, 255, 0, 255]], 
+  <<95, 155, 40, 130, 160, 185, 255, 255, 255, 255, 0, 0, 255, 255, 0, 40, 100>, 
+  <338, 180, 320, 160, 360, 205, 255, 255, 255, 255, 0, 255, 0, 255>>, 
   'WorldMap.png', 500, 389);  </pre>
 
 <p>The following is the example generated image:</p>
@@ -874,8 +874,8 @@ The basic function call for creating a tab control is: &nbsp;&nbsp;
 <p>The following example is how to fill horizontally from right to left for america only in blue color:&nbsp;</p>
 
 <pre lang="jscript">createBoundaryFillableMap(elemId, 'bfm1', 800, 800, 500, 389, highestDepth, 
-  [[95, 155, 40, 130, 160, 185, 255, 255, 255, 255, 0, 0, 255, 255, 0, 100, 160], 
-  [338, 180, 320, 160, 360, 205, 255, 255, 255, 255, 0, 255, 0, 255]], 'WorldMap.png', 500, 389);  </pre>
+  <<95, 155, 40, 130, 160, 185, 255, 255, 255, 255, 0, 0, 255, 255, 0, 100, 160>, 
+  <338, 180, 320, 160, 360, 205, 255, 255, 255, 255, 0, 255, 0, 255>>, 'WorldMap.png', 500, 389);  </pre>
 
 <p>The following is the example generated image:&nbsp;</p>
 <img src="Screenshot39.png" /> 
@@ -1046,8 +1046,8 @@ The basic function call for&nbsp; creating a simple XML viewer is:&nbsp;&nbsp;
 
 <pre lang="jscript">createVotingControl(elemId, 'vc1', 450, 150, 300, 30, highestDepth, 
   5, 10, 59, 172, 53, 255, 0, 5, 1, 0, 1, 180, 21, '#000000', '12pt Ariel', 
-  12, 0, 0, 6.7, 1, 0, 0, 1, 'duckoutline.png', [15, 13, 0, 0, 30, 26, 255, 
-  255, 255, 255, 59, 172, 53, 255], 30, 26, 0, 255, 255, 255, 255);
+  12, 0, 0, 6.7, 1, 0, 0, 1, 'duckoutline.png', <15, 13, 0, 0, 30, 26, 255, 
+  255, 255, 255, 59, 172, 53, 255>, 30, 26, 0, 255, 255, 255, 255);
 </pre>
 
 <pre lang="jscript">createVotingControl(elemId, 'vc2', 450, 200, 300, 30, 
@@ -1057,7 +1057,7 @@ The basic function call for&nbsp; creating a simple XML viewer is:&nbsp;&nbsp;
   votingProps.InitialValue = value; invalidateRect(canvasid, null, 
   votingProps.X, votingProps.Y, votingProps.Width, votingProps.Height); }); </pre>
 
-<pre lang="jscript">createVotingControl(elemId, 'vc3', 450, 250, 300, 30, highestDepth, 5, 5, 59, 172, 53, 255, 0, 5, 1, 1, 1, 180, 21, '#000000', '12pt Ariel', 12, 0, 0, 0.5, 1, 0, 0, 1, 'staroutline.png', [8, 8, 0, 0, 30, 26, 255, 255, 255, 255, 59, 172, 53, 255], 17, 17, 0, 255, 255, 255, 255, function (canvasid, windowid, votingProps, clickx, clicky, value) { votingProps.InitialValue = value; invalidateRect(canvasid, null, votingProps.X, votingProps.Y, votingProps.Width, votingProps.Height); }, 1);
+<pre lang="jscript">createVotingControl(elemId, 'vc3', 450, 250, 300, 30, highestDepth, 5, 5, 59, 172, 53, 255, 0, 5, 1, 1, 1, 180, 21, '#000000', '12pt Ariel', 12, 0, 0, 0.5, 1, 0, 0, 1, 'staroutline.png', <8, 8, 0, 0, 30, 26, 255, 255, 255, 255, 59, 172, 53, 255>, 17, 17, 0, 255, 255, 255, 255, function (canvasid, windowid, votingProps, clickx, clicky, value) { votingProps.InitialValue = value; invalidateRect(canvasid, null, votingProps.X, votingProps.Y, votingProps.Width, votingProps.Height); }, 1);
 </pre><div>The basic function call for&nbsp; creating a voting control is: &nbsp;&nbsp;</div>
 
 <pre lang="jscript">function createVotingControl(canvasid, controlNameId, x, y, width, 
@@ -1090,7 +1090,7 @@ The basic function call for&nbsp; creating a simple XML viewer is:&nbsp;&nbsp;
 &lt;script type=&quot;text/javascript&quot;&gt;
 registerCanvasElementId('canvas1');
 createComboBox('canvas1', 'cb1', 10, 10, 150, 20, highestDepth, 
-    ['Bombay', 'Pune', 'Madras', 'Delhi'], null, null, drawListAreaCustom, null,
+    <'Bombay', 'Pune', 'Madras', 'Delhi'>, null, null, drawListAreaCustom, null,
     listAreaCustomClickFunction, '#364635', 10, '10pt Ariel', '#1b213b', 10, '10pt Ariel');
 invalidateRect(elemId, null, 0, 0, 500, 500);
 function drawListAreaCustom(canvasid, windowid) {
@@ -1106,7 +1106,7 @@ function drawListAreaCustom(canvasid, windowid) {
     for (var i = vscrollBarProps.SelectedID; i &lt; 
            comboboxProps.Data.length &amp;&amp; ((comboboxProps.ListAreaTextHeight + 10) *
         (i - vscrollBarProps.SelectedID + 1)) + 4 &lt; 100; i++) {
-        switch (comboboxProps.Data[i]) {
+        switch (comboboxProps.Data<i>) {
             case 'Bombay':
                 drawCustomImage(ctx, comboboxProps.X, comboboxProps.Y + 4 +
                     ((comboboxProps.ListAreaTextHeight + 10) * 
@@ -1128,7 +1128,7 @@ function drawListAreaCustom(canvasid, windowid) {
                       (i - vscrollBarProps.SelectedID + 1)), 16, 16, 'Delhi.png');
                 break;
         }
-        ctx.fillText(comboboxProps.Data[i], comboboxProps.X + 20, comboboxProps.Y + 17 +
+        ctx.fillText(comboboxProps.Data<i>, comboboxProps.X + 20, comboboxProps.Y + 17 +
                     ((comboboxProps.ListAreaTextHeight + 10) * (i - vscrollBarProps.SelectedID + 1)));
     }
     ctx.strokeStyle = '#b7bfc8';
@@ -1140,8 +1140,8 @@ function drawListAreaCustom(canvasid, windowid) {
 var preloadedImages = new Array();
 function drawCustomImage(ctx, x, y, width, height, src) {
     for (var i = 0; i &lt; preloadedImages.length; i++) {
-        if (preloadedImages[i].Src == src) {
-            ctx.drawImage(preloadedImages[i].Image, x, y);
+        if (preloadedImages<i>.Src == src) {
+            ctx.drawImage(preloadedImages<i>.Image, x, y);
             return;
         }
     }
@@ -1279,7 +1279,7 @@ function selectMovieTime(canvasid, windowid) {
     labelWindowIDS.push(createLabel(elemId, 'numTicketsLabel', 630, 220, 160, 30, 
         'Number of Tickets:', '#131aa3', 16, '16pt Ariel', null, highestDepth));
     labelWindowIDS.push(createTextBox(elemId, 'numTicketsTextBox', 800, 220, 50, 30, highestDepth, 'No.', 
-        '#F0F0F0', 12, '12pt Ariel', '#051329', 12, '12pt Ariel', 2, '[0-9]', 0, null, 1, '#2e3642',
+        '#F0F0F0', 12, '12pt Ariel', '#051329', 12, '12pt Ariel', 2, '<0-9>', 0, null, 1, '#2e3642',
         1, 0, '#000000', 3, 3, 20, 1, 10, 1, '#9bacc6', '#d6e4f9', 0, null, 0, null, 
         0, 0, '#D0D000', 12, '12pt Ariel', '', '#0d2952', 'rgba(0, 0, 240, 0.2)', 1));
     labelWindowIDS.push(createButton(elemId, 'PaymentButton', 875, 220, 100, 30, 
@@ -1288,7 +1288,7 @@ function selectMovieTime(canvasid, windowid) {
             invokeServerSideFunction('AjaxEx1.aspx', 'DoPaymentForTickets', elemId, windowid, afterPayment);
         }, null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1', labelWindowProps.ControlNameID));
     for (var i = 0; i &lt; controlNameIDs.length; i++) {
-        var window = getWindowByControlNameID(controlNameIDs[i]);
+        var window = getWindowByControlNameID(controlNameIDs<i>);
         if (window.ControlType == 'Label' &amp;&amp; window.WindowCount != windowid) {
             var labelProps2 = getLabelProps(canvasid, window.WindowCount);
             labelProps2.BackGroundColor = null;
@@ -1296,14 +1296,14 @@ function selectMovieTime(canvasid, windowid) {
         }
     }
     for (var i = 0; i &lt; labelWindowIDS.length; i++) {
-        var wprops = getWindowProps(elemId, labelWindowIDS[i]);
+        var wprops = getWindowProps(elemId, labelWindowIDS<i>);
         invalidateRect(elemId, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
     }
 }
 function afterPayment(params) {
     suspendDraw = 1;
     for (var i = 0; i &lt; controlNameIDs.length; i++) {
-        destroyControlByNameID(controlNameIDs[i]);
+        destroyControlByNameID(controlNameIDs<i>);
     }
     controlNameIDs = new Array();
     destroyControlByNameID('numTicketsLabel');
@@ -1314,7 +1314,7 @@ function afterPayment(params) {
     destroyControlByNameID('selectCityComboBoxComboBoxTextArea');
     destroyControlByNameID('selectCinemaComboBoxComboBoxTextArea');
     suspendDraw = 0;
-    createLabel(elemId, 'PaymentMessageLabel', 10, 220, 1024, 30, params[0], 
+    createLabel(elemId, 'PaymentMessageLabel', 10, 220, 1024, 30, params<0>, 
                   '#131aa3', 16, '16pt Ariel', null, highestDepth);
     invalidateRect(elemId, null, 0, 0, 1024, 768);
 }
@@ -1322,7 +1322,7 @@ var controlNameIDs = new Array();
 function showMoviesForCinema(params) {
     suspendDraw = 1;
     for (var i = 0; i &lt; controlNameIDs.length; i++) {
-        destroyControlByNameID(controlNameIDs[i]);
+        destroyControlByNameID(controlNameIDs<i>);
     }
     controlNameIDs = new Array();
     suspendDraw = 0;
@@ -1330,12 +1330,12 @@ function showMoviesForCinema(params) {
     var labelWindowIDS = new Array();
     for (var i = 0; i &lt; params.length; i++) {
         var windowid = createImage(elemId, 'Poster' + i.toString(), 10 + 
-                          xoffset, 300, 266, 200, highestDepth, params[i][0]);
+                          xoffset, 300, 266, 200, highestDepth, params<i><0>);
         controlNameIDs.push('Poster' + i.toString());
         var timesoffset = 0;
-        for (var j = 1; j &lt; params[i].length; j++) {
+        for (var j = 1; j &lt; params<i>.length; j++) {
             labelWindowIDS.push(createLabel(elemId, 'MovieTimeLabel' + j.toString() + 'Poster' + 
-                i.toString(), 10 + xoffset + timesoffset, 510, 50, 20, params[i][j], '#cdc833', 
+                i.toString(), 10 + xoffset + timesoffset, 510, 50, 20, params<i><j>, '#cdc833', 
                 12, '12pt Ariel', null, highestDepth, null, selectMovieTime, null, 1));
             controlNameIDs.push('MovieTimeLabel' + j.toString() + 'Poster' + i.toString());
             timesoffset += 70;
@@ -1343,28 +1343,28 @@ function showMoviesForCinema(params) {
         xoffset += 296;
     }
     for (var i = 0; i &lt; labelWindowIDS.length; i++) {
-        var wprops = getWindowProps(elemId, labelWindowIDS[i]);
+        var wprops = getWindowProps(elemId, labelWindowIDS<i>);
         invalidateRect(elemId, null, wprops.X, wprops.Y, wprops.Width, wprops.Height);
     }
 }
 function form1() {
     createImage(elemId, 'imgTitle', 312, 10, 400, 100, highestDepth + 1, 'Title.png');
-    createMenuBarControl(elemId, 'menuBar1', 0, 120, 1024, 60, highestDepth, [['HOME', '#000000', 20, 
-         '20pt Ariel', 0, null, null], ['TICKETS', '#000000', 20, '20pt Ariel', 0, null, null],
-        ['MOVIES', '#000000', 20, '20pt Ariel', 0, null, null], ['CINEMAS', '#000000', 20, '20pt Ariel', 
-         0, null, null], ['TRAILERS', '#000000', 20, '20pt Ariel', 0, null, null],
-        ['CONTACT US', '#000000', 20, '20pt Ariel', 0, null, null]], 
+    createMenuBarControl(elemId, 'menuBar1', 0, 120, 1024, 60, highestDepth, <<'HOME', '#000000', 20, 
+         '20pt Ariel', 0, null, null>, <'TICKETS', '#000000', 20, '20pt Ariel', 0, null, null>,
+        <'MOVIES', '#000000', 20, '20pt Ariel', 0, null, null>, <'CINEMAS', '#000000', 20, '20pt Ariel', 
+         0, null, null>, <'TRAILERS', '#000000', 20, '20pt Ariel', 0, null, null>,
+        <'CONTACT US', '#000000', 20, '20pt Ariel', 0, null, null>>, 
          '#fdf2c0', '#f0cc75', '#d99839', '#e3e7ff', '#c5cdff', 0);
     createLabel(elemId, 'label1', 10, 220, 50, 30, 'City', 
       '#131aa3', 16, '16pt Ariel', null, highestDepth);
-    createComboBox(elemId, 'selectCityComboBox', 75, 220, 200, 30, highestDepth, ['Cities'], null, 
+    createComboBox(elemId, 'selectCityComboBox', 75, 220, 200, 30, highestDepth, <'Cities'>, null, 
       null, null, null, null, '#131aa3', 16, '16pt Ariel', 
       '#131aa3', 16, '16pt Ariel', cityChanged);
     createLabel(elemId, 'label2', 300, 220, 120, 30, 
       'Multiplex', '#131aa3', 16, '16pt Ariel', null, highestDepth);
     selecteCinemaWindowID = createComboBox(elemId, 
       'selectCinemaComboBox', 400, 220, 200, 30, highestDepth, 
-      ['Select a city first'], null, null, null, null, null, '#131aa3', 16, '16pt Ariel', 
+      <'Select a city first'>, null, null, null, null, null, '#131aa3', 16, '16pt Ariel', 
        '#131aa3', 16, '16pt Ariel', onSelectCinema);
     return selecteCinemaWindowID;
 }
@@ -1380,7 +1380,7 @@ invalidateRect(elemId, null, 0, 0, 1024, 768);
 
 <pre lang="jscript">/*
     Canvas Control Library Copyright 2012
-    Created by Akshay Srinivasan [akshay.srin@gmail.com]
+    Created by Akshay Srinivasan <akshay.srin@gmail.com>
     This javascript code is provided as is with no warranty implied.
     Akshay Srinivasan are not liable or responsible for any consequence of 
     using this code in your applications.
@@ -1473,7 +1473,7 @@ public partial class Default2 : System.Web.UI.Page
         CanvasControlLibrary.CCLComboBoxProps selectCinemaComboBox = ccl.getControlPropsByControlNameID(
           &quot;selectCinemaComboBoxComboBoxTextArea&quot;) as CanvasControlLibrary.CCLComboBoxProps;
         selectCinemaComboBox.Data = new System.Collections.ArrayList();
-        switch (selectCityComboBox.Data[Convert.ToInt32(selectCityComboBox.SelectedID)].ToString())
+        switch (selectCityComboBox.Data<Convert.ToInt32(selectCityComboBox.SelectedID)>.ToString())
         {
             case &quot;Mumbai&quot;:
                 selectCinemaComboBox.Data.Add(&quot;Select a Theater&quot;);
@@ -1523,21 +1523,21 @@ public partial class Default2 : System.Web.UI.Page
           ccl.getControlPropsByControlNameID(&quot;selectCinemaComboBoxComboBoxTextArea&quot;) 
           as CanvasControlLibrary.CCLComboBoxProps;
         Regex regex = new System.Text.RegularExpressions.Regex(
-          &quot;MovieTimeLabel[0-9]+Poster(?&lt;PosterIndex&gt;[0-9]+)&quot;);
+          &quot;MovieTimeLabel<0-9>+Poster(?&lt;PosterIndex&gt;<0-9>+)&quot;);
         Match m = regex.Match((string)buttonProps.Tag);
-        int movieIndex = Convert.ToInt32(m.Groups[&quot;PosterIndex&quot;].Value);
+        int movieIndex = Convert.ToInt32(m.Groups<&quot;PosterIndex&quot;>.Value);
         string movieName = &quot;&quot;;
         for (int i = 0; i &lt; movieIndexes.Count; i++)
         {
-            if (((ArrayList)movieIndexes[i])[0].ToString() == 
-               selectCinemaComboBox.Data[Convert.ToInt32(selectCinemaComboBox.SelectedID)].ToString())
+            if (((ArrayList)movieIndexes<i>)<0>.ToString() == 
+               selectCinemaComboBox.Data<Convert.ToInt32(selectCinemaComboBox.SelectedID)>.ToString())
             {
-                movieName = ((ArrayList)((ArrayList)movieIndexes[i])[1])[movieIndex].ToString();
+                movieName = ((ArrayList)((ArrayList)movieIndexes<i>)<1>)<movieIndex>.ToString();
             }
         }
         parameters.Add(&quot;The payment was successful.  You have &quot; + 
             textbox.UserInputText + &quot; tickets to see &quot; + movieName + &quot; at &quot; + 
-            selectCinemaComboBox.Data[Convert.ToInt32(selectCinemaComboBox.SelectedID)].ToString() +
+            selectCinemaComboBox.Data<Convert.ToInt32(selectCinemaComboBox.SelectedID)>.ToString() +
             &quot; showing at time &quot; + lp.Text + &quot;.&quot;);
     }
 
@@ -1546,7 +1546,7 @@ public partial class Default2 : System.Web.UI.Page
         CanvasControlLibrary.CCLComboBoxProps selectCinemaComboBox = 
           ccl.getControlPropsByControlNameID(&quot;selectCinemaComboBoxComboBoxTextArea&quot;) 
           as CanvasControlLibrary.CCLComboBoxProps;
-        switch (selectCinemaComboBox.Data[Convert.ToInt32(selectCinemaComboBox.SelectedID)].ToString())
+        switch (selectCinemaComboBox.Data<Convert.ToInt32(selectCinemaComboBox.SelectedID)>.ToString())
         {
             case &quot;Phoenix Mills&quot;:
                 parameters = new ArrayList{new ArrayList { &quot;fantastic_four.jpg&quot;, 
@@ -1675,10 +1675,10 @@ public partial class _Default : System.Web.UI.Page
     }
     else
     {
-        ccl.CurrentSessionObj.Data[&quot;Counter&quot;] = 
-           (int)ccl.CurrentSessionObj.Data[&quot;Counter&quot;] + 1;
+        ccl.CurrentSessionObj.Data<&quot;Counter&quot;> = 
+           (int)ccl.CurrentSessionObj.Data<&quot;Counter&quot;> + 1;
     }
-    lp.Text = ccl.CurrentSessionObj.Data[&quot;Counter&quot;].ToString();
+    lp.Text = ccl.CurrentSessionObj.Data<&quot;Counter&quot;>.ToString();
 }
 </pre>
 
@@ -1694,8 +1694,8 @@ public partial class _Default : System.Web.UI.Page
 <pre lang="jscript">
 function getButtonProps(canvasid, windowid) {
     for (var i = 0; i < buttonPropsArray.length; i++) {
-        if (buttonPropsArray[i].CanvasID == canvasid && buttonPropsArray[i].WindowID == windowid) {
-            return buttonPropsArray[i];
+        if (buttonPropsArray<i>.CanvasID == canvasid && buttonPropsArray<i>.WindowID == windowid) {
+            return buttonPropsArray<i>;
         }
     }
 }
@@ -1719,7 +1719,7 @@ CCLControlTypeName.prototype = {
 <pre lang="jscript">
 var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Button', controlNameId);
 </pre>
-<p>You want to save the window id which uniquely identifies the controls instances window and pass it back at the end of the create control function.  The next thing to do is fill the passed in parameters to an object with properties and then add that to the array you created to hold the control properties.  In the case of the button control it is the following:</p>
+<p>One thing to note here is the string 'Button'.  You should name your control something that the underlying system will use to identify a control of your type.  You want to save the window id which uniquely identifies the controls instances window and pass it back at the end of the create control function.  The next thing to do is fill the passed in parameters to an object with properties and then add that to the array you created to hold the control properties.  In the case of the button control it is the following:</p>
 <pre lang="jscript">
 buttonPropsArray.push({
     CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Text: text,
@@ -1757,11 +1757,11 @@ if (xm > scrollBarProps.X && xm < controlProps.X + controlProps.Width &&
 <p>The other thing when dealing with objects that are self referential do not include them in the properties of the control which will go through the postback system as it will die due to infinite looping.  The other thing not to include is the actual image binary data or any kind of binary data in a property that will go back thought the postback system.  Instead store such data locally as they will always be available as we never move off the page and wont be lost during ajax postback calls.</p>
 <p>So the postback system is first step there is a call to invokeServerSideFunction which cause the javascript on the client side do to an ajax server side call.  It then calls getEncodedVariables to wrap all the properties and their values in all the control arrays and send them as POST data on the ajax call to the server side.  So the first thing you have to do for your control is add code in getEncodedVariables function so that your controls properties and values are sent across as well.  So for example in the case of button here is its code addition to work with the postback system within getEncodedVariables function call:</p>
 <pre lang="jscript">
-strVars += '[/labelPropsArray][buttonPropsArray]';
+strVars += '</labelPropsArray><buttonPropsArray>';
 for (var i = 0; i < buttonPropsArray.length; i++) {
-    strVars += '[i]' + stringEncodeObject(buttonPropsArray[i]) + '[/i]';
+    strVars += '<i>' + stringEncodeObject(buttonPropsArray<i>) + '</i>';
 }
-strVars += '[/buttonPropsArray][scrollBarPropsArray]';
+strVars += '</buttonPropsArray><scrollBarPropsArray>';
 </pre>
 <p>Then we arrive on the server side and all this data is unwrapped for use in say C#.  So now you have to modify CanvasControlLibrary.cs file.  This happens in the UnwrapVars function.  In the case of button the code is:>/p>
 <pre lang="csharp">
@@ -1774,7 +1774,7 @@ case "buttonPropsArray":
     }
     break;
 </pre>
-<p>Notice something that is going on the name of the button control properties is called buttonPropsArray.  So on the javascript side we did in the pseudo xml '[buttonPropsArray]' so now what the C# server side code is doing its keyed into this as a XML node name which it uses reflection to then recurse over a class which you have to define in the case of button it is CCLButtonProps and also you have to create an array to hold it which button does and code for button is the following:</p>
+<p>Notice something that is going on the name of the button control properties is called buttonPropsArray.  So on the javascript side we did in the pseudo xml '<buttonPropsArray>' so now what the C# server side code is doing its keyed into this as a XML node name which it uses reflection to then recurse over a class which you have to define in the case of button it is CCLButtonProps and also you have to create an array to hold it which button does and code for button is the following:</p>
 <pre lang="csharp">
 public List<CCLButtonProps> ButtonPropsArray = new List<CCLButtonProps>();
 
@@ -1820,12 +1820,12 @@ public class CCLButtonProps
 <p>Now sometimes we pass back arrays and sometimes even objects so for objects define their type as not string but List<object> and for javascript objects as LightWeightDictionary types.  You can also see object is fine too as Tag property of button uses this.  It does not matter as all the reflection code logic will handle the rest transparently for your control.</p>
 <p>After whatever happens custom C# logic on the ajax aspx page holding your end user of the controls code it is time to wrap up all the controls and send the long pseudo xml string back to the client that made the ajax request.  All that action happens in SendVars.  So now of course you have to add support for your control in this function.  The button example code is the following in the SendVars function:</p>
 <pre lang="csharp">
-strVars.Append("[/labelPropsArray][buttonPropsArray]");
+strVars.Append("</labelPropsArray><buttonPropsArray>");
 foreach (CCLButtonProps b in ButtonPropsArray)
 {
-    strVars.Append("[i]").Append(encodeObject(b)).Append("[/i]");
+    strVars.Append("<i>").Append(encodeObject(b)).Append("</i>");
 }
-strVars.Append("[/buttonPropsArray][scrollBarPropsArray]");
+strVars.Append("</buttonPropsArray><scrollBarPropsArray>");
 </pre>
 <p>The other thing that will need to be changed is the function getControlPropsByControlNameID.  This basically allows the user to pass in the unique control name id and get back the properties in the server side code.  In the case of button example here is the code:</p>
 <pre lang="csharp">
@@ -1841,7 +1841,7 @@ break;
 </pre>
 <p>Now you come back to the client the web browser and the javascript unwraps the XML into the controls on the web page setting their properties etc.  So here to you have to modify the javascript client side function UnWrapVars.  Here there is logic to restore lost properties that had function logic which was saved before the ajax postback call was made and now needs to be restored.  So there is a loop in which you need to add support for your control.  An example of this is shown below for button:</p>
 <pre lang="jscript">
-            var o = getButtonProps(savedFunctionsOnPostback[i].CanvasID, savedFunctionsOnPostback[i].WindowID);
+            var o = getButtonProps(savedFunctionsOnPostback<i>.CanvasID, savedFunctionsOnPostback<i>.WindowID);
             if (setSavedFunctionOnPostback(o, savedFunctionsOnPostback, i) == 1) { continue; }
 </pre>
 <p>Now you have a fully supported control.  It will draw to the canvas web page it will interact with the user it will send information back via the ajax postback system to the server side for additional manipulation and the changed data and properties will be reflected back from the server side to the client side web page.</p>
