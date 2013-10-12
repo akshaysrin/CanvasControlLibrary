@@ -52,6 +52,7 @@ import java.util.List;
         public String LabelTextFontString;
         public String LabelTextHeight;
         public String RoundDisplayedValueToNumOfDecimals;
+        public String TabStopIndex;
 
         CCLVotingProps()
         {

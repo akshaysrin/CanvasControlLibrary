@@ -21,4 +21,5 @@ package com.epic.canvascontrollibrary;
         public String MinValue;
         public String CurrentValue;
         public Object Tag;
+        public String TabStopIndex;
     }

@@ -26,6 +26,7 @@ import java.util.List;
         public String DropDownColorStart;
         public String DropDownColorEnd;
         public Object Tag;
+        public String TabStopIndex;
 
         CCLSubMenuBarProps()
         {

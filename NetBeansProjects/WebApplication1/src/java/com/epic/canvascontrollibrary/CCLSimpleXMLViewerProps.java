@@ -27,4 +27,5 @@ package com.epic.canvascontrollibrary;
         public String ImgURLNode;
         public String ImgURLValue;
         public String ImgURLAttribute;
+        public String TabStopIndex;
     }

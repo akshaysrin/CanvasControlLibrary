@@ -45,4 +45,5 @@ package com.epic.canvascontrollibrary;
         public Object Tag;
         public String Theme;
         public String HasGloss;
+        public String TabStopIndex;
     }

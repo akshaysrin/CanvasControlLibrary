@@ -23,4 +23,5 @@ package com.epic.canvascontrollibrary;
         public String TextBoxAreaTextHeight;
         public String TextBoxAreaTextFontString;
         public Object Tag;
+        public String TabStopIndex;
     }

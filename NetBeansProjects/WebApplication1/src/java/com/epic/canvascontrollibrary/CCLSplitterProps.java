@@ -18,4 +18,5 @@ package com.epic.canvascontrollibrary;
         public String Height;
         public String LineColor;
         public String MouseDown;
+        public String TabStopIndex;
     }

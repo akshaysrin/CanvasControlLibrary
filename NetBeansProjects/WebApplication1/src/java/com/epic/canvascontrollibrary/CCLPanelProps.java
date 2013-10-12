@@ -39,4 +39,5 @@ package com.epic.canvascontrollibrary;
         public String OriginalWidth;
         public String OriginalHeight;
         public Object Tag;
+        public String TabStopIndex;
     }

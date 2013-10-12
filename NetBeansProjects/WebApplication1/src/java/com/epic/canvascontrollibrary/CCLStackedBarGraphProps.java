@@ -37,6 +37,7 @@ import java.util.List;
         public String AlreadyUnregisteredAnimation;
         public String MarginLeft;
         public Object Tag;
+        public String TabStopIndex;
 
         CCLStackedBarGraphProps()
         {

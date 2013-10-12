@@ -39,6 +39,7 @@ import java.util.List;
         public String HasLegend;
         public String MarginRight;
         public Object Tag;
+        public String TabStopIndex;
 
         CCLBarGraphProps()
         {

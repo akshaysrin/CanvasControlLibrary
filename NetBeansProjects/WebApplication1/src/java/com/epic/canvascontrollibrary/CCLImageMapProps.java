@@ -31,6 +31,7 @@ import java.util.List;
         public String Scale;
         public String ScaleIncrementFactor;
         public Object Tag;
+        public String TabStopIndex;
 
         CCLImageMapProps()
         {

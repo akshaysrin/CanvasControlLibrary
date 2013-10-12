@@ -40,6 +40,7 @@ import java.util.List;
         public String DeltaY;
         public String SliceClickFunction;
         public Object Tag;
+        public String TabStopIndex;
 
         CCLDoughnutChartProps()
         {

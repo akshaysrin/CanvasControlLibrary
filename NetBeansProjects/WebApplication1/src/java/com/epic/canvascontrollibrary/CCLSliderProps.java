@@ -23,4 +23,5 @@ package com.epic.canvascontrollibrary;
         public String CurrentValue;
         public String MouseDownState;
         public Object Tag;
+        public String TabStopIndex;
     }

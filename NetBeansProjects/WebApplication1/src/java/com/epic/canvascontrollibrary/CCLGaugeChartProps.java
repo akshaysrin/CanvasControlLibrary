@@ -33,6 +33,7 @@ import java.util.List;
         public String GaugeLabelTextFontString;
         public String AlreadyUnregisteredAnimation;
         public Object Tag;
+        public String TabStopIndex;
 
         CCLGaugeChartProps()
         {

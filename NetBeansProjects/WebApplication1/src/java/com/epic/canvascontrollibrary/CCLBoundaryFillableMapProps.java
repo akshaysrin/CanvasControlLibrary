@@ -23,6 +23,7 @@ import java.util.List;
         public String ImgURL;
         public String ImageWidth;
         public String ImageHeight;
+        public String TabStopIndex;
 
         CCLBoundaryFillableMapProps()
         {

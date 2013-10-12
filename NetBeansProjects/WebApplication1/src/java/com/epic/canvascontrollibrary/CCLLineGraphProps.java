@@ -39,6 +39,7 @@ import java.util.List;
         public String MarginLeft;
         public String IsLabeledXValues;
         public Object Tag;
+        public String TabStopIndex;
 
         CCLLineGraphProps()
         {

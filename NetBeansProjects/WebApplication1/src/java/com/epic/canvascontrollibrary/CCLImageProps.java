@@ -36,4 +36,5 @@ package com.epic.canvascontrollibrary;
         public String NewBrowserWindowCopyHistory;
         public Object Tag;
         public String Tile;
+        public String TabStopIndex;
     }

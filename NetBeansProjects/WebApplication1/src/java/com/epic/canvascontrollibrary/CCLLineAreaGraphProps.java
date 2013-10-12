@@ -36,6 +36,7 @@ import java.util.List;
         public String AlreadyUnregisteredAnimation;
         public String IsLabledOnXAxis;
         public Object Tag;
+        public String TabStopIndex;
 
         CCLLineAreaGraphProps()
         {

@@ -29,6 +29,7 @@ import java.util.List;
         public List<Object> ButtonExtents;
         public String LabelTextHeight;
         public Object Tag;
+        public String TabStopIndex;
 
         CCLRadioButtonGroupProps()
         {

@@ -36,6 +36,7 @@ import java.util.List;
         public String AxisLabelsHeight;
         public String AxisLabelsFontString;
         public Object Tag;
+        public String TabStopIndex;
 
         CCLCandlesticksGraphProps()
         {

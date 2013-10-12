@@ -43,6 +43,7 @@ import java.util.List;
         public String LineClickFunction;
         public String YMaxValue;
         public Object Tag;
+        public String TabStopIndex;
 
         CCLBarsMixedWithLabeledLineGraphProps()
         {

@@ -28,6 +28,7 @@ import java.util.List;
         public List<Object> LineBreakIndexes;
         public List<Object> MarkupTextExtents;
         public String MarkupText;
+        public String TabStopIndex;
 
         CCLMultiLineLabelProps()
         {

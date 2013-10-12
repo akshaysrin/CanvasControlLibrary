@@ -31,6 +31,7 @@ import java.util.List;
         public String CustomDrawLetterFunction;
         public String HasGloss;
         public String ShiftKeyPressed;
+        public String TabStopIndex;
 
         CCLVirtualKeyboardProps()
         {

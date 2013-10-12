@@ -27,6 +27,7 @@ import java.util.List;
         public String CurrentImageIndex;
         public String Slide;
         public String HoldCountDown;
+        public String TabStopIndex;
 
         CCLImageSliderProps()
         {

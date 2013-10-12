@@ -16,4 +16,5 @@ package com.epic.canvascontrollibrary;
         public String Y;
         public String Status;
         public Object Tag;
+        public String TabStopIndex;
     }

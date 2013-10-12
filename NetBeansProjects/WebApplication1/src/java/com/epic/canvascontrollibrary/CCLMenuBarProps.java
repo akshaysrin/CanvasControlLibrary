@@ -27,6 +27,7 @@ import java.util.List;
         public String DropDownColorEnd;
         public List<Object> ChildMenuWindowIDs;
         public Object Tag;
+        public String TabStopIndex;
 
         CCLMenuBarProps()
         {

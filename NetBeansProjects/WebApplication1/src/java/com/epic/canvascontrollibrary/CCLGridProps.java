@@ -64,6 +64,7 @@ import java.util.List;
         public String HasUIDs;
         public List<Object> OrigUIDs; 
         public List<Object> SortedUIDs;
+        public String TabStopIndex;
 
         CCLGridProps()
         {

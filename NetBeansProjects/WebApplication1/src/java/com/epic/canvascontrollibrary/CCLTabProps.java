@@ -32,6 +32,7 @@ import java.util.List;
         public String SelectedTabBorderColor;
         public String SelectedTabBorderLineWidth;
         public Object Tag;
+        public String TabStopIndex;
 
         CCLTabProps()
         {

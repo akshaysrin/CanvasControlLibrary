@@ -26,4 +26,5 @@ package com.epic.canvascontrollibrary;
         public String HasIcons;
         public String IconWidth;
         public String IconHeight;
+        public String TabStopIndex;
     }

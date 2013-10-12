@@ -53,6 +53,7 @@ import java.util.List;
         public String DayLabelTextHeight;
         public String DayLabelTextFontString;
         public Object Tag;
+        public String TabStopIndex;
 
         CCLCalenderProps()
         {

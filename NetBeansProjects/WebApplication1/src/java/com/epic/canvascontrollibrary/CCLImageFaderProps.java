@@ -29,6 +29,7 @@ import java.util.List;
         public String CurrentImageIndex;
         public String CurrentGlobalAlphaValue;
         public String OverlayImages;
+        public String TabStopIndex;
 
         CCLImageFaderProps()
         {
