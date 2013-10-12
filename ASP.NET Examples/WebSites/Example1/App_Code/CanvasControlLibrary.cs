@@ -160,6 +160,7 @@ public class CanvasControlLibrary
         public string NewBrowserWindowCopyHistory { get; set; }
         public string BackGroundColor { get; set; }
         public object Tag { get; set; }
+        public string TabStopIndex { get; set; }
     }
 
     public List<CCLButtonProps> ButtonPropsArray = new List<CCLButtonProps>();
@@ -201,6 +202,7 @@ public class CanvasControlLibrary
         public object Tag { get; set; }
         public string Theme { get; set; }
         public string HasGloss { get; set; }
+        public string TabStopIndex { get; set; }
     }
 
     public List<CCLScrollBarProps> ScrollBarPropsArray = new List<CCLScrollBarProps>();
@@ -275,6 +277,7 @@ public class CanvasControlLibrary
         public string HasUIDs { get; set; }
         public List<object> OrigUIDs { get; set; } 
         public List<object> SortedUIDs { get; set; }
+        public string TabStopIndex { get; set; }
 
         public CCLGridProps()
         {
@@ -333,6 +336,7 @@ public class CanvasControlLibrary
         public string Y { get; set; }
         public string Status { get; set; }
         public object Tag { get; set; }
+        public string TabStopIndex { get; set; }
     }
 
     public List<CCLRadioButtonGroupProps> RadioButtonGroupPropsArray = new List<CCLRadioButtonGroupProps>();
@@ -355,6 +359,7 @@ public class CanvasControlLibrary
         public List<object> ButtonExtents { get; set; }
         public string LabelTextHeight { get; set; }
         public object Tag { get; set; }
+        public string TabStopIndex { get; set; }
 
         public CCLRadioButtonGroupProps()
         {
@@ -393,6 +398,7 @@ public class CanvasControlLibrary
         public string NewBrowserWindowCopyHistory { get; set; }
         public object Tag { get; set; }
         public string Tile { get; set; }
+        public string TabStopIndex { get; set; }
     }
 
     public List<CCLTreeViewProps> TreeViewPropsArray = new List<CCLTreeViewProps>();
@@ -415,6 +421,7 @@ public class CanvasControlLibrary
         public string HasIcons { get; set; }
         public string IconWidth { get; set; }
         public string IconHeight { get; set; }
+        public string TabStopIndex { get; set; }
     }
 
     public List<CCLCalenderProps> CalenderPropsArray = new List<CCLCalenderProps>();
@@ -461,6 +468,7 @@ public class CanvasControlLibrary
         public string DayLabelTextHeight { get; set; }
         public string DayLabelTextFontString { get; set; }
         public object Tag { get; set; }
+        public string TabStopIndex { get; set; }
 
         public CCLCalenderProps()
         {
@@ -484,6 +492,7 @@ public class CanvasControlLibrary
         public string MinValue { get; set; }
         public string CurrentValue { get; set; }
         public object Tag { get; set; }
+        public string TabStopIndex { get; set; }
     }
 
     public List<CCLSliderProps> SliderPropsArray = new List<CCLSliderProps>();
@@ -503,6 +512,7 @@ public class CanvasControlLibrary
         public string CurrentValue { get; set; }
         public string MouseDownState { get; set; }
         public object Tag { get; set; }
+        public string TabStopIndex { get; set; }
     }
 
     public List<CCLDatePickerProps> DatePrickerPropsArray = new List<CCLDatePickerProps>();
@@ -522,6 +532,7 @@ public class CanvasControlLibrary
         public string TextBoxAreaTextHeight { get; set; }
         public string TextBoxAreaTextFontString { get; set; }
         public object Tag { get; set; }
+        public string TabStopIndex { get; set; }
     }
 
     public List<CCLPanelProps> PanelPropsArray = new List<CCLPanelProps>();
@@ -557,6 +568,7 @@ public class CanvasControlLibrary
         public string OriginalWidth { get; set; }
         public string OriginalHeight { get; set; }
         public object Tag { get; set; }
+        public string TabStopIndex { get; set; }
     }
 
     public List<CCLBarGraphProps> BarGraphPropsArray = new List<CCLBarGraphProps>();
@@ -589,6 +601,7 @@ public class CanvasControlLibrary
         public string HasLegend { get; set; }
         public string MarginRight { get; set; }
         public object Tag { get; set; }
+        public string TabStopIndex { get; set; }
 
         public CCLBarGraphProps()
         {
@@ -623,6 +636,7 @@ public class CanvasControlLibrary
         public string DeltaY { get; set; }
         public string SliceClickFunction { get; set; }
         public object Tag { get; set; }
+        public string TabStopIndex { get; set; }
 
         public CCLPieChartProps()
         {
@@ -660,6 +674,7 @@ public class CanvasControlLibrary
         public string MarginLeft { get; set; }
         public string IsLabeledXValues { get; set; }
         public object Tag { get; set; }
+        public string TabStopIndex { get; set; }
 
         public CCLLineGraphProps()
         {
@@ -692,6 +707,7 @@ public class CanvasControlLibrary
         public string GaugeLabelTextFontString { get; set; }
         public string AlreadyUnregisteredAnimation { get; set; }
         public object Tag { get; set; }
+        public string TabStopIndex { get; set; }
 
         public CCLGaugeChartProps()
         {
@@ -723,6 +739,7 @@ public class CanvasControlLibrary
         public string MarkLabelTextFontString { get; set; }
         public string AlreadyUnregisteredAnimation { get; set; }
         public object Tag { get; set; }
+        public string TabStopIndex { get; set; }
 
         public CCLRadarGraphProps()
         {
@@ -757,6 +774,7 @@ public class CanvasControlLibrary
         public string AlreadyUnregisteredAnimation { get; set; }
         public string IsLabledOnXAxis { get; set; }
         public object Tag { get; set; }
+        public string TabStopIndex { get; set; }
 
         public CCLLineAreaGraphProps()
         {
@@ -791,6 +809,7 @@ public class CanvasControlLibrary
         public string AxisLabelsHeight { get; set; }
         public string AxisLabelsFontString { get; set; }
         public object Tag { get; set; }
+        public string TabStopIndex { get; set; }
 
         public CCLCandlesticksGraphProps()
         {
@@ -830,6 +849,7 @@ public class CanvasControlLibrary
         public string DeltaY { get; set; }
         public string SliceClickFunction { get; set; }
         public object Tag { get; set; }
+        public string TabStopIndex { get; set; }
 
         public CCLDoughnutChartProps()
         {
@@ -871,6 +891,7 @@ public class CanvasControlLibrary
         public string LineClickFunction { get; set; }
         public string YMaxValue { get; set; }
         public object Tag { get; set; }
+        public string TabStopIndex { get; set; }
 
         public CCLBarsMixedWithLabeledLineGraphProps()
         {
@@ -909,6 +930,7 @@ public class CanvasControlLibrary
         public string AlreadyUnregisteredAnimation { get; set; }
         public string MarginLeft { get; set; }
         public object Tag { get; set; }
+        public string TabStopIndex { get; set; }
 
         public CCLStackedBarGraphProps()
         {
@@ -939,6 +961,7 @@ public class CanvasControlLibrary
         public string SelectedTabBorderColor { get; set; }
         public string SelectedTabBorderLineWidth { get; set; }
         public object Tag { get; set; }
+        public string TabStopIndex { get; set; }
 
         public CCLTabProps()
         {
@@ -970,6 +993,7 @@ public class CanvasControlLibrary
         public string Scale { get; set; }
         public string ScaleIncrementFactor { get; set; }
         public object Tag { get; set; }
+        public string TabStopIndex { get; set; }
 
         public CCLImageMapProps()
         {
@@ -995,6 +1019,7 @@ public class CanvasControlLibrary
         public string DropDownColorEnd { get; set; }
         public List<object> ChildMenuWindowIDs { get; set; }
         public object Tag { get; set; }
+        public string TabStopIndex { get; set; }
 
         public CCLMenuBarProps()
         {
@@ -1020,6 +1045,7 @@ public class CanvasControlLibrary
         public string DropDownColorStart { get; set; }
         public string DropDownColorEnd { get; set; }
         public object Tag { get; set; }
+        public string TabStopIndex { get; set; }
 
         public CCLSubMenuBarProps()
         {
@@ -1103,6 +1129,7 @@ public class CanvasControlLibrary
         public string CurrentImageIndex { get; set; }
         public string CurrentGlobalAlphaValue { get; set; }
         public string OverlayImages { get; set; }
+        public string TabStopIndex { get; set; }
 
         public CCLImageFaderProps()
         {
@@ -1128,6 +1155,7 @@ public class CanvasControlLibrary
         public string CurrentImageIndex { get; set; }
         public string Slide { get; set; }
         public string HoldCountDown { get; set; }
+        public string TabStopIndex { get; set; }
 
         public CCLImageSliderProps()
         {
@@ -1154,6 +1182,7 @@ public class CanvasControlLibrary
         public List<object> LineBreakIndexes { get; set; }
         public List<object> MarkupTextExtents { get; set; }
         public string MarkupText { get; set; }
+        public string TabStopIndex { get; set; }
 
         public CCLMultiLineLabelProps()
         {
@@ -1240,6 +1269,7 @@ public class CanvasControlLibrary
         public string CustomDrawLetterFunction { get; set; }
         public string HasGloss { get; set; }
         public string ShiftKeyPressed { get; set; }
+        public string TabStopIndex { get; set; }
 
         public CCLVirtualKeyboardProps()
         {
@@ -1260,6 +1290,7 @@ public class CanvasControlLibrary
         public string Height { get; set; }
         public string LineColor { get; set; }
         public string MouseDown { get; set; }
+        public string TabStopIndex { get; set; }
     }
 
     public List<CCLBoundaryFillableMapProps> BoundaryFillableMapProps = new List<CCLBoundaryFillableMapProps>();
@@ -1276,6 +1307,7 @@ public class CanvasControlLibrary
         public string ImgURL { get; set; }
         public string ImageWidth { get; set; }
         public string ImageHeight { get; set; }
+        public string TabStopIndex { get; set; }
 
         public CCLBoundaryFillableMapProps()
         {
@@ -1304,6 +1336,7 @@ public class CanvasControlLibrary
         public string ImgURLNode { get; set; }
         public string ImgURLValue { get; set; }
         public string ImgURLAttribute { get; set; }
+        public string TabStopIndex { get; set; }
     }
 
     public List<CCLVotingProps> VotingProps = new List<CCLVotingProps>();
@@ -1349,6 +1382,7 @@ public class CanvasControlLibrary
         public string LabelTextFontString { get; set; }
         public string LabelTextHeight { get; set; }
         public string RoundDisplayedValueToNumOfDecimals { get; set; }
+        public string TabStopIndex { get; set; }
 
         public CCLVotingProps()
         {

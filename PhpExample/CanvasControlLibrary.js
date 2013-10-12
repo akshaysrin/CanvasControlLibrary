@@ -1382,7 +1382,7 @@ CCLLabel.prototype = {
     NewBrowserWindowHasScrollBars: null, NewBrowserWindowHasToolbar: null, NewBrowserWindowHasLocationOrURLOrAddressBox: null,
     NewBrowserWindowHasDirectoriesOrExtraButtons: null, NewBrowserWindowHasStatusBar: null,
     NewBrowserWindowHasMenuBar: null, NewBrowserWindowCopyHistory: null, DrawFunction: null,
-    Alignment: null, ClickFunction: null, BackGroundColor: null, Tag: null,
+    Alignment: null, ClickFunction: null, BackGroundColor: null, Tag: null, TabStopIndex: null,
 
     Initialize: function () {
         return createLabel(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width,
@@ -1392,7 +1392,7 @@ CCLLabel.prototype = {
             this.NameOfNewBrowserWindow, this.WidthOfNewBrowserWindow, this.HeightOfNewBrowserWindow,
             this.NewBrowserWindowIsResizable, this.NewBrowserWindowHasScrollBars, this.NewBrowserWindowHasToolbar,
             this.NewBrowserWindowHasLocationOrURLOrAddressBox, this.NewBrowserWindowHasDirectoriesOrExtraButtons,
-            this.NewBrowserWindowHasStatusBar, this.NewBrowserWindowHasMenuBar, this.NewBrowserWindowCopyHistory);
+            this.NewBrowserWindowHasStatusBar, this.NewBrowserWindowHasMenuBar, this.NewBrowserWindowCopyHistory, this.TabStopIndex);
     }
 }
 
@@ -1402,13 +1402,13 @@ function createLabel(canvasid, controlNameId, x, y, width, height, text, textCol
     alignment, clickFunction, backgroundColor, autoAdjustWidth, tag, isHyperlink, url, nobrowserhistory, isnewbrowserwindow,
     nameofnewbrowserwindow, widthofnewbrowserwindow, heightofnewbrowserwindow, newbrowserwindowisresizable, newbrowserwindowhasscrollbars,
     newbrowserwindowhastoolbar, newbrowserwindowhaslocationorurloraddressbox, newbroserwindowhasdirectoriesorextrabuttons,
-    newbrowserwindowhasstatusbar, newbrowserwindowhasmenubar, newbrowserwindowcopyhistory) {
+    newbrowserwindowhasstatusbar, newbrowserwindowhasmenubar, newbrowserwindowcopyhistory, tabstopindex) {
     if (autoAdjustWidth == 1) {
         var ctx = getCtx(canvasid);
         ctx.font = textFontString;
         width = ctx.measureText(text).width;
     }
-    var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Label', controlNameId);
+    var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Label', controlNameId, null, tabstopindex);
     var label = new CCLLabel();
     labelPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Text: text,
@@ -1486,6 +1486,9 @@ function createLabel(canvasid, controlNameId, x, y, width, height, text, textCol
                 }
             }
         }, canvasid);
+    }
+    if (tabstopindex != null && tabstopindex > 0) {
+        registerKeyDownFunction(canvasid, function () { }, windowid);
     }
     return windowid;
 }
@@ -1698,7 +1701,7 @@ CCLButton.prototype = {
     NewBrowserWindowHasDirectoriesOrExtraButtons: null,
     NewBrowserWindowHasStatusBar: null, NewBrowserWindowHasMenuBar: null,
     NewBrowserWindowCopyHistory: null, Tag: null, Theme: null, HasGloss: null,
-    ControlNameID: null, Depth: null, ClickFunction: null, DrawFunction: null,
+    ControlNameID: null, Depth: null, ClickFunction: null, DrawFunction: null, TabStopIndex: null,
 
     Initialize: function () {
         return createButton(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Height, this.Text, this.TextColor, this.TextHeight,
@@ -1708,7 +1711,7 @@ CCLButton.prototype = {
             this.NameOfNewBrowserWindow, this.WidthOfNewBrowserWindow, this.HeightOfNewBrowserWindow, this.NewBrowserWindowIsResizable,
             this.NewBrowserWindowHasScrollBars, this.NewBrowserWindowHasToolbar, this.NewBrowserWindowHasLocationOrURLOrAddressBox,
             this.NewBrowserWindowHasDirectoriesOrExtraButtons, this.NewBrowserWindowHasStatusBar, this.NewBrowserWindowHasMenuBar,
-            this.NewBrowserWindowCopyHistory);
+            this.NewBrowserWindowCopyHistory, this.TabStopIndex);
     }
 }
 
@@ -1716,8 +1719,8 @@ function createButton(canvasid, controlNameId, x, y, width, height, text, textCo
     drawFunction, bottomColorStart, bottomColorEnd, topColorStart, topColorEnd, borderColor, tag, isHyperlink, url, nobrowserhistory, isnewbrowserwindow,
     nameofnewbrowserwindow, widthofnewbrowserwindow, heightofnewbrowserwindow, newbrowserwindowisresizable, newbrowserwindowhasscrollbars,
     newbrowserwindowhastoolbar, newbrowserwindowhaslocationorurloraddressbox, newbrowserwindowhasdirectoriesorextrabuttons,
-    newbrowserwindowhasstatusbar, newbrowserwindowhasmenubar, newbrowserwindowcopyhistory) {
-    var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Button', controlNameId);
+    newbrowserwindowhasstatusbar, newbrowserwindowhasmenubar, newbrowserwindowcopyhistory, tabstopindex) {
+    var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Button', controlNameId, null, tabstopindex);
     buttonPropsArray.push({
         CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Text: text,
         EdgeRadius: edgeRadius, BottomColorStart: bottomColorStart, BottomColorEnd: bottomColorEnd,
@@ -1787,6 +1790,9 @@ function createButton(canvasid, controlNameId, x, y, width, height, text, textCo
         registerWindowDrawFunction(windowid, function () { drawFunction(canvasid, windowid); }, canvasid);
     else
         registerWindowDrawFunction(windowid, function () { defaultButtonDrawFunction(canvasid, windowid); }, canvasid);
+    if (tabstopindex != null && tabstopindex > 0) {
+        registerKeyDownFunction(canvasid, function () { }, windowid);
+    }
     return windowid;
 }
 
@@ -2248,7 +2254,7 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         HasFilterImageIcon: null, FilterImageIcon: null, FilteredData: null,
         SortClickExtents: null, HasUIDs: null, UIDs: null,
         ControlNameID: null, DrawHeaderCellFunction: null,
-        DrawRowDataCellFunction: null, RowDataTextHeight: null, Depth: null,
+        DrawRowDataCellFunction: null, RowDataTextHeight: null, Depth: null, TabStopIndex: null,
 
         Initialize: function () {
             return createGrid(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Height, this.Depth, this.RowData,
@@ -2259,7 +2265,7 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
                 this.AltRowBgColorStart1, this.AltRowBgColorEnd1, this.AltRowBgColorStart2, this.AltRowBgColorEnd2, this.Tag,
                 this.HasSelectedRow, this.SelectedRowBgColor, this.HasSelectedCell, this.SelectedCellBgColor, this.HasSorting,
                 this.SortableColumnsArray, this.HasSortImages, this.SortImageURLsArray, this.SortImageShowIndex, this.CustomSortFunction,
-                this.HasUIDs, this.UIDs, this.HasFilters, this.FilterColumnsArray, this.HasFilterImageIcon, this.FilterImageIcon);
+                this.HasUIDs, this.UIDs, this.HasFilters, this.FilterColumnsArray, this.HasFilterImageIcon, this.FilterImageIcon, this.TabStopIndex);
         }
     }
 
@@ -2272,8 +2278,8 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         cellClickFunction, dataRowHeight, headerRowHeight, columnWidthArray, hasBorder, borderColor, borderLineWidth,
         headerbackgroundstartcolor, headerbackgroundendcolor, altrowbgcolorstart1, altrowbgcolorend1, altrowbgcolorstart2, altrowbgcolorend2, tag,
         hasSelectedRow, selectedRowBgColor, hasSelectedCell, selectedCellBgColor, hasSorting, sortableColumnsArray, hasSortImages, sortImageURLsArray,
-        sortImageShowIndex, customSortFunction, hasuids, uids, hasFilters, filterColumnsArray, hasFilterImageIcon, filterImageIcon) {
-        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Grid');
+        sortImageShowIndex, customSortFunction, hasuids, uids, hasFilters, filterColumnsArray, hasFilterImageIcon, filterImageIcon, tabstopindex) {
+        var windowid = createWindow(canvasid, x, y, width, height, depth, nul, 'Grid', controlNameId, null, tabstopindex);
         var effectiveWidth = 0;
         for (var i = 0; i < columnWidthArray.length; i++) {
             effectiveWidth += columnWidthArray[i];
@@ -2322,6 +2328,9 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         }
         registerWindowDrawFunction(windowid, drawGrid, canvasid);
         registerClickFunction(windowid, clickGrid, canvasid);
+        if (tabstopindex != null && tabstopindex > 0) {
+            registerKeyDownFunction(canvasid, function () { }, windowid);
+        }
         return windowid;
     }
 
@@ -3009,15 +3018,15 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
     function CCLCheckbox() { }
 
     CCLCheckbox.prototype = {
-        CanvasID: null, X: null, Y: null, Status: null, Tag: null, ControlNameID: null, Depth: null,
+        CanvasID: null, X: null, Y: null, Status: null, Tag: null, ControlNameID: null, Depth: null, TabStopIndex: null,
 
         Initialize: function () {
-            return createCheckbox(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Depth, this.Status, this.Tag);
+            return createCheckbox(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Depth, this.Status, this.Tag, this.TabStopIndex);
         }
     }
 
-    function createCheckbox(canvasid, controlNameId, x, y, depth, status, tag) {
-        var windowid = createWindow(canvasid, x, y, 15, 15, depth, null, 'CheckBox', controlNameId);
+    function createCheckbox(canvasid, controlNameId, x, y, depth, status, tag, tabstopindex) {
+        var windowid = createWindow(canvasid, x, y, 15, 15, depth, null, 'CheckBox', controlNameId, null, tabstopindex);
         checkboxPropsArray.push({ CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Status: status, Tag: tag });
         registerClickFunction(windowid, function () {
             var checkboxProps = getcheckboxProps(canvasid, windowid);
@@ -3028,6 +3037,9 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
             }
         }, canvasid);
         registerWindowDrawFunction(windowid, function () { drawCheckbox(canvasid, windowid); }, canvasid);
+        if (tabstopindex != null && tabstopindex > 0) {
+            registerKeyDownFunction(canvasid, function () { }, windowid);
+        }
         return windowid;
     }
 
@@ -3048,17 +3060,17 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
     CCLRadioButtonGroup.prototype = {
         CanvasID: null, WindowID: null, X: null, Y: null, Width: null, Height: null, Alignment: null, GroupName: null,
         Labels: null, SelectedID: null, LabelTextColor: null, LabelFontString: null, Radius: null,
-        LabelTextHeight: null, Tag: null, ControlNameID: null, Depth: null,
+        LabelTextHeight: null, Tag: null, ControlNameID: null, Depth: null, TabStopIndex: null,
 
         Initialize: function () {
             return createRadioButtonGroup(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Alignment, this.Depth,
                 this.GroupName, this.Labels, this.SelectedID, this.LabelTextColor, this.LabelFontString, this.LabelTextHeight,
-                this.Radius, this.Tag);
+                this.Radius, this.Tag, this.TabStopIndex);
         }
     }
 
     function createRadioButtonGroup(canvasid, controlNameId, x, y, alignment, depth, groupname, labels, selectedid, labelTextColor,
-        labelFontString, labelTextHeight, radius, tag) {
+        labelFontString, labelTextHeight, radius, tag, tabstopindex) {
         var canvas = document.getElementById(canvasid);
         var ctx = canvas.getContext('2d');
         ctx.font = labelFontString;
@@ -3073,7 +3085,7 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
             var tw = ctx.measureText(labels[i]).width;
             width += tw + 8 + (2 * radius);
         }
-        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'RadioButtonGroup', controlNameId);
+        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'RadioButtonGroup', controlNameId, null, tabstopindex);
         radiobuttonPropsArray.push({
             CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Alignment: alignment, GroupName: groupname,
             Labels: labels, SelectedID: selectedid, LabelTextColor: labelTextColor, LabelFontString: labelFontString, Radius: radius,
@@ -3135,6 +3147,9 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
                 }
             }
         }, canvasid);
+        if (tabstopindex != null && tabstopindex > 0) {
+            registerKeyDownFunction(canvasid, function () { }, windowid);
+        }
         return windowid;
     }
 
@@ -3186,7 +3201,7 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         NewBrowserWindowHasDirectoriesOrExtraButtons: null,
         NewBrowserWindowHasStatusBar: null, NewBrowserWindowHasMenuBar: null,
         NewBrowserWindowCopyHistory: null, Tag: null, Tile: null,
-        ControlNameID: null, Depth: null,
+        ControlNameID: null, Depth: null, TabStopIndex: null,
 
         Initialize: function () {
             return createImage(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Height, this.Depth,
@@ -3194,7 +3209,7 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
                 this.IsNewBrowserWindow, this.NameOfNewBrowserWindow, this.WidthOfNewBrowserWindow, this.HeightOfNewBrowserWindow,
                 this.NewBrowserWindowIsResizable, this.NewBrowserWindowHasScrollBars, this.NewBrowserWindowHasToolbar,
                 this.NewBrowserWindowHasLocationOrURLOrAddressBox, this.NewBrowserWindowHasDirectoriesOrExtraButtons,
-                this.NewBrowserWindowHasStatusBar, this.NewBrowserWindowHasMenuBar, this.NewBrowserWindowCopyHistory);
+                this.NewBrowserWindowHasStatusBar, this.NewBrowserWindowHasMenuBar, this.NewBrowserWindowCopyHistory, this.TabStopIndex);
         }
     }
 
@@ -3202,8 +3217,8 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         isHyperlink, url, nobrowserhistory, isnewbrowserwindow,
         nameofnewbrowserwindow, widthofnewbrowserwindow, heightofnewbrowserwindow, newbrowserwindowisresizable, newbrowserwindowhasscrollbars,
         newbrowserwindowhastoolbar, newbrowserwindowhaslocationorurloraddressbox, newbrowserwindowhasdirectoriesorextrabuttons,
-        newbrowserwindowhasstatusbar, newbrowserwindowhasmenubar, newbrowserwindowcopyhistory) {
-        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Image', controlNameId);
+        newbrowserwindowhasstatusbar, newbrowserwindowhasmenubar, newbrowserwindowcopyhistory, tabstopindex) {
+        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Image', controlNameId, null, tabstopindex);
         var image = new Image();
         image.onload = function () {
             invalidateRect(canvasid, null, x, y, width, height);
@@ -3290,6 +3305,9 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
                     }
                 }
             }, canvasid);
+        }
+        if (tabstopindex != null && tabstopindex > 0) {
+            registerKeyDownFunction(canvasid, function () { }, windowid);
         }
         return windowid;
     }
@@ -3507,18 +3525,18 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         VScrollBarWindowID: null, HScrollBarWindowID: null,
         ClickNodeFunction: null, Tag: null, HasIcons: null, IconWidth: null,
         IconHeight: null, TextColor: null, TextFontString: null, TextHeight: null,
-        ControlNameID: null, Depth: null, Nodes: null, SelectedNode: null,
+        ControlNameID: null, Depth: null, Nodes: null, SelectedNode: null, TabStopIndex: null,
 
         Initialize: function () {
             return createTreeView(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Height, this.Depth, this.Nodes,
                 this.TextColor, this.TextFontString, this.TextHeight, this.ClickNodeFunction, this.Tag, this.HasIcons, this.IconWidth,
-                this.IconHeight, this.SelectedNode);
+                this.IconHeight, this.SelectedNode, this.TabStopIndex);
         }
     }
 
     function createTreeView(canvasid, controlNameId, x, y, width, height, depth, nodes,
-        textcolor, textfontstring, textheight, clickNodeFunction, tag, hasicons, iconwidth, iconheight, selectednode) {
-        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'TreeView', controlNameId);
+        textcolor, textfontstring, textheight, clickNodeFunction, tag, hasicons, iconwidth, iconheight, selectednode, tabstopindex) {
+        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'TreeView', controlNameId, null, tabstopindex);
         var shownitemscount = findNumberOfExpandedNodesInAll(nodes);
         iconImages = (hasicons == 1 ? fillIconImages(nodes, new Array()) : new Array());
         var vscrollbarwindowid = createScrollBar(canvasid, controlNameId + 'VS', x + width, y, height, depth, shownitemscount, 1, windowid, null, null, null,
@@ -3539,6 +3557,9 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         setTreeviewClickButtonExtents(getTreeViewProps(canvasid, windowid), clickButtonExtents);
         registerWindowDrawFunction(windowid, drawTreeView, canvasid);
         registerClickFunction(windowid, clickTreeView, canvasid);
+        if (tabstopindex != null && tabstopindex > 0) {
+            registerKeyDownFunction(canvasid, function () { }, windowid);
+        }
         return windowid;
     }
 
@@ -3974,7 +3995,7 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         HeaderBackgroundColor: null, BodyBackgroundColor: null,
         MouseOverHightLightColor: null, MouseHoverDate: null,
         DayLabelTextColor: null, DayLabelTextHeight: null, Tag: null, DayLabelTextFontString: null,
-        ControlNameID: null, Depth: null,
+        ControlNameID: null, Depth: null, TabStopIndex: null,
 
         Initialize: function () {
             return createCalendar(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Height, this.Depth,
@@ -3984,7 +4005,7 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
                 this.DayDateInactiveTextColor, this.DayDateInactiveTextHeight, this.DayDateInactiveTextFontString, this.SelectedDayTextColor,
                 this.SelectedDayTextHeight, this.SelectedDayTextFontString, this.SelectedDayHighLightColor, this.TodayTextColor,
                 this.TodayTextHeight, this.TodayTextFontString, this.TodayHighLightColor, this.MouseOverHightLightColor,
-                this.OnDayClickFunction, this.DayLabelTextColor, this.DayLabelTextHeight, this.DayLabelTextFontString, this.Tag);
+                this.OnDayClickFunction, this.DayLabelTextColor, this.DayLabelTextHeight, this.DayLabelTextFontString, this.Tag, this.TabStopIndex);
         }
     }
 
@@ -3993,8 +4014,8 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         dayDateActiveColor, dayDateActiveTextHeight, dayDateActiveTextFontString,
         dayDateInactiveTextColor, dayDateInactiveTextHeight, dayDateInactiveTextFontString, selectedDayTextColor, selectedDayTextHeight,
         selectedDayTextFontString, selectedDayHighLightColor, todayTextColor, todayTextHeight, todayTextFontString, todayHighLightColor,
-        mouseoverHightlightColor, ondayClickFunction, dayLabelTextColor, dayLabelTextHeight, dayLabelTextFontString, tag) {
-        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Calender', controlNameId);
+        mouseoverHightlightColor, ondayClickFunction, dayLabelTextColor, dayLabelTextHeight, dayLabelTextFontString, tag, tabstopindex) {
+        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Calender', controlNameId, null, tabstopindex);
         calenderPropsArray.push({
             CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, VisibleMonth: visibleMonth, VisibleYear: visibileYear,
             SelectedDay: new Date(selectedDay), DayCellWidth: dayCellWidth, DayCellHeight: dayCellHeight, HeaderHeight: headerHeight,
@@ -4013,6 +4034,9 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         registerWindowDrawFunction(windowid, drawCalender, canvasid);
         registerClickFunction(windowid, calenderClick, canvasid);
         registerMouseOverFunction(windowid, calenderMouseOver, canvasid);
+        if (tabstopindex != null && tabstopindex > 0) {
+            registerKeyDownFunction(canvasid, function () { }, windowid);
+        }
         return windowid;
     }
 
@@ -4120,21 +4144,24 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
 
     CCLProgressBar.prototype = {
         CanvasID: null, X: null, Y: null, Width: null, Height: null, Color: null, MaxValue: null,
-        MinValue: null, CurrentValue: null, Tag: null, ControlNameID: null, Depth: null,
+        MinValue: null, CurrentValue: null, Tag: null, ControlNameID: null, Depth: null, TabStopIndex: null,
 
         Initialize: function () {
             return (this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Height, this.Depth, this.Color,
-                this.MaxValue, this.MinValue, this.CurrentValue, this.Tag);
+                this.MaxValue, this.MinValue, this.CurrentValue, this.Tag, this.TabStopIndex);
         }
     }
 
-    function createProgressBar(canvasid, controlNameId, x, y, width, height, depth, color, maxvalue, minvalue, currentvalue, tag) {
-        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'ProgressBar', controlNameId);
+    function createProgressBar(canvasid, controlNameId, x, y, width, height, depth, color, maxvalue, minvalue, currentvalue, tag, tabstopindex) {
+        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'ProgressBar', controlNameId, null, tabstopindex);
         progressBarPropsArray.push({
             CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Color: color, MaxValue: maxvalue,
             MinValue: minvalue, CurrentValue: currentvalue, Tag: tag
         });
         registerWindowDrawFunction(windowid, drawProgressBar, canvasid);
+        if (tabstopindex != null && tabstopindex > 0) {
+            registerKeyDownFunction(canvasid, function () { }, windowid);
+        }
         return windowid;
     }
 
@@ -4285,16 +4312,16 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
     CCLSlider.prototype = {
         CanvasID: null, X: null, Y: null, Width: null, Height: null, HandleWidth: null,
         HandleHeight: null, MaxValue: null, MinValue: null, MouseDownState: null, Tag: null,
-        ControlNameID: null, Depth: null, Value: null,
+        ControlNameID: null, Depth: null, TabStopIndex: null, Value: null,
 
         Initialize: function () {
             return createSlider(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Height, this.Depth,
-                this.HandleWidth, this.MaxValue, this.MinValue, this.Value, this.Tag);
+                this.HandleWidth, this.MaxValue, this.MinValue, this.Value, this.Tag, this.TabStopIndex);
         }
     }
 
-    function createSlider(canvasid, controlNameId, x, y, width, height, depth, handlewidth, maxvalue, minvalue, value, tag) {
-        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Slider', controlNameId);
+    function createSlider(canvasid, controlNameId, x, y, width, height, depth, handlewidth, maxvalue, minvalue, value, tag, tabstopindex) {
+        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Slider', controlNameId, null, tabstopindex);
         sliderPropsArray.push({
             CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, HandleWidth: handlewidth,
             HandleHeight: height, MaxValue: maxvalue, MinValue: minvalue, CurrentValue: value, MouseDownState: 0, Tag: tag
@@ -4303,6 +4330,9 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         registerMouseDownFunction(windowid, sliderMouseDown, canvasid);
         registerMouseUpFunction(windowid, sliderMouseUp, canvasid);
         registerMouseMoveFunction(windowid, sliderMouseMove, canvasid);
+        if (tabstopindex != null && tabstopindex > 0) {
+            registerKeyDownFunction(canvasid, function () { }, windowid);
+        }
         return windowid;
     }
 
@@ -4339,7 +4369,7 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
     CCLDatePicker.prototype = {
         CanvasID: null, X: null, Y: null, Width: null, Height: null, TextBoxAreaTextColor: null,
         TextBoxAreaTextHeight: null, TextBoxAreaTextFontString: null, Tag: null,
-        ControlNameID: null, Depth: null, VisibleMonth: null, VisibleYear: null,
+        ControlNameID: null, Depth: null, TabStopIndex: null, VisibleMonth: null, VisibleYear: null,
         SelectedDay: null, DayCellWidth: null, DayCellHeight: null, HeaderHeight: null,
         TextHeaderColor: null, TextHeaderHeight: null, TextHeaderFontString: null,
         DayDateActiveColor: null, DayDateActiveTextHeight: null,
@@ -4364,7 +4394,7 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
                 this.SelectedDayTextFontString, this.SelectedDayHighLightColor, this.TodayTextColor, this.TodayTextHeight,
                 this.TodayTextFontString, this.TodayHighLightColor, this.MouseOverHightLightColor, this.OnDayClickFunction,
                 this.DayLabelTextColor, this.DayLabelTextHeight, this.DayLabelTextFontString, this.TextBoxAreaTextColor,
-                this.TextBoxAreaTextHeight, this.TextBoxAreaTextFontString, this.CalenderHeight, this.Tag);
+                this.TextBoxAreaTextHeight, this.TextBoxAreaTextFontString, this.CalenderHeight, this.Tag, this.TabStopIndex);
         }
     }
 
@@ -4374,7 +4404,7 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         dayDateInactiveTextColor, dayDateInactiveTextHeight, dayDateInactiveTextFontString, selectedDayTextColor, selectedDayTextHeight,
         selectedDayTextFontString, selectedDayHighLightColor, todayTextColor, todayTextHeight, todayTextFontString, todayHighLightColor,
         mouseoverHightlightColor, ondayClickFunction, dayLabelTextColor, dayLabelTextHeight, dayLabelTextFontString, textboxAreaTextColor,
-        textboxAreaTextHeight, textboxAreaTextFontString, calenderHeight, tag) {
+        textboxAreaTextHeight, textboxAreaTextFontString, calenderHeight, tag, tabstopindex) {
         var textboxAreaWindowID = createWindow(canvasid, x, y, width - height, height, depth, null, 'DatePickerTextArea', controlNameId + 'DatePickerTextArea');
         var buttonWindowID = createWindow(canvasid, x + width - height, y, height, height, depth, null, 'DatePickerButton', controlNameId + 'DatePickerButton');
         var calenderWindowID = createCalendar(canvasid, controlNameId + 'DatePickerCalender', x, y + height, width, calenderHeight, depth, visibleMonth, visibileYear, selectedDay,
@@ -4515,7 +4545,7 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         ExpandCollapseButtonColor: null, IsExpanded: null, ExpandCollapseButtonRadius: null,
         PanelLabel: null, PanelLabelTextColor: null, PanelLabelTextHeight: null,
         PanelLabelTextFontString: null, OriginalWidth: null, OriginalHeight: null, Tag: null,
-        ControlNameID: null, Depth: null,
+        ControlNameID: null, Depth: null, TabStopIndex: null,
 
         Initialize: function () {
             return (this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Height, this.Depth,
@@ -4523,15 +4553,15 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
                 this.BackgroundEndColor, this.IsCollapsable, this.CollapsedWidth, this.CollapsedHeight,
                 this.PanelLabel, this.PanelLabelTextColor, this.PanelLabelTextHeight, this.PanelLabelTextFontString,
                 this.HeaderBackgroundStartColor, this.HeaderBackgroundEndColor, this.HeaderHeight,
-                this.ExpandCollapseButtonColor, this.IsExpanded, this.ExpandCollapseButtonRadius, this.Tag);
+                this.ExpandCollapseButtonColor, this.IsExpanded, this.ExpandCollapseButtonRadius, this.Tag, this.TabStopIndex);
         }
     }
 
     function createPanel(canvasid, controlNameId, x, y, width, height, depth, hasBorder, borderColor, hasBackgroundGradient, backgroundStartColor, backgroundEndColor,
         iscollapsable, collapsedWidth, collapsedHeight, panellabel, panelLabelTextColor, panelLabelTextHeight, panelLabelTextFontString,
-        headerBackgroundStartColor, headerBackgroundEndColor, headerheight, expandCollapseButtonColor, isexpanded, expandCollapseButtonRadius, tag) {
+        headerBackgroundStartColor, headerBackgroundEndColor, headerheight, expandCollapseButtonColor, isexpanded, expandCollapseButtonRadius, tag, tabstopindex) {
         var windowid = createWindow(canvasid, x, y, (iscollapsable == 1 ? (isexpanded == 1 ? width : collapsedWidth) : width),
-            (iscollapsable == 1 ? (isexpanded == 1 ? height : headerheight) : height), depth, null, 'Panel', controlNameId);
+            (iscollapsable == 1 ? (isexpanded == 1 ? height : headerheight) : height), depth, null, 'Panel', controlNameId, null, tabstopindex);
         panelPropsArray.push({
             CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, ExpandedWidth: width, ExpandedHeight: height,
             CollapsedWidth: collapsedWidth, CollapsedHeight: collapsedHeight, IsCollapsable: iscollapsable, HasBorder: hasBorder, BorderColor: borderColor,
@@ -4696,6 +4726,9 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         registerMouseDownFunction(windowid, function () { }, canvasid);
         registerMouseMoveFunction(windowid, function () { }, canvasid);
         registerMouseUpFunction(windowid, function () { }, canvasid);
+        if (tabstopindex != null && tabstopindex > 0) {
+            registerKeyDownFunction(canvasid, function () { }, windowid);
+        }
         return windowid;
     }
 
@@ -4719,21 +4752,21 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         TitleTextFontString: null, BarWidth: null, AxisLabelsTextHeight: null,
         AxisLabelsTextFontString: null, AxisLabelsTextColor: null, MarginLeft: null,
         GapBetweenBars: null, BarClickFunction: null, AlreadyUnregisteredAnimation: null,
-        HasLegend: null, MarginRight: null, Tag: null, ControlNameID: null, Depth: null,
+        HasLegend: null, MarginRight: null, Tag: null, ControlNameID: null, Depth: null, TabStopIndex: null,
 
         Initialize: function () {
             return createBarGraph(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Height,
                 this.Depth, this.Data, this.MaxValue, this.NumMarksY, this.Title, this.TitleTextColor,
                 this.TitleTextHeight, this.TitleTextFontString, this.BarWidth, this.AxisLabelsTextColor,
                 this.AxisLabelsTextHeight, this.AxisLabelsTextFontString, this.MarginLeft, this.GapBetweenBars,
-                this.BarClickFunction, this.HasLegend, this.MarginRight, this.Tag);
+                this.BarClickFunction, this.HasLegend, this.MarginRight, this.Tag, this.TabStopIndex);
         }
     }
 
     function createBarGraph(canvasid, controlNameId, x, y, width, height, depth, data, maxvalue, nummarksy, title, titletextcolor,
         titletextheigth, titletextfontstring, barwidth, axisLabelsTextColor, axisLabelsTextHeight, axisLabelsTextFontString,
-        marginleft, gapbetweenbars, barClickFunction, haslegend, marginright, tag) {
-        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'BarGraph', controlNameId);
+        marginleft, gapbetweenbars, barClickFunction, haslegend, marginright, tag, tabstopindex) {
+        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'BarGraph', controlNameId, null, tabstopindex);
         barGraphsPropsArray.push({
             CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Data: data,
             MaxValue: maxvalue, NumMarksY: nummarksy, Title: title, TitleTextColor: titletextcolor, TitleTextHeight: titletextheigth,
@@ -4826,6 +4859,9 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
             ctx.restore();
         }, canvasid);
         registerAnimatedWindow(canvasid, windowid);
+        if (tabstopindex != null && tabstopindex > 0) {
+            registerKeyDownFunction(canvasid, function () { }, windowid);
+        }
         return windowid;
     }
 
@@ -4925,18 +4961,18 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         CanvasID: null, X: null, Y: null, Width: null, Height: null, Data: null,
         Title: null, TitleTextColor: null, TitleTextHeight: null, TitleTextFontString: null,
         LabelTextColor: null, LabelTextHeight: null, LabelTextFontString: null, 
-        SliceClickFunction: null, Tag: null, ControlNameID: null, Depth: null,
+        SliceClickFunction: null, Tag: null, ControlNameID: null, Depth: null, TabStopIndex: null,
 
         Initialize: function () {
             return createPieChart(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Height,
                 this.Depth, this.Data, this.Title, this.TitleTextColor, this.TitleTextHeight, this.TitleTextFontString,
-                this.LabelTextColor, this.LabelTextHeight, this.LabelTextFontString, this.SliceClickFunction, this.Tag);
+                this.LabelTextColor, this.LabelTextHeight, this.LabelTextFontString, this.SliceClickFunction, this.Tag, this.TabStopIndex);
         }
     }
 
     function createPieChart(canvasid, controlNameId, x, y, width, height, depth, data, title, titletextcolor, titletextheight, titletextfontstring,
-        labeltextcolor, labeltextheight, labeltextfontstring, sliceClickFunction, tag) {
-        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'PieChart', controlNameId);
+        labeltextcolor, labeltextheight, labeltextfontstring, sliceClickFunction, tag, tabstopindex) {
+        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'PieChart', controlNameId, null, tabstopindex);
         var totalvalue = 0;
         for (var i = 0; i < data.length; i++) {
             totalvalue += data[i][1];
@@ -5139,6 +5175,9 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
             ctx.restore();
         }, canvasid);
         registerAnimatedWindow(canvasid, windowid);
+        if (tabstopindex != null && tabstopindex > 0) {
+            registerKeyDownFunction(canvasid, function () { }, windowid);
+        }
         return windowid;
     }
 
@@ -5191,21 +5230,21 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         TitleTextColor: null, TitleTextHeight: null, TitleTextFontString: null,
         AxisLabelsTextColor: null, AxisLabelsTextHeight: null, AxisLabelsTextFontString: null,
         ClickFunction: null, MarginLeft: null, IsLabeledXValues: null, Tag: null,
-        ControlNameID: null, Depth: null,
+        ControlNameID: null, Depth: null, TabStopIndex: null,
 
         Initialize: function () {
             return createLineGraph(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Height,
                 this.Depth, this.Data, this.XMaxValue, this.NumMarksX, this.YMaxValue, this.NumMarksY, this.Title,
                 this.TitleTextColor, this.TitleTextHeight, this.TitleTextFontString, this.AxisLabelsTextColor,
                 this.AxisLabelsTextHeight, this.AxisLabelsTextFontString, this.ClickFunction, this.MarginLeft,
-                this.IsLabeledXValues, this.Tag);
+                this.IsLabeledXValues, this.Tag, this.TabStopIndex);
         }
     }
 
     function createLineGraph(canvasid, controlNameId, x, y, width, height, depth, data, xmaxvalue, nummarksx, ymaxvalue, nummarksy, title,
         titletextcolor, titletextheight, titletextfontstring, axislabelstextcolor, axislabelstextheight, axislabelstextfontstring,
-        clickFunction, marginleft, islabeledxvalues, tag) {
-        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'LineGraph', controlNameId);
+        clickFunction, marginleft, islabeledxvalues, tag, tabstopindex) {
+        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'LineGraph', controlNameId, null, tabstopindex);
         var hmax = 0;
         for (var j = 0; j < data.length; j++) {
             if (data[j][0].length > hmax)
@@ -5353,6 +5392,9 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
             ctx.restore();
         }, canvasid);
         registerAnimatedWindow(canvasid, windowid);
+        if (tabstopindex != null && tabstopindex > 0) {
+            registerKeyDownFunction(canvasid, function () { }, windowid);
+        }
         return windowid;
     }
 
@@ -5426,18 +5468,18 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         CanvasID: null, X: null, Y: null, Width: null, Height: null, Data: null,
         Title: null, TitleTextColor: null, TitleTextHeight: null, TitleTextFontString: null,
         GaugeRadius: null, GaugeLabelTextColor: null, GaugeLabelTextHeight: null,
-        GaugeLabelTextFontString: null, Tag: null, ControlNameID: null, Depth: null,
+        GaugeLabelTextFontString: null, Tag: null, ControlNameID: null, Depth: null, TabStopIndex: null,
 
         Initialize: function () {
             return (this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Height, this.Depth, this.Data,
                 this.Title, this.TitleTextColor, this.TitleTextHeight, this.TitleTextFontString, this.GaugeRadius,
-                this.GaugeLabelTextColor, this.GaugeLabelTextHeight, this.GaugeLabelTextFontString, this.Tag);
+                this.GaugeLabelTextColor, this.GaugeLabelTextHeight, this.GaugeLabelTextFontString, this.Tag, this.TabStopIndex);
         }
     }
 
     function createGauge(canvasid, controlNameId, x, y, width, height, depth, data, title, titletextcolor, titletextheight, titletextfontstring, gaugeradius,
-        gaugelabeltextcolor, gaugelabeltextheight, gaugelabeltextfontstring, tag) {
-        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Gauge', controlNameId);
+        gaugelabeltextcolor, gaugelabeltextheight, gaugelabeltextfontstring, tag, tabstopindex) {
+        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Gauge', controlNameId, null, tabstopindex);
         gaugeChartPropsArray.push({
             CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Data: data,
             Title: title, TitleTextColor: titletextcolor, TitleTextHeight: titletextheight, TitleTextFontString: titletextfontstring,
@@ -5661,6 +5703,9 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
             }
         }, canvasid);
         registerAnimatedWindow(canvasid, windowid);
+        if (tabstopindex != null && tabstopindex > 0) {
+            registerKeyDownFunction(canvasid, function () { }, windowid);
+        }
         return windowid;
     }
 
@@ -5726,19 +5771,19 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         MaxValue: null, ColorStr: null, NumMarks: null, Title: null, TitleTextColor: null,
         TitleTextHeight: null, TitleTextFontString: null,
         MarkLabelTextColor: null, MarkLabelTextHeight: null, MarkLabelTextFontString: null,
-        Tag: null, ControlNameID: null, Depth: null,
+        Tag: null, ControlNameID: null, Depth: null, TabStopIndex: null,
 
         Initialize: function () {
             return createRadarGraph(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Height,
                 this.Depth, this.Data, this.MaxValue, this.ColorStr, this.NumMarks, this.Title, this.TitleTextColor,
                 this.TitleTextHeight, this.TitleTextFontString, this.MarkLabelTextColor, this.MarkLabelTextHeight,
-                this.MarkLabelTextFontString, this.Tag);
+                this.MarkLabelTextFontString, this.Tag, this.TabStopIndex);
         }
     }
 
     function createRadarGraph(canvasid, controlNameId, x, y, width, height, depth, data, maxvalue, colorstr, nummarks, title, titletextcolor, titletextheight,
-        titletextfontstring, marklabeltextcolor, marklabeltextheight, marklabeltextfontstring, tag) {
-        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'RadarGraph', controlNameId);
+        titletextfontstring, marklabeltextcolor, marklabeltextheight, marklabeltextfontstring, tag, tabstopindex) {
+        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'RadarGraph', controlNameId, null, tabstopindex);
         radarGraphPropsArray.push({
             CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Data: data,
             MaxValue: maxvalue, ColorStr: colorstr, NumMarks: nummarks, Title: title, TitleTextColor: titletextcolor,
@@ -5844,20 +5889,20 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         XMaxValue: null, YMaxValue: null, NumMarksX: null, NumMarksY: null, Title: null,
         TitleTextColor: null, TitleTextHeight: null, TitleTextFontString: null,
         AxisLabelsColor: null, AxisLabelsHeight: null, AxisLabelsFontString: null,
-        MarginLeft: null, IsLabledOnXAxis: null, Tag: null, ControlNameID: null, Depth: null,
+        MarginLeft: null, IsLabledOnXAxis: null, Tag: null, ControlNameID: null, Depth: null, TabStopIndex: null,
 
         Initialize: function () {
             return createLineAreaGraph(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Height,
                 this.Depth, this.Data, this.XMaxValue, this.YMaxValue, this.NumMarksX, this.NumMarksY, this.Title,
                 this.TitleTextColor, this.TitleTextHeight, this.TitleTextFontString, this.AxisLabelsColor,
-                this.AxisLabelsHeight, this.AxisLabelsFontString, this.MarginLeft, this.IsLabledOnXAxis, this.Tag);
+                this.AxisLabelsHeight, this.AxisLabelsFontString, this.MarginLeft, this.IsLabledOnXAxis, this.Tag, this.TabStopIndex);
         }
     }
 
     function createLineAreaGraph(canvasid, controlNameId, x, y, width, height, depth, data, xmaxvalue, ymaxvalue, nummarksx, nummarksy, title,
         titletextcolor, titletextheight, titletextfontstring, axislabelscolor, axislabelsheight, axislabelsfontstring, marginleft,
-        islabeledonxaxis, tag) {
-        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'LineAreaGraph', controlNameId);
+        islabeledonxaxis, tag, tabstopindex) {
+        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'LineAreaGraph', controlNameId, null, tabstopindex);
         lineAreaGraphPropsArray.push({
             CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Data: data,
             XMaxValue: xmaxvalue, YMaxValue: ymaxvalue, NumMarksX: nummarksx, NumMarksY: nummarksy, Title: title,
@@ -6025,21 +6070,21 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         TitleColor: null, TitleHeight: null, TitleFontString: null, CandleBodyWidth: null,
         CandleBodyColor: null, CandleLineColor: null, MarginLeft: null,
         AxisLabelsColor: null, AxisLabelsHeight: null, AxisLabelsFontString: null, Tag: null,
-        ControlNameID: null, Depth: null,
+        ControlNameID: null, Depth: null, TabStopIndex: null,
 
         Initialize: function () {
             return createCandlesticksGraph(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Height,
                 this.Depth, this.Data, this.XMarksLabelData, this.XMarksWidth, this.YMaxValue, this.NumMarksY, this.Title,
                 this.TitleColor, this.TitleHeight, this.TitleFontString, this.CandleBodyWidth, this.CandleBodyColor,
                 this.CandleLineColor, this.marginleft, this.axislabelscolor, this.axislabelsheight, this.axislabelsfontstring,
-                this.Tag);
+                this.Tag, this.TabStopIndex);
         }
     }
 
     function createCandlesticksGraph(canvasid, controlNameId, x, y, width, height, depth, data, xmarkslabeldata, xmarkswidth, ymaxvalue, nummarksy, title,
         titlecolor, titleheight, titlefontstring, candlebodywidth, candelbodycolorstr, candellinecolorstr, marginleft,
-        axislabelscolor, axislabelsheight, axislabelsfontstring, tag) {
-        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'CandlesticksGraph', controlNameId);
+        axislabelscolor, axislabelsheight, axislabelsfontstring, tag, tabstopindex) {
+        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'CandlesticksGraph', controlNameId, null, tabstopindex);
         candlesticksGraphPropsArray.push({
             CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Data: data,
             XMarksLabelData: xmarkslabeldata, XMarksWidth: xmarkswidth, YMaxValue: ymaxvalue, NumMarksY: nummarksy, Title: title,
@@ -6235,19 +6280,19 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         Title: null, TitleColor: null, TitleTextHeight: null, TitleFontString: null, InnerRadius: null,
         MarginSides: null, LabelColor: null, LabelHeight: null,
         LabelFontString: null, LegendWidth: null, LegendHeight: null, LegendFontString: null,
-        SliceClickFunction: null, Tag: null, ControlNameID: null, Depth: null,
+        SliceClickFunction: null, Tag: null, ControlNameID: null, Depth: null, TabStopIndex: null,
 
         Initialize: function () {
             return (this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Height, this.Depth,
                 this.Data, this.Title, this.TitleColor, this.TitleTextHeight, this.TitleFontString, this.InnerRadius,
                 this.MarginSides, this.LabelColor, this.LabelHeight, this.LabelFontString, this.LegendWidth,
-                this.LegendHeight, this.LegendFontString, this.SliceClickFunction, this.Tag);
+                this.LegendHeight, this.LegendFontString, this.SliceClickFunction, this.Tag, this.TabStopIndex);
         }
     }
 
     function createDoughnutChart(canvasid, controlNameId, x, y, width, height, depth, data, title, titlecolor, titletextheight, titlefontstring, innerradius, marginsides,
-        labelcolor, labelheight, labelfontstring, legendwidth, legendheight, legendfontstring, sliceClickFunction, tag) {
-        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'DoughnutChart', controlNameId);
+        labelcolor, labelheight, labelfontstring, legendwidth, legendheight, legendfontstring, sliceClickFunction, tag, tabstopindex) {
+        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'DoughnutChart', controlNameId, null, tabstopindex);
         var totalvalue = 0;
         for (var i = 0; i < data.length; i++) {
             totalvalue += data[i][1];
@@ -6408,6 +6453,9 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
             ctx.restore();
         }, canvasid);
         registerAnimatedWindow(canvasid, windowid);
+        if (tabstopindex != null && tabstopindex > 0) {
+            registerKeyDownFunction(canvasid, function () { }, windowid);
+        }
         return windowid;
     }
 
@@ -6432,21 +6480,21 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         AxisLabelsTextFontString: null, AxisLabelsTextColor: null, MarginLeft: null,
         GapBetweenBars: null, BarClickFunction: null,
         HasLegend: null, MarginRight: null, LineClickFunction: null,
-        YMaxValue: null, Tag: null, ControlNameID: null, Depth: null, LinesData: null,
+        YMaxValue: null, Tag: null, ControlNameID: null, Depth: null, TabStopIndex: null, LinesData: null,
 
         Intialize: function () {
             return createBarsMixedWithLabledLineGraph(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width,
                 this.Height, this.Depth, this.Data, this.MaxValue, this.NumMarksY, this.Title, this.TitleTextColor,
                 this.TitleTextHeight, this.TitleTextFontString, this.BarWidth, this.AxisLabelsTextColor,
                 this.AxisLabelsTextHeight, this.AxisLabelsTextFontString, this.MarginLeft, this.GapBetweenBars,
-                this.BarClickFunction, this.HasLegend, this.MarginRight, this.LinesData, this.LineClickFunction, this.Tag);
+                this.BarClickFunction, this.HasLegend, this.MarginRight, this.LinesData, this.LineClickFunction, this.Tag, this.TabStopIndex);
         }
     }
 
     function createBarsMixedWithLabledLineGraph(canvasid, controlNameId, x, y, width, height, depth, data, maxvalue, nummarksy, title, titletextcolor,
         titletextheight, titletextfontstring, barwidth, axisLabelsTextColor, axisLabelsTextHeight, axisLabelsTextFontString,
-        marginleft, gapbetweenbars, barClickFunction, haslegend, marginright, linesData, lineClickFunction, tag) {
-        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'BarsMixedWithLabeledLineGraph', controlNameId);
+        marginleft, gapbetweenbars, barClickFunction, haslegend, marginright, linesData, lineClickFunction, tag, tabstopindex) {
+        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'BarsMixedWithLabeledLineGraph', controlNameId, null, tabstopindex);
         barsMixedWithLabledLineGraphsPropsArray.push({
             CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, Data: data,
             MaxValue: maxvalue, NumMarksY: nummarksy, Title: title, TitleTextColor: titletextcolor, TitleTextHeight: titletextheight,
@@ -6599,6 +6647,9 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
             ctx.restore();
         }, canvasid);
         registerAnimatedWindow(canvasid, windowid);
+        if (tabstopindex != null && tabstopindex > 0) {
+            registerKeyDownFunction(canvasid, function () { }, windowid);
+        }
         return windowid;
     }
 
@@ -6672,19 +6723,19 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         Data: null, MaxValue: null, NumMarksY: null, Title: null, TitleColor: null, TitleHeight: null,
         TitleFontString: null, BarWidth: null, GapBetweenBarSets: null,
         AxisLabelsColor: null, AxisLabelsHeight: null, AxisLabelsFontString: null,
-        BarClickFunction: null, MarginLeft: null, Tag: null, ControlNameID: null, Depth: null,
+        BarClickFunction: null, MarginLeft: null, Tag: null, ControlNameID: null, Depth: null, TabStopIndex: null,
 
         Initialize: function () {
             return createStackedBarGraph(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Height,
                 this.Depth, this.Data, this.MaxValue, this.NumMarksY, this.Title, this.TitleColor, this.TitleHeight,
                 this.TitleFontString, this.BarWidth, this.GapBetweenBarSets, this.AxisLabelsColor, this.AxisLabelsHeight,
-                this.AxisLabelsFontString, this.BarClickFunction, this.MarginLeft, this.Tag);
+                this.AxisLabelsFontString, this.BarClickFunction, this.MarginLeft, this.Tag, this.TabStopIndex);
         }
     }
 
     function createStackedBarGraph(canvasid, controlNameId, x, y, width, height, depth, data, maxvalue, nummarksy, title, titlecolor, titleheight,
-        titlefontstring, barwidth, gapbetweenbarssets, axislabelscolor, axislabelsheight, axislabelsfontstring, barClickFunction, marginleft, tag) {
-        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'StackedBarGraph', controlNameId);
+        titlefontstring, barwidth, gapbetweenbarssets, axislabelscolor, axislabelsheight, axislabelsfontstring, barClickFunction, marginleft, tag, tabstopindex) {
+        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'StackedBarGraph', controlNameId, null, tabstopindex);
         stackedBarGraphPropsArray.push({
             CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height,
             Data: data, MaxValue: maxvalue, NumMarksY: nummarksy, Title: title, TitleColor: titlecolor, TitleHeight: titleheight,
@@ -6763,6 +6814,9 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
             ctx.restore();
         }, canvasid);
         registerAnimatedWindow(canvasid, windowid);
+        if (tabstopindex != null && tabstopindex > 0) {
+            registerKeyDownFunction(canvasid, function () { }, windowid);
+        }
         return windowid;
     }
 
@@ -6914,7 +6968,7 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         TabLabels: null, TabLabelColor: null, TabLabelHeight: null, TabLabelFontString: null,
         PanelWindowIDs: null, SelectedTabID: null, TabLabelGradientStartColor: null,
         TabLabelGradientEndColor: null, GapBetweenTabs: null, SelectedTabBorderColor: null,
-        SelectedTabBorderLineWidth: null, Tag: null, ControlNameID: null, Depth: null,
+        SelectedTabBorderLineWidth: null, Tag: null, ControlNameID: null, Depth: null, TabStopIndex: null,
         PanelHasBackgroundGradient: null, PanelHasBorder: null, PanelBackgroundStartColor: null,
         PanelBackgroundEndColor: null, PanelBorderColor: null,
 
@@ -6923,15 +6977,15 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
                 this.TabLabels, this.TabLabelColor, this.TabLabelHeight, this.TabLabelFontString,
                 this.TabLabelGradientStartColor, this.TabLabelGradientEndColor, this.PanelHasBorder, this.PanelBorderColor,
                 this.PanelHasBackgroundGradient, this.panelBackgroundStartColor, this.panelBackgroundEndColor, this.selectedTabID,
-                this.GapBetweenTabs, this.SelectedTabBorderColor, this.SelectedTabBorderLineWidth, this.Tag);
+                this.GapBetweenTabs, this.SelectedTabBorderColor, this.SelectedTabBorderLineWidth, this.Tag, this.TabStopIndex);
         }
     }
 
     function createTabControl(canvasid, controlNameId, x, y, width, height, depth, tablabels, tablabelcolor, tablabelheight, tablabelfontstring,
         tablabelgradientstartcolor, tablabelgradientendcolor, panelHasBorder, panelBorderColor, panelHasBackgroundGradient,
         panelBackgroundStartColor, panelBackgroundEndColor, selectedTabID, gapbetweentabs, selectedtabbordercolor,
-        selectedtabborderlinewidth, tag) {
-        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Tab', controlNameId);
+        selectedtabborderlinewidth, tag, tabstopindex) {
+        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Tab', controlNameId, null, tabstopindex);
         var panels = new Array();
         for (var i = 0; i < tablabels.length; i++) {
             var panelwindowid = createPanel(canvasid, controlNameId + 'Panel' + i.toString(), x, y + tablabelheight + 8, width, height - tablabelheight - 8, depth, panelHasBorder, panelBorderColor,
@@ -7045,6 +7099,9 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
                 }
             }
         }, canvasid);
+        if (tabstopindex != null && tabstopindex > 0) {
+            registerKeyDownFunction(canvasid, function () { }, windowid);
+        }
         return windowid;
     }
 
@@ -7090,18 +7147,18 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         ImgUrl: null, PinXYs: null, PinClickFunction: null, HasZoom: null,
         ImageTopLeftXOffset: null, ImageTopLeftYOffset: null, MovingMap: null,
         LastMovingX: null, LastMovingY: null, Scale: null, ScaleIncrementFactor: null, Tag: null,
-        ControlNameID: null, Depth: null,
+        ControlNameID: null, Depth: null, TabStopIndex: null,
 
         Initialize: function () {
             return createImageMapControl(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width,
                 this.Height, this.Depth, this.ImgUrl, this.PinXYs, this.PinClickFunction, this.HasZoom,
-                this.ImageTopLeftXOffset, this.ImageTopLeftYOffset, this.Scale, this.ScaleIncrementFactor, this.Tag);
+                this.ImageTopLeftXOffset, this.ImageTopLeftYOffset, this.Scale, this.ScaleIncrementFactor, this.Tag, this.TabStopIndex);
         }
     }
 
     function createImageMapControl(canvasid, controlNameId, x, y, width, height, depth, imgurl, pinxys, pinClickFunction, hasZoom,
-        imagetopleftxoffset, imagetopleftyoffset, scale, scaleincrementfactor, tag) {
-        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'ImageMap', controlNameId);
+        imagetopleftxoffset, imagetopleftyoffset, scale, scaleincrementfactor, tag, tabstopindex) {
+        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'ImageMap', controlNameId, null, tabstopindex);
         var image = new Image();
         image.src = imgurl;
         image.onload = function () {
@@ -7207,6 +7264,9 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
                 }
             }, canvasid);
         }
+        if (tabstopindex != null && tabstopindex > 0) {
+            registerKeyDownFunction(canvasid, function () { }, windowid);
+        }
         return windowid;
     }
 
@@ -7236,15 +7296,16 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
     CCLSubMenu.prototype = {
         CanvasID: null, XOffset: null, YOffset: null, Width: null, Height: null,
         Data: null, ParentMenuWindowID: null, ParentIndexInParentMenu: null,
-        DropDownColorStart: null, DropDownColorEnd: null, Tag: null, ControlNameID: null, Depth: null,
+        DropDownColorStart: null, DropDownColorEnd: null, Tag: null, ControlNameID: null, Depth: null, TabStopIndex: null,
 
         Initialize: function () {
             return createSubMenu(this.CanvasID, this.ControlNameID, this.ParentMenuWindowID, this.Depth, this.Data,
-                this.XOffset, this.YOffset, this.ParentIndexInParentMenu, this.DropDownColorStart, this.DropDownColorEnd, this.Tag);
+                this.XOffset, this.YOffset, this.ParentIndexInParentMenu, this.DropDownColorStart, this.DropDownColorEnd, this.Tag, this.TabStopIndex);
         }
     }
 
-    function createSubMenu(canvasid, controlNameId, parentWindowId, depth, data, xoffset, yoffset, parentIndexInParentMenu, dropdowncolorstart, dropdowncolorend, tag) {
+    function createSubMenu(canvasid, controlNameId, parentWindowId, depth, data, xoffset, yoffset, parentIndexInParentMenu, dropdowncolorstart,
+        dropdowncolorend, tag, tabstopindex) {
         var ctx = getCtx(canvasid);
         var greatestLength = 0;
         var greatestHeight = 5;
@@ -7258,7 +7319,7 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
             greatestHeight += data[i][2] + 5;
             newdata.push([data[i][0], data[i][1], data[i][2], data[i][3], data[i][4], data[i][5]]);
         }
-        var windowid = createWindow(canvasid, xoffset, yoffset, greatestLength, greatestHeight, depth, null, 'SubMenu', controlNameId);
+        var windowid = createWindow(canvasid, xoffset, yoffset, greatestLength, greatestHeight, depth, null, 'SubMenu', controlNameId, null, tabstopindex);
         registerModalWindow(canvasid, windowid);
         registerHiddenWindow(canvasid, windowid, 1);
         var heightOffset = 5;
@@ -7341,6 +7402,9 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
                 setStatusForAllChildWindowsFromMenuBar(canvasid3, subMenuBarProps.ChildMenuWindowIDs, 1, -1, subMenuBarProps.ParentMenuWindowID);
             }
         });
+        if (tabstopindex != null && tabstopindex > 0) {
+            registerKeyDownFunction(canvasid, function () { }, windowid);
+        }
         return windowid;
     }
 
@@ -7396,18 +7460,18 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         CanvasID: null, X: null, Y: null, Width: null, Height: null,
         Data: null, BarColorStart: null, BarColorMiddle: null, BarColorEnd: null,
         DropDownColorStart: null, DropDownColorEnd: null, Tag: null, Orientation: null,
-        ControlNameID: null, Depth: null,
+        ControlNameID: null, Depth: null, TabStopIndex: null,
 
         Initialize: function () {
             return createMenuBarControl(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Height, this.Depth,
                 this.Data, this.BarColorStart, this.BarColorMiddle, this.BarColorEnd, this.DropDownColorStart, this.DropDownColorEnd,
-                this.Orientation, this.Tag);
+                this.Orientation, this.Tag, this.TabStopIndex);
         }
     }
 
     function createMenuBarControl(canvasid, controlNameId, x, y, width, height, depth, data, barcolorstart, barcolormiddle, barcolorend,
-        dropdowncolorstart, dropdowncolorend, orientation, tag) {
-        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'MenuBar', controlNameId);
+        dropdowncolorstart, dropdowncolorend, orientation, tag, tabstopindex) {
+        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'MenuBar', controlNameId, null, tabstopindex);
         var ctx = getCtx(canvasid);
         var widthOffset = 0;
         var childMenuWindowIds = new Array();
@@ -7489,6 +7553,9 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
                 }
             }
         });
+        if (tabstopindex != null && tabstopindex > 0) {
+            registerKeyDownFunction(canvasid, function () { }, windowid);
+        }
         return windowid;
     }
 
@@ -7716,7 +7783,7 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
                 this.BgGradientStartColor, this.BgGradientEndColor, this.HasBgImage, this.BgImageUrl, this.HasAutoComplete,
                 this.ListPossibles, this.DropDownPossiblesListIfThereIsInputText, this.LimitToListPossibles,
                 this.ListPossiblesTextColor, this.ListPossiblesTextHeight, this.ListPossiblesTextFontString, this.UserInputText,
-                this.CaretColor, this.TextSelectionBgColor, this.HasFocusInitially, this.Tag, this.CustomKeyboardWindowID);
+                this.CaretColor, this.TextSelectionBgColor, this.HasFocusInitially, this.Tag, this.CustomKeyboardWindowID, this.TabStopIndex);
         }
     }
 
@@ -8375,17 +8442,17 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
     CCLImageFader.prototype = {
         CanvasID: null, X: null, Y: null, Width: null, Height: null, ImageURLs: null,
         FadeStartValue: null, FadeEndValue: null, FadeStepValue: null, HoldForTicks: null, ClickFunction: null,
-        OverlayImages: null, ControlNameID: null, Depth: null,
+        OverlayImages: null, ControlNameID: null, Depth: null, TabStopIndex: null,
 
         Initialize: function () {
             return createImageFader(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Height, this.Depth,
                 this.ImageURLs, this.FadeStartValue, this.FadeEndValue, this.FadeStepValue, this.HoldForTicks,
-                this.ClickFunction, this.OverlayImages);
+                this.ClickFunction, this.OverlayImages, this.TabStopIndex);
         }
     }
 
     function createImageFader(canvasid, controlNameId, x, y, width, height, depth, imageURLs, fadeStartValue, fadeEndValue, fadeStepValue, holdForTicks,
-        clickFunction, overlayimages) {
+        clickFunction, overlayimages, tabstopindex) {
         var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'ImageFader');
         var drawingCanvas = document.createElement('canvas');
         drawingCanvas.width = width;
@@ -8459,6 +8526,9 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
             }, canvasid);
         }
         registerAnimatedWindow(canvasid, windowid);
+        if (tabstopindex != null && tabstopindex > 0) {
+            registerKeyDownFunction(canvasid, function () { }, windowid);
+        }
         return windowid;
     }
 
@@ -8528,15 +8598,15 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
     CCLImageSlider.prototype = {
         CanvasID: null, X: null, Y: null, Width: null, Height: null, ImageURLs: null,
         Direction: null, StepIncrement: null, ClickFunction: null, HoldForTicks: null,
-        ControlNameID: null, Depth: null,
+        ControlNameID: null, Depth: null, TabStopIndex: null,
 
         Initialize: function () {
             return createImageSlider(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Height,
-                this.Depth, this.ImageURLs, this.Direction, this.StepIncrement, this.HoldForTicks, this.ClickFunction);
+                this.Depth, this.ImageURLs, this.Direction, this.StepIncrement, this.HoldForTicks, this.ClickFunction, this.TabStopIndex);
         }
     }
 
-    function createImageSlider(canvasid, controlNameId, x, y, width, height, depth, imageURLs, direction, stepIncrement, holdForTicks, clickFunction) {
+    function createImageSlider(canvasid, controlNameId, x, y, width, height, depth, imageURLs, direction, stepIncrement, holdForTicks, clickFunction, tabstopindex) {
         var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'ImageSlider');
         imageSliderPropsArray.push({
             CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, ImageURLs: imageURLs,
@@ -8657,6 +8727,9 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
             }, canvasid);
         }
         registerAnimatedWindow(canvasid, windowid);
+        if (tabstopindex != null && tabstopindex > 0) {
+            registerKeyDownFunction(canvasid, function () { }, windowid);
+        }
         return windowid;
     }
 
@@ -8705,15 +8778,16 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
     CCLMultiLineLabel.prototype = {
         CanvasID: null, X: null, Y: null, Width: null, Height: null, HasMarkup: null, Text: null, TextColor: null,
         TextHeight: null, TextFontString: null, LineSpacingInPixels: null, WordSensitive: null,
-        ControlNameID: null, Depth: null,
+        ControlNameID: null, Depth: null, TabStopIndex: null,
 
         Initialize: function () {
             return createMultiLineLabel(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Depth, this.HasMarkup,
-                this.Text, this.TextColor, this.TextHeight, this.TextFontString, this.LineSpacingInPixels, this.WordSensitive);
+                this.Text, this.TextColor, this.TextHeight, this.TextFontString, this.LineSpacingInPixels, this.WordSensitive, this.TabStopIndex);
         }
     }
 
-    function createMultiLineLabel(canvasid, controlNameId, x, y, width, depth, hasMarkup, text, textColor, textHeight, textFontString, lineSpacingInPixels, wordSensitive) {
+    function createMultiLineLabel(canvasid, controlNameId, x, y, width, depth, hasMarkup, text, textColor, textHeight, textFontString,
+        lineSpacingInPixels, wordSensitive, tabstopindex) {
         var height = textHeight + lineSpacingInPixels;
         var ctx = getCtx(canvasid);
         ctx.font = textFontString;
@@ -8889,6 +8963,9 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
                 }
             }
         }, canvasid);
+        if (tabstopindex != null && tabstopindex > 0) {
+            registerKeyDownFunction(canvasid, function () { }, windowid);
+        }
         return windowid;
     }
 
@@ -9725,18 +9802,18 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         CanvasID: null, X: null, Y: null, Width: null, Height: null, Keys: null,
         KeyPressFunction: null, GapBetweenButtons: null, GapBetweenRows: null,
         TextHeight: null, TextFontString: null, CustomDrawLetterFunction: null, HasGloss: null,
-        ControlNameID: null, Depth: null,
+        ControlNameID: null, Depth: null, TabStopIndex: null,
 
         Initialize: function () {
             return createVirtualKeyboard(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Height,
                 this.Depth, this.Keys, this.KeyPressFunction, this.GapBetweenButtons, this.GapBetweenRows, this.HasGloss,
-                this.TextHeight, this.TextFontString, this.CustomDrawLetterFunction);
+                this.TextHeight, this.TextFontString, this.CustomDrawLetterFunction, this.TabStopIndex);
         }
     }
 
     function createVirtualKeyboard(canvasid, controlNameId, x, y, width, height, depth, keys, keypressFunc, gapbetweenbuttons,
-        gapbetweenrows, hasgloss, textheight, textfontstring, customDrawLetterFunc) {
-        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'VirtualKeyboard', controlNameId);
+        gapbetweenrows, hasgloss, textheight, textfontstring, customDrawLetterFunc, tabstopindex) {
+        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'VirtualKeyboard', controlNameId, null, tabstopindex);
         var customkeys = (keys == null ? 0 : 1);
         if (!keys) {
             keys = [[[['Q', 30, 30], ['W', 30, 30], ['E', 30, 30], ['R', 30, 30], ['T', 30, 30], ['Y', 30, 30], ['U', 30, 30], ['I', 30, 30],
@@ -10008,6 +10085,9 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
                 }
             }, canvasid);
         }, canvasid);
+        if (tabstopindex != null && tabstopindex > 0) {
+            registerKeyDownFunction(canvasid, function () { }, windowid);
+        }
         return windowid;
     }
 
@@ -10026,15 +10106,15 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
     function CCLSplitter() { }
 
     CCLSplitter.prototype = {
-        CanvasID: null, X: null, Y: null, Width: null, Height: null, LineColor: null, ControlNameID: null, Depth: null,
+        CanvasID: null, X: null, Y: null, Width: null, Height: null, LineColor: null, ControlNameID: null, Depth: null, TabStopIndex: null,
 
         Initialize: function () {
-            return createSplitter(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Height, this.Depth, this.LineColor);
+            return createSplitter(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Height, this.Depth, this.LineColor, this.TabStopIndex);
         }
     }
 
-    function createSplitter(canvasid, controlNameId, x, y, width, height, depth, linecolor) {
-        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Splitter', controlNameId);
+    function createSplitter(canvasid, controlNameId, x, y, width, height, depth, linecolor, tabstopindex) {
+        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'Splitter', controlNameId, null, tabstopindex);
         splitterPropsArray.push({
             CanvasID: canvasid, WindowID: windowid, X: x, Y: y, Width: width, Height: height, LineColor: linecolor, MouseDown: 0
         });
@@ -10146,6 +10226,9 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
             var splitterProps = getSplitterProps(canvasid, windowid);
             splitterProps.MouseDown = 0;
         }, canvasid);
+        if (tabstopindex != null && tabstopindex > 0) {
+            registerKeyDownFunction(canvasid, function () { }, windowid);
+        }
         return windowid;
     }
 
@@ -10165,16 +10248,16 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
 
     CCLBoundaryFillableMap.prototype = {
         CanvasID: null, X: null, Y: null, Width: null, Height: null, FillPoints: null,
-        ImgURL: null, Image: null, ImageWidth: null, ImageHeight: null, ControlNameID: null, Depth: null,
+        ImgURL: null, Image: null, ImageWidth: null, ImageHeight: null, ControlNameID: null, Depth: null, TabStopIndex: null,
 
         Initialize: function () {
             return createBoundaryFillableMap(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Height,
-                this.Depth, this.FillPoints, this.ImgURL, this.ImageWidth, this.ImageHeight);
+                this.Depth, this.FillPoints, this.ImgURL, this.ImageWidth, this.ImageHeight, this.TabStopIndex);
         }
     }
 
-    function createBoundaryFillableMap(canvasid, controlNameId, x, y, width, height, depth, fillpoints, imgurl, imgwidth, imgheight) {
-        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'BoundaryFillableMap', controlNameId);
+    function createBoundaryFillableMap(canvasid, controlNameId, x, y, width, height, depth, fillpoints, imgurl, imgwidth, imgheight, tabstopindex) {
+        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'BoundaryFillableMap', controlNameId, null, tabstopindex);
         var image = new Image();
         image.onload = function () {
             invalidateRect(canvasid, null, x, y, width, height);
@@ -10198,6 +10281,9 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
             }
             ctxdest.putImageData(imgdata, boundaryFillableMapProps.X, boundaryFillableMapProps.Y);
         }, canvasid);
+        if (tabstopindex != null && tabstopindex > 0) {
+            registerKeyDownFunction(canvasid, function () { }, windowid);
+        }
         return windowid;
     }
 
@@ -10269,17 +10355,17 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         CanvasID: null, X: null, Y: null, Width: null, Height: null, XML: null, TextColor: null, TextFontString: null,
         TextHeight: null, ClickNodeFunction: null, Tag: null, HasIcons: null, IconWidth: null, IconHeight: null,
         ImgURLNode: null, ImgURLValue: null, ImgURLAttribute: null,
-        ControlNameID: null, Depth: null,
+        ControlNameID: null, Depth: null, TabStopIndex: null,
 
         Initialize: function () {
             createSimpleXMLViewer(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Height, this.Depth,
                 this.XML, this.TextColor, this.TextFontString, this.TextHeight, this.ClickNodeFunction, this.Tag, this.HasIcons,
-                this.IconWidth, this.IconHeight, this.ImgURLNode, this.ImgURLValue, this.ImgURLAttribute);
+                this.IconWidth, this.IconHeight, this.ImgURLNode, this.ImgURLValue, this.ImgURLAttribute, this.TabStopIndex);
         }
     }
 
     function createSimpleXMLViewer(canvasid, controlNameId, x, y, width, height, depth, xml, textcolor, textfontstring, textheight,
-        clickNodeFunction, tag, hasicons, iconwidth, iconheight, imgURLNode, imgURLValue, imgURLAttribute) {
+        clickNodeFunction, tag, hasicons, iconwidth, iconheight, imgURLNode, imgURLValue, imgURLAttribute, tabstopindex) {
         var parser = new DOMParser();
         xmlDoc = parser.parseFromString(xml, "text/xml");
         var nodes = new Array();
@@ -10308,6 +10394,9 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
             TextHeight: textheight, ClickNodeFunction: clickNodeFunction, Tag: tag, HasIcons: hasicons, IconWidth: iconwidth, IconHeight: iconheight,
             ImgURLNode: imgURLNode, ImgURLValue: imgURLValue, ImgURLAttribute: imgURLAttribute
         });
+        if (tabstopindex != null && tabstopindex > 0) {
+            registerKeyDownFunction(canvasid, function () { }, windowid);
+        }
         return windowid;
     }
 
@@ -10345,7 +10434,7 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         StarOutlineBgColorRed: null, StarOutlineBgColorGreen: null, StarOutlineBgColorBlue: null,
         StarOutlineBgColorAlpha: null, LabelTextColor: null, LabelTextFontString: null,
         LabelTextHeight: null, CustomClickFunction: null, RoundDisplayedValueToNumOfDecimals: null,
-        ControlNameID: null, Depth: null, IsCustomPattern: null,
+        ControlNameID: null, Depth: null, TabStopIndex: null, IsCustomPattern: null,
 
         Initialize: function () {
             return createVotingControl(this.CanvasID, this.ControlNameID, this.X, this.Y, this.Width, this.Height,
@@ -10357,7 +10446,7 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
                 this.FillOrientation, this.IsCustomPattern, this.OutLineImgURL, this.CustomFillPoint,
                 this.ImgWidth, this.ImgHeight, this.HasMouseOverLabel, this.StarOutlineBgColorRed,
                 this.StarOutlineBgColorGreen, this.StarOutlineBgColorBlue, this.StarOutlineBgColorAlpha,
-                this.CustomClickFunction, this.RoundDisplayedValueToNumOfDecimals);
+                this.CustomClickFunction, this.RoundDisplayedValueToNumOfDecimals, this.TabStopIndex);
         }
     }
 
@@ -10366,8 +10455,8 @@ function createScrollBar(canvasid, controlNameId, x, y, len, depth, maxitems, al
         labeltextcolor, labeltextfontstring, labeltextheight, starsstartingposoffsetwhenlabel, starsyposwhenlabel, initialvalue, 
         outlinethicknessofemptystar, starsorientation, fillorientation, iscustompattern, outlineimgurl, customfillpoint,
         imgwidth, imgheight, hasmouseoverlabel, staroutlinebgcolorred, staroutlinebgcolorgreen, staroutlinebgcolorblue, staroutlinebgcoloralpha,
-        customclickfunction, rounddisplayedvaluetonumofdecimals) {
-        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'VotingControl', controlNameId);
+        customclickfunction, rounddisplayedvaluetonumofdecimals, tabstopindex) {
+        var windowid = createWindow(canvasid, x, y, width, height, depth, null, 'VotingControl', controlNameId, null, tabstopindex);
         if (iscustompattern == 1) {
             votingOutlineImage = new Image();
             votingOutlineImage.onload = function () {

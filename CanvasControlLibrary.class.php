@@ -111,6 +111,7 @@ class CCLLabelProps
     public $NewBrowserWindowCopyHistory;
     public $BackGroundColor;
     public $Tag;
+    public $TabStopIndex;
 }
 
 class CCLButtonProps
@@ -150,6 +151,7 @@ class CCLButtonProps
     public $Tag;
     public $Theme;
     public $HasGloss;
+    public $TabStopIndex;
 }
 
 class CCLScrollBarProps
@@ -220,6 +222,7 @@ class CCLGridProps
     public $HasUIDs;
     public $OrigUIDs; 
     public $SortedUIDs;
+    public $TabStopIndex;
 
     public function __construct()
     {
@@ -274,6 +277,7 @@ class CCLCheckBoxProps
     public $Y;
     public $Status;
     public $Tag;
+    public $TabStopIndex;
 }
 
 class CCLRadioButtonGroupProps
@@ -294,6 +298,7 @@ class CCLRadioButtonGroupProps
     public $ButtonExtents;
     public $LabelTextHeight;
     public $Tag;
+    public $TabStopIndex;
 
     public function __construct()
     {
@@ -330,6 +335,7 @@ class CCLImageProps
     public $NewBrowserWindowCopyHistory;
     public $Tag;
     public $Tile;
+    public $TabStopIndex;
 }
 
 class CCLTreeViewProps
@@ -350,6 +356,7 @@ class CCLTreeViewProps
     public $HasIcons;
     public $IconWidth;
     public $IconHeight;
+    public $TabStopIndex;
 }
 
 class CCLCalenderProps
@@ -394,6 +401,7 @@ class CCLCalenderProps
     public $DayLabelTextHeight;
     public $DayLabelTextFontString;
     public $Tag;
+    public $TabStopIndex;
 
     public function __construct()
     {
@@ -415,6 +423,7 @@ class CCLProgressBarProps
     public $MinValue;
     public $CurrentValue;
     public $Tag;
+    public $TabStopIndex;
 }
 
 class CCLSliderProps
@@ -432,6 +441,7 @@ class CCLSliderProps
     public $CurrentValue;
     public $MouseDownState;
     public $Tag;
+    public $TabStopIndex;
 }
 
 class CCLDatePickerProps
@@ -449,6 +459,7 @@ class CCLDatePickerProps
     public $TextBoxAreaTextHeight;
     public $TextBoxAreaTextFontString;
     public $Tag;
+    public $TabStopIndex;
 }
 
 class CCLPanelProps
@@ -482,6 +493,7 @@ class CCLPanelProps
     public $OriginalWidth;
     public $OriginalHeight;
     public $Tag;
+    public $TabStopIndex;
 }
 
 class CCLBarGraphProps
@@ -512,6 +524,7 @@ class CCLBarGraphProps
     public $HasLegend;
     public $MarginRight;
     public $Tag;
+    public $TabStopIndex;
 
     public function __construct()
     {
@@ -544,6 +557,7 @@ class CCLPieChartProps
     public $DeltaY;
     public $SliceClickFunction;
     public $Tag;
+    public $TabStopIndex;
 
     public function __construct()
     {
@@ -579,6 +593,7 @@ class CCLLineGraphProps
     public $MarginLeft;
     public $IsLabeledXValues;
     public $Tag;
+    public $TabStopIndex;
 
     public function __construct()
     {
@@ -609,6 +624,7 @@ class CCLGaugeChartProps
     public $GaugeLabelTextFontString;
     public $AlreadyUnregisteredAnimation;
     public $Tag;
+    public $TabStopIndex;
 
     public function __construct()
     {
@@ -638,6 +654,7 @@ class CCLRadarGraphProps
     public $MarkLabelTextFontString;
     public $AlreadyUnregisteredAnimation;
     public $Tag;
+    public $TabStopIndex;
 
     public function __construct()
     {
@@ -670,6 +687,7 @@ class CCLLineAreaGraphProps
     public $AlreadyUnregisteredAnimation;
     public $IsLabledOnXAxis;
     public $Tag;
+    public $TabStopIndex;
 
     public function __construct()
     {
@@ -702,6 +720,7 @@ class CCLCandlesticksGraphProps
     public $AxisLabelsHeight;
     public $AxisLabelsFontString;
     public $Tag;
+    public $TabStopIndex;
 
     public function __construct()
     {
@@ -739,6 +758,7 @@ class CCLDoughnutChartProps
     public $DeltaY;
     public $SliceClickFunction;
     public $Tag;
+    public $TabStopIndex;
 
     public function __construct()
     {
@@ -778,6 +798,7 @@ class CCLBarsMixedWithLabeledLineGraphProps
     public $LineClickFunction;
     public $YMaxValue;
     public $Tag;
+    public $TabStopIndex;
 
     public function __construct()
     {
@@ -814,6 +835,7 @@ class CCLStackedBarGraphProps
     public $AlreadyUnregisteredAnimation;
     public $MarginLeft;
     public $Tag;
+    public $TabStopIndex;
 
     public function __construct()
     {
@@ -842,6 +864,7 @@ class CCLTabProps
     public $SelectedTabBorderColor;
     public $SelectedTabBorderLineWidth;
     public $Tag;
+    public $TabStopIndex;
 
     public function __construct()
     {
@@ -871,6 +894,7 @@ class CCLImageMapProps
     public $Scale;
     public $ScaleIncrementFactor;
     public $Tag;
+    public $TabStopIndex;
 
     public function __construct()
     {
@@ -894,6 +918,7 @@ class CCLMenuBarProps
     public $DropDownColorEnd;
     public $ChildMenuWindowIDs;
     public $Tag;
+    public $TabStopIndex;
 
     public function __construct()
     {
@@ -917,6 +942,7 @@ class CCLSubMenuBarProps
     public $DropDownColorStart;
     public $DropDownColorEnd;
     public $Tag;
+    public $TabStopIndex;
 
     public function __construct()
     {
@@ -996,6 +1022,7 @@ class CCLImageFaderProps
     public $CurrentImageIndex;
     public $CurrentGlobalAlphaValue;
     public $OverlayImages;
+    public $TabStopIndex;
 
     public function __construct()
     {
@@ -1019,6 +1046,7 @@ class CCLImageSliderProps
     public $CurrentImageIndex;
     public $Slide;
     public $HoldCountDown;
+    public $TabStopIndex;
 
     public function __construct()
     {
@@ -1043,6 +1071,7 @@ class CCLMultiLineLabelProps
     public $LineBreakIndexes;
     public $MarkupTextExtents;
     public $MarkupText;
+    public $TabStopIndex;
 
     public function __construct()
     {
@@ -1125,6 +1154,7 @@ class CCLVirtualKeyboardProps
     public $CustomDrawLetterFunction;
     public $HasGloss;
     public $ShiftKeyPressed;
+    public $TabStopIndex;
 
     public function __construct()
     {
@@ -1143,6 +1173,7 @@ class CCLSplitterProps
     public $Height;
     public $LineColor;
     public $MouseDown;
+    public $TabStopIndex;
 }
 
 class CCLBoundaryFillableMapProps
@@ -1157,6 +1188,7 @@ class CCLBoundaryFillableMapProps
     public $ImgURL;
     public $ImageWidth;
     public $ImageHeight;
+    public $TabStopIndex;
 
     public function __construct()
     {
@@ -1183,6 +1215,7 @@ class CCLSimpleXMLViewerProps
     public $ImgURLNode;
     public $ImgURLValue;
     public $ImgURLAttribute;
+    public $TabStopIndex;
 }
 
 class CCLVotingProps
@@ -1226,6 +1259,7 @@ class CCLVotingProps
     public $LabelTextFontString;
     public $LabelTextHeight;
     public $RoundDisplayedValueToNumOfDecimals;
+    public $TabStopIndex;
 
     public function __construct()
     {
