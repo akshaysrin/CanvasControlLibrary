@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+	<meta charset="utf-8" />
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="CanvasControlLibrary.js"></script>
+</head>
+<body>
+    <canvas id="canvas" width="3000" height="1500" tabindex="0"></canvas>
+    <script type="text/javascript">
+            var elemId = 'canvas';
+            registerCanvasElementId(elemId);
+            createBarGraph(elemId, 'bg1', 500, 500, 400, 300, highestDepth, [['GM', 50, '#FF0000'], ['Ford', 30, '#00FF00'], ['Chrysler', 20, '#0000FF']],
+                100, 5, "Auto Industry %'s", '#000000', 12, '12pt Ariel', 50, '#000000', 10, '10pt Ariel', 50, 20, function (canvasid, windowid, i) {
+                    var barGraphProps = getBarGraphProps(canvasid, windowid);
+                    alert('You clicked on the bar labeled:: ' + barGraphProps.Data[i][0]);
+                }, 1, 100);
+            createPieChart(elemId, 'pc1', 10, 10, 500, 336, highestDepth, [['GM', 50, '#FF0000'], ['Ford', 30, '#00FF00'], ['Chrysler', 20, '#0000FF']],
+                "Auto Industry %'s", '#000000', 10, '10pt Ariel', '#000000', 10, '10pt Ariel', function (c, w, i) {
+                    var p = getPieChartProps(c, w);
+                    alert("You clicked on slice for " + p.Data[i][0]);
+                });
+            createLineGraph(elemId, 'lg1', 10, 550, 400, 336, highestDepth, [[[[10, 80], [20, 50], [30, 75], [40, 34], [50, 20], [60, 80], [70, 68],
+                [80, 90], [90, 45]], '#00FF00'], [[[10, 45], [20, 70], [30, 35], [40, 64], [50, 50], [60, 30], [70, 40],
+                [80, 70], [90, 90]], '#FF0000']], 100, 5, 100, 5, 'Automotive Sales', '#000000', 10, '10pt Ariel', '#000000', 10, '10pt Ariel',
+                function (canvasid1, windowid1, i) { alert(i.toString()); }, 50);
+            createLineGraph(elemId, 'lg2', 550, 10, 400, 336, highestDepth, [[[['A1', 80], ['A2', 50], ['A3', 75], ['A4', 34], ['A5', 20], ['A6', 80], ['A7', 68],
+                ['A8', 90], ['A9', 45], ['A10', 68]], '#00FF00'], [[['A1', 45], ['A2', 70], ['A3', 35], ['A4', 64], ['A5', 50], ['A6', 30], ['A7', 40],
+                ['A8', 70], ['A9', 90], ['A10', 28]], '#FF0000']], 100, 5, 100, 5, 'Automotive Sales', '#000000', 10, '10pt Ariel', '#000000', 10, '10pt Ariel',
+                function (canvasid1, windowid1, i) { alert(i.toString()); }, 50, 1);
+            createGauge(elemId, 'g1', 10, 950, 350, 350, highestDepth, [0, 100, [0, 30, '#FF0000'], [30, 60, '#FFF000'], [60, 100, '#00FF00'], 10, 5, 80],
+                'Automotive Efficiency %', '#000000', 16, '16pt Ariel', 150, '#FFFFFF', 10, '10pt Ariel');
+            createRadarGraph(elemId, 'rg1', 400, 950, 350, 400, highestDepth, [10, 20, 30, 40, 50, 60], 60, '#5f69b3', 6, 'Test Radar Graph', '#000000', 16,
+                '16pt Ariel', '#000000', 10, '10pt Ariel');
+            createLineAreaGraph(elemId, 'lag1', 1000, 10, 400, 400, highestDepth, [[[10, [20, 30, 10]], [20, [50, 30, 20]], [30, [20, 40, 30]], [40, [10, 20, 40]],
+                [50, [20, 20, 10]], [60, [40, 40, 20]], [70, [50, 10, 10]], [80, [10, 20, 10]], [90, [20, 30, 10]], [100, [40, 20, 10]]],
+                ['#FF0000', '#00FF00', '#0000FF']], 100, 100, 5, 5, 'Regional Sales', '#000000', 16, "normal 16px 'Trebuchet MS', Verdana, Arial, Helvetica, sans-serif",
+                '#000000', 10, '10pt Ariel', 50);
+            createLineAreaGraph(elemId, 'lag2', 1450, 10, 400, 400, highestDepth, [[['A1', [20, 30, 10]], ['A2', [50, 30, 20]], ['A3', [20, 40, 30]], ['A4', [10, 20, 40]],
+                ['A5', [20, 20, 10]], ['A6', [40, 40, 20]], ['A7', [50, 10, 10]], ['A8', [10, 20, 10]], ['A9', [20, 30, 10]], ['A10', [40, 20, 10]]],
+                ['#FF0000', '#00FF00', '#0000FF']], 100, 100, 5, 5, 'Regional Sales', '#000000', 16, "normal 16px 'Trebuchet MS', Verdana, Arial, Helvetica, sans-serif",
+                '#000000', 10, '10pt Ariel', 50, 1);
+            createCandlesticksGraph(elemId, 'cg1', 1000, 500, 350, 400, highestDepth, [[30, 70, 20, 80], [10, 30, 5, 35], [50, 30, 23, 80]],
+                [[0, 'GM'], [1, 'Ford'], [2, 'Chrysler']], 75, 100, 5, 'Automotive Stocks', '#000000', 16, '16pt Ariel', 20, '#586d8c', '#305791', 50,
+                '#000000', 10, '10pt Ariel');
+            createDoughnutChart(elemId, 'dgc1', 1000, 950, 450, 450, highestDepth, [['GM', 50, '#FF0000'], ['Ford', 30, '#00FF00'], ['Chrysler', 20, '#0000FF']],
+                "Auto Industry %'s", '#000000', 16, '16pt Ariel', 80, 25, '#000000', 10, '10pt Ariel', 100, 10, '10pt Ariel', function (c, w, i) {
+                    var p = getDoughnutChartProps(c, w);
+                    alert("You clicked on slice for " + p.Data[i][0]);
+                });
+            createBarsMixedWithLabledLineGraph(elemId, 'mbwllg1', 1450, 450, 400, 300, highestDepth, [['GM', 50, '#FF0000'], ['Ford', 30, '#00FF00'], ['Chrysler', 20, '#0000FF']],
+                100, 5, "Auto Industry %'s", '#000000', 12, '12pt Ariel', 50, '#000000', 10, '10pt Ariel', 50, 20, function (canvasid, windowid, i) {
+                    var barGraphProps = getBarGraphProps(canvasid, windowid);
+                    alert('You clicked on the bar labeled:: ' + barGraphProps.Data[i][0]);
+                }, 1, 100, [[[['GM', 80], ['Ford', 50], ['Chrysler', 75]], '#00FF00'], [[['GM', 45], ['Ford', 70], ['Chrysler', 35]], '#FF0000']],
+                function (c, w, i) { alert("You clicked on the line " + i); });
+            createStackedBarGraph(elemId, 'sbg1', 1450, 800, 400, 400, highestDepth, [['GM', [10, '#FF0000'], [20, '#0000FF'], [10, '#00FF00']],
+                ['Ford', [20, '#FF0000'], [10, '#0000FF'], [30, '#00FF00']], ['Chrysler', [32, '#FF0000'], [25, '#0000FF'], [35, '#00FF00']]],
+                100, 5, 'Stacked Bar Graph', '#000000', 16, '16pt Ariel', 100, 40, '#000000', 10, '10pt Ariel', function (c, w, i) {
+                    var p = getstackedBarGraphProps(c, w);
+                    alert("You clicked on the " + p.Data[i][0] + " stacked bar!");
+                }, 50);
+            invalidateRect(elemId, null, 0, 0, 3000, 1500);
+    </script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="CanvasControlLibrary.js"></script>
+</head>
+<body>
+    <canvas id="canvas" width="1500" height="1500" tabindex="0"></canvas>
+    <script type="text/javascript">
+        var elemId = 'canvas';
+        registerCanvasElementId(elemId);
+        createLabel(elemId, 'l1', 10, 10, 200, 20, 'TEST', '#000000', 12, '12pt Ariel', null, highestDepth,
+            null, function () {
+                invokeServerSideFunction(elemId, 1500, 1500, "testFunc2", ['Srin', 'ivasan'], function () {
+                    invalidateRect(elemId, -1, 0, 0, 1500, 1500);
+                    alert('Success');
+                });
+            },
+            '#FFFFFF', 1, null);
+        createButton(elemId, 'b3', 400, 300, 100, 40, 'Example 2', '#0000FF', 12, '12pt Ariel', 2, highestDepth, 0, 0,
+            function () {
+                invokeServerSideFunction(elemId, 1500, 1500, "testFunc1", ['Aks', 'hay'], function () {
+                    invalidateRect(elemId, -1, 0, 0, 1500, 1500);
+                    alert('Success');
+                });
+            },
+            null, '#bee6fd', '#a7d9f5', '#eaf6fd', '#d9f0fc', '#3c7fb1', null);
+        invalidateRect(elemId, -1, 0, 0, 1500, 1500);
+    </script>
+</body>
+</html>
